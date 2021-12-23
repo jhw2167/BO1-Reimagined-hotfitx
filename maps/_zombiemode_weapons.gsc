@@ -237,6 +237,8 @@ init_weapons()
 //	PrecacheItem( "zombie_melee" );
 
 	//Z2 Weapons disabled for now
+	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
+	
 	// Pistols
 	add_zombie_weapon( "m1911_zm",					"m1911_upgraded_zm",					&"ZOMBIE_WEAPON_M1911",					50,		"pistol",			"",		undefined );
 	add_zombie_weapon( "python_zm",					"python_upgraded_zm",					&"ZOMBIE_WEAPON_PYTHON",				2200,	"pistol",			"",		undefined );
