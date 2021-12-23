@@ -55,3 +55,13 @@ unbranched
 	- not sure where to add this back
 	- Increase point tally
 ---
+
+
+6. Perk limit
+---
+unbranched
+---
+
+	- 4 perks to r15
+	- 1 new perk every 5 rounds
+---
