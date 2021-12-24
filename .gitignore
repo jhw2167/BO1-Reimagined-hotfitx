@@ -5,6 +5,9 @@
 console.log
 missingasset.csv
 TODO.md
+
 hotfix_files/*
+zzz_search/*
 log.txt
 goals.txt
+search.sh

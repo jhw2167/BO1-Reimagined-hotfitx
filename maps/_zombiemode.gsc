@@ -1730,7 +1730,7 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("cg_drawFPSLabels", 0);
 
 	// no cheats
-	self SetClientDvar("sv_cheats", 0);
+	//self SetClientDvar("sv_cheats", 0);
 
 	// allows shooting while looking at players
 	self SetClientDvar("g_friendlyFireDist", 0);
