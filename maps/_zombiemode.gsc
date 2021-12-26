@@ -295,6 +295,7 @@ track_players_ammo_count()
 			weap = players[i] getcurrentweapon();
 			//iprintln("current weapon: " + weap);
 			//iprintlnbold(weap);
+		
 			//Excludes all Perk based 'weapons' so that you don't get low ammo spam.
 			if( !isDefined(weap) ||
 					weap == "none" ||
@@ -802,9 +803,9 @@ init_levelvars()
 	//	set_zombie_var( identifier, 					value,	float,	column );
 
 	// AI
-	set_zombie_var( "zombie_health_increase", 			100,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
+	set_zombie_var( "zombie_health_increase", 			1000,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
 	set_zombie_var( "zombie_health_increase_multiplier",0.1, 	true,	column );	//	after round 10 multiply the zombies' starting health by this amount
-	set_zombie_var( "zombie_health_start", 				150,	false,	column );	//	starting health of a zombie at round 1
+	set_zombie_var( "zombie_health_start", 				1500,	false,	column );	//	starting health of a zombie at round 1
 	set_zombie_var( "zombie_spawn_delay", 				2.0,	true,	column );	// Base time to wait between spawning zombies.  This is modified based on the round number.
 	set_zombie_var( "zombie_new_runner_interval", 		 10,	false,	column );	//	Interval between changing walkers who are too far away into runners
 	set_zombie_var( "zombie_move_speed_multiplier", 	  8,	false,	column );	//	Multiply by the round number to give the base speed value.  0-40 = walk, 41-70 = run, 71+ = sprint
@@ -2735,7 +2736,7 @@ failsafe_revive_give_back_weapons()
 
 		// he's not reviving anyone but he still has revive stuff up, clean it all up
 /#
-iprintlnbold( "FAILSAFE CLEANING UP REVIVE HUD AND GUN" );
+//iprintlnbold( "FAILSAFE CLEANING UP REVIVE HUD AND GUN" );
 #/
 		// pass in "none" since we have no idea what the weapon they should be showing is
 		self maps\_laststand::revive_give_back_weapons( "none" );
@@ -3774,7 +3775,7 @@ round_spawning()
 		}
 		old_spawn = spawn_point;
 
-	//	iPrintLn(spawn_point.targetname + " " + level.zombie_vars["zombie_spawn_delay"]);
+	iPrintLn(spawn_point.targetname + " " + level.zombie_vars["zombie_spawn_delay"]);
 
 		// MM Mix in dog spawns...
 		spawn_dog = false;
@@ -5945,7 +5946,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "" )
 		return damage;
 
-//	println( "*********HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	iprintln( "*********HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
 
 	old_damage = damage;
 	final_damage = damage;
@@ -6407,7 +6408,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	// return unchanged damage
-	//iPrintln( final_damage );
+	iPrintln( final_damage );
 	return int( final_damage );
 }
 
