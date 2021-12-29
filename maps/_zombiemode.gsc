@@ -5946,19 +5946,22 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "" )
 		return damage;
 
-	iprintln( "*********HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
-
+	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	iprintln( meansofdeath );
+	iprintln( "Anim name: " + self.animname );
 	old_damage = damage;
 	final_damage = damage;
 
 	if ( IsDefined( self.actor_damage_func ) )
 	{
 		final_damage = [[ self.actor_damage_func ]]( weapon, old_damage, attacker );
+		iprintln( "Custom damage function: " + final_damage );
 	}
 
 	if ( IsDefined( self.actor_full_damage_func ) )
 	{
 		final_damage = [[ self.actor_full_damage_func ]]( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime );
+		iprintln( " Full Custom damage function: " + final_damage );
 	}
 
 	// debug
@@ -6308,6 +6311,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 5;
 			break;
 		}
+		
 
 		// Death Machine - kills in 4 body shots or 2 headshots
 		if(weapon == "minigun_zm")
@@ -6333,6 +6337,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				}
 			}
 		}
+		
+		iprintln( "Final dmg for bullet guns: " + final_damage );
 	}
 
 	//projectile impact damage - all body shots deal the same damage
