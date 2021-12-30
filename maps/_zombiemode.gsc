@@ -6196,21 +6196,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "mp40_upgraded_zm":
-			final_damage = 200;
+			final_damage = 240;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 6;
 			break;
 		case "mp5k_upgraded_zm":
 		case "mpl_upgraded_zm":
 		case "pm63_upgraded_zm":
-			final_damage = 140;
+			final_damage = 220;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 6;
 			break;
 		case "ppsh_upgraded_zm":
-			final_damage = 150;
+			final_damage = 220;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
+				final_damage *= 6;
 			break;
 		case "m16_gl_upgraded_zm":
 		case "famas_upgraded_zm":
@@ -6221,7 +6221,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "ak74u_upgraded_zm":
 			final_damage = 190;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 8;
 			break;
 		case "aug_acog_upgraded_zm":
 			final_damage = 200;
@@ -6240,9 +6240,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 5;
 			break;
 		case "spectre_upgraded_zm":
-			final_damage = 130;
+			final_damage = 190;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 6;
 			break;
 		case "rpk_upgraded_zm":
 			final_damage = 180;
@@ -6306,9 +6306,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 5;
 			break;
 		case "zombie_thompson_upgraded":
-			final_damage = 200;
+			final_damage = 240;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 6;
 			break;
 		//Shotgun Damange updates - Reiminaged Expanded
 		case "rottweil72_zm":
