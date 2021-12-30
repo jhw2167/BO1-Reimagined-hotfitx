@@ -5946,22 +5946,22 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "" )
 		return damage;
 
-	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
-	iprintln( meansofdeath );
-	iprintln( "Anim name: " + self.animname );
+	//iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	//iprintln( meansofdeath );
+	//iprintln( "Anim name: " + self.animname );
 	old_damage = damage;
 	final_damage = damage;
 
 	if ( IsDefined( self.actor_damage_func ) )
 	{
 		final_damage = [[ self.actor_damage_func ]]( weapon, old_damage, attacker );
-		iprintln( "Custom damage function: " + final_damage );
+		//iprintln( "Custom damage function: " + final_damage );
 	}
 
 	if ( IsDefined( self.actor_full_damage_func ) )
 	{
 		final_damage = [[ self.actor_full_damage_func ]]( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime );
-		iprintln( " Full Custom damage function: " + final_damage );
+		//iprintln( " Full Custom damage function: " + final_damage );
 	}
 
 	// debug
@@ -6310,6 +6310,35 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 5;
 			break;
+		//Shotgun Damange updates - Reiminaged Expanded
+		case "rottweil72_zm":
+			final_damage = 800 * ( damage / 180);
+			break;
+		case "rottweil72_upgraded_zm":
+			final_damage = 1000 * ( damage / 300);
+			break;
+		case "ithaca_zm":
+			final_damage = 1500 * ( damage / 160);
+			break;
+		case "ithaca_upgraded_zm":
+			final_damage = 4000 * ( damage / 300);
+			break;
+		case "spas_zm":
+			final_damage = 1200 * ( damage / 160);
+			break;
+		case "spas_upgraded_zm":
+			final_damage = 3200 * ( damage / 300);
+			break;
+		case "hs10_zm":
+			final_damage = 1200 * ( damage / 160);
+			break;
+		case "hs10_upgraded_zm":
+			final_damage = 3000 * ( damage / 300);
+			break;
+		case "hs10lh_upgraded_zm":
+			final_damage = 3000 * ( damage / 300);
+			break;
+			
 		}
 		
 
@@ -6338,7 +6367,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 		}
 		
-		iprintln( "Final dmg for bullet guns: " + final_damage );
+		//iprintln( "Final dmg for bullet guns: " + final_damage );
 	}
 
 	//projectile impact damage - all body shots deal the same damage
