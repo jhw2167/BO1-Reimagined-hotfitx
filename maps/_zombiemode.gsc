@@ -5946,7 +5946,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "" )
 		return damage;
 
-	//iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
 	//iprintln( meansofdeath );
 	//iprintln( "Anim name: " + self.animname );
 	old_damage = damage;
@@ -6136,14 +6136,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "psg1_zm":
-			final_damage = 500;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+			final_damage = 1800;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+				final_damage *= 4;
 			break;
 		case "l96a1_zm":
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+			final_damage = 2200;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+				final_damage *= 4;
 			break;
 		//CLASSIC WEAPONS
 		case "zombie_kar98k":
@@ -6260,14 +6260,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "psg1_upgraded_zm":
-			final_damage = 1000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 8;
+			final_damage = 4000;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+				final_damage *= 4;
 			break;
 		case "l96a1_upgraded_zm":
-			final_damage = 2000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 8;
+			final_damage = 5000;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+				final_damage *= 4;
 			break;
 		case "fnfal_upgraded_zm":
 			final_damage = 240;
@@ -6367,7 +6367,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 		}
 		
-		//iprintln( "Final dmg for bullet guns: " + final_damage );
+		iprintln( "Final dmg for bullet guns: " + final_damage );
 	}
 
 	//projectile impact damage - all body shots deal the same damage
@@ -6445,6 +6445,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	// return unchanged damage
 	//iPrintln( final_damage );
 	return int( final_damage );
+}
+
+is_not_boss_zombie( animname )
+{
+	return (animname != "thief_zombie" && animname != "director_zombie" && animname != "astro_zombie");
 }
 
 is_headshot( sWeapon, sHitLoc, sMeansOfDeath )
