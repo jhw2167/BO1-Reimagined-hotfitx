@@ -176,6 +176,7 @@ spear_trap_slow(activator, trap)
 	}
 	else if(self.animname == "zombie")
 	{
+		/*
 		self thread spear_kill(undefined, activator);
 
 		painAnims = [];
@@ -190,7 +191,7 @@ spear_trap_slow(activator, trap)
 			self animscripted("spear_pain_anim", self.origin, self.angles, painAnim);
 			self _zombie_spear_trap_damage_wait();
 		}
-
+		*/
 	}
 	self.spear_trap_slow = false;
 }

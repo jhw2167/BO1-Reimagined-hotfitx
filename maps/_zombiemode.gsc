@@ -6443,7 +6443,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	// return unchanged damage
-	iPrintln( final_damage );
+	//iPrintln( final_damage );
 	return int( final_damage );
 }
 
