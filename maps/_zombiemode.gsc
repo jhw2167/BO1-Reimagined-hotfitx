@@ -803,9 +803,9 @@ init_levelvars()
 	//	set_zombie_var( identifier, 					value,	float,	column );
 
 	// AI
-	set_zombie_var( "zombie_health_increase", 			1000,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
+	set_zombie_var( "zombie_health_increase", 			100,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
 	set_zombie_var( "zombie_health_increase_multiplier",0.1, 	true,	column );	//	after round 10 multiply the zombies' starting health by this amount
-	set_zombie_var( "zombie_health_start", 				1500,	false,	column );	//	starting health of a zombie at round 1
+	set_zombie_var( "zombie_health_start", 				150,	false,	column );	//	starting health of a zombie at round 1
 	set_zombie_var( "zombie_spawn_delay", 				2.0,	true,	column );	// Base time to wait between spawning zombies.  This is modified based on the round number.
 	set_zombie_var( "zombie_new_runner_interval", 		 10,	false,	column );	//	Interval between changing walkers who are too far away into runners
 	set_zombie_var( "zombie_move_speed_multiplier", 	  8,	false,	column );	//	Multiply by the round number to give the base speed value.  0-40 = walk, 41-70 = run, 71+ = sprint
@@ -6017,6 +6017,32 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if(meansofdeath == "MOD_MELEE")
 	{
 		final_damage -= final_damage % 50; // fix for melee weapons doing 1-4 extra damage
+		
+		if(IsDefined(weapon) && weapon == "knife_zm")
+		{
+			
+			
+			wait_anim = 2;
+			if(damage >= self.health) {
+				return final_damage;
+			}
+			
+			fall_anim = %ai_zombie_thundergun_hit_upontoback;
+			self SetPlayerCollision( 0 );
+			self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
+			animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
+			
+			getup_anim = %ai_zombie_thundergun_getup_b;
+			self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
+			animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
+			self SetPlayerCollision( 1 );
+			
+		} else if ( IsDefined(weapon) && weapon == "upgraded_knife_zm" )
+		{
+			//not developed
+			self [[ self.thundergun_fling_func ]]( attacker );
+		}
+		
 	}
 
 	// damage scaling for explosive weapons
