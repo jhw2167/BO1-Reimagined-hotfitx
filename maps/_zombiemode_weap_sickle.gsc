@@ -288,8 +288,8 @@ do_sickle_flourish_end( gun )
 
 	self TakeWeapon(weapon);
 
-	self GiveWeapon( "sickle_knife_zm" );
-	self set_player_melee_weapon( "sickle_knife_zm" );
+	//self GiveWeapon( "sickle_knife_zm" );
+	//self set_player_melee_weapon( "sickle_knife_zm" );	keep player with knockdown punch
 
 	self TakeWeapon("combat_knife_zm");
 	self GiveWeapon("combat_sickle_knife_zm");
@@ -297,7 +297,7 @@ do_sickle_flourish_end( gun )
 
 	if( self HasWeapon("knife_zm") )
 	{
-		self TakeWeapon( "knife_zm" );
+		//self TakeWeapon( "knife_zm" );
 	}
 
 	// TODO: race condition?

@@ -8988,6 +8988,9 @@ set_melee_actionslot()
 		self GiveWeapon(wep);
 		self SetActionSlot(2, "weapon", wep);
 	}
+	
+	//keep knife_zm for pushing zombies down
+	self set_player_melee_weapon("knife_zm");
 }
 
 set_gamemode()
