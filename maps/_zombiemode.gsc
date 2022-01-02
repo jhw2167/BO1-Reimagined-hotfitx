@@ -6315,28 +6315,28 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 800 * ( damage / 180);
 			break;
 		case "rottweil72_upgraded_zm":
-			final_damage = 1000 * ( damage / 300);
+			final_damage = 2500 * ( damage / 300);
 			break;
 		case "ithaca_zm":
 			final_damage = 1500 * ( damage / 160);
 			break;
 		case "ithaca_upgraded_zm":
-			final_damage = 4000 * ( damage / 300);
+			final_damage = 10000 * ( damage / 300);
 			break;
 		case "spas_zm":
 			final_damage = 1200 * ( damage / 160);
 			break;
 		case "spas_upgraded_zm":
-			final_damage = 3200 * ( damage / 300);
+			final_damage = 8000 * ( damage / 300);
 			break;
 		case "hs10_zm":
 			final_damage = 1200 * ( damage / 160);
 			break;
 		case "hs10_upgraded_zm":
-			final_damage = 3000 * ( damage / 300);
+			final_damage = 7500 * ( damage / 300);
 			break;
 		case "hs10lh_upgraded_zm":
-			final_damage = 3000 * ( damage / 300);
+			final_damage = 7500 * ( damage / 300);
 			break;
 			
 		}
