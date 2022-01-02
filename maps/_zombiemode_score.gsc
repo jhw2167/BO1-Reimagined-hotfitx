@@ -632,7 +632,7 @@ score_highlight( scoring_player, score, value )
 		y -= 5;
 	}
 
-	time = 0.5;
+	time = 0.7;
 	half_time = time * 0.5;
 	quarter_time = time * 0.25;
 
@@ -648,8 +648,8 @@ score_highlight( scoring_player, score, value )
 	}
 	else if(IsDefined(self.positive_points_hud) && IsDefined(self.positive_points_hud[player_num]))
 	{
-		value += self.positive_points_hud_value[player_num];
-		self.positive_points_hud[player_num] Destroy();
+		value = self.positive_points_hud_value[player_num];
+		//self.positive_points_hud[player_num] Destroy();
 	}
 
 	hud = self create_highlight_hud( x, y, value );
@@ -683,10 +683,10 @@ score_highlight( scoring_player, score, value )
 
 	// Move the hud
 	hud MoveOverTime( time );
-	hud.x -= 50;
+	hud.x -= 40;
 	if(value < 1)
 	{
-		hud.y += 5;
+		hud.y += RandomIntRange(5,25);
 	}
 	else
 	{
