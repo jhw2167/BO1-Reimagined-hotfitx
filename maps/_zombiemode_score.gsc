@@ -73,15 +73,39 @@ player_add_points( event, mod, hit_location ,is_dog)
 			break;
 
 		case "damage_light":
-			player_points = level.zombie_vars["zombie_score_damage_light"];
+			//player_points = level.zombie_vars["zombie_score_damage_light"];
+			
+			if (level.round_number < 10) {
+				player_points = 10;
+			} else if (level.round_number < 20) {
+				player_points = 5;
+			} else {
+				player_points = 1;
+			}
 			break;
 
 		case "damage":
-			player_points = level.zombie_vars["zombie_score_damage_normal"];
+			//player_points = level.zombie_vars["zombie_score_damage_normal"];
+			if (level.round_number < 10) {
+				player_points = 10;
+			} else if (level.round_number < 20) {
+				player_points = 5;
+			} else {
+				player_points = 1;
+			}
 			break;
 
 		case "damage_ads":
-			player_points = level.zombie_vars["zombie_score_damage_normal"];
+			//player_points = level.zombie_vars["zombie_score_damage_normal"];
+			
+			if (level.round_number < 10) {
+				player_points = 10;
+			} else if (level.round_number < 20) {
+				player_points = 5;
+			} else {
+				player_points = 1;
+			}
+			
 			break;
 
 		case "rebuild_board":
@@ -173,6 +197,16 @@ get_zombie_death_player_points()
 	{
 		points = level.zombie_vars["zombie_score_kill_4player"];
 	}
+	
+	//Players get a few extra points in later rounds
+	if (level.round_number < 20) {
+		player_points = 50;
+	} else if (level.round_number < 30) {
+		player_points = 60;
+	} else {
+		player_points = 70;
+	}
+	
 	points *=100;
 	return( points );
 }
