@@ -4214,10 +4214,6 @@ round_start()
 //		Objective_Add( 0, "active", "Mystery Box", level.chests[level.chest_index].chest_lid.origin, "minimap_icon_mystery_box" );
 //	}
 
-	if ( level.zombie_vars["game_start_delay"] > 0 )
-	{
-		round_pause( level.zombie_vars["game_start_delay"] );
-	}
 
 	flag_set( "begin_spawning" );
 
@@ -4780,6 +4776,19 @@ round_think()
 		//array_thread( players, maps\_zombiemode_ability::giveHardpointItems );
 
 		level thread award_grenades_for_survivors();
+		
+		
+		//continually delays round start until turned off
+		iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
+		if ( GetDvarInt("zombie_pause") > 0 )
+		{
+			while(GetDvarInt("zombie_pause") > 0) 
+			{
+				round_pause( 5 );
+			}
+			
+		}
+		
 
 		bbPrint( "zombie_rounds: round %d player_count %d", level.round_number, players.size );
 
