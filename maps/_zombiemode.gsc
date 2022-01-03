@@ -4750,6 +4750,8 @@ round_think()
 	//level.zombie_move_speed = 105;
 	//level.zombie_vars["zombie_spawn_delay"] = .08;
 	//level.zombie_ai_limit = 1;
+	SetDvar( "zombie_pause", "0" );		//zombie pause was being innit to 1 instead
+
 
 	for( ;; )
 	{
@@ -4779,7 +4781,7 @@ round_think()
 		
 		
 		//continually delays round start until turned off
-		iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
+		//iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
 		if ( GetDvarInt("zombie_pause") > 0 )
 		{
 			while(GetDvarInt("zombie_pause") > 0) 
