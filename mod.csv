@@ -315,6 +315,10 @@ weapon,sp/starburst_china_lake_zm
 weapon,sp/tesla_gun_powerup_zm
 weapon,sp/tesla_gun_powerup_upgraded_zm
 
+//DOUBLE PAP
+weapon,sp/zombie_thompson_upgraded_x2
+weapon,sp/spas_upgraded_zm_x2
+
 //SOUNDS
 sound,reimagined
 

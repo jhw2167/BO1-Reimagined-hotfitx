@@ -423,6 +423,13 @@ include_weapons()
 
 	// get the bowie into the collector achievement list
 	level.collector_achievement_weapons = array_add( level.collector_achievement_weapons, "bowie_knife_zm" );
+	
+	
+	//All double PaP weapons:
+	include_weapon( "spas_upgraded_zm_x2", false );
+	include_weapon( "zombie_thompson", true );
+	include_weapon( "zombie_thompson_upgraded", false );
+	include_weapon( "zombie_thompson_upgraded_x2", false );
 }
 
 

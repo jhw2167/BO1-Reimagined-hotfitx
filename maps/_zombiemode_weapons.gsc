@@ -322,6 +322,12 @@ init_weapons()
 
  	add_zombie_weapon( "falling_hands_zm",			undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
 
+
+	//Double PaP weapons
+	add_zombie_weapon( "spas_upgraded_zm",					"spas_upgraded_zm_x2",						&"ZOMBIE_SPAS_UPGRADED",					2000,		"shotgun",			"",		undefined );
+	add_zombie_weapon( "zombie_thompson", 					"zombie_thompson_upgraded", 				&"WAW_ZOMBIE_WEAPON_THOMPSON_1200", 		1200, 		"mg" );
+	add_zombie_weapon( "zombie_thompson_upgraded", 			"zombie_thompson_upgraded_x2", 				&"WAW_WEAPON_THOMPSON_UPGRADED", 		1200, 		"mg" );
+
 	if(IsDefined(level._zombie_custom_add_weapons))
 	{
 		[[level._zombie_custom_add_weapons]]();
@@ -783,6 +789,19 @@ is_weapon_upgraded( weaponname )
 	}
 
 	return false;
+}
+
+
+is_weapon_double_upgraded( weaponname )
+{
+	if( !isdefined( weaponname ) || weaponname == "" )
+	{
+		return false;
+	}
+
+	//iprintln("Is weapon double upgraded: "+ IsSubStr( weaponname, "x2" ));
+	weaponname = ToLower( weaponname );
+	return IsSubStr( weaponname, "x2" );
 }
 
 

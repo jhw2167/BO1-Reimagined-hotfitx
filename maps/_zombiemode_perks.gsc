@@ -573,7 +573,7 @@ vending_machine_trigger_think()
 				{
 					self SetInvisibleToPlayer( players[i], true );
 				}
-				else if ( !flag("pack_machine_in_use") && players[i] maps\_zombiemode_weapons::is_weapon_upgraded( current_weapon ) )
+				else if ( !flag("pack_machine_in_use") && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
 				{
 					self SetInvisibleToPlayer( players[i], true );
 				}
@@ -635,7 +635,7 @@ vending_weapon_upgrade()
 			player maps\_laststand::player_is_in_laststand() ||
 			is_true( player.intermission ) ||
 			player isThrowingGrenade() ||
-			player maps\_zombiemode_weapons::is_weapon_upgraded( current_weapon ) )
+			player maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
 		{
 			wait( 0.1 );
 			continue;
