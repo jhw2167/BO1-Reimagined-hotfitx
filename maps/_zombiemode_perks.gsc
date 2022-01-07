@@ -410,7 +410,7 @@ default_vending_precaching()
 	//PrecacheString( &"ZOMBIE_PERK_QUICKREVIVE" );
 	PrecacheString( &"REIMAGINED_PERK_QUICKREVIVE" );
 	PrecacheString( &"ZOMBIE_PERK_FASTRELOAD" );
-	PrecacheString( &"ZOMBIE_PERK_PACKAPUNCH" );
+	PrecacheString( &"REIMAGINED_PERK_PACKAPUNCH" );
 
 	level._effect["doubletap_light"]		= loadfx("misc/fx_zombie_cola_dtap_on");
 	if ( is_true( level.zombiemode_using_marathon_perk ) )
@@ -664,6 +664,14 @@ vending_weapon_upgrade()
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
 		}
+		
+		if ( player maps\_zombiemode_weapons::is_weapon_upgraded( current_weapon ) && player.score < self.cost2 )
+		{
+			//player iprintln( "Not enough points to buy Perk: " + perk );
+			self playsound("deny");
+			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
+			continue;
+		}
 
 		if( is_melee_weapon(current_weapon) || is_placeable_mine(current_weapon) )
 		{
@@ -683,6 +691,20 @@ vending_weapon_upgrade()
 			
  			continue;
 		}
+		if (current_weapon == "microwavegundw_upgraded_zm" ||
+			current_weapon == "tesla_gun_powerup_upgraded_zm" ||
+			current_weapon == "tesla_gun_upgraded_zm" ||
+			current_weapon == "thundergun_upgraded_zm" ||
+			current_weapon == "ray_gun_upgraded_zm" ||
+			current_weapon == "freezegun_upgraded_zm" ||
+			current_weapon == "shrink_ray_upgraded_zm" || 
+			current_weapon == "sniper_explosive_bolt_upgraded_zm" ||	//scavenger
+			current_weapon == "humangun_upgraded_zm" ||					//human gun
+			current_weapon == "m1911_upgraded_zm"			) 
+			{
+				continue;
+			}
+				
 
 		self.user = player;
 		flag_set("pack_machine_in_use");
@@ -765,7 +787,7 @@ vending_weapon_upgrade()
 			}
 		}
 
-		self SetHintString( &"ZOMBIE_PERK_PACKAPUNCH", self.cost );
+		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 		//self setvisibletoall();
 		flag_clear("pack_machine_in_use");
 		self.user = undefined;
@@ -785,12 +807,14 @@ vending_weapon_upgrade_cost()
 	while ( 1 )
 	{
 		self.cost = 5000;
-		self SetHintString( &"ZOMBIE_PERK_PACKAPUNCH", self.cost );
+		self.cost2 = 15000;
+		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
 		level waittill( "powerup bonfire sale" );
 
 		self.cost = 1000;
-		self SetHintString( &"ZOMBIE_PERK_PACKAPUNCH", self.cost );
+		self.cost2 = 5000;
+		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
 		level waittill( "bonfire_sale_off" );
 	}

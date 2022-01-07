@@ -15,6 +15,9 @@
 
 //HINTSTRINGS
 
+REFERENCE           PERK_PACKAPUNCH
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Pack A Punch [Cost: &&1],\n                     or Double Pack A Punch [Cost: &&2]"
+
 REFERENCE           WEAPONCOSTAMMO
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Weapon [Cost: &&1], Ammo [Cost: &&2]"
 
