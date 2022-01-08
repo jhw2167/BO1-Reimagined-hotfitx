@@ -324,9 +324,9 @@ init_weapons()
 
 
 	//Double PaP weapons
-	add_zombie_weapon( "spas_upgraded_zm",					"spas_upgraded_zm_x2",						&"ZOMBIE_WEAPON_SPAS",					2000,		"shotgun",			"",		undefined );
-	add_zombie_weapon( "zombie_thompson", 					"zombie_thompson_upgraded", 				&"WAW_ZOMBIE_WEAPON_THOMPSON_1200", 		1200, 		"mg" );
-	add_zombie_weapon( "zombie_thompson_upgraded", 			"zombie_thompson_upgraded_x2", 				&"WAW_WEAPON_THOMPSON_UPGRADED", 		1200, 		"mg" );
+	//************************************************************************************************************************
+	
+	//************************************************************************************************************************
 
 	if(IsDefined(level._zombie_custom_add_weapons))
 	{
