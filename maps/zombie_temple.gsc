@@ -426,7 +426,7 @@ include_weapons()
 	
 	
 	//All double PaP weapons:
-
+	include_weapon( "galil_upgraded_zm_x2", false );
 
 }
 
