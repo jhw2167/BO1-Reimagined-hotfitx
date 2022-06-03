@@ -792,19 +792,22 @@ vending_2x_blacklist(weapon) {
 			weapon == "tesla_gun_upgraded_zm" ||
 			weapon == "thundergun_upgraded_zm" ||
 			weapon == "ray_gun_upgraded_zm" ||
+			weapon == "starburst_ray_gun_zm" ||
 			weapon == "freezegun_upgraded_zm" ||
 			weapon == "shrink_ray_upgraded_zm" || 
 			weapon == "sniper_explosive_bolt_upgraded_zm" ||	//scavenger
+			(IsSubStr( weapon, "sniper" ) && IsSubStr( weapon, "upgraded" )) ||						///scavenger
 			weapon == "humangun_upgraded_zm" ||					//human gun
 			
-			IsSubStr( weapon, "zombie" ) ||					//no double pap WaW weapons
+			( IsSubStr( weapon, "zombie" ) && IsSubStr( weapon, "upgraded" ) ||					//no double pap WaW weapons
 			
 			weapon == "m14_upgraded_zm" ||
 			weapon == "mpl_upgraded_zm" ||
 			weapon == "mp5k_upgraded_zm" ||
 			weapon == "mp40_upgraded_zm" ||
-			weapon == "ak47u_upgraded_zm" ||
-			weapon == "rottwiel72_upgraded_zm" ||
+			weapon == "ak74u_upgraded_zm" ||
+			weapon == "pm63_upgraded_zm" ||
+			weapon == "rottweil72_upgraded_zm" ||
 			weapon == "m16_gl_upgraded_zm" ||
 			weapon == "gl_m16_upgraded_zm" ||
 			weapon == "ithaca_upgraded_zm" ||
