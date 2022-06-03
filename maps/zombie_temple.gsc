@@ -426,7 +426,41 @@ include_weapons()
 	
 	
 	//All double PaP weapons:
+		// - no wall weapons
+		// - no wonder weapons
+	//include_weapon( "zombie_thompson_upgraded_x2", false );
+	include_weapon( "spas_upgraded_zm_x2", false );
+	//include_weapon( "m14_upgraded_zm_x2", false );
+	//include_weapon( "rottweil72_upgraded_zm_x2", false );
+	//include_weapon( "m16_gl_upgraded_zm_x2", false );
+	//include_weapon( "gl_m16_upgraded_zm_x2", false );
+	include_weapon( "cz75_upgraded_zm_x2", false );
+	include_weapon( "cz75dw_upgraded_zm_x2", false );
+	include_weapon( "cz75lh_upgraded_zm_x2", false );
+	include_weapon( "spectre_upgraded_zm_x2", false );
+	include_weapon( "hs10_upgraded_zm_x2", false );
+	include_weapon( "hs10lh_upgraded_zm_x2", false );
+	//include_weapon( "ithaca_upgraded_zm_x2", false );
+	include_weapon( "g11_lps_upgraded_zm_x2", false );
+	include_weapon( "famas_upgraded_zm_x2", false );
+	include_weapon( "aug_acog_mk_upgraded_zm_x2", false );
+	//include_weapon( "mk_aug_upgraded_zm_x2", false );
+	include_weapon( "commando_upgraded_zm_x2", false );
 	include_weapon( "galil_upgraded_zm_x2", false );
+	include_weapon( "rpk_upgraded_zm_x2", false );
+	include_weapon( "hk21_upgraded_zm_x2", false );
+	include_weapon( "l96a1_upgraded_zm_x2", false );
+	include_weapon( "china_lake_upgraded_zm_x2", false );
+	include_weapon( "m72_law_upgraded_zm_x2", false );
+	include_weapon( "knife_ballistic_upgraded_zm_x2", false );
+	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
+	//include_weapon( "explosive_bolt_upgraded_zm_x2", false );
+
+	include_weapon( "ppsh_upgraded_zm_x2", false );
+	include_weapon( "ak47_ft_upgraded_zm_x2", false );
+	include_weapon( "stoner63_upgraded_zm_x2", false );
+	include_weapon( "psg1_upgraded_zm_x2", false );
+	
 
 }
 

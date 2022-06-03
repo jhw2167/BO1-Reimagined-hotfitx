@@ -691,19 +691,9 @@ vending_weapon_upgrade()
 			
  			continue;
 		}
-		if (current_weapon == "microwavegundw_upgraded_zm" ||
-			current_weapon == "tesla_gun_powerup_upgraded_zm" ||
-			current_weapon == "tesla_gun_upgraded_zm" ||
-			current_weapon == "thundergun_upgraded_zm" ||
-			current_weapon == "ray_gun_upgraded_zm" ||
-			current_weapon == "freezegun_upgraded_zm" ||
-			current_weapon == "shrink_ray_upgraded_zm" || 
-			current_weapon == "sniper_explosive_bolt_upgraded_zm" ||	//scavenger
-			current_weapon == "humangun_upgraded_zm" ||					//human gun
-			current_weapon == "m1911_upgraded_zm"			) 
-			{
-				continue;
-			}
+		if(vending_2x_blacklist(current_weapon) {
+			continue;
+		}
 				
 
 		self.user = player;
@@ -794,6 +784,43 @@ vending_weapon_upgrade()
 		self.third_person_weapon_complete = undefined;
 	}
 }
+//END VENDING WEAPON UPGRADE
+
+vending_2x_blacklist(weapon) {
+	if (	weapon == "microwavegundw_upgraded_zm" ||
+			weapon == "tesla_gun_powerup_upgraded_zm" ||
+			weapon == "tesla_gun_upgraded_zm" ||
+			weapon == "thundergun_upgraded_zm" ||
+			weapon == "ray_gun_upgraded_zm" ||
+			weapon == "freezegun_upgraded_zm" ||
+			weapon == "shrink_ray_upgraded_zm" || 
+			weapon == "sniper_explosive_bolt_upgraded_zm" ||	//scavenger
+			weapon == "humangun_upgraded_zm" ||					//human gun
+			
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+			weapon == "zombie_thompson_upgraded_zm" ||
+
+			weapon == "m14_upgraded_zm" ||
+			weapon == "mpl_upgraded_zm" ||
+			weapon == "mp5k_upgraded_zm" ||
+			weapon == "mp40_upgraded_zm" ||
+			weapon == "rottwiel72_upgraded_zm" ||
+			weapon == "m16_gl_upgraded_zm" ||
+			weapon == "gl_m16_upgraded_zm" ||
+			weapon == "ithaca_upgraded_zm" ||
+			weapon == "mk_aug_upgraded_zm" ||
+			weapon == "explosivbe_bolt_upgraded_zm"			)
+			{
+				return true;
+			}
+}
+
 
 wait_for_third_person_weapon_complete()
 {
