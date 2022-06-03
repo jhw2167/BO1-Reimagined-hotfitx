@@ -691,7 +691,7 @@ vending_weapon_upgrade()
 			
  			continue;
 		}
-		if(vending_2x_blacklist(current_weapon) {
+		if(vending_2x_blacklist(current_weapon)) {
 			continue;
 		}
 				
