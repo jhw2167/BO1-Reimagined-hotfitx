@@ -797,28 +797,24 @@ vending_2x_blacklist(weapon) {
 			weapon == "sniper_explosive_bolt_upgraded_zm" ||	//scavenger
 			weapon == "humangun_upgraded_zm" ||					//human gun
 			
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-			weapon == "zombie_thompson_upgraded_zm" ||
-
+			IsSubStr( weapon, "zombie" ) ||					//no double pap WaW weapons
+			
 			weapon == "m14_upgraded_zm" ||
 			weapon == "mpl_upgraded_zm" ||
 			weapon == "mp5k_upgraded_zm" ||
 			weapon == "mp40_upgraded_zm" ||
+			weapon == "ak47u_upgraded_zm" ||
 			weapon == "rottwiel72_upgraded_zm" ||
 			weapon == "m16_gl_upgraded_zm" ||
 			weapon == "gl_m16_upgraded_zm" ||
 			weapon == "ithaca_upgraded_zm" ||
 			weapon == "mk_aug_upgraded_zm" ||
-			weapon == "explosivbe_bolt_upgraded_zm"			)
+			weapon == "explosivbe_bolt_upgraded_zm")
 			{
 				return true;
 			}
+			
+			return false;
 }
 
 
