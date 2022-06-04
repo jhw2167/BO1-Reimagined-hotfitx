@@ -428,18 +428,20 @@ include_weapons()
 	//All double PaP weapons:
 		// - no wall weapons
 		// - no wonder weapons
-	//include_weapon( "zombie_thompson_upgraded_x2", false );
-	include_weapon( "spas_upgraded_zm_x2", false );
 	//include_weapon( "m14_upgraded_zm_x2", false );
 	//include_weapon( "rottweil72_upgraded_zm_x2", false );
 	//include_weapon( "m16_gl_upgraded_zm_x2", false );
 	//include_weapon( "gl_m16_upgraded_zm_x2", false );
+	include_weapon( "python_upgraded_zm_x2", false );
 	include_weapon( "cz75_upgraded_zm_x2", false );
 	include_weapon( "cz75dw_upgraded_zm_x2", false );
 	include_weapon( "cz75lh_upgraded_zm_x2", false );
+	
 	include_weapon( "spectre_upgraded_zm_x2", false );
+	include_weapon( "spas_upgraded_zm_x2", false );
 	include_weapon( "hs10_upgraded_zm_x2", false );
 	include_weapon( "hs10lh_upgraded_zm_x2", false );
+	
 	//include_weapon( "ithaca_upgraded_zm_x2", false );
 	include_weapon( "g11_lps_upgraded_zm_x2", false );
 	include_weapon( "famas_upgraded_zm_x2", false );

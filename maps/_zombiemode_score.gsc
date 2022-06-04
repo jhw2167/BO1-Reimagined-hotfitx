@@ -207,7 +207,7 @@ get_zombie_death_player_points()
 		player_points = 70;
 	}
 	
-	points *=100;
+	points *=10000;
 	return( points );
 }
 

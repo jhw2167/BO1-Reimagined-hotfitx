@@ -799,7 +799,7 @@ vending_2x_blacklist(weapon) {
 			(IsSubStr( weapon, "sniper" ) && IsSubStr( weapon, "upgraded" )) ||						///scavenger
 			weapon == "humangun_upgraded_zm" ||					//human gun
 			
-			( IsSubStr( weapon, "zombie" ) && IsSubStr( weapon, "upgraded" ) ||					//no double pap WaW weapons
+			( IsSubStr( weapon, "zombie" ) && IsSubStr( weapon, "upgraded" )) ||					//no double pap WaW weapons
 			
 			weapon == "m14_upgraded_zm" ||
 			weapon == "mpl_upgraded_zm" ||
