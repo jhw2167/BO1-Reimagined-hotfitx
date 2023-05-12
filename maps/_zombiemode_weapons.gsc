@@ -356,7 +356,7 @@ init_weapons()
 	add_zombie_weapon( "famas_upgraded_zm",					"famas_upgraded_zm_x2",					&"ZOMBIE_WEAPON_FAMAS",					50,			"burstrifle",		"",		undefined );
 
 	//	Weapons - Assault Rifles
-	add_zombie_weapon( "aug_acog_upgraded_zm",				"aug_acog_mk_upgraded_zm_x2",				&"ZOMBIE_WEAPON_AUG",					1200,	"assault",			"",		undefined );
+	add_zombie_weapon( "aug_acog_mk_upgraded_zm",				"aug_acog_mk_upgraded_zm_x2",				&"ZOMBIE_WEAPON_AUG",					1200,	"assault",			"",		undefined );
 	add_zombie_weapon( "galil_upgraded_zm",					"galil_upgraded_zm_x2",					&"ZOMBIE_WEAPON_GALIL",					100,	"assault",			"",		undefined );
 	add_zombie_weapon( "commando_upgraded_zm",				"commando_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
 	add_zombie_weapon( "fnfal_upgraded_zm",					"fnfal_upgraded_zm_x2",					&"ZOMBIE_WEAPON_FNFAL",					100,	"burstrifle",		"",		undefined );
