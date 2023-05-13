@@ -951,6 +951,7 @@ init_function_overrides()
 	{
 		level.Player_Spawn_func = ::coop_player_spawn_placement;
 	}
+	
 }
 
 
@@ -6446,6 +6447,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
+	//x2 Weapons
+	
+	//x2 Special Weapons
+	else if(weapon == "knife_ballistic_upgraded_zm_x2")
+	{
+		return self.maxhealth + 1000; // should always kill
+	}
+
+	//Classic Special Damage Multipliers (perks and conditions)
 	if(weapon == "molotov_zm")
 	{
 		return self.maxhealth + 1000;
