@@ -7,19 +7,21 @@
 
 init()
 {
-	/*
-	Reimagined-Expanded: We always include tesla script 5/13/2023
 	
+	//Reimagined-Expanded: We always include tesla script 5/13/2023
 	if ( !maps\_zombiemode_weapons::is_weapon_included( "tesla_gun_zm" ) && !is_true( level.uses_tesla_powerup ) )
 	{
-		return;
+		//return;
 	}
-	*/
+	
 
 	level._effect["tesla_bolt"]				= loadfx( "maps/zombie/fx_zombie_tesla_bolt_secondary" );
 	level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
 	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 
+	if ( maps\_zombiemode_weapons::is_weapon_included( "tesla_gun_zm" ) || is_true( level.uses_tesla_powerup ) ) 
+	{
+		
 	level._effect["tesla_viewmodel_rail"]	= loadfx( "maps/zombie/fx_zombie_tesla_rail_view" );
 	level._effect["tesla_viewmodel_tube"]	= loadfx( "maps/zombie/fx_zombie_tesla_tube_view" );
 	level._effect["tesla_viewmodel_tube2"]	= loadfx( "maps/zombie/fx_zombie_tesla_tube_view2" );
@@ -30,6 +32,7 @@ init()
 	level._effect["tesla_viewmodel_tube3_upgraded"]	= loadfx( "maps/zombie/fx_zombie_tesla_tube_view3_ug" );
 
 	level._effect["tesla_shock_eyes"]		= loadfx( "maps/zombie/fx_zombie_tesla_shock_eyes" );
+	}
 
 	precacheshellshock( "electrocution" );
 
@@ -459,9 +462,9 @@ tesla_debug_arc( origin, distance )
 
 is_tesla_damage( mod )
 {
-	iprintln("Is weapon tesla: " + (self.damageweapon == "knife_ballistic_upgraded_zm_x2") );
+	//iprintln("Is weapon tesla: ");
 	//return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm") ) && ( mod == "MOD_PROJECTILE" || mod == "MOD_PROJECTILE_SPLASH" ) );
-	return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm" self.damageweapon == "knife_ballistic_upgraded_zm_x2")  )  );
+	return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm" || self.damageweapon == "knife_ballistic_upgraded_zm_x2")  )  );
 }
 
 enemy_killed_by_tesla()

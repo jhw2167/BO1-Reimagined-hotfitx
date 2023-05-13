@@ -98,7 +98,7 @@ main()
 	// Initialize the zone manager above any scripts that make use of zone info
 	maps\_zombiemode_zone_manager::init();
 
-	maps\_zombiemode_grief::init();
+	//maps\_zombiemode_grief::init();
 
 	// Call the other zombiemode scripts
 	maps\_zombiemode_audio::audio_init();
@@ -6452,8 +6452,29 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//x2 Special Weapons
 	if(weapon == "knife_ballistic_upgraded_zm_x2")
 	{
+		iprintln("Attempting to do tesla dmg");
+			// get em
+		zombies = GetAiSpeciesArray( "axis", "all" );
+		iprintln("Species Array");
+		
+		iprintln(zombies);
+
+		// find the zombies in range
+		zombie_sort = get_array_of_closest( self.origin, zombies, undefined, 15, 250 );
+		iprintln("sorted\n\n");
+		iprintln(zombie_sort);
+
+		// shoot tesla rounds at them
+		for (i = 0; i < zombie_sort.size; i++)
+		{
+			centroid = zombie_sort[i] GetCentroid();
+			level thread maps\_zombiemode_weap_nesting_dolls::nesting_dolls_play_tesla_bolt( self.origin, centroid );
+			zombie_sort[i] thread maps\_zombiemode_weap_tesla::tesla_damage_init( "head", centroid, self );
+		}
+		
 		return self.maxhealth + 1000; // should always kill
 	}
+	
 
 	//Classic Special Damage Multipliers (perks and conditions)
 	if(weapon == "molotov_zm")
