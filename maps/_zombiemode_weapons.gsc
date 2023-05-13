@@ -378,7 +378,7 @@ init_weapons()
  	add_zombie_weapon( "knife_ballistic_bowie_upgraded_zm",	"knife_ballistic_upgraded_zm_x2",	&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		10,		"bowie",	"",		undefined );
  	add_zombie_weapon( "knife_ballistic_sickle_upgraded_zm",	"knife_ballistic_upgraded_zm_x2",	&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		10,		"sickle",	"",		undefined );
 
- 	add_zombie_weapon( "ak47_upgraded_zm",					"ak47_ft_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
+ 	add_zombie_weapon( "ak47_ft_upgraded_zm",					"ak47_ft_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
  	add_zombie_weapon( "stoner63_upgraded_zm",				"stoner63_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
  	add_zombie_weapon( "psg1_upgraded_zm",					"psg1_upgraded_zm_x2",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"sniper",			"",		undefined );
  	add_zombie_weapon( "ppsh_upgraded_zm",					"ppsh_upgraded_zm_x2",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"smg",			"",		undefined );

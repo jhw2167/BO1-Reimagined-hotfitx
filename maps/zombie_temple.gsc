@@ -435,18 +435,17 @@ include_weapons()
 	include_weapon( "python_upgraded_zm_x2", false );
 	include_weapon( "cz75_upgraded_zm_x2", false );
 	include_weapon( "cz75dw_upgraded_zm_x2", false );
-	include_weapon( "cz75lh_upgraded_zm_x2", false );
 	
 	include_weapon( "spectre_upgraded_zm_x2", false );
 	include_weapon( "spas_upgraded_zm_x2", false );
 	include_weapon( "hs10_upgraded_zm_x2", false );
-	include_weapon( "hs10lh_upgraded_zm_x2", false );
 	
 	//include_weapon( "ithaca_upgraded_zm_x2", false );
+	include_weapon( "fnfal_upgraded_zm_x2", false );
 	include_weapon( "g11_lps_upgraded_zm_x2", false );
 	include_weapon( "famas_upgraded_zm_x2", false );
 	include_weapon( "aug_acog_mk_upgraded_zm_x2", false );
-	//include_weapon( "mk_aug_upgraded_zm_x2", false );
+	include_weapon( "mk_aug_upgraded_zm_x2", false );
 	include_weapon( "commando_upgraded_zm_x2", false );
 	include_weapon( "galil_upgraded_zm_x2", false );
 	include_weapon( "rpk_upgraded_zm_x2", false );
