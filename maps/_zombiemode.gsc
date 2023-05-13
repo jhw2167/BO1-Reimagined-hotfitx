@@ -6450,7 +6450,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//x2 Weapons
 	
 	//x2 Special Weapons
-	else if(weapon == "knife_ballistic_upgraded_zm_x2")
+	if(weapon == "knife_ballistic_upgraded_zm_x2")
 	{
 		return self.maxhealth + 1000; // should always kill
 	}
