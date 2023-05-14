@@ -119,6 +119,11 @@ tesla_damage_init( hit_location, hit_origin, player )
 tesla_arc_damage( source_enemy, player, arc_num, upgraded )
 {
 	player endon( "disconnect" );
+	
+	player.tesla_enemies = undefined;
+	player.tesla_enemies_hit = 1;
+	player.tesla_powerup_dropped = false;
+	player.tesla_arc_count = 0;
 
 	debug_print( "TESLA: Evaulating arc damage for arc: " + arc_num + " Current enemies hit: " + player.tesla_enemies_hit );
 
