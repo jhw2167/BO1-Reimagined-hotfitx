@@ -248,7 +248,12 @@ watch_use_trigger( trigger, model, callback, weapon, playerSoundOnUse, npcSoundO
 			else if(player HasWeapon("knife_ballistic_sickle_upgraded_zm"))
 			{
 				weapon = "knife_ballistic_sickle_upgraded_zm";
+			} 
+			else if(  player HasWeapon("knife_ballistic_upgraded_zm_x2") ) 
+			{
+				weapon = "knife_ballistic_upgraded_zm_x2";
 			}
+				
 		}
 
 		max_ammo = WeaponMaxAmmo(weapon);

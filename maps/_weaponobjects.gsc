@@ -49,6 +49,7 @@ onPlayerSpawned() // self == player
 			self create_claymore_watcher_zm();
 			self create_ballistic_knife_watcher_zm( "knife_ballistic", "knife_ballistic_zm" );
 			self create_ballistic_knife_watcher_zm( "knife_ballistic_upgraded", "knife_ballistic_upgraded_zm" );
+			self create_ballistic_knife_watcher_zm( "knife_ballistic_upgraded_zm", "knife_ballistic_upgraded_zm_x2" ); //Reimagined-Expanded 5/14
 			self create_ballistic_knife_watcher_zm( "knife_ballistic_bowie", "knife_ballistic_bowie_zm" );
 			self create_ballistic_knife_watcher_zm( "knife_ballistic_bowie_upgraded", "knife_ballistic_bowie_upgraded_zm" );
 			
