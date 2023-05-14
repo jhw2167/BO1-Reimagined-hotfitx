@@ -6446,17 +6446,18 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			final_damage = 30;
 		}
+		
+		//x2 Special Weapons
+		if(weapon == "knife_ballistic_upgraded_zm_x2" && self.animname != "director_zombie")
+		{	
+			//Wunderwaff thread
+			self maps\_zombiemode_weap_tesla::tesla_arc_damage( self, attacker, 1, true );
+			return self.maxhealth + 1000; // should always kill
+		}
 	}
 
 	//x2 Weapons
 	
-	//x2 Special Weapons
-	if(weapon == "knife_ballistic_upgraded_zm_x2" && self.animname != "director_zombie")
-	{	
-		//Wunderwaff thread
-		self maps\_zombiemode_weap_tesla::tesla_arc_damage( self, attacker, 1, true );
-		return self.maxhealth + 1000; // should always kill
-	}
 	
 
 	//Classic Special Damage Multipliers (perks and conditions)
