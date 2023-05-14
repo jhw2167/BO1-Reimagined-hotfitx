@@ -409,6 +409,8 @@ tesla_play_arc_fx( target )
 		wait( level.zombie_vars["tesla_arc_travel_time"] );
 		return;
 	}
+	
+	//iprintln("Self and target defined, is tesla_bolt defined: " + IsDefined(level._effect["tesla_bolt"]));
 
 	tag = "J_SpineUpper";
 

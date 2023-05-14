@@ -318,6 +318,10 @@ fx,maps/zombie/fx_zombie_auto_turret_light_ready
 fx,maps/zombie/fx_zombie_factory_marker
 fx,maps/zombie/fx_zombie_factory_marker_fl
 fx,maps/zombie/fx_zombie_packapunch
+fx,maps/zombie/fx_zombie_tesla_bolt_secondary
+fx,maps/zombie/fx_zombie_tesla_electric_bolt
+fx,maps/zombie/fx_zombie_tesla_shock_secondary
+fx,maps/zombie/fx_zombie_tesla_shock
 
 //MATERIALS
 material,cdc_logo
@@ -332,6 +336,7 @@ material,terrain_scorch_dirt
 material,terrain_scorch_grass
 material,terrain_scorch_sand
 material,terrain_scorch_mud
+
 
 //XMODELS
 xmodel,zombie_perk_bottle_jugg
@@ -401,6 +406,21 @@ xanim,ai_zombie_run_attack_v2
 xanim,ai_zombie_run_attack_v3
 xanim,ai_zombie_walk_attack_v2
 xanim,ai_zombie_walk_attack_v4
+xanim,viewmodel_tesla_d2p_in
+xanim,viewmodel_tesla_d2p_loop
+xanim,viewmodel_tesla_d2p_out
+xanim,viewmodel_tesla_putaway
+xanim,viewmodel_tesla_sprint_in
+xanim,viewmodel_tesla_sprint_loop
+xanim,viewmodel_tesla_sprint_out
+xanim,ai_zombie_tesla_crawl_death_a
+xanim,ai_zombie_tesla_crawl_death_b
+xanim,ai_zombie_tesla_death_a
+xanim,ai_zombie_tesla_death_b
+xanim,ai_zombie_tesla_death_c
+xanim,ai_zombie_tesla_death_d
+xanim,ai_zombie_tesla_death_e
+xanim,viewmodel_ppsh_empty_sprint_loop
 
 //PLAYER ANIMS
 rawfile,mp/playeranim.script
