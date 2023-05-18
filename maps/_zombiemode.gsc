@@ -123,6 +123,7 @@ main()
 	//maps\_zombiemode_protips::pro_tips_initialize();
 	maps\_zombiemode_traps::init();
 	maps\_zombiemode_weapon_box::init();
+	maps\_zombiemode_weapon_effects::init();	//Reimagined-Expanded
 	/#
 	maps\_zombiemode_devgui::init();
 	#/
@@ -5911,6 +5912,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		level.monkey_bolt_holder = self;
 	}
+	
+	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	iprintln("Mode type is: " + meansofdeath);
 
 	// Raven - snigl - Record what the blow gun hit
 	if( GetSubStr(weapon, 0, 8 ) == "blow_gun" && meansofdeath == "MOD_IMPACT" )
@@ -5959,7 +5963,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "" )
 		return damage;
 
-	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
 	//iprintln( meansofdeath );
 	//iprintln( "Anim name: " + self.animname );
 	old_damage = damage;
@@ -6033,8 +6036,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		if(IsDefined(weapon) && weapon == "knife_zm")
 		{
-			
-			
+			//Reimagined-Expanded Push Zombies down with Knife
 			wait_anim = 2;
 			if(damage >= self.health) {
 				return final_damage;
@@ -6353,7 +6355,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 6;
 			break;
-		//Shotgun Damange updates - Reiminaged Expanded
+		//Reiminaged-Expanded - Shotgun Damange increase
 		case "rottweil72_zm":
 			final_damage = 800 * ( damage / 180);
 			break;
@@ -6447,7 +6449,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 30;
 		}
 		
-		//x2 Special Weapons
+		//Reimagined-Expanded - x2 Special Weapons
 		if(weapon == "knife_ballistic_upgraded_zm_x2" && self.animname != "director_zombie")
 		{	
 			//Wunderwaff thread
@@ -6456,7 +6458,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
-	//x2 Weapons
+	//Reimagined-Expanded - x2 Weapons
 	
 	
 
