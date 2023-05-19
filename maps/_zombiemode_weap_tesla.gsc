@@ -11,16 +11,14 @@ init()
 	//Reimagined-Expanded: We always include tesla script 5/13/2023
 	if ( !maps\_zombiemode_weapons::is_weapon_included( "tesla_gun_zm" ) && !is_true( level.uses_tesla_powerup ) )
 	{
-		//return;
+		return;
 	}
 	
+	//Reimagined-Expanded - Included in _zombiemode_weapon_effects.gsc
+	//level._effect["tesla_bolt"]				= loadfx( "maps/zombie/fx_zombie_tesla_bolt_secondary" );
+	//level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
+	//level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 
-	level._effect["tesla_bolt"]				= loadfx( "maps/zombie/fx_zombie_tesla_bolt_secondary" );
-	level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
-	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
-
-	if ( maps\_zombiemode_weapons::is_weapon_included( "tesla_gun_zm" ) || is_true( level.uses_tesla_powerup ) ) 
-	{
 		
 	level._effect["tesla_viewmodel_rail"]	= loadfx( "maps/zombie/fx_zombie_tesla_rail_view" );
 	level._effect["tesla_viewmodel_tube"]	= loadfx( "maps/zombie/fx_zombie_tesla_tube_view" );
@@ -32,9 +30,8 @@ init()
 	level._effect["tesla_viewmodel_tube3_upgraded"]	= loadfx( "maps/zombie/fx_zombie_tesla_tube_view3_ug" );
 
 	level._effect["tesla_shock_eyes"]		= loadfx( "maps/zombie/fx_zombie_tesla_shock_eyes" );
-	}
 
-	precacheshellshock( "electrocution" );
+	//precacheshellshock( "electrocution" );
 
 	set_zombie_var( "tesla_max_arcs",			5 );
 	set_zombie_var( "tesla_max_enemies_killed", 10 );

@@ -30,72 +30,8 @@ init()
 }
 
 
-tesla_damage_init( hit_location, hit_origin, player )
-{
-	player endon( "disconnect" );
-
-	// Make sure the closest zombie from the hit origin is the one that initially gets hit
-	zombs = getaispeciesarray("axis");
-	zombs_hit = [];
-	for(i=0;i<zombs.size;i++)
-	{
-		if(IsDefined(zombs[i].attacker) && zombs[i].attacker == player)
-		{
-			if(IsDefined(zombs[i].damageweapon) && (zombs[i].damageweapon == "tesla_gun_zm" || zombs[i].damageweapon == "tesla_gun_upgraded_zm" || zombs[i].damageweapon == "tesla_gun_powerup_zm" || zombs[i].damageweapon == "tesla_gun_powerup_upgraded_zm"))
-			{
-				if(!is_true(zombs[i].zombie_tesla_hit) && !is_true(zombs[i].humangun_zombie_1st_hit_response))
-				{
-					zombs_hit[zombs_hit.size] = zombs[i];
-				}
-			}
-		}
-	}
-	if(zombs_hit.size == 0)
-	{
-		return;
-	}
-	closest_zomb = GetClosest(hit_origin, zombs_hit);
-	if(self != closest_zomb)
-	{
-		return;
-	}
-
-	if ( IsDefined( player.tesla_enemies_hit ) && player.tesla_enemies_hit > 0 )
-	{
-		debug_print( "TESLA: Player: '" + player.playername + "' currently processing tesla damage" );
-		return;
-	}
-
-	if( IsDefined( self.zombie_tesla_hit ) && self.zombie_tesla_hit )
-	{
-		// can happen if an enemy is marked for tesla death and player hits again with the tesla gun
-		return;
-	}
-
-	debug_print( "TESLA: Player: '" + player.playername + "' hit with the tesla gun" );
-
-	//TO DO Add Tesla Kill Dialog thread....
-
-	player.tesla_enemies = undefined;
-	player.tesla_enemies_hit = 1;
-	player.tesla_powerup_dropped = false;
-	player.tesla_arc_count = 0;
-
-	upgraded = (self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm");
-
-	self tesla_arc_damage( self, player, 1, upgraded );
-
-	if( player.tesla_enemies_hit >= 4)
-	{
-		player thread tesla_killstreak_sound();
-	}
-
-	player.tesla_enemies_hit = 0;
-}
-
-
 // this enemy is in the range of the source_enemy's tesla effect
-tesla_arc_damage( source_enemy, player, arc_num, upgraded )
+tesla_arc_damage( source_enemy, player, arc_num )
 {
 	player endon( "disconnect" );
 	
@@ -104,7 +40,6 @@ tesla_arc_damage( source_enemy, player, arc_num, upgraded )
 	player.tesla_powerup_dropped = false;
 	player.tesla_arc_count = 0;
 
-	debug_print( "TESLA: Evaulating arc damage for arc: " + arc_num + " Current enemies hit: " + player.tesla_enemies_hit );
 
 	tesla_flag_hit( self, true );
 	wait_network_frame();
@@ -113,9 +48,7 @@ tesla_arc_damage( source_enemy, player, arc_num, upgraded )
 	enemies = tesla_get_enemies_in_area( self GetCentroid(), level.zombie_vars["tesla_radius_start"] - radius_decay, player );
 	tesla_flag_hit( enemies, true );
 
-	self thread tesla_do_damage( source_enemy, arc_num, player, upgraded );
-
-	debug_print( "TESLA: " + enemies.size + " enemies hit during arc: " + arc_num );
+	self thread tesla_do_damage( source_enemy, arc_num, player, 1);
 
 	for( i = 0; i < enemies.size; i++ )
 	{
@@ -124,18 +57,75 @@ tesla_arc_damage( source_enemy, player, arc_num, upgraded )
 			continue;
 		}
 
-		if ( tesla_end_arc_damage( arc_num + 1, player.tesla_enemies_hit, upgraded ) )
+		if ( tesla_end_arc_damage_ballistic( arc_num + 1, player.tesla_enemies_hit, 1 ) )
 		{
 			tesla_flag_hit( enemies[i], false );
 			continue;
 		}
 
 		player.tesla_enemies_hit++;
-		enemies[i] tesla_arc_damage( self, player, arc_num + 1, upgraded );
+		enemies[i] tesla_arc_damage( self, player, arc_num + 1, 1 );
 	}
 }
 
 
+//Ballist knife max 7 arcs or radius_decay
+tesla_end_arc_damage_ballistic( arc_num, enemies_hit_num, upgraded )
+{
+	if ( arc_num >= 7 ) {
+		return true;
+	}
+
+	if ( enemies_hit_num >= 7 ) {
+		return true;
+	}
+
+	//base is good
+	radius_decay = level.zombie_vars["tesla_radius_decay"] * arc_num;
+	if ( level.zombie_vars["tesla_radius_start"] - radius_decay <= 0 ) {
+		return true;
+	}
+
+	return false;
+	//TO DO play Tesla Missed sound (sad)
+}
+
+//*
+//AR/SMGs will arc to only 3 zombies in a small radius
+tesla_end_arc_damage_bullet( arc_num, enemies_hit_num, upgraded )
+{
+	if ( arc_num >= level.zombie_vars["tesla_max_arcs"] )
+	{
+		debug_print( "TESLA: Ending arcing. Max arcs hit" );
+		return true;
+		//TO DO Play Super Happy Tesla sound
+	}
+
+	max = level.zombie_vars["tesla_max_enemies_killed"];
+	if(upgraded)
+	{
+		max = level.zombie_vars["tesla_max_enemies_killed_upgraded"];
+	}
+
+	if ( enemies_hit_num >= max )
+	{
+		debug_print( "TESLA: Ending arcing. Max enemies killed" );
+		return true;
+	}
+
+	radius_decay = level.zombie_vars["tesla_radius_decay"] * arc_num;
+	if ( level.zombie_vars["tesla_radius_start"] - radius_decay <= 0 )
+	{
+		debug_print( "TESLA: Ending arcing. Radius is less or equal to zero" );
+		return true;
+	}
+
+	return false;
+	//TO DO play Tesla Missed sound (sad)
+}
+//*/
+
+//original
 tesla_end_arc_damage( arc_num, enemies_hit_num, upgraded )
 {
 	if ( arc_num >= level.zombie_vars["tesla_max_arcs"] )

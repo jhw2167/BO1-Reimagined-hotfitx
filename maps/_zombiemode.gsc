@@ -112,6 +112,7 @@ main()
 	maps\_zombiemode_user::init();
 	maps\_zombiemode_weap_cymbal_monkey::init();
 	maps\_zombiemode_weap_freezegun::init();
+	maps\_zombiemode_weapon_effects::init();	//Reimagined-Expanded
 	maps\_zombiemode_weap_tesla::init();
 	maps\_zombiemode_weap_thundergun::init();
 	maps\_zombiemode_weap_crossbow::init();
@@ -123,7 +124,6 @@ main()
 	//maps\_zombiemode_protips::pro_tips_initialize();
 	maps\_zombiemode_traps::init();
 	maps\_zombiemode_weapon_box::init();
-	maps\_zombiemode_weapon_effects::init();	//Reimagined-Expanded
 	/#
 	maps\_zombiemode_devgui::init();
 	#/
@@ -6453,7 +6453,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon == "knife_ballistic_upgraded_zm_x2" && self.animname != "director_zombie")
 		{	
 			//Wunderwaff thread
-			self maps\_zombiemode_weap_tesla::tesla_arc_damage( self, attacker, 1, true );
+			self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 1);
 			return self.maxhealth + 1000; // should always kill
 		}
 	}
