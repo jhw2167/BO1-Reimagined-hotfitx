@@ -52,7 +52,21 @@ watch_for_monkey_bolt()
 		switch( weaponName )
 		{
 			case "explosive_bolt_upgraded_zm":
+				iprintln("Will Exploding!");
 				grenade thread crossbow_monkey_bolt( self );
+				//Reimagined-Expanded - self is money bolt, want to play large explosion
+				grenade waittill("explode");
+				iprintln("Exploding!");
+				PlayFxOnTag( level._effect["napalm_explosion"], self, "tag_origin" );
+				break;
+				
+			case "explosive_bolt_zm":
+				iprintln("Will Exploding normal bolt!");
+				grenade thread crossbow_monkey_bolt( self );
+				//Reimagined-Expanded - self is money bolt, want to play large explosion
+				self waittill("explode");
+				iprintln("Exploding!");
+				PlayFxOnTag( level._effect["napalm_explosion"], self, "tag_origin" );
 				break;
 		}
 	}

@@ -6094,7 +6094,23 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	// neck, head, and healmet shots all deal the same damage
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
 	{
-		switch(weapon)
+		weaponName="";
+		//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
+		if( IsSubStr( weapon, "x2" ) )
+		{
+				weaponName = GetSubStr(weapon, 0, weapon.size-3)
+				iprintln("Weapon!  " + weaponName);
+		} else {
+			weaponName=weapon;
+		}
+		
+		iprintln( IsSubStr( weapon, "_x2" ) );
+		iprintln("WeaponName  " + weaponName);
+		iprintln("Weapon.name  " + weapon.name);
+		iprintln("Weapon.size  " + weapon.size);
+		
+		
+		switch(weaponName)
 		{
 		//REGULAR WEAPONS
 		case "m1911_zm":
@@ -6450,15 +6466,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		
 		//Reimagined-Expanded - x2 Special Weapons
-		if(weapon == "knife_ballistic_upgraded_zm_x2" && self.animname != "director_zombie")
+		if(weapon == "knife_ballistic_upgraded_zm_x2" && is_not_boss_zombie(self.animname))
 		{	
-			//Wunderwaff thread
+			//Custom Wunderwaff thread
 			self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 1);
 			return self.maxhealth + 1000; // should always kill
 		}
 	}
 
 	//Reimagined-Expanded - x2 Weapons
+	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && is_not_boss_zombie(self.animname))
+	{	
+			//Wunderwaff thread
+			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
+			return self.maxhealth + 1000; // should always kill
+	}
 	
 	
 

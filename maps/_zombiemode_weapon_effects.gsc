@@ -12,6 +12,9 @@ init()
 	level._effect["tesla_bolt"]				= loadfx( "maps/zombie/fx_zombie_tesla_bolt_secondary" );
 	level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
 	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
+	
+	//Explosion
+	level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
 
 	precacheshellshock( "electrocution" );
 
@@ -29,6 +32,105 @@ init()
 	level thread on_player_connect();
 }
 
+
+/** EXPLOSIVE EFFECTS **/
+
+explosive_arc_damage( source_enemy, player, arc_num )
+{
+	player endon( "disconnect" );
+	
+	player.tesla_enemies = undefined;
+	player.tesla_enemies_hit = 1;
+	player.tesla_powerup_dropped = false;
+	player.tesla_arc_count = 0;
+
+
+	//tesla_flag_hit( self, true );
+	wait_network_frame();
+
+	//Tesla start is 300 radius units, we'll star with 500
+	enemies = tesla_get_enemies_in_area( self GetCentroid(), 1000, player );
+
+
+	for( i = 0; i < enemies.size; i++ )
+	{
+		enemies[i] thread explosive_do_damage( source_enemy, arc_num, player, 1);
+	}
+}
+
+
+explosive_do_damage( source_enemy, arc_num, player, upgraded )
+{
+	player endon( "disconnect" );
+
+	if ( arc_num > 1 )
+	{
+		time = RandomFloat( 0.2, 0.6 ) * arc_num;
+
+		if(upgraded)
+		{
+			time /= 1.5;
+		}
+
+		wait time;
+	}
+
+	if( !IsDefined( self ) || !IsAlive( self ) )
+	{
+		// guy died on us
+		return;
+	}
+
+	if ( !self.isdog )
+	{
+		if( self.has_legs )
+		{
+			self.deathanim = random( level._zombie_tesla_death[self.animname] );
+		}
+		else
+		{
+			self.deathanim = random( level._zombie_tesla_crawl_death[self.animname] );
+		}
+	}
+	else
+	{
+		self.a.nodeath = undefined;
+	}
+
+	if( is_true( self.is_traversing))
+	{
+		self.deathanim = undefined;
+	}
+
+
+	if( !IsDefined( self ) || !IsAlive( self ) )
+	{
+		// guy died on us
+		return;
+	}
+
+	//self tesla_play_death_fx( arc_num );
+
+	// use the origin of the arc orginator so it pics the correct death direction anim
+	origin = source_enemy.origin;
+	
+
+	if( !IsDefined( self ) || !IsAlive( self ) )
+	{
+		// guy died on us
+		return;
+	}
+
+	if(!self.isdog)
+	{
+		player maps\_zombiemode_score::player_add_points( "death", "", "" );
+	}
+
+}
+
+
+
+/** TESLA EFFECTS **/
 
 // this enemy is in the range of the source_enemy's tesla effect
 tesla_arc_damage( source_enemy, player, arc_num )

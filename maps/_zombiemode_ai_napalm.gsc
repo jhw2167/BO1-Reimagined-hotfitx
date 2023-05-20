@@ -253,8 +253,8 @@ init_napalm_fx()
 	level._effect["napalm_fire_torso"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_torso" );
 	level._effect["napalm_fire_ground"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_ground2" );
 
-	//TODO: larger
-	level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
+	//Reimagined-Expanded - _weapon_effects used everywhere
+	//level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
 
 	//TODO: fire is too bright and washed out, use darker, richer fire graphics
 	level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
