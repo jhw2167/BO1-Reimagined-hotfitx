@@ -255,9 +255,8 @@ init_napalm_fx()
 
 	//Reimagined-Expanded - _weapon_effects used everywhere
 	//level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
-
 	//TODO: fire is too bright and washed out, use darker, richer fire graphics
-	level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
+	//level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
 
 	//small residual fire
 	//NOTE: just using nuke fx for now
@@ -932,7 +931,7 @@ kill_with_fire(damageType, attacker)
 	if ( self.animname == "monkey_zombie" )
 	{
 		//Nothing
-	}
+	} 
 	else
 	{
 		//a max of 6 burning zombs can be going at once

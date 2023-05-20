@@ -6096,18 +6096,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		weaponName="";
 		//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
-		if( IsSubStr( weapon, "x2" ) )
-		{
-				weaponName = GetSubStr(weapon, 0, weapon.size-3)
-				iprintln("Weapon!  " + weaponName);
+		if( IsSubStr( weapon, "x2" ) ) {
+				weaponName = GetSubStr(weapon, 0, weapon.size-3);
 		} else {
 			weaponName=weapon;
 		}
-		
-		iprintln( IsSubStr( weapon, "_x2" ) );
-		iprintln("WeaponName  " + weaponName);
-		iprintln("Weapon.name  " + weapon.name);
-		iprintln("Weapon.size  " + weapon.size);
 		
 		
 		switch(weaponName)
@@ -6399,6 +6392,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "hs10lh_upgraded_zm":
 			final_damage = 7500 * ( damage / 300);
 			break;
+		default:
+			iprintln("default case for damage weapons");
+			break;
 			
 		}
 		
@@ -6428,7 +6424,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 		}
 		
-		iprintln( "Final dmg for bullet guns: " + final_damage );
 	}
 
 	//projectile impact damage - all body shots deal the same damage
@@ -6483,6 +6478,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 	
 	
+	
+	iprintln( "Final dmg for bullet guns: " + final_damage );
 
 	//Classic Special Damage Multipliers (perks and conditions)
 	if(weapon == "molotov_zm")

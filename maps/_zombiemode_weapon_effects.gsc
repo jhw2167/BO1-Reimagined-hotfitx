@@ -15,6 +15,7 @@ init()
 	
 	//Explosion
 	level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
+	level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
 
 	precacheshellshock( "electrocution" );
 
@@ -127,6 +128,48 @@ explosive_do_damage( source_enemy, arc_num, player, upgraded )
 	}
 
 }
+
+
+//Explosive Fire Damage + FX _zombiemode_ai_napalm
+napalm_fire_effects( grenade , radius, time, attacker )
+{
+	iprintln("Make it to method!");
+	
+	trigger = spawn( "trigger_radius", grenade.origin, level.SPAWNFLAG_TRIGGER_AI_AXIS, radius, 70 );
+	
+	wait(3.3);
+	sound_ent = spawn( "script_origin", grenade.origin );
+	sound_ent playloopsound( "evt_napalm_fire", 1 );
+	PlayFxOnTag( level._effect["napalm_fire_trigger"], grenade, "tag_origin" );
+	PlayFX( level._effect["napalm_fire_trigger"], grenade.origin );
+					
+	
+	//trigger = spawn( "trigger_radius", grenade.origin, 1, radius, 70 );
+
+	if(!isDefined(trigger))
+	{
+		return;
+	}
+
+
+	trigger.napalm_fire_damage = 20;
+
+
+	trigger.napalm_fire_damage_type = "burned";
+	trigger thread maps\_zombiemode_ai_napalm::triggerDamage(attacker);
+
+	wait(time);
+	trigger notify("end_fire_effect");
+	trigger Delete();
+
+	if( isdefined( sound_ent ) )
+	{
+		sound_ent stoploopsound( 1 );
+		wait(1);
+		sound_ent delete();
+	}
+}
+
 
 
 
