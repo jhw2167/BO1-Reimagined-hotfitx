@@ -15,8 +15,8 @@ init()
 	
 	//Explosion
 	//level._effect["fire_trap_med"] 	= loadfx("maps/zombie/fx_zombie_fire_trap_med");	
-	level._effect["custom_large_explosion"] = LoadFX( "maps/explosions/fx_explosion_charge_large" );
-	level._effect["custom_large_fire"] = LoadFX( "maps/env/fx_fire_xlg_fuel" );
+	level._effect["custom_large_explosion"] = LoadFX( "explosions/fx_explosion_charge_large" );
+	level._effect["custom_large_fire"] = LoadFX( "env/fire/fx_fire_xlg_fuel" );
 	//level._effect["custom_large_fire"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );
 	precacheshellshock( "electrocution" );
 

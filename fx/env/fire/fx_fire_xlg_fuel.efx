@@ -12,7 +12,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 20 30;
 	spawnFrustumCullRadius 1000;
-	spawn 600 0;
+	spawnLooping 600 0;
 	spawnOneShot 100 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 4000 2400;
@@ -220,7 +220,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 300;
-	spawn 300 0;
+	spawnLooping 300 0;
 	spawnOneShot 50 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 1700 100;
@@ -428,7 +428,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 100;
 	spawnFrustumCullRadius 100;
-	spawn 450 0;
+	spawnLooping 450 0;
 	spawnOneShot 20 200;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 1000 0;
@@ -629,7 +629,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 300;
-	spawn 300 0;
+	spawnLooping 300 0;
 	spawnOneShot 3 0;
 	spawnDelayMsec 0 19;
 	lifeSpanMsec 4000 3200;
@@ -845,7 +845,7 @@ iwfx 3
 	fadeInRange 3000 500;
 	fadeOutRange 20 30;
 	spawnFrustumCullRadius 1000;
-	spawn 1000 0;
+	spawnLooping 1000 0;
 	spawnOneShot 100 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 6000 0;
@@ -1050,7 +1050,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 1000;
-	spawn 240 0;
+	spawnLooping 240 0;
 	spawnOneShot 100 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 3300 1200;
@@ -1261,7 +1261,7 @@ iwfx 3
 	fadeInRange 15000 5000;
 	fadeOutRange 0 1000;
 	spawnFrustumCullRadius 300;
-	spawn 33 0;
+	spawnLooping 33 0;
 	spawnOneShot 3 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 33 0;
@@ -1458,7 +1458,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 100;
-	spawn 500 0;
+	spawnLooping 500 0;
 	spawnOneShot 50 0;
 	spawnDelayMsec 0 100;
 	lifeSpanMsec 1700 100;
@@ -1666,7 +1666,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 500;
-	spawn 200 0;
+	spawnLooping 200 0;
 	spawnOneShot 3 0;
 	spawnDelayMsec 0 19;
 	lifeSpanMsec 4000 3200;
@@ -1882,7 +1882,7 @@ iwfx 3
 	fadeInRange 5000 1000;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 1000;
-	spawn 400 0;
+	spawnLooping 400 0;
 	spawnOneShot 100 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 3600 800;
@@ -2089,7 +2089,7 @@ iwfx 3
 	fadeInRange 15000 5000;
 	fadeOutRange 0 1000;
 	spawnFrustumCullRadius 300;
-	spawn 41 0;
+	spawnLooping 41 0;
 	spawnOneShot 3 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 41 0;
@@ -2286,7 +2286,7 @@ iwfx 3
 	fadeInRange 0 0;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 400;
-	spawn 120 0;
+	spawnLooping 120 0;
 	spawnOneShot 100 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 820 100;
@@ -2501,7 +2501,7 @@ iwfx 3
 	fadeInRange 19000 1000;
 	fadeOutRange 0 0;
 	spawnFrustumCullRadius 1000;
-	spawn 400 0;
+	spawnLooping 400 0;
 	spawnOneShot 100 0;
 	spawnDelayMsec 0 0;
 	lifeSpanMsec 1800 600;

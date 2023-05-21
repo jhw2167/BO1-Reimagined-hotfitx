@@ -322,9 +322,9 @@ fx,maps/zombie/fx_zombie_tesla_bolt_secondary
 fx,maps/zombie/fx_zombie_tesla_electric_bolt
 fx,maps/zombie/fx_zombie_tesla_shock_secondary
 fx,maps/zombie/fx_zombie_tesla_shock
-fx,maps/explosions/fx_embers_burst_optim
-fx,maps/explosions/fx_explosion_charge_large
-fx,maps/env/fx_fire_xlg_fuel
+fx,explosions/fx_embers_burst_optim
+fx,explosions/fx_explosion_charge_large
+fx,env/fire/fx_fire_xlg_fuel
 
 
 //MATERIALS
