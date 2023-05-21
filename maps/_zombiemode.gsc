@@ -6332,37 +6332,37 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "zombie_kar98k_upgraded":
 			final_damage = 4200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
+				final_damage *= 2;
 			break;
 		case "zombie_gewehr43_upgraded":
 			final_damage = 560;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 2;
 			break;
 		case "zombie_m1carbine_upgraded":
 			final_damage = 420;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 2;
 			break;
 		case "zombie_type100_smg_upgraded":
 			final_damage = 280;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6.5;
+				final_damage *= 2;
 			break;
 		case "zombie_fg42_upgraded":
 			final_damage = 300;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3.5;
+				final_damage *= 2;
 			break;
 		case "zombie_stg44_upgraded":
 			final_damage = 250;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 5;
+				final_damage *= 2;
 			break;
 		case "zombie_thompson_upgraded":
 			final_damage = 240;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 2;
 			break;
 		//Reiminaged-Expanded - Shotgun Damange increase
 		case "rottweil72_zm":
@@ -6476,6 +6476,62 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
 			return self.maxhealth + 1000; // should always kill
 	}
+	
+	///*
+	if( IsSubStr( weapon, "x2" ) ) {
+		//flat 2x damage increase for double pap'ed weapon
+		final_damage = int(final_damage * 2);
+	}
+	
+	switch(weapon)
+	{
+		//Electric Effect
+		case "ppsh_upgraded_zm_x2":
+		case "ak74u_upgraded_zm_x2":
+		case "spectre_upgraded_zm_x2":
+		case "aug_acog_upgraded_zm_x2":
+		case "famas_upgraded_zm_x2":
+			//electric
+		break;
+		
+		case "rpk_upgraded_zm_x2":
+		case "ak47_ft_upgraded_zm_x2":
+			//fire
+		break;
+		
+		case "hk21_upgraded_zm_x2":
+		case "galil_upgraded_zm_x2":
+			//freeze
+		break;
+		
+		case "commando_upgraded_zm_x2":
+		case "stoner63_upgraded_zm_x2":
+				final_damage = int(final_damage * 1.2); //big damage
+		break;
+		case "fnfal_upgraded_zm_x2":
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
+				final_damage = int(final_damage * 2); //big damage
+			}
+		break;
+		
+		//Snipers
+		case "psg1_upgraded_zm_x2":
+		case "l96a1_upgraded_zm_x2":
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
+				final_damage = int(final_damage * 5); //big damage
+			}
+		break;
+		
+		case "m72_law_upgraded_zm_x2":
+		case "china_lake_upgraded_zm_x2":
+		if( !is_boss_zombie(self.animname)) {
+			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
+			level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 80, 4, self );
+			return self.maxhealth + 1000; // should always kill
+		}
+		break;
+	}
+	//*/	
 	
 	
 	

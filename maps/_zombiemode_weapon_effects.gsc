@@ -132,12 +132,17 @@ explosive_do_damage( source_enemy, arc_num, player, upgraded )
 
 
 //Explosive Fire Damage + FX _zombiemode_ai_napalm
-napalm_fire_effects( grenade , radius, time, attacker )
+napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 {
 	
 	
-	trigger = spawn( "trigger_radius", grenade.origin, 1, radius, 70 );
-	grenade waittill("explode");
+	trigger = spawn( "trigger_radius", grenadeOrAi.origin, 1, radius, 70 );
+	if( isAi(grenadeOrAi)) {
+		//detotae bomb where zombie died
+	} else { //else we wait for the grenade to explode, in the case of crossbow projectile
+		grenadeOrAi waittill("explode");
+	}
+	
 	
 	sound_ent = spawn( "script_origin", trigger.origin );
 	sound_ent playloopsound( "evt_napalm_fire", 1 );
