@@ -254,9 +254,9 @@ init_napalm_fx()
 	level._effect["napalm_fire_ground"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_ground2" );
 
 	//Reimagined-Expanded - _weapon_effects used everywhere
-	//level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
+	level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
 	//TODO: fire is too bright and washed out, use darker, richer fire graphics
-	//level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
+	level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
 
 	//small residual fire
 	//NOTE: just using nuke fx for now
@@ -275,8 +275,8 @@ init_napalm_fx()
 	level._effect["napalm_fire_torso_end"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_forearm_end" );
 
 	//Steam FX when napalm walks under water
-	level._effect["napalm_steam"]				= LoadFX( "maps/zombie_temple/fx_ztem_zombie_torso_steam_runner" );
-	level._effect["napalm_feet_steam"]			= LoadFX( "maps/zombie_temple/fx_ztem_zombie_torso_steam_runner" );
+	//level._effect["napalm_steam"]				= LoadFX( "maps/zombie_temple/fx_ztem_zombie_torso_steam_runner" );
+	//level._effect["napalm_feet_steam"]			= LoadFX( "maps/zombie_temple/fx_ztem_zombie_torso_steam_runner" );
 }
 
 /*
@@ -928,11 +928,7 @@ kill_with_fire(damageType, attacker)
 	}
 
 	self.marked_for_death = true;
-	if ( self.animname == "monkey_zombie" )
-	{
-		//Nothing
-	} 
-	else
+	if ( self.animname == "zombie" )
 	{
 		//a max of 6 burning zombs can be going at once
 		if( (level.burning_zombies.size < 6) )
@@ -943,6 +939,10 @@ kill_with_fire(damageType, attacker)
 			self thread animscripts\zombie_death::flame_death_fx();
 			//wait( randomfloat(1.25) );
 		}
+	} 
+	else
+	{
+		return;
 	}
 
 	self.trap_death = true;

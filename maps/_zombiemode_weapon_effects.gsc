@@ -14,9 +14,10 @@ init()
 	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 	
 	//Explosion
-	level._effect["napalm_explosion"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_exp" );
-	level._effect["napalm_fire_trigger"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );//"env/fire/fx_fire_player_torso"
-
+	//level._effect["fire_trap_med"] 	= loadfx("maps/zombie/fx_zombie_fire_trap_med");	
+	level._effect["custom_large_explosion"] = LoadFX( "maps/explosions/fx_explosion_charge_large" );
+	level._effect["custom_large_fire"] = LoadFX( "maps/env/fx_fire_xlg_fuel" );
+	//level._effect["custom_large_fire"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );
 	precacheshellshock( "electrocution" );
 
 	set_zombie_var( "tesla_max_arcs",			5 );
@@ -133,18 +134,16 @@ explosive_do_damage( source_enemy, arc_num, player, upgraded )
 //Explosive Fire Damage + FX _zombiemode_ai_napalm
 napalm_fire_effects( grenade , radius, time, attacker )
 {
-	iprintln("Make it to method!");
 	
-	trigger = spawn( "trigger_radius", grenade.origin, level.SPAWNFLAG_TRIGGER_AI_AXIS, radius, 70 );
 	
-	wait(3.3);
-	sound_ent = spawn( "script_origin", grenade.origin );
+	trigger = spawn( "trigger_radius", grenade.origin, 1, radius, 70 );
+	grenade waittill("explode");
+	
+	sound_ent = spawn( "script_origin", trigger.origin );
 	sound_ent playloopsound( "evt_napalm_fire", 1 );
-	PlayFxOnTag( level._effect["napalm_fire_trigger"], grenade, "tag_origin" );
-	PlayFX( level._effect["napalm_fire_trigger"], grenade.origin );
+	PlayFx( level._effect["custom_large_explosion"], trigger.origin );
+	PlayFX( level._effect["custom_large_fire"], trigger.origin );
 					
-	
-	//trigger = spawn( "trigger_radius", grenade.origin, 1, radius, 70 );
 
 	if(!isDefined(trigger))
 	{
@@ -156,10 +155,10 @@ napalm_fire_effects( grenade , radius, time, attacker )
 
 
 	trigger.napalm_fire_damage_type = "burned";
-	trigger thread maps\_zombiemode_ai_napalm::triggerDamage(attacker);
+	trigger thread triggerCustomFireDamage(attacker);
 
 	wait(time);
-	trigger notify("end_fire_effect");
+	trigger notify("end_custom_fire_effect");
 	trigger Delete();
 
 	if( isdefined( sound_ent ) )
@@ -167,6 +166,36 @@ napalm_fire_effects( grenade , radius, time, attacker )
 		sound_ent stoploopsound( 1 );
 		wait(1);
 		sound_ent delete();
+	}
+}
+
+triggerCustomFireDamage(attacker)
+{
+	self endon("end_custom_fire_effect");
+
+	while(1)
+	{
+		self waittill( "trigger", guy );
+		if(isplayer(guy))
+		{
+			if(is_player_valid(guy))
+			{
+				debounce = 500;
+				if(!isDefined(guy.last_napalm_fire_damage))
+				{
+					guy.last_napalm_fire_damage = -1 * debounce;
+				}
+				if(guy.last_napalm_fire_damage + debounce < GetTime())
+				{
+					guy DoDamage( self.napalm_fire_damage, guy.origin, undefined, undefined, undefined );//"triggerhurt"
+					guy.last_napalm_fire_damage = GetTime();
+				}
+			}
+		}
+		else if(!maps\_zombiemode::is_boss_zombie(self.animname))
+		{
+			guy thread maps\_zombiemode_ai_napalm::kill_with_fire(self.napalm_fire_damage_type, attacker);
+		}
 	}
 }
 

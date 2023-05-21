@@ -60,10 +60,8 @@ watch_for_monkey_bolt()
 				{
 					if(primaryWeapons[i]=="crossbow_explosive_upgraded_zm_x2") 
 					{
-					explosive = Spawn( "script_origin", grenade.origin );
-					grenade waittill("explode");
 						//							(exploding object, radius, time, player)
-					level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( grenade, 80, 3, self );
+					level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( grenade, 80, 4, self );
 					}
 					
 				}

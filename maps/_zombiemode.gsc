@@ -6187,12 +6187,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "psg1_zm":
 			final_damage = 1800;
-			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 4;
 			break;
 		case "l96a1_zm":
 			final_damage = 2200;
-			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 4;
 			break;
 		//CLASSIC WEAPONS
@@ -6315,12 +6315,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "psg1_upgraded_zm":
 			final_damage = 4000;
-			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 4;
 			break;
 		case "l96a1_upgraded_zm":
 			final_damage = 5000;
-			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && is_not_boss_zombie(self.animname) )
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 4;
 			break;
 		case "fnfal_upgraded_zm":
@@ -6461,7 +6461,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		
 		//Reimagined-Expanded - x2 Special Weapons
-		if(weapon == "knife_ballistic_upgraded_zm_x2" && is_not_boss_zombie(self.animname))
+		if(weapon == "knife_ballistic_upgraded_zm_x2" && !is_boss_zombie(self.animname))
 		{	
 			//Custom Wunderwaff thread
 			self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 1);
@@ -6470,7 +6470,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//Reimagined-Expanded - x2 Weapons
-	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && is_not_boss_zombie(self.animname))
+	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
 	{	
 			//Wunderwaff thread
 			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
@@ -6525,9 +6525,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	return int( final_damage );
 }
 
-is_not_boss_zombie( animname )
+is_boss_zombie( animname )
 {
-	return (animname != "thief_zombie" && animname != "director_zombie" && animname != "astro_zombie");
+	return (animname == "thief_zombie" && animname == "director_zombie" && animname == "astro_zombie");
 }
 
 is_headshot( sWeapon, sHitLoc, sMeansOfDeath )
