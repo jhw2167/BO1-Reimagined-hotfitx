@@ -6058,6 +6058,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			self [[ self.thundergun_fling_func ]]( attacker );
 		}
 		
+		if( IsDefined(weapon) && weapon == "combat_knife") {
+			final_damage = int(self.maxhealth / 4) + 1;
+			if(damage < final_damage)
+				return final_damage;
+			else
+				return damage;
+		}
+		
 	}
 
 	// damage scaling for explosive weapons
@@ -6113,24 +6121,24 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "cz75_zm":
 		case "cz75dw_zm":
-			final_damage = 150;
+			final_damage = 400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3.5;
 			break;
 		case "python_zm":
-			final_damage = 1000;
+			final_damage = 2200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 1.5;
 			break;
 		case "m14_zm":
 		case "zombie_m1garand":
-			final_damage = 130;
+			final_damage = 390;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
 			break;
 		case "ak74u_zm":
 		case "zombie_thompson":
-			final_damage = 120;
+			final_damage = 400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 4;
 			break;
@@ -6144,77 +6152,77 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "ppsh_zm":
 		case "zombie_stg44":
 		case "zombie_type100_smg":
-			final_damage = 100;
+			final_damage = 360;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
+				final_damage *= 2;
 			break;
 		case "spectre_zm":
-			final_damage = 90;
+			final_damage = 400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
+				final_damage *= 2;
 			break;
 		case "aug_acog_mk_acog_zm":
-			final_damage = 140;
+			final_damage = 430;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
+				final_damage *= 2;
 			break;
 		case "commando_zm":
 		case "galil_zm":
 		case "ak47_zm":
-			final_damage = 150;
+			final_damage = 470;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
+				final_damage *= 2;
 			break;
 		case "fnfal_zm":
-			final_damage = 160;
+			final_damage = 520;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 4;
 			break;
 		case "rpk_zm":
-			final_damage = 130;
+			final_damage = 750;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
+				final_damage *= 2;
 			break;
 		case "hk21_zm":
-			final_damage = 150;
+			final_damage = 710;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
+				final_damage *= 2;
 			break;
 		case "stoner63_zm":
-			final_damage = 160;
+			final_damage = 800;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3;
+				final_damage *= 2;
 			break;
 		case "psg1_zm":
 			final_damage = 1800;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
-				final_damage *= 4;
+				final_damage *= 3;
 			break;
 		case "l96a1_zm":
 			final_damage = 2200;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
-				final_damage *= 4;
+				final_damage *= 3;
 			break;
 		//CLASSIC WEAPONS
 		case "zombie_kar98k":
 		case "zombie_type99_rifle":
 		case "zombie_springfield":
-			final_damage = 500;
+			final_damage = 700;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
 		case "zombie_m1carbine":
-			final_damage = 150;
+			final_damage = 300;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
 		case "zombie_gewehr43":
-			final_damage = 130;
+			final_damage = 300;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
 		case "zombie_bar":
-			final_damage = 200;
+			final_damage = 300;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
@@ -6231,97 +6239,97 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//UPGRADED WEAPONS
 		case "cz75_upgraded_zm":
 		case "cz75dw_upgraded_zm":
-			final_damage = 300;
+			final_damage = 1000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3.5;
 			break;
 		case "python_upgraded_zm":
-			final_damage = 1500;
+			final_damage = 5000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 3;
 			break;
 		case "m14_upgraded_zm":
-			final_damage = 400;
+			final_damage = 1400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 8;
+				final_damage *= 3;
 			break;
 		case "mp40_upgraded_zm":
-			final_damage = 240;
+			final_damage = 1100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "mp5k_upgraded_zm":
 		case "mpl_upgraded_zm":
 		case "pm63_upgraded_zm":
-			final_damage = 220;
+			final_damage = 1060;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "ppsh_upgraded_zm":
-			final_damage = 220;
+			final_damage = 1100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "m16_gl_upgraded_zm":
-			final_damage = 250;
+			final_damage = 1350;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 8;
+				final_damage *= 3;
 			break;
 		case "famas_upgraded_zm":
-			final_damage = 250;
+			final_damage = 1450;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "ak74u_upgraded_zm":
-			final_damage = 190;
+			final_damage = 1100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 7;
+				final_damage *= 3;
 			break;
 		case "aug_acog_upgraded_zm":
-			final_damage = 300;
+			final_damage = 1500;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "commando_upgraded_zm":
 		case "ak47_ft_upgraded_zm":
-			final_damage = 310;
+			final_damage = 1600;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "galil_upgraded_zm":
-			final_damage = 320;
+			final_damage = 1550;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "spectre_upgraded_zm":
-			final_damage = 190;
+			final_damage = 1200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 6;
+				final_damage *= 3;
 			break;
 		case "rpk_upgraded_zm":
-			final_damage = 180;
+			final_damage = 1980;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
 			break;
 		case "hk21_upgraded_zm":
-			final_damage = 210;
+			final_damage = 1800;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
 			break;
 		case "stoner63_upgraded_zm":
-			final_damage = 230;
+			final_damage = 2100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
 			break;
 		case "psg1_upgraded_zm":
 			final_damage = 4000;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
-				final_damage *= 4;
+				final_damage *= 3;
 			break;
 		case "l96a1_upgraded_zm":
 			final_damage = 5000;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
-				final_damage *= 4;
+				final_damage *= 3;
 			break;
 		case "fnfal_upgraded_zm":
 			final_damage = 400;
@@ -6524,11 +6532,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		case "m72_law_upgraded_zm_x2":
 		case "china_lake_upgraded_zm_x2":
-		if( !is_boss_zombie(self.animname)) {
-			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
-			level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 80, 4, self );
-			return self.maxhealth + 1000; // should always kill
-		}
+			if( !is_boss_zombie(self.animname)) {
+				self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
+				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );
+				return self.maxhealth + 1000; // should always kill
+			} else {
+				final_damage = 2000;
+			}
 		break;
 	}
 	//*/	

@@ -37,6 +37,43 @@ init()
 
 /** EXPLOSIVE EFFECTS **/
 
+//Starts from _zombie_weap_crossbow.gsc -- unused
+wait_projectile_impacts() {
+
+	for(;;) {
+	
+		self waittill ( "projectile_impact", weaponName, position );
+		grenade = spawn("script_model", position);
+		iprintln("weapon impact: " + weaponName);
+		
+			switch( weaponName )
+			{
+				case "crossbow_explosive_upgraded_zm_x2":
+					//Reimagined-Expanded - self is money bolt, want to play large explosion
+					primaryWeapons = self GetWeaponsListPrimaries();
+					for( i=0; i<primaryWeapons.size; i++) 
+					{
+						if(primaryWeapons[i]=="crossbow_explosive_upgraded_zm_x2") 
+						{
+							//							(exploding object, radius, time, player)
+						level thread napalm_fire_effects( grenade, 80, 4, self );
+						}
+						
+					}
+					break;
+					
+				case "m72_law_upgraded_zm_x2":
+					level thread napalm_fire_effects( grenade, 160, 4, self );
+				break;
+				case "china_lake_upgraded_zm_x2":
+					level thread napalm_fire_effects( grenade, 40, 4, self );
+				break;
+			
+		} //end switch
+
+	}
+}
+
 explosive_arc_damage( source_enemy, player, arc_num )
 {
 	player endon( "disconnect" );
@@ -156,7 +193,7 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 	}
 
 
-	trigger.napalm_fire_damage = 20;
+	trigger.napalm_fire_damage = 40;
 
 
 	trigger.napalm_fire_damage_type = "burned";

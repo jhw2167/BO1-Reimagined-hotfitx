@@ -34,7 +34,7 @@ watch_for_monkey_bolt()
 {
 	self endon( "death" );
 	self endon( "disconnect" );
-
+	
 	if ( GetDvar( #"zombiemode" ) != "1" )
 	{
 		return;
@@ -43,6 +43,7 @@ watch_for_monkey_bolt()
 	for (;;)
 	{
 		self waittill ( "grenade_fire", grenade, weaponName, parent );
+		iprintln("weapon fired: " + weaponName);
 
 		if(isDefined(level.zombiemode_cross_bow_fired))
 		{
@@ -65,7 +66,6 @@ watch_for_monkey_bolt()
 					}
 					
 				}
-				
 				break;
 				
 		}
