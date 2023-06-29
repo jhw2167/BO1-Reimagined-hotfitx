@@ -73,8 +73,8 @@ player_add_points( event, mod, hit_location ,is_dog)
 			break;
 
 		case "damage_light":
+			//Reimagined-Expanded
 			//player_points = level.zombie_vars["zombie_score_damage_light"];
-			
 			if (level.round_number < 10) {
 				player_points = 10;
 			} else if (level.round_number < 20) {
@@ -85,6 +85,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 			break;
 
 		case "damage":
+			//Reimagined-Expanded
 			//player_points = level.zombie_vars["zombie_score_damage_normal"];
 			if (level.round_number < 10) {
 				player_points = 10;
@@ -96,8 +97,8 @@ player_add_points( event, mod, hit_location ,is_dog)
 			break;
 
 		case "damage_ads":
+			//Reimagined-Expanded
 			//player_points = level.zombie_vars["zombie_score_damage_normal"];
-			
 			if (level.round_number < 10) {
 				player_points = 10;
 			} else if (level.round_number < 20) {
@@ -198,15 +199,17 @@ get_zombie_death_player_points()
 		points = level.zombie_vars["zombie_score_kill_4player"];
 	}
 	
+	//Reimagined-Expanded, zombies increase exponentially, points decrease to compensate
 	//Players get a few extra points in later rounds
 	if (level.round_number < 20) {
-		player_points = 50;
+		player_points = 100;
 	} else if (level.round_number < 30) {
-		player_points = 60;
+		player_points = 80;
 	} else {
-		player_points = 70;
+		player_points = 80;
 	}
 	
+	//Reimagined-Expanded
 	points *=10000;
 	return( points );
 }
