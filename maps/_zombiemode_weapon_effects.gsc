@@ -23,8 +23,8 @@ init()
 	set_zombie_var( "tesla_max_arcs",			5 );
 	set_zombie_var( "tesla_max_enemies_killed", 10 );
 	set_zombie_var( "tesla_max_enemies_killed_upgraded", 15 );
-	set_zombie_var( "tesla_radius_start",		300 );
-	set_zombie_var( "tesla_radius_decay",		20 );
+	//set_zombie_var( "tesla_radius_start",		10000 );		//Reimagined-Expanded up from 300
+	//set_zombie_var( "tesla_radius_decay",		20 );
 	set_zombie_var( "tesla_head_gib_chance",	50 );
 	set_zombie_var( "tesla_arc_travel_time",	0.5, true );
 	set_zombie_var( "tesla_kills_for_powerup",	15 );
@@ -247,7 +247,7 @@ triggerCustomFireDamage(attacker)
 /** TESLA EFFECTS **/
 
 // this enemy is in the range of the source_enemy's tesla effect
-tesla_arc_damage( source_enemy, player, arc_num )
+tesla_arc_damage_ballistic( source_enemy, player, arc_num )
 {
 	player endon( "disconnect" );
 	
@@ -260,8 +260,8 @@ tesla_arc_damage( source_enemy, player, arc_num )
 	tesla_flag_hit( self, true );
 	wait_network_frame();
 
-	radius_decay = level.zombie_vars["tesla_radius_decay"] * arc_num;
-	enemies = tesla_get_enemies_in_area( self GetCentroid(), level.zombie_vars["tesla_radius_start"] - radius_decay, player );
+	radius_decay = 100 * arc_num;
+	enemies = tesla_get_enemies_in_area( self GetCentroid(), 1000 - radius_decay, player );
 	tesla_flag_hit( enemies, true );
 
 	self thread tesla_do_damage( source_enemy, arc_num, player, 1);
@@ -280,7 +280,7 @@ tesla_arc_damage( source_enemy, player, arc_num )
 		}
 
 		player.tesla_enemies_hit++;
-		enemies[i] tesla_arc_damage( self, player, arc_num + 1, 1 );
+		enemies[i] tesla_arc_damage_ballistic( self, player, arc_num + 1);
 	}
 }
 
@@ -296,9 +296,9 @@ tesla_end_arc_damage_ballistic( arc_num, enemies_hit_num, upgraded )
 		return true;
 	}
 
-	//base is good
-	radius_decay = level.zombie_vars["tesla_radius_decay"] * arc_num;
-	if ( level.zombie_vars["tesla_radius_start"] - radius_decay <= 0 ) {
+	//arc - 2000, decay - 100
+	radius_decay = 100 * arc_num;
+	if ( 1000 - radius_decay <= 0 ) {
 		return true;
 	}
 
@@ -306,33 +306,59 @@ tesla_end_arc_damage_ballistic( arc_num, enemies_hit_num, upgraded )
 	//TO DO play Tesla Missed sound (sad)
 }
 
+tesla_arc_damage_bullet( source_enemy, player, arc_num )
+{
+	player endon( "disconnect" );
+	
+	player.tesla_enemies = undefined;
+	player.tesla_enemies_hit = 1;
+	player.tesla_powerup_dropped = false;
+	player.tesla_arc_count = 0;
+
+
+	tesla_flag_hit( self, true );
+	wait_network_frame();
+	
+					//radius decay, use 100 instead of 20
+	radius_decay = 50 * arc_num; //level.zombie_vars["tesla_radius_decay"] * arc_num;
+	enemies = tesla_get_enemies_in_area( self GetCentroid(), 500 -radius_decay, player );
+	tesla_flag_hit( enemies, true );
+
+	self thread tesla_do_damage( source_enemy, arc_num, player, 1);
+
+	for( i = 0; i < enemies.size; i++ )
+	{
+		if( enemies[i] == self )
+		{
+			continue;
+		}
+
+		if ( tesla_end_arc_damage_bullet( arc_num + 1, player.tesla_enemies_hit, 1 ) )
+		{
+			tesla_flag_hit( enemies[i], false );
+			continue;
+		}
+
+		player.tesla_enemies_hit++;
+		enemies[i] tesla_arc_damage_bullet( self, player, arc_num + 1);
+	}
+}
+
 //*
 //AR/SMGs will arc to only 3 zombies in a small radius
 tesla_end_arc_damage_bullet( arc_num, enemies_hit_num, upgraded )
 {
-	if ( arc_num >= level.zombie_vars["tesla_max_arcs"] )
-	{
-		debug_print( "TESLA: Ending arcing. Max arcs hit" );
-		return true;
-		//TO DO Play Super Happy Tesla sound
-	}
-
-	max = level.zombie_vars["tesla_max_enemies_killed"];
-	if(upgraded)
-	{
-		max = level.zombie_vars["tesla_max_enemies_killed_upgraded"];
-	}
-
-	if ( enemies_hit_num >= max )
-	{
-		debug_print( "TESLA: Ending arcing. Max enemies killed" );
+	if ( arc_num >= 4 ) {
 		return true;
 	}
 
-	radius_decay = level.zombie_vars["tesla_radius_decay"] * arc_num;
-	if ( level.zombie_vars["tesla_radius_start"] - radius_decay <= 0 )
-	{
-		debug_print( "TESLA: Ending arcing. Radius is less or equal to zero" );
+	if ( enemies_hit_num >= 4 ) {
+		return true;
+	}
+
+	//half base radius, decay is 100
+	radius_decay = 50 * arc_num;
+	if ( 500 - radius_decay <= 0 ) {
 		return true;
 	}
 
@@ -341,6 +367,7 @@ tesla_end_arc_damage_bullet( arc_num, enemies_hit_num, upgraded )
 }
 //*/
 
+/*
 //original
 tesla_end_arc_damage( arc_num, enemies_hit_num, upgraded )
 {
@@ -373,6 +400,7 @@ tesla_end_arc_damage( arc_num, enemies_hit_num, upgraded )
 	return false;
 	//TO DO play Tesla Missed sound (sad)
 }
+//*/
 
 
 tesla_get_enemies_in_area( origin, distance, player )

@@ -4748,10 +4748,10 @@ chalk_round_over()
 
 round_think()
 {
-	//level.round_number = 100;
-	//level.zombie_move_speed = 105;
-	//level.zombie_vars["zombie_spawn_delay"] = .08;
-	//level.zombie_ai_limit = 1;
+level.round_number = 20;
+	level.zombie_move_speed = 105;
+	level.zombie_vars["zombie_spawn_delay"] = .08;
+	level.zombie_ai_limit = 10;
 	SetDvar( "zombie_pause", "0" );		//zombie pause was being innit to 1 instead
 
 
@@ -6472,7 +6472,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon == "knife_ballistic_upgraded_zm_x2" && !is_boss_zombie(self.animname))
 		{	
 			//Custom Wunderwaff thread
-			self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 1);
+			self maps\_zombiemode_weapon_effects::tesla_arc_damage_ballistic( self, attacker, 1);
+			wait(2);
 			return self.maxhealth + 1000; // should always kill
 		}
 	}
@@ -6500,6 +6501,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "aug_acog_upgraded_zm_x2":
 		case "famas_upgraded_zm_x2":
 			//electric
+			if(attacker GetWeaponAmmoClip(weapon) % 20 == 0)
+			{
+				self maps\_zombiemode_weapon_effects::tesla_arc_damage_bullet( self, attacker, 1);
+			}
+			
 		break;
 		
 		case "rpk_upgraded_zm_x2":
@@ -6537,7 +6543,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );
 				return self.maxhealth + 1000; // should always kill
 			} else {
-				final_damage = 2000;
+				final_damage = 2000; //against boss zombies
 			}
 		break;
 	}
@@ -6545,7 +6551,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	
 	
-	iprintln( "Final dmg for bullet guns: " + final_damage );
+	//iprintln( "Final dmg for bullet guns: " + final_damage );
+	
+	
+	iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
+	//iprintln( "Mod 10: " + ((attacker GetWeaponAmmoStock(weapon)) % 10) );
 
 	//Classic Special Damage Multipliers (perks and conditions)
 	if(weapon == "molotov_zm")
