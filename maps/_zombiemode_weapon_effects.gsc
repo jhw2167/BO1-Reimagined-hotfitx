@@ -252,7 +252,7 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 	player.tesla_enemies_hit = 1;
 	player.tesla_powerup_dropped = false;
 	player.tesla_arc_count = 0;
-	arc_num = 0;
+	arc_num = 1;
 
 
 	tesla_flag_hit( self, true );
@@ -261,7 +261,7 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 	enemies = tesla_get_enemies_in_area( self GetCentroid(), distance, player );
 	tesla_flag_hit( enemies, true );
 
-	self thread tesla_do_damage( source_enemy, arc_num, player, 1);
+	self thread tesla_do_damage( source_enemy, 0, player, 1);
 	for( i = 0; i < enemies.size; i++ )
 	{
 		if( i > arcs )
