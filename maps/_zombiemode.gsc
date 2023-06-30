@@ -3777,7 +3777,7 @@ round_spawning()
 		}
 		old_spawn = spawn_point;
 
-	iPrintLn(spawn_point.targetname + " " + level.zombie_vars["zombie_spawn_delay"]);
+	//iPrintLn(spawn_point.targetname + " " + level.zombie_vars["zombie_spawn_delay"]);
 
 		// MM Mix in dog spawns...
 		spawn_dog = false;
@@ -5913,8 +5913,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		level.monkey_bolt_holder = self;
 	}
 	
-	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
-	iprintln("Mode type is: " + meansofdeath);
+	//Reimagined-Expanded-print
+	//iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	//iprintln("Mode type is: " + meansofdeath);
 
 	// Raven - snigl - Record what the blow gun hit
 	if( GetSubStr(weapon, 0, 8 ) == "blow_gun" && meansofdeath == "MOD_IMPACT" )
@@ -6472,8 +6473,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon == "knife_ballistic_upgraded_zm_x2" && !is_boss_zombie(self.animname))
 		{	
 			//Custom Wunderwaff thread
-			self maps\_zombiemode_weapon_effects::tesla_arc_damage_ballistic( self, attacker, 1);
-			wait(2);
+			self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 300, 6);
+																//zomb, player, arc range, num arcs
 			return self.maxhealth + 1000; // should always kill
 		}
 	}
@@ -6482,7 +6483,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
 	{	
 			//Wunderwaff thread
-			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
+			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 0);
 			return self.maxhealth + 1000; // should always kill
 	}
 	
@@ -6501,10 +6502,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "aug_acog_upgraded_zm_x2":
 		case "famas_upgraded_zm_x2":
 			//electric
-			if(attacker GetWeaponAmmoClip(weapon) % 20 == 0)
-			{
-				self maps\_zombiemode_weapon_effects::tesla_arc_damage_bullet( self, attacker, 1);
-			}
+			if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
+				if ( !IsDefined( self.zombie_tesla_hit ) || self.zombie_tesla_hit == false )
+					self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
+			}														//zomb, player, arc range, num arcs
+			
 			
 		break;
 		
@@ -6554,7 +6556,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
-	iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
+	//iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
 	//iprintln( "Mod 10: " + ((attacker GetWeaponAmmoStock(weapon)) % 10) );
 
 	//Classic Special Damage Multipliers (perks and conditions)
