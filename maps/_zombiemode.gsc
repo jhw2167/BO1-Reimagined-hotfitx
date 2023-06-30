@@ -6482,9 +6482,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//Reimagined-Expanded - x2 Weapons
 	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
 	{	
-			//Wunderwaff thread
-			self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 0);
-			return self.maxhealth + 1000; // should always kill
+
+		self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 0);
+		return self.maxhealth + 1000; // should always kill
+			
 	}
 	
 	///*
@@ -6503,11 +6504,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "famas_upgraded_zm_x2":
 			//electric
 			if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
-				if ( !IsDefined( self.zombie_tesla_hit ) || self.zombie_tesla_hit == false )
 					self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
-			}														//zomb, player, arc range, num arcs
-			
-			
+																		//zomb, player, arc range, num arcs
+			}									
 		break;
 		
 		case "rpk_upgraded_zm_x2":

@@ -261,7 +261,6 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 	enemies = tesla_get_enemies_in_area( self GetCentroid(), distance, player );
 	tesla_flag_hit( enemies, true );
 
-	iprintln("Enemies size: " + enemies.size);
 	self thread tesla_do_damage( source_enemy, arc_num, player, 1);
 	for( i = 0; i < enemies.size; i++ )
 	{
@@ -314,16 +313,15 @@ tesla_get_enemies_in_area( origin, distance, player )
 				continue;
 			}
 			
+			if ( DistanceSquared( origin, test_origin ) > distance_squared )
+			{
+				continue;
+			} 
+			
 			/* if ( IsDefined( zombies[i].zombie_tesla_hit ) && zombies[i].zombie_tesla_hit == true )
 			{
 				continue;
 			}
-
-			 if ( DistanceSquared( origin, test_origin ) > distance_squared )
-			{
-				iprintln("distance");
-				continue;
-			} 
 
 			if ( !zombies[i] DamageConeTrace(origin, player) && !BulletTracePassed( origin, test_origin, false, undefined ) && !SightTracePassed( origin, test_origin, false, undefined ) )
 			{
