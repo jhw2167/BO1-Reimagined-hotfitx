@@ -2922,18 +2922,21 @@ headshot_blood_fx()
 
 	// main head pop fx
 	PlayFX( level._effect["headshot"], fxOrigin, forwardVec, upVec );
-	PlayFX( level._effect["headshot_nochunks"], fxOrigin, forwardVec, upVec );
+	//Reimagined-Expanded
+	//PlayFX( level._effect["headshot_nochunks"], fxOrigin, forwardVec, upVec );
 
 	wait( 0.3 );
 	if(IsDefined( self ))
 	{
 		if( self maps\_zombiemode_weap_tesla::enemy_killed_by_tesla() )
 		{
-			PlayFxOnTag( level._effect["tesla_head_light"], self, fxTag );
+			//Reimagined-Expanded
+			//PlayFxOnTag( level._effect["tesla_head_light"], self, fxTag );
 		}
 		else
 		{
-			PlayFxOnTag( level._effect["bloodspurt"], self, fxTag );
+			//Reimagined-Expanded
+			//PlayFxOnTag( level._effect["bloodspurt"], self, fxTag );
 		}
 	}
 }

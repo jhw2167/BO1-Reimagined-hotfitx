@@ -17,6 +17,7 @@ init()
 	//level._effect["fire_trap_med"] 	= loadfx("maps/zombie/fx_zombie_fire_trap_med");	
 	level._effect["custom_large_explosion"] = LoadFX( "explosions/fx_explosion_charge_large" );
 	level._effect["custom_large_fire"] = LoadFX( "env/fire/fx_fire_xlg_fuel" );
+	level._effect["custom_med_fire"] = Loadfx("maps/mp_maps/fx_mp_fire_medium");
 	//level._effect["custom_large_fire"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );
 	precacheshellshock( "electrocution" );
 
@@ -209,6 +210,59 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 		sound_ent delete();
 	}
 }
+
+
+bonus_fire_damage( zomb , player, radius, time)
+{
+
+	//Set zomb on fire
+	PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
+	PlayFxOnTag( level._effect["character_fire_death_torso"], self, "J_SpineLower" );
+	self playsound("evt_zombie_ignite");
+	
+	//Wait for guy to die
+	origin = zomb.origin;
+	for(;;) {
+		if( !IsDefined( self ) || !IsAlive( self ) ) {
+		break;
+		}
+		origin = zomb.origin;
+		wait(0.05);
+	}
+	
+	
+	//Build trigger where zombie dies to fire
+	trigger = spawn( "trigger_radius", origin, 1, radius, 70 );
+	
+	if(!isDefined(trigger))
+	{
+		return;
+	}
+
+	
+	//Spawn fx on trigger
+	sound_ent = spawn( "script_origin", trigger.origin );
+	sound_ent playloopsound( "evt_napalm_fire", 1 );
+	PlayFX( level._effect["custom_med_fire"], trigger.origin );
+
+	trigger.napalm_fire_damage = 40;
+	trigger.napalm_fire_damage_type = "hellfire";
+	trigger thread triggerCustomFireDamage(player);
+
+	wait(time);
+	trigger notify("end_custom_fire_effect");
+	trigger Delete();
+
+	if( isdefined( sound_ent ) )
+	{
+		sound_ent stoploopsound( 1 );
+		wait(1);
+		sound_ent delete();
+	}
+}
+
+
+
 
 triggerCustomFireDamage(attacker)
 {

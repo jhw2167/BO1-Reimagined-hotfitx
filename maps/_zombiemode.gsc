@@ -1142,9 +1142,10 @@ init_fx()
 	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
 
 	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
-	level._effect["headshot_nochunks"] 			= LoadFX( "misc/fx_zombie_bloodsplat" );
-	level._effect["bloodspurt"] 				= LoadFX( "misc/fx_zombie_bloodspurt" );
-	level._effect["tesla_head_light"]			= LoadFX( "maps/zombie/fx_zombie_tesla_neck_spurt");
+	//Reimagined-Expanded - removed to avoid fx overload
+	//level._effect["headshot_nochunks"] 			= LoadFX( "misc/fx_zombie_bloodsplat" );
+	//level._effect["bloodspurt"] 				= LoadFX( "misc/fx_zombie_bloodspurt" );
+	//level._effect["tesla_head_light"]			= LoadFX( "maps/zombie/fx_zombie_tesla_neck_spurt");
 
 	level._effect["rise_burst_water"]			= LoadFX("maps/zombie/fx_zombie_body_wtr_burst");
 	level._effect["rise_billow_water"]			= LoadFX("maps/zombie/fx_zombie_body_wtr_billowing");
@@ -5915,7 +5916,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	//Reimagined-Expanded-print
 	//iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
-	//iprintln("Mode type is: " + meansofdeath);
+	iprintln("Mode type is: " + meansofdeath);
 
 	// Raven - snigl - Record what the blow gun hit
 	if( GetSubStr(weapon, 0, 8 ) == "blow_gun" && meansofdeath == "MOD_IMPACT" )
@@ -6473,7 +6474,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon == "knife_ballistic_upgraded_zm_x2" && !is_boss_zombie(self.animname))
 		{	
 			//Custom Wunderwaff thread
-			self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 300, 6);
+			self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 300, 6);
 																//zomb, player, arc range, num arcs
 			return self.maxhealth + 1000; // should always kill
 		}
@@ -6483,7 +6484,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
 	{	
 
-		self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 0);
+		self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 0);
 		return self.maxhealth + 1000; // should always kill
 			
 	}
@@ -6493,6 +6494,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//flat 2x damage increase for double pap'ed weapon
 		final_damage = int(final_damage * 2);
 	}
+	
+	//Reimagined-Expanded Hellfire spreads more hellfire
+	if(meansOfDeath=="hellfire") {
+		iprintln("hellfire trigger");
+		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
+		wait(1);
+		return self.maxhealth + 1000; // should always kill 
+	}
+		
 	
 	switch(weapon)
 	{
@@ -6504,14 +6514,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "famas_upgraded_zm_x2":
 			//electric
 			if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
-					self maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
+					self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
 																		//zomb, player, arc range, num arcs
 			}									
 		break;
 		
 		case "rpk_upgraded_zm_x2":
 		case "ak47_ft_upgraded_zm_x2":
-			//fire
+			if(is_boss_zombie(self.animname)) {
+				//nothing
+			}
+			else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
+				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
+				wait(1);											//zomb, player, radius, time
+				return self.maxhealth + 1000; // should always kill
+			}
 		break;
 		
 		case "hk21_upgraded_zm_x2":
