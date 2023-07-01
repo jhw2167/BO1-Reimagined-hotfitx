@@ -6528,7 +6528,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "spectre_upgraded_zm_x2":
 			case "aug_acog_upgraded_zm_x2":
 			case "famas_upgraded_zm_x2":
-				//electric
+			if(is_boss_zombie(self.animname)) { //nothing
+			}
 				if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
 						self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
 																			//zomb, player, arc range, num arcs
@@ -6536,10 +6537,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				}									
 			break;
 			
+			//Fire
 			case "rpk_upgraded_zm_x2":
 			case "ak47_ft_upgraded_zm_x2":
-				if(is_boss_zombie(self.animname)) {
-					//nothing
+				if(is_boss_zombie(self.animname)) { //nothing
 				}
 				else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
 					self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
@@ -6548,10 +6549,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				}
 			break;
 			
+			//Freeze
 			case "hk21_upgraded_zm_x2":
-			if(is_boss_zombie(self.animname)) {
-					//nothing
-				}
+			if(is_boss_zombie(self.animname)) { //nothing 
+			}
 				else if((attacker GetWeaponAmmoClip(weapon) ) < 60 ) {
 					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
 						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
@@ -6560,10 +6561,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					}
 				}
 			break;
-			case "galil_upgraded_zm_x2":
-			
-				if(is_boss_zombie(self.animname)) {
-					//nothing
+			case "galil_upgraded_zm_x2":	
+				if(is_boss_zombie(self.animname)) { //nothing
 				}
 				else if((attacker GetWeaponAmmoClip(weapon) ) < 20 ) {
 					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
