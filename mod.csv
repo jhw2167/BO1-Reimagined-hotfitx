@@ -322,9 +322,12 @@ fx,maps/zombie/fx_zombie_tesla_bolt_secondary
 fx,maps/zombie/fx_zombie_tesla_electric_bolt
 fx,maps/zombie/fx_zombie_tesla_shock_secondary
 fx,maps/zombie/fx_zombie_tesla_shock
-//fx,explosions/fx_embers_burst_optim
+
 fx,explosions/fx_explosion_charge_large
 fx,env/fire/fx_fire_xlg_fuel
+fx,env/fire/fx_fire_player_torso_mp
+fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
+fx,weapon/freeze_gun/fx_exp_freezegun_impact
 
 
 //MATERIALS

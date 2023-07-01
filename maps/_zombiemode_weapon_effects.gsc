@@ -14,12 +14,15 @@ init()
 	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 	
 	//Explosion
-	//level._effect["fire_trap_med"] 	= loadfx("maps/zombie/fx_zombie_fire_trap_med");	
 	level._effect["custom_large_explosion"] = LoadFX( "explosions/fx_explosion_charge_large" );
 	level._effect["custom_large_fire"] = LoadFX( "env/fire/fx_fire_xlg_fuel" );
-	level._effect["custom_med_fire"] = Loadfx("maps/mp_maps/fx_mp_fire_medium");
-	//level._effect["custom_large_fire"] = LoadFX( "maps/zombie_temple/fx_ztem_napalm_zombie_end2" );
+	level._effect["custom_med_fire"] = Loadfx("env/fire/fx_fire_player_torso_mp");
 	precacheshellshock( "electrocution" );
+	
+	//Freeze
+	level._effect[ "trail_freezegun_ring_emit" ]			= Loadfx( "weapon/freeze_gun/fx_trail_freezegun_ring_emit" );
+	level._effect[ "freezegun_damage_torso" ]			= LoadFX( "weapon/freeze_gun/fx_exp_freezegun_impact" );
+	
 
 	set_zombie_var( "tesla_max_arcs",			5 );
 	set_zombie_var( "tesla_max_enemies_killed", 10 );
@@ -295,6 +298,122 @@ triggerCustomFireDamage(attacker)
 }
 
 
+/** FREEZE EFFECTS **/
+bonus_freeze_damage( zomb, player, radius, time ) 
+{
+	
+	PlayFxOnTag( level._effect[ "freezegun_damage_torso" ], zomb, "J_SpineUpper" );
+	
+	currentweapon = player GetCurrentWeapon();
+	
+	view_pos = player GetTagOrigin( "tag_flash" );
+	view_angles = player GetTagAngles( "tag_flash" );
+	Playfx( level._effect["trail_freezegun_ring_emit"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+	
+	//Get zombies in cone
+	zombies = freezegun_get_enemies_in_range();
+	new_move_speed="walk";
+	
+	//Slow zombies
+	self.marked_for_freeze = true;
+	for ( i = 0; i < zombies.size; i++ ) {
+	
+		if ( is_true(zombies[i].zombie_move_speed_supersprint) )
+		{
+			zombies[i].zombie_move_speed_supersprint = false;
+
+			zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
+		}
+		else if ( zombies[i].zombie_move_speed != new_move_speed )
+		{
+			zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
+		}
+	
+	}
+		
+}
+
+freezegun_get_enemies_in_range() {
+	
+	inner_range = 300;
+	outer_range = 600;
+	cylinder_radius = 120;
+
+	view_pos = self GetWeaponMuzzlePoint();
+
+	zombies = GetAiSpeciesArray( "axis", "all" );
+	zombies = get_array_of_closest( view_pos, zombies, undefined, undefined, (outer_range * 1.1) );
+	if ( !isDefined( zombies ) )
+		return;
+	
+
+	freezegun_inner_range_squared = inner_range * inner_range;
+	freezegun_outer_range_squared = outer_range * outer_range;
+	cylinder_radius_squared = cylinder_radius * cylinder_radius;
+
+	forward_view_angles = self GetWeaponForwardDir();
+	end_pos = view_pos + vector_scale( forward_view_angles, outer_range );
+	
+	validZombs = [];
+	//Filter array by invalid enemies
+	for ( i = 0; i < zombies.size; i++ )
+	{
+		
+		if ( !IsDefined( zombies[i] ) || !IsAlive( zombies[i] ) )
+		{
+			// guy died on us
+			//iprintln("died");
+			continue;
+		}
+		
+		if( !(zombies[i].animname=="zombie") )
+		{
+			//iprintln("not zombie");
+			continue;
+		}
+		
+		if(IsDefined(zombies[i].marked_for_freeze) && zombies[i].marked_for_freeze )
+		{
+			//iprintln("marked for freeze");
+			continue;
+		}
+		
+
+		test_origin = zombies[i] GetCentroid();
+		test_range_squared = DistanceSquared( view_pos, test_origin );
+		if ( test_range_squared > freezegun_outer_range_squared )
+		{
+			return validZombs; // everything else in the list will be out of range
+		}
+
+		normal = VectorNormalize( test_origin - view_pos );
+		dot = VectorDot( forward_view_angles, normal );
+		if ( 0 > dot )
+		{
+			// guy's behind us
+			continue;
+		}
+
+		radial_origin = PointOnSegmentNearestToPoint( view_pos, end_pos, test_origin );
+		if ( DistanceSquared( test_origin, radial_origin ) > cylinder_radius_squared )
+		{
+			// guy's outside the range of the cylinder of effect
+			continue;
+		}
+
+		if ( !zombies[i] DamageConeTrace( view_pos, self ) && !BulletTracePassed( view_pos, test_origin, false, undefined ) && !SightTracePassed( view_pos, test_origin, false, undefined ) )
+		{
+			// guy can't actually be hit from where we are
+			continue;
+		}
+
+		zombies[i].marked_for_freeze = true;
+		validZombs[validZombs.size] = zombies[i];
+	}
+	
+	return validZombs;
+}
+
 
 
 /** TESLA EFFECTS **/
@@ -327,7 +446,6 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 		
 		enemies[i] thread tesla_do_damage( source_enemy, arc_num, player, 1);
 		arc_num++;
-		iprintln("iter loop: " + i);
 	}
 }
 
@@ -536,8 +654,10 @@ tesla_play_death_fx( arc_num )
 		fx = "tesla_shock_secondary";
 	}
 
-	if(arc_num==0)
-		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect[fx], self, tag );
+	if(arc_num==0) {
+		iPrintln("playfx");
+		PlayFxOnTag( level._effect["tesla_shock"], self, tag );
+	}
 	
 	self playsound( "wpn_imp_tesla" );
 

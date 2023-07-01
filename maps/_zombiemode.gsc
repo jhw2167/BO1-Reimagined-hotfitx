@@ -6476,6 +6476,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			//Custom Wunderwaff thread
 			self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 300, 6);
 																//zomb, player, arc range, num arcs
+			wait(1);
 			return self.maxhealth + 1000; // should always kill
 		}
 	}
@@ -6490,10 +6491,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 	
 	///*
-	if( IsSubStr( weapon, "x2" ) ) {
-		//flat 2x damage increase for double pap'ed weapon
-		final_damage = int(final_damage * 2);
-	}
 	
 	//Reimagined-Expanded Hellfire spreads more hellfire
 	if(meansOfDeath=="hellfire") {
@@ -6502,69 +6499,102 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		wait(1);
 		return self.maxhealth + 1000; // should always kill 
 	}
-		
 	
-	switch(weapon)
-	{
-		//Electric Effect
-		case "ppsh_upgraded_zm_x2":
-		case "ak74u_upgraded_zm_x2":
-		case "spectre_upgraded_zm_x2":
-		case "aug_acog_upgraded_zm_x2":
-		case "famas_upgraded_zm_x2":
-			//electric
-			if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
-					self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
-																		//zomb, player, arc range, num arcs
-			}									
-		break;
-		
-		case "rpk_upgraded_zm_x2":
-		case "ak47_ft_upgraded_zm_x2":
-			if(is_boss_zombie(self.animname)) {
-				//nothing
-			}
-			else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
-				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
-				wait(1);											//zomb, player, radius, time
-				return self.maxhealth + 1000; // should always kill
-			}
-		break;
-		
-		case "hk21_upgraded_zm_x2":
-		case "galil_upgraded_zm_x2":
-			//freeze
-		break;
-		
-		case "commando_upgraded_zm_x2":
-		case "stoner63_upgraded_zm_x2":
-				final_damage = int(final_damage * 1.2); //big damage
-		break;
-		case "fnfal_upgraded_zm_x2":
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
-				final_damage = int(final_damage * 2); //big damage
-			}
-		break;
-		
-		//Snipers
-		case "psg1_upgraded_zm_x2":
-		case "l96a1_upgraded_zm_x2":
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
-				final_damage = int(final_damage * 5); //big damage
-			}
-		break;
-		
-		case "m72_law_upgraded_zm_x2":
-		case "china_lake_upgraded_zm_x2":
+		if(weapon == "m72_law_upgraded_zm_x2" || weapon == "china_lake_upgraded_zm_x2") 
+		{
 			if( !is_boss_zombie(self.animname)) {
-				self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
+				self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
 				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );
 				return self.maxhealth + 1000; // should always kill
 			} else {
-				final_damage = 2000; //against boss zombies
+				final_damage = 4000; //against boss zombies
 			}
-		break;
-	}
+		
+		}
+	
+	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
+	{	
+
+		if( IsSubStr( weapon, "x2" ) ) {
+			//flat 2x damage increase for double pap'ed weapon
+			final_damage = int(final_damage * 2);
+		}
+	
+		switch(weapon)
+		{
+			//Electric Effect
+			case "ppsh_upgraded_zm_x2":
+			case "ak74u_upgraded_zm_x2":
+			case "spectre_upgraded_zm_x2":
+			case "aug_acog_upgraded_zm_x2":
+			case "famas_upgraded_zm_x2":
+				//electric
+				if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
+						self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
+																			//zomb, player, arc range, num arcs
+						wait(1);
+				}									
+			break;
+			
+			case "rpk_upgraded_zm_x2":
+			case "ak47_ft_upgraded_zm_x2":
+				if(is_boss_zombie(self.animname)) {
+					//nothing
+				}
+				else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
+					self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
+					wait(1);											//zomb, player, radius, time
+					return self.maxhealth + 1000; // should always kill
+				}
+			break;
+			
+			case "hk21_upgraded_zm_x2":
+			if(is_boss_zombie(self.animname)) {
+					//nothing
+				}
+				else if((attacker GetWeaponAmmoClip(weapon) ) < 60 ) {
+					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
+						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
+						wait(0.05);
+						return self.maxhealth + 1000; // should always kill
+					}
+				}
+			break;
+			case "galil_upgraded_zm_x2":
+			
+				if(is_boss_zombie(self.animname)) {
+					//nothing
+				}
+				else if((attacker GetWeaponAmmoClip(weapon) ) < 20 ) {
+					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
+						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
+						wait(0.05);
+						return self.maxhealth + 1000; // should always kill
+					}
+				}
+			break;
+			
+			case "commando_upgraded_zm_x2":
+			case "stoner63_upgraded_zm_x2":
+					final_damage = int(final_damage * 1.2); //big damage
+			break;
+			case "fnfal_upgraded_zm_x2":
+				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
+					final_damage = int(final_damage * 2); //big damage
+				}
+			break;
+			
+			//Snipers
+			case "psg1_upgraded_zm_x2":
+			case "l96a1_upgraded_zm_x2":
+				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
+					final_damage = int(final_damage * 5); //big damage
+				}
+			break;
+		}
+		//End Switch
+	
+	} //End "bullet dmg only" wrapping if statment
 	//*/	
 	
 	
