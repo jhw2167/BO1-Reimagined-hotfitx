@@ -1252,7 +1252,7 @@ include_weapons()
 	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
 	//include_weapon( "explosive_bolt_upgraded_zm_x2", false );
 
-	include_weapon( "ppsh_upgraded_zm_x2", false );
+	//include_weapon( "ppsh_upgraded_zm_x2", false );
 	include_weapon( "ak47_ft_upgraded_zm_x2", false );
 	include_weapon( "stoner63_upgraded_zm_x2", false );
 	include_weapon( "psg1_upgraded_zm_x2", false );

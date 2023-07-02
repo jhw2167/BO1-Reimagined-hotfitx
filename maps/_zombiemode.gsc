@@ -6502,7 +6502,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 		if(weapon == "m72_law_upgraded_zm_x2" || weapon == "china_lake_upgraded_zm_x2") 
 		{
-			iprintln("dmg override law");
 			if( !is_boss_zombie(self.animname)) {
 				self maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
 				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );

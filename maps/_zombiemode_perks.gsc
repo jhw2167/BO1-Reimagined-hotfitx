@@ -719,6 +719,7 @@ vending_weapon_upgrade()
 		self SetHintString("");
 		self disable_trigger();
 
+		iprintln("Call knuckle crack from main thread");
 		player thread do_knuckle_crack();
 
 		// Remember what weapon we have.  This is needed to check unique weapon counts.
@@ -962,7 +963,7 @@ do_knuckle_crack()
 
 	gun = self upgrade_knuckle_crack_begin();
 
-	self waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
+	self waittill_any_or_timeout( 1.5, "fake_death", "death", "player_downed", "weapon_change_complete" );
 
 	if(self HasPerk("specialty_fastreload"))
 	{
@@ -1046,6 +1047,7 @@ upgrade_knuckle_crack_end( gun )
 	self decrement_is_drinking();
 
 	self TakeWeapon(weapon);
+	
 	primaries = self GetWeaponsListPrimaries();
 	if( self is_drinking() )
 	{
