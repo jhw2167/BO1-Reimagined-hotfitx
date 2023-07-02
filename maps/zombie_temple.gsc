@@ -425,7 +425,7 @@ include_weapons()
 	level.collector_achievement_weapons = array_add( level.collector_achievement_weapons, "bowie_knife_zm" );
 	
 	
-	//All double PaP weapons:
+	/* //All double PaP weapons:
 		// - no wall weapons
 		// - no wonder weapons
 	//include_weapon( "m14_upgraded_zm_x2", false );
@@ -461,7 +461,7 @@ include_weapons()
 	include_weapon( "ak47_ft_upgraded_zm_x2", false );
 	include_weapon( "stoner63_upgraded_zm_x2", false );
 	include_weapon( "psg1_upgraded_zm_x2", false );
-	
+	 */
 
 }
 
