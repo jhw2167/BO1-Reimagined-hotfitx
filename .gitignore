@@ -11,4 +11,4 @@ zzz_search/*
 log.txt
 logs.txt
 goals.txt
-search.sh
+*.sh
