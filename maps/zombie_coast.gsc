@@ -478,8 +478,8 @@ include_weapons()
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm" );					// ptrs41
-	include_weapon( "dragunov_upgraded_zm", false );
+	//include_weapon( "dragunov_zm" );					// ptrs41
+	//include_weapon( "dragunov_upgraded_zm", false );
 	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
@@ -491,9 +491,9 @@ include_weapons()
 
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
-	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm" );
-	include_weapon( "china_lake_upgraded_zm", false );
+	//include_weapon( "m72_law_upgraded_zm", false );
+	//include_weapon( "china_lake_zm" );
+	//include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
 	include_weapon( "ray_gun_zm" );
@@ -509,8 +509,8 @@ include_weapons()
 
 	include_weapon( "knife_ballistic_zm", true );
 	include_weapon( "knife_ballistic_upgraded_zm", false );
-	include_weapon( "knife_ballistic_sickle_zm", false );
-	include_weapon( "knife_ballistic_sickle_upgraded_zm", false );
+	//include_weapon( "knife_ballistic_sickle_zm", false );
+	//include_weapon( "knife_ballistic_sickle_upgraded_zm", false );
 	level._uses_retrievable_ballisitic_knives = true;
 
 	include_weapon( "tesla_gun_powerup_zm", false );

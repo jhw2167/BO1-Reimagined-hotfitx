@@ -204,7 +204,8 @@ do_bowie_flourish_end( gun )
 	self AllowMelee( true );
 	weapon = "zombie_bowie_flourish";
 
-	if ( self HasWeapon( "knife_ballistic_zm" ) )
+	//Reimagined-expanded had to remove since weapon overload with double pap
+	/* if ( self HasWeapon( "knife_ballistic_zm" ) )
 	{
 		ballistic_clip_ammo = self GetWeaponAmmoClip("knife_ballistic_zm");
 		ballistic_stock_ammo = self GetWeaponAmmoStock("knife_ballistic_zm");
@@ -237,7 +238,7 @@ do_bowie_flourish_end( gun )
 
 		self SetWeaponAmmoClip("knife_ballistic_bowie_upgraded_zm", ballistic_clip_ammo);
 		self SetWeaponAmmoStock("knife_ballistic_bowie_upgraded_zm", ballistic_stock_ammo);
-	}
+	} */
 
 	if(self HasWeapon(gun) && is_placeable_mine(gun) && self GetWeaponAmmoClip(gun) == 0)
 	{

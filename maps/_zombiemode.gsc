@@ -6500,7 +6500,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		return self.maxhealth + 1000; // should always kill 
 	}
 	
-		if(weapon == "m72_law_upgraded_zm_x2" || weapon == "china_lake_upgraded_zm_x2") 
+		if(weapon == "m72_law_zm" || weapon == "china_lake_zm") 
 		{
 			if( !is_boss_zombie(self.animname)) {
 				self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);

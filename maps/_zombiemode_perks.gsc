@@ -813,6 +813,8 @@ vending_2x_blacklist(weapon) {
 			weapon == "gl_m16_upgraded_zm" ||
 			weapon == "ithaca_upgraded_zm" ||
 			weapon == "mk_aug_upgraded_zm" ||
+			weapon == "m72_law_zm" || 
+			weapon == "china_lake_zm" ||
 			weapon == "explosivbe_bolt_upgraded_zm")
 			{
 				return true;

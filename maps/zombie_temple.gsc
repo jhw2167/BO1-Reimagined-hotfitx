@@ -380,8 +380,8 @@ include_weapons()
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm" );							// ptrs41
-	include_weapon( "dragunov_upgraded_zm", false );
+	//include_weapon( "dragunov_zm" );							// ptrs41
+	//include_weapon( "dragunov_upgraded_zm", false );
 	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
@@ -393,9 +393,9 @@ include_weapons()
 
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
-	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm" );
-	include_weapon( "china_lake_upgraded_zm", false );
+	//include_weapon( "m72_law_upgraded_zm", false );
+	//include_weapon( "china_lake_zm" );
+	//include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
 	include_weapon( "zombie_cymbal_monkey" );
@@ -408,8 +408,8 @@ include_weapons()
 	include_weapon( "crossbow_explosive_upgraded_zm", false );
 	include_weapon( "knife_ballistic_zm", true );
 	include_weapon( "knife_ballistic_upgraded_zm", false );
-	include_weapon( "knife_ballistic_bowie_zm", false );
-	include_weapon( "knife_ballistic_bowie_upgraded_zm", false );
+	//include_weapon( "knife_ballistic_bowie_zm", false );
+	//include_weapon( "knife_ballistic_bowie_upgraded_zm", false );
 	level._uses_retrievable_ballisitic_knives = true;
 
 	// limited weapons
@@ -451,8 +451,8 @@ include_weapons()
 	include_weapon( "rpk_upgraded_zm_x2", false );
 	include_weapon( "hk21_upgraded_zm_x2", false );
 	include_weapon( "l96a1_upgraded_zm_x2", false );
-	include_weapon( "china_lake_upgraded_zm_x2", false );
-	include_weapon( "m72_law_upgraded_zm_x2", false );
+	//include_weapon( "china_lake_upgraded_zm_x2", false );
+	//include_weapon( "m72_law_upgraded_zm_x2", false );
 	include_weapon( "knife_ballistic_upgraded_zm_x2", false );
 	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
 	//include_weapon( "explosive_bolt_upgraded_zm_x2", false );

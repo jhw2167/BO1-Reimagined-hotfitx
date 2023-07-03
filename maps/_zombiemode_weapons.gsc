@@ -369,8 +369,8 @@ init_weapons()
 	add_zombie_weapon( "hk21_upgraded_zm",					"hk21_upgraded_zm_x2",						&"ZOMBIE_WEAPON_HK21",					50,		"mg",				"",		undefined );
 
 	// Rocket Launchers
-	add_zombie_weapon( "m72_law_upgraded_zm", 				"m72_law_upgraded_zm_x2",					&"ZOMBIE_WEAPON_M72_LAW",	 			2000,	"launcher",			"",		undefined );
-	add_zombie_weapon( "china_lake_upgraded_zm", 			"china_lake_upgraded_zm_x2",				&"ZOMBIE_WEAPON_CHINA_LAKE", 			2000,	"launcher",			"",		undefined );
+	//add_zombie_weapon( "m72_law_upgraded_zm", 				"m72_law_upgraded_zm_x2",					&"ZOMBIE_WEAPON_M72_LAW",	 			2000,	"launcher",			"",		undefined );
+	//add_zombie_weapon( "china_lake_upgraded_zm", 			"china_lake_upgraded_zm_x2",				&"ZOMBIE_WEAPON_CHINA_LAKE", 			2000,	"launcher",			"",		undefined );
 
 	// Special
  	add_zombie_weapon( "crossbow_explosive_upgraded_zm",		"crossbow_explosive_upgraded_zm_x2",		&"ZOMBIE_WEAPON_CROSSBOW_EXPOLOSIVE",	10,		"crossbow",			"",		undefined );
@@ -380,7 +380,7 @@ init_weapons()
 
  	add_zombie_weapon( "ak47_ft_upgraded_zm",					"ak47_ft_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
  	add_zombie_weapon( "stoner63_upgraded_zm",				"stoner63_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
- 	add_zombie_weapon( "psg1_upgraded_zm",					"psg1_upgraded_zm_x2",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"sniper",			"",		undefined );
+ 	//add_zombie_weapon( "psg1_upgraded_zm",					"psg1_upgraded_zm_x2",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"sniper",			"",		undefined );
  	add_zombie_weapon( "ppsh_upgraded_zm",					"ppsh_upgraded_zm_x2",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"smg",			"",		undefined );
 	
 	//************************************************************************************************************************
@@ -4063,7 +4063,7 @@ init_includes()
 {
 	include_weapon("ak47_zm");
  	include_weapon("stoner63_zm");
- 	include_weapon("psg1_zm");
+ 	//include_weapon("psg1_zm");
  	include_weapon("ppsh_zm");
  	include_weapon("falling_hands_zm", false);
 
@@ -4072,7 +4072,7 @@ init_includes()
 	{
  		include_weapon("ak47_ft_upgraded_zm", false);
 	 	include_weapon("stoner63_upgraded_zm", false);
-	 	include_weapon("psg1_upgraded_zm", false);
+	 	//include_weapon("psg1_upgraded_zm", false);
 	 	include_weapon("ppsh_upgraded_zm", false);
 		
 		//Reimagined-Expanded
@@ -4106,10 +4106,10 @@ init_includes()
 	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
 	//include_weapon( "explosive_bolt_upgraded_zm_x2", false );
 
-	//include_weapon( "ppsh_upgraded_zm_x2", false );
+	include_weapon( "ppsh_upgraded_zm_x2", false );
 	include_weapon( "ak47_ft_upgraded_zm_x2", false );
 	include_weapon( "stoner63_upgraded_zm_x2", false );
-	include_weapon( "psg1_upgraded_zm_x2", false );
+	//include_weapon( "psg1_upgraded_zm_x2", false );
 	
 	//include_weapon( "china_lake_upgraded_zm_x2", false );
 	//include_weapon( "m72_law_upgraded_zm_x2", false );

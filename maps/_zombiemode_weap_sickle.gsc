@@ -246,7 +246,8 @@ do_sickle_flourish_end( gun )
 	self AllowMelee( true );
 	weapon = "zombie_sickle_flourish";
 
-	if ( self HasWeapon( "knife_ballistic_zm" ) )
+	//Reimagined-expanded had to remove since weapon overload with double pap
+	/* if ( self HasWeapon( "knife_ballistic_zm" ) )
 	{
 		ballistic_clip_ammo = self GetWeaponAmmoClip("knife_ballistic_zm");
 		ballistic_stock_ammo = self GetWeaponAmmoStock("knife_ballistic_zm");
@@ -279,7 +280,7 @@ do_sickle_flourish_end( gun )
 
 		self SetWeaponAmmoClip("knife_ballistic_sickle_upgraded_zm", ballistic_clip_ammo);
 		self SetWeaponAmmoStock("knife_ballistic_sickle_upgraded_zm", ballistic_stock_ammo);
-	}
+	} */
 
 	if(self HasWeapon(gun) && is_placeable_mine(gun) && self GetWeaponAmmoClip(gun) == 0)
 	{
@@ -288,6 +289,7 @@ do_sickle_flourish_end( gun )
 
 	self TakeWeapon(weapon);
 
+	//Reimagined-expanded
 	//self GiveWeapon( "sickle_knife_zm" );
 	//self set_player_melee_weapon( "sickle_knife_zm" );	keep player with knockdown punch
 
