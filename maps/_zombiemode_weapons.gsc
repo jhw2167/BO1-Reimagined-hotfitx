@@ -848,7 +848,7 @@ is_weapon_upgraded( weaponname )
 	return false;
 }
 
-
+//Reimagined-Expanded
 is_weapon_double_upgraded( weaponname )
 {
 	if( !isdefined( weaponname ) || weaponname == "" )

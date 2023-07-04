@@ -17,6 +17,7 @@ rawfile,maps/_zombiemode_spawner.gsc
 rawfile,maps/_zombiemode_traps.gsc
 rawfile,maps/_zombiemode_utility.gsc
 rawfile,maps/_zombiemode_weapons.gsc
+rawfile,maps/_zombiemode_weapon_effects.gsc
 rawfile,maps/_zombiemode_weap_sickle.gsc
 rawfile,maps/_zombiemode_weap_freezegun.gsc
 rawfile,maps/_zombiemode_weap_tesla.gsc
@@ -35,6 +36,7 @@ rawfile,maps/_zombiemode_grief.gsc
 
 //NACHT
 rawfile,maps/zombie_cod5_prototype.gsc
+rawfile,maps/zombie_cod5_prototype_fx.gsc
 
 //VERRUCKT
 rawfile,maps/zombie_cod5_asylum.gsc
@@ -49,9 +51,11 @@ rawfile,maps/zombie_cod5_sumpf_trap_pendulum.gsc
 //DER RIESE
 rawfile,maps/zombie_cod5_factory.gsc
 rawfile,maps/zombie_cod5_factory_teleporter.gsc
+rawfile,maps/zombie_cod5_factory_fx.gsc
 
 //KINO
 rawfile,maps/zombie_theater.gsc
+rawfile,maps/zombie_theater_fx.gsc
 rawfile,maps/zombie_theater_amb.gsc
 rawfile,maps/zombie_theater_teleporter.gsc
 rawfile,maps/zombie_theater_quad.gsc
@@ -88,10 +92,12 @@ rawfile,maps/zombie_coast_eggs.gsc
 rawfile,maps/zombie_coast_lighthouse.gsc
 
 //SHANG
+rawfile,maps/zombie_temple.gsc
+rawfile,maps/zombie_temple_fx.gsc
+
 rawfile,maps/_zombiemode_weap_shrink_ray.gsc
 rawfile,maps/zombie_temple_ai_monkey.gsc
 rawfile,maps/zombie_temple_traps.gsc
-rawfile,maps/zombie_temple.gsc
 rawfile,maps/zombie_temple_pack_a_punch.gsc
 rawfile,maps/zombie_temple_sq.gsc
 rawfile,maps/zombie_temple_sq_oafc.gsc
@@ -330,6 +336,7 @@ fx,env/fire/fx_fire_xlg_fuel
 fx,env/fire/fx_fire_player_torso_mp
 fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
 fx,weapon/freeze_gun/fx_exp_freezegun_impact
+
 
 
 //MATERIALS
