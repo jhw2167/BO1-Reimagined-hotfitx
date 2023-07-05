@@ -5915,7 +5915,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 	
 	//Reimagined-Expanded-print
-	//iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
 	iprintln("Mode type is: " + meansofdeath);
 
 	// Raven - snigl - Record what the blow gun hit
@@ -6493,14 +6493,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	///*
 	
 	//Reimagined-Expanded Hellfire spreads more hellfire
-	if(meansOfDeath=="hellfire") {
-		iprintln("hellfire trigger");
-		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
+	if(meansOfDeath=="hellfire" ) {
+		if( is_boss_zombie(self.animname) ) {
+			return 1000;
+		}
+		
+		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 2);
 		wait(1);
 		return self.maxhealth + 1000; // should always kill 
 	}
 	
-		if(weapon == "m72_law_zm" || weapon == "china_lake_zm") 
+		if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_zm") 
 		{
 			if( !is_boss_zombie(self.animname)) {
 				self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
@@ -6530,7 +6533,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "famas_upgraded_zm_x2":
 			if(is_boss_zombie(self.animname)) { //nothing
 			}
-				if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
+			else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
 						self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
 																			//zomb, player, arc range, num arcs
 						wait(1);
@@ -6542,7 +6545,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "ak47_ft_upgraded_zm_x2":
 				if(is_boss_zombie(self.animname)) { //nothing
 				}
-				else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
+				else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0 && !is_true( self.in_water )) {
 					self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
 					wait(1);											//zomb, player, radius, time
 					return self.maxhealth + 1000; // should always kill
@@ -6551,7 +6554,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 			//Freeze
 			case "hk21_upgraded_zm_x2":
-			if(is_boss_zombie(self.animname)) { //nothing 
+			if(is_boss_zombie(self.animname)) { //nothing
 			}
 				else if((attacker GetWeaponAmmoClip(weapon) ) < 60 ) {
 					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
@@ -6564,7 +6567,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "galil_upgraded_zm_x2":	
 				if(is_boss_zombie(self.animname)) { //nothing
 				}
-				else if((attacker GetWeaponAmmoClip(weapon) ) < 20 ) {
+				else if((attacker GetWeaponAmmoClip(weapon) ) < 71 ) {
 					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
 						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
 						wait(0.05);
@@ -6598,7 +6601,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	
 	
-	//iprintln( "Final dmg for bullet guns: " + final_damage );
+	iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
 	//iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
@@ -6642,6 +6645,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		self.dmg_taken += int(final_damage);
 	}
+	
 
 	// return unchanged damage
 	//iPrintln( final_damage );
@@ -6650,7 +6654,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 is_boss_zombie( animname )
 {
-	return (animname == "thief_zombie" && animname == "director_zombie" && animname == "astro_zombie");
+	return (animname == "thief_zombie" || animname == "director_zombie" || animname == "astro_zombie");
 }
 
 is_headshot( sWeapon, sHitLoc, sMeansOfDeath )

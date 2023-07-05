@@ -261,7 +261,7 @@ custom_add_weapons()
 {
  	maps\_zombiemode_weapons::add_zombie_weapon( "humangun_zm",				"humangun_upgraded_zm",					&"ZOMBIE_WEAPON_HUMANGUN", 				10,		"human",			"",		undefined );
 	maps\_zombiemode_weapons::add_zombie_weapon( "sniper_explosive_zm",		"sniper_explosive_upgraded_zm",			&"ZOMBIE_WEAPON_SNIPER_EXPLOSIVE",		2500,	"ubersniper",		"",		undefined );
-	maps\_zombiemode_weapons::add_zombie_weapon( "tesla_gun_powerup_zm",			"tesla_gun_powerup_upgraded_zm",			&"ZOMBIE_WEAPON_TESLA", 				10,		"tesla",			"",		undefined, true ); //true - adds weapon without including it
+	//maps\_zombiemode_weapons::add_zombie_weapon( "tesla_gun_powerup_zm",			"tesla_gun_powerup_upgraded_zm",			&"ZOMBIE_WEAPON_TESLA", 				10,		"tesla",			"",		undefined, true ); //true - adds weapon without including it
 }
 
 coast_spawn_init_delay(director)
@@ -491,7 +491,7 @@ include_weapons()
 
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
-	//include_weapon( "m72_law_upgraded_zm", false );
+	include_weapon( "m72_law_upgraded_zm", false );
 	//include_weapon( "china_lake_zm" );
 	//include_weapon( "china_lake_upgraded_zm", false );
 

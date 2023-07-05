@@ -408,6 +408,7 @@ freezegun_get_enemies_in_range() {
 		}
 
 		zombies[i].marked_for_freeze = true;
+		zombies[i].bonus_fx = true;
 		validZombs[validZombs.size] = zombies[i];
 	}
 	
@@ -472,8 +473,14 @@ tesla_get_enemies_in_area( origin, distance, player )
 	{
 		for ( i = 0; i < zombies.size; i++ )
 		{
-			 if ( !IsDefined( zombies[i] ) )
+			 if ( !IsDefined( zombies[i] )  || !IsAlive( zombies[i] ) )
 			{
+				continue;
+			}
+			
+			if( !maps\_zombiemode::is_boss_zombie(self.animname) )
+			{
+				//iprintln("boss zombie");
 				continue;
 			}
 
@@ -506,6 +513,8 @@ tesla_get_enemies_in_area( origin, distance, player )
 				continue;
 			} 
 
+			zombies[i].bonus_fx=true;
+			zombies[i].marked_for_tesla=true;
 			enemies[enemies.size] = zombies[i];
 		}
 	}

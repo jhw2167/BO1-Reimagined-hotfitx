@@ -393,7 +393,7 @@ include_weapons()
 
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
-	//include_weapon( "m72_law_upgraded_zm", false );
+	include_weapon( "m72_law_upgraded_zm", false );
 	//include_weapon( "china_lake_zm" );
 	//include_weapon( "china_lake_upgraded_zm", false );
 
