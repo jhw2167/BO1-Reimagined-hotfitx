@@ -6036,6 +6036,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		final_damage -= final_damage % 50; // fix for melee weapons doing 1-4 extra damage
 		
+		if(is_boss_zombie(self.animname)) {
+			return 200;
+		}	
+		
 		if(IsDefined(weapon) && weapon == "knife_zm")
 		{
 			//Reimagined-Expanded Push Zombies down with Knife
@@ -6060,13 +6064,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			self [[ self.thundergun_fling_func ]]( attacker );
 		}
 		
-		if( IsDefined(weapon) && weapon == "combat_knife") {
+		if( IsDefined(weapon) && weapon == "combat_knife" && self.animname=="zombie") {
 			final_damage = int(self.maxhealth / 4) + 1;
 			if(damage < final_damage)
 				return final_damage;
 			else
 				return damage;
 		}
+		
 		
 	}
 

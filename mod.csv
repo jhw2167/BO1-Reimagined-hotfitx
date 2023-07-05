@@ -437,6 +437,9 @@ xanim,ai_zombie_tesla_death_c
 xanim,ai_zombie_tesla_death_d
 xanim,ai_zombie_tesla_death_e
 xanim,viewmodel_ppsh_empty_sprint_loop
+xanim,ai_zombie_thundergun_hit_upontoback
+xanim,ai_zombie_thundergun_getup_b
+
 
 //PLAYER ANIMS
 rawfile,mp/playeranim.script
