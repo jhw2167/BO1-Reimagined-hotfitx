@@ -6567,7 +6567,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "galil_upgraded_zm_x2":	
 				if(is_boss_zombie(self.animname)) { //nothing
 				}
-				else if((attacker GetWeaponAmmoClip(weapon) ) < 71 ) {
+				else if((attacker GetWeaponAmmoClip(weapon) ) < 20 ) {
 					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
 						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
 						wait(0.05);
