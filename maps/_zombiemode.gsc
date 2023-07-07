@@ -806,8 +806,9 @@ init_levelvars()
 	//	set_zombie_var( identifier, 					value,	float,	column );
 
 	// AI
-	set_zombie_var( "zombie_health_increase", 			100,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
-	set_zombie_var( "zombie_health_increase_multiplier",0.1, 	true,	column );	//	after round 10 multiply the zombies' starting health by this amount
+	// Reimagined-Expanded
+	//set_zombie_var( "zombie_health_increase", 			100,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
+	//set_zombie_var( "zombie_health_increase_multiplier",0.1, 	true,	column );	//	after round 10 multiply the zombies' starting health by this amount
 	set_zombie_var( "zombie_health_start", 				150,	false,	column );	//	starting health of a zombie at round 1
 	set_zombie_var( "zombie_spawn_delay", 				2.0,	true,	column );	// Base time to wait between spawning zombies.  This is modified based on the round number.
 	set_zombie_var( "zombie_new_runner_interval", 		 10,	false,	column );	//	Interval between changing walkers who are too far away into runners
@@ -4944,7 +4945,8 @@ ai_calculate_health( round_number )
 		return;
 	}
 
-	level.zombie_health = level.zombie_vars["zombie_health_start"];
+	//vanilla
+	/* level.zombie_health = level.zombie_vars["zombie_health_start"];
 	for ( i=2; i<=round_number; i++ )
 	{
 		// After round 10, get exponentially harder
@@ -4963,7 +4965,24 @@ ai_calculate_health( round_number )
 			level.zombie_health = MAX_ZOMBIE_HEALTH;
 			break;
 		}
+	} */
+	
+	
+	//Reimagined-Expanded - logarythmic health scaling
+	base = 400;
+	rTenfactor = 0.5;
+	startHealth = 150;
+	logFactor = 7;
+	
+	health = startHealth;
+	for ( i=2; i<=round_number; i++ ){	
+		if(i == 10)	rTenfactor=1;
+		health += base * ( Int( i / logFactor ) + rTenfactor);
+		iprintln(health);
 	}
+		
+	level.zombie_health = health;
+	
 }
 
 /#
