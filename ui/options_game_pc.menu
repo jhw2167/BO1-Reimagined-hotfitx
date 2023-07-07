@@ -57,9 +57,15 @@
 				setDvar character_dialog 1;
 			}
 			
+			if(dvarString(zombie_pause) == "")
+			{
+				setDvar zombie_pause 0;
+			}
 			
-			setDvar zombie_pause 0;
-			
+			if(dvarString(zombie_apocalypse) == "")
+			{
+				setDvar zombie_apocalypse 0;
+			}
 
 			if(dvarString(com_maxfps) == "85") // default value
 			{
@@ -243,7 +249,7 @@
 
 		FRAME_CHOICE_SECTION_TITLE( 30, "@REIMAGINED_HOST_ONLY" )
 
-		FRAME_CHOICE_DVARSTRINGLIST_VIS( 31, "@REIMAGINED_GAMEMODE_CAPS", zm_gamemode, { "@REIMAGINED_GAMEMODE_SURVIVAL_CAPS"; "survival"; "@REIMAGINED_GAMEMODE_GRIEF_CAPS"; "grief"; "@REIMAGINED_GAMEMODE_SNR_CAPS"; "snr"; "@REIMAGINED_GAMEMODE_RACE_CAPS"; "race"; "@REIMAGINED_GAMEMODE_GG_CAPS"; "gg"; "@MPUI_RANDOM_CAPS"; "random" }, ;, 1)
+		FRAME_CHOICE_DVARSTRINGLIST_VIS( 31, "@REIMAGINED_GAMEMODE_CAPS", zm_gamemode, { "@REIMAGINED_GAMEMODE_SURVIVAL_CAPS"; "survival" }, ;, 1)
 		//	"@REIMAGINED_GAMEMODE_CTF_CAPS"; "ctf"; "@REIMAGINED_GAMEMODE_KOTH_CAPS"; "koth"; "@REIMAGINED_GAMEMODE_TURNED_CAPS"; "turned";
 
 		//FRAME_CHOICE_DVARSTRINGLIST_VIS( 31, "@REIMAGINED_GAMEMODE_CAPS", zm_gamemode, { "@REIMAGINED_GAMEMODE_SURVIVAL_CAPS"; "survival" }, ;, 1)
@@ -261,7 +267,9 @@
 
 		FRAME_CHOICE_BUTTON_VIS( 34, "@REIMAGINED_INITIAL_MAGICBOX_CAPS", setdvar ui_options_game_popup "initial_box_locations"; open mature_content_pc_disable_warning, (dvarString(zm_gamemode) == "survival") )
 		
-		FRAME_CHOICE_DVARYESNO_VIS( 35, "@ZOMBIE_PAUSE", zombie_pause, ;, (dvarString(zm_gamemode) == "survival") )
+		FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, ;, (dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1") )
+		
+		FRAME_CHOICE_DVARYESNO_VIS( 36, "@REIMAGINED_PAUSE", zombie_pause, ;, (dvarString(zombie_apocalypse) == "0") )
 
 		// VERSUS
 

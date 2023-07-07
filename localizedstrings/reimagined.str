@@ -1073,4 +1073,10 @@ LANG_ENGLISH		"Survive to Win!"
 REFERENCE			FINAL_ROUND
 LANG_ENGLISH		"Final Round"
 
+REFERENCE          	PAUSE
+LANG_ENGLISH       	"In-Game Pause"
+
+REFERENCE          	APOCALYPSE
+LANG_ENGLISH       	"Apocalypse Mode"
+
 ENDMARKER

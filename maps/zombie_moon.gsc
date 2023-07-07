@@ -906,6 +906,8 @@ moon_round_think_func()
 		{
 			level thread maps\_zombiemode::award_grenades_for_survivors();
 		}
+		
+		check_zombie_pause();
 
 		bbPrint( "zombie_rounds: round %d player_count %d", level.round_number, players.size );
 

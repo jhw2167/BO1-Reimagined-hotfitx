@@ -29,6 +29,8 @@ main()
 	level.zombie_melee_in_water = true;
 	level.put_timed_out_zombies_back_in_queue = true;
 	level.use_alternate_poi_positioning = true;
+	SetDvar( "zombie_pause", "0" );		//zombie pause was being innit to 1 instead
+	level.apocalypse=GetDvarInt("zombie_apocalypse");
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -3760,7 +3762,7 @@ round_spawning()
 			wait 1;
 		}
 
-		// added ability to pause zombie spawning
+		// Reimagined-Expanded added ability to pause zombie spawning
 		if ( !flag("spawn_zombies" ) )
 		{
 			flag_wait( "spawn_zombies" );
@@ -4134,46 +4136,59 @@ round_spawning_test()
 // }
 
 
-//	Allows the round to be paused.  Displays a countdown timer.
+//	Allows zombie spawning to be paused.  Displays a countdown timer.
 //
+
+check_zombie_pause() {
+		
+	if ( GetDvarInt("zombie_pause") > 0 && level.apocalypse==0 )
+	{
+		level.countdown_hud = create_counter_hud();
+		level.countdown_hud settext( "Paused" );
+		level.countdown_hud.color = ( 1, 1, 1 );
+		level.countdown_hud.alpha = 1;
+		level.countdown_hud FadeOverTime( 2.0 );
+
+		level.countdown_hud.horzAlign = "center";
+		level.countdown_hud.vertAlign = "middle";
+		level.countdown_hud.alignX = "center";
+		level.countdown_hud.alignY = "middle";
+		level.countdown_hud.y = -100;
+		level.countdown_hud.foreground = 1;
+		level.countdown_hud.fontscale = 16.0;
+		
+		players = get_players();
+	for(i=0;i<players.size;i++) {
+		players[i].ignoreme = true;
+	}
+			
+		while(GetDvarInt("zombie_pause") > 0) 
+		{
+			round_pause( 5 );
+		}
+		
+		players = get_players();
+		for(i=0;i<players.size;i++) {
+			players[i].ignoreme = false;
+		}	
+
+		level.countdown_hud settext("");
+		level.countdown_hud destroy_hud();
+	}
+}
+
 round_pause( delay )
 {
 	if ( !IsDefined( delay ) )
 	{
-		delay = 30;
-	}
-
-	level.countdown_hud = create_counter_hud();
-	level.countdown_hud SetValue( delay );
-	level.countdown_hud.color = ( 1, 1, 1 );
-	level.countdown_hud.alpha = 1;
-	level.countdown_hud FadeOverTime( 2.0 );
-	wait( 2.0 );
-
-	level.countdown_hud.color = ( 0.21, 0, 0 );
-	level.countdown_hud FadeOverTime( 3.0 );
-	wait(3);
-
-	while (delay >= 1)
-	{
-		wait (1);
-		delay--;
-		level.countdown_hud SetValue( delay );
-	}
-
-	// Zero!  Play end sound
-	players = GetPlayers();
-	for (i=0; i<players.size; i++ )
-	{
-		players[i] playlocalsound( "zmb_perks_packa_ready" );
-	}
-
-	level.countdown_hud FadeOverTime( 1.0 );
-	level.countdown_hud.color = (1,1,1);
-	level.countdown_hud.alpha = 0;
-	wait( 1.0 );
-
-	level.countdown_hud destroy_hud();
+		delay = 5;
+	}			
+		
+	while (delay >= 1) {
+			wait(1);
+			delay--;
+	}	
+	
 }
 
 
@@ -4752,8 +4767,7 @@ round_think()
 level.round_number = 20;
 	level.zombie_move_speed = 105;
 	level.zombie_vars["zombie_spawn_delay"] = .08;
-	level.zombie_ai_limit = 10;
-	SetDvar( "zombie_pause", "0" );		//zombie pause was being innit to 1 instead
+	level.zombie_ai_limit = 40;
 
 
 	for( ;; )
@@ -4785,14 +4799,8 @@ level.round_number = 20;
 		
 		//continually delays round start until turned off
 		//iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
-		if ( GetDvarInt("zombie_pause") > 0 )
-		{
-			while(GetDvarInt("zombie_pause") > 0) 
-			{
-				round_pause( 5 );
-			}
-			
-		}
+		//also in moon think function
+		check_zombie_pause();
 		
 
 		bbPrint( "zombie_rounds: round %d player_count %d", level.round_number, players.size );
