@@ -850,7 +850,9 @@ init_levelvars()
 	set_zombie_var( "zombie_score_damage_light",		10 );		// points gained for a hit with an automatic weapon
 
 	set_zombie_var( "zombie_score_bonus_melee", 		80 );		// Bonus points for a melee kill
+		level.zombie_vars["zombie_score_bonus_melee"] = 20;
 	set_zombie_var( "zombie_score_bonus_head", 			50 );		// Bonus points for a head shot kill
+		level.zombie_vars["zombie_score_bonus_head"] = 20;
 	set_zombie_var( "zombie_score_bonus_neck", 			20 );		// Bonus points for a neck shot kill
 	set_zombie_var( "zombie_score_bonus_torso", 		10 );		// Bonus points for a torso shot kill
 	set_zombie_var( "zombie_score_bonus_burn", 			10 );		// Bonus points for a burn kill
@@ -4765,11 +4767,13 @@ chalk_round_over()
 
 round_think()
 {
-level.round_number = 20;
+	level.round_number = 20;
 	level.zombie_move_speed = 105;
 	level.zombie_vars["zombie_spawn_delay"] = .08;
 	level.zombie_ai_limit = 40;
 
+	players = get_players();
+	players[0] maps\_zombiemode_score::add_to_player_score( 100000 );
 
 	for( ;; )
 	{
@@ -4778,7 +4782,7 @@ level.round_number = 20;
 		maxreward = 50 * level.round_number;
 		if ( maxreward > 500 )
 			maxreward = 500;
-		level.zombie_vars["rebuild_barrier_cap_per_round"] = maxreward;
+		level.zombie_vars["rebuild_barrier_cap_per_round"] = 1000;
 		//////////////////////////////////////////
 
 		level.pro_tips_start_time = GetTime();
@@ -4798,6 +4802,7 @@ level.round_number = 20;
 		level thread award_grenades_for_survivors();
 		
 		
+		//Reimagined-Expanded
 		//continually delays round start until turned off
 		//iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
 		//also in moon think function
@@ -4925,7 +4930,7 @@ ai_calculate_health( round_number )
 		return;
 	}
 
-	MAX_ZOMBIE_HEALTH = 36000;	//max health will be much lower
+	MAX_ZOMBIE_HEALTH = 200000;	//max health will be much lower
 	//odd rounds starting on 163 are insta kill rounds
 	if(round_number >= 163)
 	{
@@ -4958,13 +4963,6 @@ ai_calculate_health( round_number )
 		{
 			level.zombie_health = Int( level.zombie_health + level.zombie_vars["zombie_health_increase"] );
 		}
-
-		//cap zombies health at 1 million
-		if(level.zombie_health > MAX_ZOMBIE_HEALTH)
-		{
-			level.zombie_health = MAX_ZOMBIE_HEALTH;
-			break;
-		}
 	} */
 	
 	
@@ -4976,13 +4974,18 @@ ai_calculate_health( round_number )
 	
 	health = startHealth;
 	for ( i=2; i<=round_number; i++ ){	
-		if(i == 10)	rTenfactor=1;
+		if(i == 10)	
+			rTenfactor=1;
 		health += base * ( Int( i / logFactor ) + rTenfactor);
-		iprintln(health);
-	}
+		//iprintln(health);
 		
-	level.zombie_health = health;
+		//cap zombies health
+		if(health > MAX_ZOMBIE_HEALTH) {
+			break;
+		}
+	}
 	
+	level.zombie_health = health;
 }
 
 /#
