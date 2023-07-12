@@ -12,3 +12,4 @@ log.txt
 logs.txt
 goals.txt
 *.sh
+stash/*
