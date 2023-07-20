@@ -850,9 +850,8 @@ init_levelvars()
 	set_zombie_var( "zombie_score_damage_light",		10 );		// points gained for a hit with an automatic weapon
 
 	set_zombie_var( "zombie_score_bonus_melee", 		80 );		// Bonus points for a melee kill
-		level.zombie_vars["zombie_score_bonus_melee"] = 20;
+		
 	set_zombie_var( "zombie_score_bonus_head", 			50 );		// Bonus points for a head shot kill
-		level.zombie_vars["zombie_score_bonus_head"] = 20;
 	set_zombie_var( "zombie_score_bonus_neck", 			20 );		// Bonus points for a neck shot kill
 	set_zombie_var( "zombie_score_bonus_torso", 		10 );		// Bonus points for a torso shot kill
 	set_zombie_var( "zombie_score_bonus_burn", 			10 );		// Bonus points for a burn kill
@@ -865,6 +864,13 @@ init_levelvars()
 	{
 		set_zombie_var( "zombie_timer_offset", 			280 );	// hud offsets
 	}
+
+	if(level.apocalypse == 1) {
+		level.zombie_vars["zombie_score_bonus_melee"] = 20;
+		//level.zombie_vars["zombie_score_bonus_head"] = 50;
+	}
+	
+
 }
 
 init_dvars()
