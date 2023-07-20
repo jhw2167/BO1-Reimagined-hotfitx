@@ -4972,7 +4972,7 @@ ai_calculate_health( round_number )
 	} */
 	
 	
-	//Reimagined-Expanded - logarythmic health scaling
+	//Reimagined-Expanded - logarithmic health scaling
 	base = 400;
 	rTenfactor = 0.5;
 	startHealth = 150;
@@ -4991,7 +4991,8 @@ ai_calculate_health( round_number )
 		}
 	}
 	
-	level.zombie_health = health;
+	iprintln("Current health:  " + health);
+	level.zombie_health = Int( health );
 }
 
 /#
@@ -6642,7 +6643,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	
 	
-	///iprintln( "Final dmg for bullet guns: " + final_damage );
+	//iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
 	//iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
@@ -6689,7 +6690,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 
 	// return unchanged damage
-	//iPrintln( final_damage );
+	iPrintln( final_damage );
 	return int( final_damage );
 }
 

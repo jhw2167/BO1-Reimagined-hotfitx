@@ -23,6 +23,8 @@ player_add_points( event, mod, hit_location ,is_dog)
 	player_points = 0;
 	team_points = 0;
 	multiplier = self get_points_multiplier();
+	
+
 
 	switch( event )
 	{
@@ -73,6 +75,8 @@ player_add_points( event, mod, hit_location ,is_dog)
 			break;
 
 		case "damage_light":
+		case "damage_ads":
+		case "damage":
 			//Reimagined-Expanded
 			if(level.apocalypse != 1) {
 				player_points = level.zombie_vars["zombie_score_damage_light"];
@@ -84,35 +88,8 @@ player_add_points( event, mod, hit_location ,is_dog)
 			} else {
 				player_points = 1;
 			}
-			break;
 
-		case "damage":
-			//Reimagined-Expanded
-			if(level.apocalypse != 1) {
-				player_points = level.zombie_vars["zombie_score_damage_normal"];
-			}
-			else if (level.round_number <= 10) {
-				player_points = 10;
-			} else if (level.round_number <= 20) {
-				player_points = 5;
-			} else {
-				player_points = 1;
-			}
-			break;
-
-		case "damage_ads":
-			//Reimagined-Expanded
-			if(level.apocalypse != 1) {
-				player_points = level.zombie_vars["zombie_score_damage_normal"];
-			}
-			else if (level.round_number <= 10) {
-				player_points = 10;
-			} else if (level.round_number <= 20) {
-				player_points = 5;
-			} else {
-				player_points = 1;
-			}
-			
+			multiplier *= self weapon_points_multiplier( self getcurrentweapon() );
 			break;
 
 		case "rebuild_board":
@@ -172,6 +149,30 @@ player_add_points( event, mod, hit_location ,is_dog)
 //	self thread play_killstreak_vo();
 }
 
+//Reimagined-Expanded
+weapon_points_multiplier( weapon ) 
+{
+	multiplier = 1;
+	//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
+	if( IsSubStr( weapon, "x2" ) ) {
+			weapon = GetSubStr(weapon, 0, weapon.size-3);
+	}
+
+	switch( weapon ) {
+		case "cz75_zm":
+		case "cz75dw_zm":
+		case "python_zm":
+		case "cz75_upgraded_zm":
+		case "cz75dw_upgraded_zm":
+		case "python_upgraded_zm":
+		multiplier = 2;	
+		break;
+
+	}
+	return multiplier;
+}
+
+
 get_points_multiplier()
 {
 	multiplier = self.zombie_vars["zombie_point_scalar"];
@@ -207,13 +208,16 @@ get_zombie_death_player_points()
 	
 	//Reimagined-Expanded, zombies increase exponentially, points decrease to compensate
 	//Players get a few extra points in later rounds
-	if (level.round_number < 10) {
-		player_points = 50;
-	} else if (level.round_number < 20) {
-		player_points = 80;
-	} else {
-		player_points = 100;
-	}
+	if(level.apocalypse == 1) {
+		if (level.round_number < 10) {
+			player_points = 50;
+		} else if (level.round_number < 20) {
+			player_points = 80;
+		} else {
+			player_points = 100;
+		}
+	} 
+	
 	
 	return( points );
 }
