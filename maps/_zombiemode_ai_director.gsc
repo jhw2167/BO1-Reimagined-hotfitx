@@ -609,7 +609,13 @@ director_reset_health( easy )
 	players = getplayers();
 	num_players = players.size;
 
-	self.max_damage_taken = level.director_max_damage_taken * num_players;
+	self.dmg_taken = 0;
+	if( self.times_died == undefined )
+		self.times_died = 0;
+	 else 
+		self.times_died++;
+
+	self.max_damage_taken = level.director_max_damage_taken * num_players * (self.times_died+1);
 	if ( is_true( easy ) )
 	{
 		self.max_damage_taken = level.director_max_damage_taken_easy * num_players;
@@ -673,8 +679,6 @@ director_watch_damage()
 {
 	self endon( "death" );
 	self endon( "humangun_leave" );
-
-	self.dmg_taken = 0;
 
 	//self thread director_display_damage();
 
