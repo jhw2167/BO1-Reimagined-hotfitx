@@ -10,6 +10,7 @@ hotfix_files/*
 zzz*
 log.txt
 logs.txt
+out.txt
 goals.txt
 *.sh
 stash/*
