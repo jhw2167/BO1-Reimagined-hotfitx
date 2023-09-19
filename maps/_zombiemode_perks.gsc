@@ -1741,8 +1741,8 @@ vending_trigger_think()
 			continue;
 		}
 
-		/*
-		if ( player.num_perks >= 4 && !is_true(player._retain_perks) )
+		
+		if ( player.num_perks >= level.max_perks && !is_true(player._retain_perks) )
 		{
 			//player iprintln( "Too many perks already to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
@@ -1750,7 +1750,7 @@ vending_trigger_think()
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "sigh" );
 			continue;
 		}
-		*/
+		
 
 		sound = "evt_bottle_dispense";
 		playsoundatposition(sound, self.origin);

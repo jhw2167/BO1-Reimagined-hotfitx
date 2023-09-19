@@ -4775,10 +4775,16 @@ chalk_round_over()
 
 round_think()
 {
+	//Reimagined-Expanded
 	level.round_number = 20;
 	level.zombie_move_speed = 105;
 	level.zombie_vars["zombie_spawn_delay"] = .08;
 	level.zombie_ai_limit = 40;
+
+	if(level.max_perks == undefined)
+	{
+		level.max_perks = 5;
+	}
 
 	players = get_players();
 	players[0] maps\_zombiemode_score::add_to_player_score( 100000 );

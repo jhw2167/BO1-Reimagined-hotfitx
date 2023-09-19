@@ -2834,6 +2834,7 @@ play_bonfiresale_audio()
 //******************************************************************************
 free_perk_powerup( item, player )
 {
+	level.max_perks++;
 	players = getplayers();
 	for ( i = 0; i < players.size; i++ )
 	{
