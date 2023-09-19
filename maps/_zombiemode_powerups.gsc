@@ -576,9 +576,9 @@ is_valid_powerup(powerup_name)
 //gets random powerup without effecting the current powerup cycle
 get_random_valid_powerup()
 {
-	iprintln("here");
+	//iprintln("here");
 	for(i=0; i<level.zombie_powerup_array.size; i++) {
-		iprintln(level.zombie_powerup_array[i].powerup_name);
+		//iprintln(level.zombie_powerup_array[i].powerup_name);
 	} 
 
 	powerups = array_randomize(level.zombie_powerup_array);
@@ -1848,10 +1848,9 @@ delete_on_bonfire_sale(temp_ent)
 
 start_carpenter( origin )
 {
-	iprintln("Starting carpenter");
+	//iprintln("Starting carpenter");
 
 	//level thread maps\_zombiemode_audio::do_announcer_playvox( level.devil_vox["powerup"]["carpenter"] );
-	carpenter_speed_down();
 	window_boards = getstructarray( "exterior_goal", "targetname" );
 	total = level.exterior_goals.size;
 
@@ -1899,7 +1898,6 @@ start_carpenter( origin )
 	players = get_players();
 	for(i = 0; i < players.size; i++)
 	{
-		iprintln("Calling players points");
 		players[i] maps\_zombiemode_score::player_add_points( "carpenter_powerup", 200 );
 	}
 
@@ -3594,6 +3592,7 @@ print_powerup_drop( powerup, type )
 start_carpenter_new( origin )
 {
 
+	carpenter_speed_down();
 	window_boards = getstructarray( "exterior_goal", "targetname" );
 
 	//COLLIN
