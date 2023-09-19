@@ -65,7 +65,7 @@ init()
 	thread setup_firesale_audio();
 	thread setup_bonfiresale_audio();
 
-	level.use_new_carpenter_func = maps\_zombiemode_powerups::start_carpenter_new;
+	//level.use_new_carpenter_func = maps\_zombiemode_powerups::start_carpenter_new;
 	level.board_repair_distance_squared = 750*750;
 
 	level.powerup_chance_kills = 0;
@@ -82,7 +82,7 @@ init()
 	level.last_powerup = false;
 	level.powerup_overrides = [];
 
-	level thread remove_carpenter();
+	//level thread remove_carpenter();
 	level thread add_powerup_later("fire_sale");
 	level thread add_powerup_later("minigun");
 }
@@ -108,11 +108,8 @@ init_powerups()
 	add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
 	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
 	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-
-	/*if( !level.mutators["mutator_noBoards"] )
-	{
-		add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-	}*/
+	add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	
 
 	//GZheng - Temp VO
 	//add the correct VO for firesale in the 3rd parameter of this function.
@@ -156,9 +153,9 @@ init_powerups()
 	// empty clip
 	add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
-	// grief powerups
-	add_zombie_powerup( "meat", GetWeaponModel("meat_zm"), &"REIMAGINED_CLIP_UNLOAD", true, false, false );
-	add_zombie_powerup( "upgrade_weapon", "zombie_pickup_bonfire", &"REIMAGINED_CLIP_UNLOAD", true, false, false );
+	// grief powerups - reimagined expanded
+	//add_zombie_powerup( "meat", GetWeaponModel("meat_zm"), &"REIMAGINED_CLIP_UNLOAD", true, false, false );
+	//add_zombie_powerup( "upgrade_weapon", "zombie_pickup_bonfire", &"REIMAGINED_CLIP_UNLOAD", true, false, false );
 
 	// Randomize the order
 	randomize_powerups();
@@ -444,10 +441,10 @@ get_next_powerup()
 {
 	powerup = level.zombie_powerup_array[ level.zombie_powerup_index ];
 
-	/*for(i=level.zombie_powerup_index;i<level.zombie_powerup_array.size;i++)
+	for(i=level.zombie_powerup_index;i<level.zombie_powerup_array.size;i++)
 	{
-		iprintln(level.zombie_powerup_array[i]);
-	}*/
+		//iprintln(level.zombie_powerup_array[i]);
+	}
 
 	while(1)
 	{
@@ -518,7 +515,7 @@ is_valid_powerup(powerup_name)
 	// Carpenter needs 5 destroyed windows
 	if( powerup_name == "carpenter" ) //&& get_num_window_destroyed() < 5
 	{
-		return false;
+		return true;
 	}
 	// Don't bring up fire_sale if the box hasn't moved
 	else if( powerup_name == "fire_sale" &&( level.chest_moves < 1 ) ) //level.zombie_vars["zombie_powerup_fire_sale_on"] == true ||
@@ -570,7 +567,7 @@ is_valid_powerup(powerup_name)
 	}
 	else if( powerup_name == "empty_clip" )					// never drops with regular powerups
 	{
-		return false;
+		return true;
 	}
 	
 	return true;
@@ -579,6 +576,11 @@ is_valid_powerup(powerup_name)
 //gets random powerup without effecting the current powerup cycle
 get_random_valid_powerup()
 {
+	iprintln("here");
+	for(i=0; i<level.zombie_powerup_array.size; i++) {
+		iprintln(level.zombie_powerup_array[i].powerup_name);
+	} 
+
 	powerups = array_randomize(level.zombie_powerup_array);
 	i = 0;
 	powerup = powerups[i];
@@ -762,6 +764,7 @@ powerup_drop(drop_point, player, zombie)
 	{
 		return;
 	}
+	//iprintln("in drop"); 
 
 	type = "";
 	powerup_override = undefined;
@@ -780,13 +783,13 @@ powerup_drop(drop_point, player, zombie)
 		}
 	}
 
-	if( type != "override" && level.powerup_drop_count >= level.zombie_vars["zombie_powerup_drop_max_per_round"] )
+	/* if( type != "override" && level.powerup_drop_count >= level.zombie_vars["zombie_powerup_drop_max_per_round"] )
 	{
 		/#
 		println( "^3POWERUP DROP EXCEEDED THE MAX PER ROUND!" );
 		#/
 		return;
-	}
+	} */
 
 	if( !isDefined(level.zombie_include_powerups) || level.zombie_include_powerups.size == 0 )
 	{
@@ -796,7 +799,8 @@ powerup_drop(drop_point, player, zombie)
 	// some guys randomly drop, but most of the time they check for the drop flag
 	rand_drop = RandomFloat(100);
 
-	if(type != "override")
+	//Reimagined-Expanded
+	if(type != "override" && level.round_number <= 15)
 	{
 		if(level.zombie_vars["zombie_drop_item"])
 		{
@@ -811,6 +815,18 @@ powerup_drop(drop_point, player, zombie)
 			incremenet_powerup_chance();
 			return;
 		}
+	} else if(type != "override")
+	{
+		//Reimagined expanded EV(X)=3 drops / round
+		dynamic_prob = (3 / level.zombie_round_total) * 100;
+		//iprintln("total: " + level.zombie_round_total);
+		//iprintln("Dynamic prob: " + dynamic_prob + " rand_drop: " + rand_drop);
+		if(rand_drop <= dynamic_prob) {
+			type = "random";
+		} else {
+			return;
+		}
+			
 	}
 
 	// This needs to go above the network_safe_spawn because that has a wait.
@@ -1542,15 +1558,8 @@ powerup_grab()
 						players[i] thread powerup_vo("insta_kill");
 						break;
 
-					case "carpenter":
-						if(isDefined(level.use_new_carpenter_func))
-						{
-							level thread [[level.use_new_carpenter_func]](self.origin);
-						}
-						else
-						{
-							level thread start_carpenter( self.origin );
-						}
+					case "carpenter": //reimagined-expanded
+						level thread start_carpenter_new( self.origin );
 						players[i] thread powerup_vo("carpenter");
 						break;
 
@@ -1839,8 +1848,10 @@ delete_on_bonfire_sale(temp_ent)
 
 start_carpenter( origin )
 {
+	iprintln("Starting carpenter");
 
 	//level thread maps\_zombiemode_audio::do_announcer_playvox( level.devil_vox["powerup"]["carpenter"] );
+	carpenter_speed_down();
 	window_boards = getstructarray( "exterior_goal", "targetname" );
 	total = level.exterior_goals.size;
 
@@ -1888,6 +1899,7 @@ start_carpenter( origin )
 	players = get_players();
 	for(i = 0; i < players.size; i++)
 	{
+		iprintln("Calling players points");
 		players[i] maps\_zombiemode_score::player_add_points( "carpenter_powerup", 200 );
 	}
 
@@ -3729,11 +3741,6 @@ repair_far_boards(barriers)
 	}
 }
 
-remove_carpenter()
-{
-	level.zombie_powerup_array = array_remove (level.zombie_powerup_array, "carpenter");
-}
-
 powerup_weapon_trigger_cleanup(trigger)
 {
 	self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
@@ -4363,4 +4370,34 @@ upgrade_weapon_powerup( drop_item, player )
 	}
 
 	player maps\_zombiemode_grief::update_gungame_weapon(false, true);
+}
+
+
+//Reimagined-Expanded
+carpenter_speed_down() 
+{
+
+	zombies = GetAiSpeciesArray( "axis", "all" );
+	for(i=0;i<zombies.size;i++) 
+	{
+		var = randomintrange(1, 4);
+		if( zombies[i].has_legs == true) 
+		{
+			if( zombies[i].zombie_move_speed == "sprint" )
+			{
+				zombies[i] set_run_anim( "run" + var );
+				zombies[i].run_combatanim = level.scr_anim[zombies[i].animname]["run" + var];
+
+			} else if ( zombies[i].zombie_move_speed == "run" ) 
+			{
+				zombies[i] set_run_anim( "walk" + var );
+				zombies[i].run_combatanim = level.scr_anim[zombies[i].animname]["walk" + var];
+			}
+
+		}
+			
+			
+	}
+	
+	
 }

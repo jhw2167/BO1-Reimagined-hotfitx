@@ -1213,7 +1213,7 @@ _powerup_Randomize(monkey)
 	self endon("stop_randomize");
 	monkey endon("remove");
 
-	powerup_cycle = array("nuke", "double_points", "insta_kill");
+	powerup_cycle = array("nuke", "double_points", "insta_kill", "carpenter");
 
 	if(level.chest_moves >= 1)
 	{

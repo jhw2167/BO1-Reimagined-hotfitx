@@ -3979,6 +3979,8 @@ ai_calculate_amount()
 		level thread [[ level.zombie_total_set_func ]]();
 	}
 
+	level.zombie_round_total=level.zombie_total;
+
 	/*max = level.zombie_vars["zombie_max_ai"];
 
 	multiplier = level.round_number / 5;
@@ -4991,7 +4993,7 @@ ai_calculate_health( round_number )
 		}
 	}
 	
-	iprintln("Current health:  " + health);
+	//iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
 }
 
@@ -6690,7 +6692,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 
 	// return unchanged damage
-	iPrintln( final_damage );
+	//iPrintln( final_damage );
 	return int( final_damage );
 }
 

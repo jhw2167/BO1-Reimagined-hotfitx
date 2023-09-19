@@ -477,8 +477,10 @@ include_powerups()
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
+	include_powerup( "empty_clip" ); 
 	include_powerup( "fire_sale" );
 	include_powerup( "free_perk" );
+	
 }
 
 add_powerups_after_round_1()
