@@ -48,6 +48,27 @@ main()
 
 	override_blocker_prices();
 
+	//Reimagined-Expanded
+	level.zombiemode_using_juggernaut_perk = true;
+	level.zombiemode_using_sleightofhand_perk = true;
+	level.zombiemode_using_doubletap_perk = true;
+	level.zombiemode_using_revive_perk = true;
+	level.zombiemode_using_divetonuke_perk = true;
+	/*
+	level.zombiemode_using_marathon_perk = true;
+	level.zombiemode_using_deadshot_perk = true;
+	level.zombiemode_using_additionalprimaryweapon_perk = true;
+	level.zombiemode_using_chugabud_perk = true;
+	level.zombiemode_using_electriccherry_perk = true;
+	level.zombiemode_using_vulture_perk = true;
+	level.zombiemode_using_widowswine_perk = true;
+	level.zombiemode_using_bandolier_perk = true;
+	level.zombiemode_using_timeslip_perk = true;
+	level.zombiemode_using_pack_a_punch = true;
+	*/
+	maps\zombie_pentagon_perk_machines::init();
+
+
 	// DO ACTUAL ZOMBIEMODE INIT
 	maps\_zombiemode::main();
 

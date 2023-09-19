@@ -1305,6 +1305,14 @@ turn_jugger_on()
 
 	level waittill("juggernog_on");
 
+	//Reimagined-Expanded
+	level notify("divetonuke_on");
+	level notify("marathon_on");
+	level notify("doubletap_on");
+	level notify("deadshot_on");
+	level notify("additionalprimaryweapon_on");
+
+
 	for( i = 0; i < machine.size; i++ )
 	{
 		machine[i] setmodel("zombie_vending_jugg_on");
@@ -1354,8 +1362,11 @@ turn_marathon_on()
 //
 turn_divetonuke_on()
 {
+	wait(10);
+	iprintln("turn_divetonuke_on");
 	machine = getentarray("vending_divetonuke", "targetname");
 	level waittill("divetonuke_on");
+	iprintln("PROCEEDING turn_divetonuke_on");
 
 	for( i = 0; i < machine.size; i++ )
 	{

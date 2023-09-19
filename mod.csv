@@ -68,6 +68,7 @@ rawfile,maps/zombie_pentagon_traps.gsc
 rawfile,maps/zombie_pentagon_teleporter.gsc
 rawfile,maps/zombie_pentagon_elevators.gsc
 rawfile,maps/zombie_pentagon_magic_box.gsc
+rawfile,maps/zombie_pentagon_perk_machines.gsc;
 
 //ASCENSION
 rawfile,maps/_zombiemode_ai_monkey.gsc
@@ -372,6 +373,7 @@ xmodel,zombie_3rd_perk_bottle_nuke
 xmodel,zombie_3rd_perk_bottle_ads
 xmodel,zombie_3rd_perk_bottle_three_gun
 xmodel,zombie_vending_doubletap
+xmodel,zombie_vending_nuke
 xmodel,bo2_c_zom_hazmat_viewhands
 xmodel,bo2_c_zom_suit_viewhands
 xmodel,bo2_c_zom_player_cdc_fb
