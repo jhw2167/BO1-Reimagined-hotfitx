@@ -354,6 +354,16 @@ material,terrain_scorch_grass
 material,terrain_scorch_sand
 material,terrain_scorch_mud
 
+material,mtl_zom_vending_nuke
+material,mtl_zom_vending_nuke_on
+material,mtl_zom_vending_nuke_off
+material,mtl_zombie_vending_nuke
+material,mtl_zombie_vending_nuke_on
+material,mtl_zombie_vending_marathon
+material,mtl_zombie_vending_marathon_on
+material,mtl_zombie_vending_ads
+material,mtl_zombie_vending_ads_on
+material,mtl_zombie_vending_ads_logo_on
 
 //XMODELS
 xmodel,zombie_perk_bottle_jugg
@@ -374,6 +384,11 @@ xmodel,zombie_3rd_perk_bottle_ads
 xmodel,zombie_3rd_perk_bottle_three_gun
 xmodel,zombie_vending_doubletap
 xmodel,zombie_vending_nuke
+xmodel,zombie_vending_nuke_on
+xmodel,zombie_vending_marathon
+xmodel,zombie_vending_marathon_on
+xmodel,zombie_vending_ads
+xmodel,zombie_vending_ads_on
 xmodel,bo2_c_zom_hazmat_viewhands
 xmodel,bo2_c_zom_suit_viewhands
 xmodel,bo2_c_zom_player_cdc_fb

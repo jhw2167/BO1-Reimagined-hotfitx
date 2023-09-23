@@ -54,9 +54,10 @@ main()
 	level.zombiemode_using_doubletap_perk = true;
 	level.zombiemode_using_revive_perk = true;
 	level.zombiemode_using_divetonuke_perk = true;
-	/*
 	level.zombiemode_using_marathon_perk = true;
 	level.zombiemode_using_deadshot_perk = true;
+	
+	/*
 	level.zombiemode_using_additionalprimaryweapon_perk = true;
 	level.zombiemode_using_chugabud_perk = true;
 	level.zombiemode_using_electriccherry_perk = true;
