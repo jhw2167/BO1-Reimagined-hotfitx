@@ -107,6 +107,10 @@ init()
 	{
 		[[level.quantum_bomb_register_result_func]]( "give_nearest_perk", ::quantum_bomb_give_nearest_perk_result, 100, ::quantum_bomb_give_nearest_perk_validation );
 	}
+
+	//Reimagined-Expanded
+	include_weapon("zombie_perk_bottle_jugg", false);
+	PreCacheItem( "zombie_perk_bottle_jugg" );
 }
 
 place_doubletap_machine()
@@ -1354,6 +1358,7 @@ turn_marathon_on()
 		machine[i] vibrate((0,-100,0), 0.3, 0.4, 3);
 		machine[i] playsound("zmb_perks_power_on");
 		machine[i] thread perk_fx( "marathon_light" );
+		machine[i] thread perk_fx( "doubletap_light" );
 	}
 	level notify( "specialty_endurance_power_on" );
 }
@@ -2515,53 +2520,69 @@ perk_give_bottle_begin( perk )
 	}
 
 	gun = self GetCurrentWeapon();
-	weapon = "";
+	iprintln( "perk: " + perk );
 
+	weapon = "";
+	model_index = 0;
 	switch( perk )
 	{
-	case " _upgrade":
-	case "specialty_armorvest":
-		weapon = "zombie_perk_bottle_jugg";
-		break;
+		case "specialty_armorvest":	//jugg
+			model_index = 0;
+			break;
 
-	case "specialty_quickrevive_upgrade":
-	case "specialty_quickrevive":
-		weapon = "zombie_perk_bottle_revive";
-		break;
+		case "specialty_quickrevive":	//revive
+			model_index = 1;
+			break;
 
-	case "specialty_fastreload_upgrade":
-	case "specialty_fastreload":
-		weapon = "zombie_perk_bottle_sleight";
-		break;
+		case "specialty_fastreload":	//speed
+			model_index = 2;
+			break;
 
-	case "specialty_rof_upgrade":
-	case "specialty_rof":
-		weapon = "zombie_perk_bottle_doubletap";
-		break;
+		case "specialty_rof":		//dbtap
+			model_index = 3;
+			break;
 
-	case "specialty_endurance_upgrade":
-	case "specialty_endurance":
-		weapon = "zombie_perk_bottle_marathon";
-		break;
+		case "specialty_longersprint":	//stamina, marathon
+			model_index = 4;
+			break;
 
-	case "specialty_flakjacket_upgrade":
-	case "specialty_flakjacket":
-		weapon = "zombie_perk_bottle_nuke";
-		break;
+		case "specialty_flakjacket":	//phd
+			model_index = 5;
+			break;
 
-	case "specialty_deadshot_upgrade":
-	case "specialty_deadshot":
-		weapon = "zombie_perk_bottle_deadshot";
-		break;
+		case "specialty_deadshot":	//deadshot
+			model_index = 6;
+			break;
 
-	case "specialty_additionalprimaryweapon_upgrade":
-	case "specialty_additionalprimaryweapon":
-		weapon = "zombie_perk_bottle_additionalprimaryweapon";
-		break;
+		case "specialty_additionalprimaryweapon":	//mule kick
+			model_index = 7;
+			break;
+
+		case "specialty_bulletaccuracy":	//
+			model_index = 10;
+			break;
+
+		case "specialty_bulletdamage":
+			model_index = 8;
+			break;
+
+		case "specialty_altmelee":
+			model_index = 11;
+			break;
+
+		case "specialty_extraammo":
+			model_index = 9;
+			break;
 	}
 
-	self GiveWeapon( weapon );
-	self SwitchToWeapon( weapon );
+	
+
+	self GiveWeapon( "zombie_perk_bottle_jugg", model_index );
+	self SwitchToWeapon( "zombie_perk_bottle_jugg" );
+
+	//iprintln( "perk weapon: " + weapon );
+	//self GiveWeapon( weapon );
+	//self SwitchToWeapon( weapon );
 
 	return gun;
 }
@@ -2635,6 +2656,7 @@ perk_give_bottle_end( gun, perk )
 	if ( self maps\_laststand::player_is_in_laststand() || is_true( self.intermission ) )
 	{
 		self TakeWeapon(weapon);
+		self TakeWeapon("zombie_perk_bottle");
 		return;
 	}
 
