@@ -500,6 +500,8 @@ init_strings()
 	PrecacheString( &"REIMAGINED_WEAPONCOSTAMMO_UPGRADE_HACKED" );
 	PrecacheString( &"REIMAGINED_MYSTERY_BOX" );
 
+	PrecacheString( &"REIMAGINED_PERK_BABYJUGG" );
+
 	switch(ToLower(GetDvar(#"mapname")))
 	{
 		case "zombie_theater":

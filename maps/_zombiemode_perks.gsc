@@ -4,7 +4,28 @@
 
 init()
 {
-	level thread place_additionalprimaryweapon_machine();
+
+	//Reimagined-Expanded
+	level.zombiemode_using_juggernaut_perk = true;
+	level.zombiemode_using_sleightofhand_perk = true;
+	level.zombiemode_using_doubletap_perk = true;
+	level.zombiemode_using_revive_perk = true;
+	level.zombiemode_using_divetonuke_perk = true;
+	level.zombiemode_using_marathon_perk = true;
+	level.zombiemode_using_deadshot_perk = true;
+	level.zombiemode_using_additionalprimaryweapon_perk = true;
+	level.zombiemode_using_electriccherry_perk = true;
+	level.zombiemode_using_vulture_perk = true;
+	
+	/*
+	level.zombiemode_using_chugabud_perk = true;
+	level.zombiemode_using_widowswine_perk = true;
+	level.zombiemode_using_bandolier_perk = true;
+	level.zombiemode_using_timeslip_perk = true;
+	level.zombiemode_using_pack_a_punch = true;
+	*/
+
+	//level thread place_additionalprimaryweapon_machine();
 	level thread place_doubletap_machine();
 
 	// Perks-a-cola vending machine use triggers
@@ -300,7 +321,6 @@ default_vending_precaching()
 {
 
 	PrecacheItem( "zombie_perk_bottle" );
-	PrecacheString( &"REIMAGINED_PERK_BABYJUGG" );
 
 	if( is_true( level.zombiemode_using_juggernaut_perk ) )
 	{
@@ -1313,8 +1333,8 @@ turn_jugger_on()
 		machine[i] playsound("zmb_perks_power_on");
 		machine[i] thread perk_fx( "jugger_light" );
 	}
-	level notify( "specialty_armorvest_power_on" );
 
+	level notify( "specialty_armorvest_power_on" );
 }
 
 // Double-Tap
@@ -1331,6 +1351,7 @@ turn_doubletap_on()
 		machine[i] playsound("zmb_perks_power_on");
 		machine[i] thread perk_fx( "doubletap_light" );
 	}
+
 	level notify( "specialty_rof_power_on" );
 }
 
@@ -1493,18 +1514,12 @@ bonus_perk_think()
 {
 	//flag_wait( "all_players_connected" );
 	wait(10);
-	entBabyJugg = GetEntArray("zombie_babyjugg", "targetname");
+	entBabyJugg = GetEnt("zombie_vending_babyjugg", "targetname");
 	perk = entBabyJugg.script_noteworthy;
 	iprintln("PRINT BABYJUGG");
 	iprintln("perk = " + perk);
 
-	array_thread( entBabyJugg , ::set_array_hints );
-}
-
-set_array_hints()
-{
-	self.cost=1500;
-	self SetHintString( &"REIMAGINED_PERK_BABYJUGG", self.cost );
+	//entBabyJugg SetHintString( "Hold ^3[{+activate}]^7 to buy Baby Jugg [Cost: &&1]" , self.cost );
 }
 
 vending_trigger_think()
@@ -1514,6 +1529,89 @@ vending_trigger_think()
 	if(self.script_noteworthy == "specialty_longersprint")
 	{
 		self.script_noteworthy = "specialty_endurance";
+	}
+
+	//self thread turn_cola_off();
+	perk = self.script_noteworthy;
+	solo = false;
+
+	//Reimagined-Expanded babyjugg!
+	if ( IsDefined(perk) && perk == "specialty_babyjugg" )
+	{
+		cost = 1500;
+		self SetHintString(&"REIMAGINED_PERK_QUICKREVIVE", cost );
+
+		for(;;)
+		{
+			self waittill( "trigger", player );
+
+			index = maps\_zombiemode_weapons::get_player_index(player);
+
+			if (player maps\_laststand::player_is_in_laststand() || is_true( player.intermission ) )
+			{
+				continue;
+			}
+
+			if(player in_revive_trigger())
+			{
+				continue;
+			}
+
+			if( player isThrowingGrenade() )
+			{
+				wait( 0.1 );
+				continue;
+			}
+
+			if( player isSwitchingWeapons() )
+			{
+				wait(0.1);
+				continue;
+			}
+
+			if( player is_drinking() )
+			{
+				wait( 0.1 );
+				continue;
+			}
+
+			if ( player.maxHealth > 100 )
+			{
+				wait( 1 );
+				continue;
+			}
+
+			if ( player.score < cost )
+			{
+				//player iprintln( "Not enough points to buy Perk: " + perk );
+				wait(0.1);
+				self playsound("evt_perk_deny");
+				continue;
+			}
+
+			sound = "evt_bottle_dispense";
+			playsoundatposition(sound, self.origin);
+			player maps\_zombiemode_score::minus_to_player_score( cost );
+
+			player playLocalSound("chr_breathing_hurt");
+			self thread event_heart_beat( "panicked" , 1 );
+
+			level notify ("player_pain");
+			//self playloopsound("NULL");
+			//self thread playerSndHearbeatOneShots
+
+			self waittill( "end_heartbeat_loop" );
+			//self stoploopsound (1);
+
+			wait (.2);
+			self thread event_heart_beat( "none" , 0 );
+
+			player.preMaxHealth += 40;
+			player SetMaxHealth( player.preMaxHealth );
+
+		}
+
+		return;
 	}
 
 	if(level.script != "zombie_cod5_sumpf")
@@ -1528,10 +1626,7 @@ vending_trigger_think()
 		}	
 	}
 
-	//self thread turn_cola_off();
-	perk = self.script_noteworthy;
-	solo = false;
-	flag_init( "_start_zm_pistol_rank" );
+	flag_init( "_start_zm_pistol_rank" );	
 
 	if ( IsDefined(perk) &&
 		(perk == "specialty_quickrevive" || perk == "specialty_quickrevive_upgrade") )
@@ -1555,7 +1650,7 @@ vending_trigger_think()
 
 	if ( !solo )
 	{
-		self SetHintString( &"ZOMBIE_PERK_QUICKREVIVE" );
+		self SetHintString( &"ZOMBIE_NEED_POWER" );
 	}
 
 	self SetCursorHint( "HINT_NOICON" );

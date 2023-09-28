@@ -3,14 +3,15 @@
 
 init()
 {
+	place_babyjug();
+
 	place_divetonuke();
 	place_deadshot();
 	place_marathon();
-	place_babyjug()
-	//place_martyrdom();
+	place_martyrdom();
 	//place_extraammo();
 	//place_chugabud();
-	//place_mulekick();
+	place_mulekick();
 	place_vulture();	
 }
 
@@ -23,8 +24,8 @@ place_babyjug()
 	bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
 
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
-	perk_trigger.targetname = "zombie_babyjugg";
-	perk_trigger.target = "zombie_perk_babyjugg";
+	perk_trigger.targetname = "zombie_vending_babyjugg";
+	perk_trigger.target = "vending_babyjugg";
 	perk_trigger.script_noteworthy = "specialty_babyjugg";
 
 }
