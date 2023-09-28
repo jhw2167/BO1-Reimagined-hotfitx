@@ -307,6 +307,9 @@ weapon,sp/ak47_ft_upgraded_zm_x2
 weapon,sp/stoner63_upgraded_zm_x2
 weapon,sp/psg1_upgraded_zm_x2
 
+//Perks
+weapon,sp/zombie_perk_bottle
+
 
 //SOUNDS
 sound,reimagined
@@ -354,6 +357,33 @@ material,terrain_scorch_dirt
 material,terrain_scorch_grass
 material,terrain_scorch_sand
 material,terrain_scorch_mud
+
+
+//Material Properties
+material,specialty_juggernaut_zombies
+material,specialty_juggernaut_zombies_pro
+material,specialty_quickrevive_zombies
+material,specialty_quickrevive_zombies_pro
+material,specialty_fastreload_zombies
+material,specialty_fastreload_zombies_pro
+material,specialty_doubletap_zombies
+material,specialty_doubletap_zombies_pro
+material,specialty_marathon_zombies
+material,specialty_marathon_zombies_pro
+material,specialty_divetonuke_zombies_pro
+material,specialty_divetonuke_zombies
+material,specialty_deadshot_zombies
+material,specialty_deadshot_zombies_pro
+material,specialty_mulekick_zombies
+material,specialty_mulekick_zombies_pro
+material,specialty_cherry_zombies
+material,specialty_cherry_zombies_pro
+material,specialty_vulture_zombies
+material,specialty_vulture_zombies_glow
+material,specialty_vulture_zombies_glow_pro
+material,specialty_vulture_zombies_pro
+material,specialty_widowswine_zombies
+material,specialty_widowswine_zombies_pro
 
 //Perk Materials
 material,bo2_mtl_p6_zm_vending_vultureaid
@@ -547,6 +577,15 @@ xanim,ai_zombie_tesla_death_e
 xanim,viewmodel_ppsh_empty_sprint_loop
 xanim,ai_zombie_thundergun_hit_upontoback
 xanim,ai_zombie_thundergun_getup_b
+
+xanim,p_zombie_perkacola_drink
+xanim,viewmodel_zombie_perksacola_drink
+xanim,viewmodel_zombie_perksacola_idle
+xanim,viewmodel_zombie_perksacola_lower
+xanim,vm_perk_bottle_t7_ads_down
+xanim,vm_perk_bottle_t7_ads_up
+xanim,vm_perk_bottle_t7_drink
+xanim,vm_perk_bottle_t7_idle
 
 
 //PLAYER ANIMS

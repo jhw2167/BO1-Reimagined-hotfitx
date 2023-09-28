@@ -6120,6 +6120,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 	}
 
+	iprintln("Origin: ( " + attacker.origin.x + " " + attacker.origin.y + " " + attacker.origin.z + " )");
+	iprintln("Origin: " + attacker.origin);
+
 	// damage scaling for explosive weapons
 	// consistent damage and scales for zombies farther away from explosion better
 	if(meansofdeath == "MOD_GRENADE" || meansofdeath == "MOD_GRENADE_SPLASH" || meansofdeath == "MOD_PROJECTILE" || meansofdeath == "MOD_PROJECTILE_SPLASH")

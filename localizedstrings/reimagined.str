@@ -48,6 +48,9 @@ LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Bouncing Betty [Cost: 1000]"
 REFERENCE          	PERK_QUICKREVIVE
 LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to buy Quick Revive [Cost: &&1]"
 
+REFERENCE          	PERK_BABYJUGG
+LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to buy Baby Jugg [Cost: &&1]"
+
 REFERENCE          	DOOR_CLOSED
 LANG_ENGLISH       	"The door must be opened first"
 

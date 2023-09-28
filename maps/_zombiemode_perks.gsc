@@ -35,10 +35,11 @@ init()
 
 	if ( vending_weapon_upgrade_trigger.size >= 1 )
 	{
-		array_thread( vending_weapon_upgrade_trigger, ::vending_weapon_upgrade );;
+		array_thread( vending_weapon_upgrade_trigger, ::vending_weapon_upgrade );
 	}
 
 	//Perks machine
+	default_vending_precaching();
 	if( !isDefined( level.custom_vending_precaching ) )
 	{
 		level.custom_vending_precaching = maps\_zombiemode_perks::default_vending_precaching;
@@ -65,53 +66,18 @@ init()
 	array_thread( vending_triggers, ::vending_trigger_think );
 	array_thread( vending_triggers, ::electric_perks_dialog );
 	//array_thread( vending_triggers, ::bump_trigger_think );
-
-	level thread turn_doubletap_on();
-	if ( is_true( level.zombiemode_using_marathon_perk ) )
-	{
-		level thread turn_marathon_on();
-	}
-	if ( is_true( level.zombiemode_using_divetonuke_perk ) )
-	{
-		level thread turn_divetonuke_on();
-
-		// set the behavior function
-		level.zombiemode_divetonuke_perk_func = ::divetonuke_explode;
-
-		// precache the effect
-		level._effect["divetonuke_groundhit"] = loadfx("maps/zombie/fx_zmb_phdflopper_exp");
-
-		// tweakable variables
-		set_zombie_var( "zombie_perk_divetonuke_radius", 300 ); // WW (01/12/2011): Issue 74726:DLC 2 - Zombies - Cosmodrome - PHD Flopper - Increase the radius on the explosion (Old: 150)
-		set_zombie_var( "zombie_perk_divetonuke_min_damage", 1000 );
-		set_zombie_var( "zombie_perk_divetonuke_max_damage", 5000 );
-	}
-	level thread turn_jugger_on();
-	level thread turn_revive_on();
-	level thread turn_sleight_on();
-
-	// WW (02-02-11): Deadshot perk
-	if( is_true( level.zombiemode_using_deadshot_perk ) )
-	{
-		level thread turn_deadshot_on();
-	}
-
-	if ( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
-	{
-		level thread turn_additionalprimaryweapon_on();
-	}
-
+	
 	level thread turn_PackAPunch_on();
 
 	if ( isdefined( level.quantum_bomb_register_result_func ) )
 	{
 		[[level.quantum_bomb_register_result_func]]( "give_nearest_perk", ::quantum_bomb_give_nearest_perk_result, 100, ::quantum_bomb_give_nearest_perk_validation );
 	}
-
-	//Reimagined-Expanded
-	include_weapon("zombie_perk_bottle_jugg", false);
-	PreCacheItem( "zombie_perk_bottle_jugg" );
+	
+	level thread bonus_perk_think();
 }
+
+
 
 place_doubletap_machine()
 {
@@ -332,115 +298,138 @@ remove_bump_trigger(perk)
 //	sound
 default_vending_precaching()
 {
-	PrecacheItem( "zombie_perk_bottle_doubletap" );
-	PrecacheItem( "zombie_perk_bottle_jugg" );
-	PrecacheItem( "zombie_perk_bottle_revive" );
-	PrecacheItem( "zombie_perk_bottle_sleight" );
-	PrecacheItem( "zombie_knuckle_crack" );
 
-	if ( is_true( level.zombiemode_using_marathon_perk ) )
+	PrecacheItem( "zombie_perk_bottle" );
+	PrecacheString( &"REIMAGINED_PERK_BABYJUGG" );
+
+	if( is_true( level.zombiemode_using_juggernaut_perk ) )
 	{
-		PrecacheItem( "zombie_perk_bottle_marathon" );
-		PrecacheShader( "specialty_marathon_zombies" );
+		PreCacheShader( "specialty_juggernaut_zombies" );
+		PreCacheModel( "zombie_vending_jugg" );
+		PreCacheModel( "zombie_vending_jugg_on" );
+		PreCacheString( &"ZOMBIE_PERK_JUGGERNAUT" );
+		level._effect[ "jugger_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
+		level thread turn_jugger_on();
 	}
-
-	if ( is_true( level.zombiemode_using_divetonuke_perk ) )
+	if( is_true( level.zombiemode_using_sleightofhand_perk ) )
 	{
-		PrecacheItem( "zombie_perk_bottle_nuke" );
-		PrecacheShader( "specialty_divetonuke_zombies" );
+		PreCacheShader( "specialty_fastreload_zombies" );
+		PreCacheModel( "zombie_vending_sleight" );
+		PreCacheModel( "zombie_vending_sleight_on" );
+		PreCacheString( &"ZOMBIE_PERK_FASTRELOAD" );
+		level._effect[ "sleight_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
+		level thread turn_sleight_on();
 	}
+	if( is_true( level.zombiemode_using_doubletap_perk ) )
+	{
+		PreCacheShader( "specialty_doubletap_zombies" );
+		PreCacheModel( "zombie_vending_doubletap" );
+		PreCacheModel( "zombie_vending_doubletap_on" );
+		PreCacheString( &"ZOMBIE_PERK_DOUBLETAP" );
+		level._effect[ "doubletap_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
+		level thread turn_doubletap_on();
+	}
+	if( is_true( level.zombiemode_using_revive_perk ) )
+	{
+		PreCacheShader( "specialty_quickrevive_zombies" );
+		PreCacheModel( "zombie_vending_revive" );
+		PreCacheModel( "zombie_vending_revive_on" );
+		PreCacheString( &"ZOMBIE_PERK_QUICKREVIVE" );
+		level._effect[ "revive_light" ] = LoadFX( "misc/fx_zombie_cola_revive_on" );
+		level._effect[ "revive_light_flicker" ] = LoadFX( "maps/zombie/fx_zmb_cola_revive_flicker" );
+		level thread turn_revive_on();
+	}
+	if( is_true( level.zombiemode_using_divetonuke_perk ) )
+	{
+		PreCacheShader( "specialty_divetonuke_zombies" );
+		PreCacheModel( "zombie_vending_nuke" );
+		PreCacheModel( "zombie_vending_nuke_on" );
+		PreCacheString( &"ZOMBIE_PERK_DIVETONUKE" );
+		level._effect[ "divetonuke_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 
+		set_zombie_var( "zombie_perk_divetonuke_radius", 300 ); // WW (01/12/2011): Issue 74726:DLC 2 - Zombies - Cosmodrome - PHD Flopper - Increase the radius on the explosion (Old: 150)
+		set_zombie_var( "zombie_perk_divetonuke_min_damage", 1000 );
+		set_zombie_var( "zombie_perk_divetonuke_max_damage", 5000 );
+
+		level thread turn_divetonuke_on();
+	}
+	if( is_true( level.zombiemode_using_marathon_perk ) )
+	{
+		PreCacheShader( "specialty_marathon_zombies" );
+		PreCacheModel( "zombie_vending_marathon" );
+		PreCacheModel( "zombie_vending_marathon_on" );
+		PreCacheString( &"ZOMBIE_PERK_MARATHON" );
+		level._effect[ "marathon_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
+		level thread turn_marathon_on();
+	}
 	if( is_true( level.zombiemode_using_deadshot_perk ) )
 	{
-		PreCacheItem( "zombie_perk_bottle_deadshot" );
-		PrecacheShader( "specialty_ads_zombies" );
+		PreCacheShader( "specialty_deadshot_zombies" );
+		PreCacheModel( "zombie_vending_ads" );
+		PreCacheModel( "zombie_vending_ads_on" );
+		PreCacheString( &"ZOMBIE_PERK_DEADSHOT" );
+		level._effect[ "deadshot_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
+		level thread turn_deadshot_on();
 	}
-
-	if ( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
+	if( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
 	{
-		PrecacheItem( "zombie_perk_bottle_additionalprimaryweapon" );
-		PrecacheShader( "specialty_extraprimaryweapon_zombies" );
+		PreCacheShader( "specialty_mulekick_zombies" );
+		PreCacheModel( "zombie_vending_three_gun" );
+		PreCacheModel( "zombie_vending_three_gun_on" );
+		PreCacheString( &"ZOMBIE_PERK_ADDITIONALWEAPONPERK" );
+		level._effect[ "additionalprimaryweapon_light" ] = LoadFX( "misc/fx_zombie_cola_arsenal_on" );
+		level thread turn_additionalprimaryweapon_on();
 	}
-
-	PrecacheShader( "specialty_juggernaut_zombies" );
-	PrecacheShader( "specialty_quickrevive_zombies" );
-	PrecacheShader( "specialty_fastreload_zombies" );
-	PrecacheShader( "specialty_doubletap_zombies" );
-	PrecacheShader( "specialty_juggernaut_zombies_pro" );
-	PrecacheShader( "specialty_quickrevive_zombies_pro" );
-	PrecacheShader( "specialty_fastreload_zombies_pro" );
+	if( is_true( level.zombiemode_using_chugabud_perk ) )
+	{
+		PreCacheShader( "specialty_chugabud_zombies" );
+		PreCacheModel( "p6_zm_vending_chugabud" );
+		PreCacheModel( "p6_zm_vending_chugabud_on" );
+		PreCacheString( &"ZOMBIE_PERK_CHUGABUD" );
+		level._effect[ "chugabud_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
+		//level thread turn_chugabud_on();
+	}
+	if( is_true( level.zombiemode_using_electriccherry_perk ) )
+	{
+		PreCacheShader( "specialty_cherry_zombies" );
+		PreCacheModel( "p6_zm_vending_electric_cherry" );
+		PreCacheModel( "p6_zm_vending_electric_cherry_on" );
+		PreCacheString( &"ZOMBIE_PERK_CHERRY" );
+		level._effect[ "electriccherry_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
+		//level thread turn_electriccherry_on();
+	}
+	if( is_true( level.zombiemode_using_vulture_perk ) )
+	{
+		PreCacheShader( "specialty_vulture_zombies" );
+		PreCacheModel( "p6_zm_vending_vultureaid" );
+		PreCacheModel( "p6_zm_vending_vultureaid_on" );
+		PreCacheString( &"ZOMBIE_PERK_VULTURE" );
+		level._effect[ "vulture_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
+		//level thread turn_vulture_on();
+	}
+	if( is_true( level.zombiemode_using_widowswine_perk ) )
+	{
+		PreCacheShader( "specialty_widowswine_zombies" );
+		PreCacheModel( "p7_zm_vending_widows_wine" );
+		PreCacheModel( "p7_zm_vending_widows_wine_on" );
+		PreCacheString( &"ZOMBIE_PERK_WIDOWS_WINE" );
+		level._effect[ "widow_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
+		//level thread turn_widowswine_on();
+	}
+	if( is_true( level.zombiemode_using_bandolier_perk ) )
+	{
+		PreCacheShader( "specialty_bandolier_zombies" );
+	}
+	if( is_true( level.zombiemode_using_timeslip_perk ) )
+	{
+		PreCacheShader( "specialty_timeslip_zombies" );
+	}
 
 	// Minimap icons
 	PrecacheShader( "minimap_icon_juggernog" );
 	PrecacheShader( "minimap_icon_revive" );
 	PrecacheShader( "minimap_icon_reload" );
 
-	if ( is_true( level.zombiemode_using_marathon_perk ) )
-	{
-		PrecacheModel("zombie_vending_marathon_on");
-	}
-	if ( is_true( level.zombiemode_using_divetonuke_perk ) )
-	{
-		PrecacheModel("zombie_vending_nuke_on");
-	}
-	if ( is_true( level.zombiemode_using_deadshot_perk ) )
-	{
-		PrecacheModel("zombie_vending_ads_on");
-	}
-	if ( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
-	{
-		PrecacheModel("zombie_vending_three_gun_on");
-	}
-	PreCacheModel("zombie_vending_jugg_on");
-	PrecacheModel("zombie_vending_revive_on");
-	PrecacheModel("zombie_vending_sleight_on");
-	PrecacheModel("zombie_vending_doubletap_on");
-	PrecacheModel("zombie_vending_packapunch_on");
-
-	PrecacheString( &"ZOMBIE_PERK_DOUBLETAP" );
-	if ( is_true( level.zombiemode_using_marathon_perk ) )
-	{
-		PrecacheString( &"ZOMBIE_PERK_MARATHON" );
-	}
-	if ( is_true( level.zombiemode_using_divetonuke_perk ) )
-	{
-		PrecacheString( &"ZOMBIE_PERK_DIVETONUKE" );
-	}
-	if ( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
-	{
-		PrecacheString( &"ZOMBIE_PERK_ADDITIONALWEAPONPERK" );
-	}
-	PrecacheString( &"ZOMBIE_PERK_JUGGERNAUT" );
-	//PrecacheString( &"ZOMBIE_PERK_QUICKREVIVE" );
-	PrecacheString( &"REIMAGINED_PERK_QUICKREVIVE" );
-	PrecacheString( &"ZOMBIE_PERK_FASTRELOAD" );
-	PrecacheString( &"REIMAGINED_PERK_PACKAPUNCH" );
-
-	level._effect["doubletap_light"]		= loadfx("misc/fx_zombie_cola_dtap_on");
-	if ( is_true( level.zombiemode_using_marathon_perk ) )
-	{
-		level._effect["marathon_light"]			= loadfx("maps/zombie/fx_zmb_cola_staminup_on");
-	}
-	if ( is_true( level.zombiemode_using_divetonuke_perk ) )
-	{
-		level._effect["divetonuke_light"]		= loadfx("misc/fx_zombie_cola_dtap_on");
-	}
-	if ( is_true( level.zombiemode_using_deadshot_perk ) )
-	{
-		level._effect["deadshot_light"]		= loadfx("misc/fx_zombie_cola_dtap_on");
-	}
-	if ( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
-	{
-		level._effect["additionalprimaryweapon_light"] = loadfx("misc/fx_zombie_cola_arsenal_on");
-	}
-	level._effect["jugger_light"]			= loadfx("misc/fx_zombie_cola_jugg_on");
-	level._effect["revive_light"]			= loadfx("misc/fx_zombie_cola_revive_on");
-	level._effect["sleight_light"]			= loadfx("misc/fx_zombie_cola_on");
-
-	level._effect["packapunch_fx"]			= loadfx("maps/zombie/fx_zombie_packapunch");
-
-	// solo revive flicker
-	level._effect["revive_light_flicker"] = loadfx("maps/zombie/fx_zmb_cola_revive_flicker");
 }
 
 third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk_machine, perk_trigger )
@@ -1368,10 +1357,8 @@ turn_marathon_on()
 turn_divetonuke_on()
 {
 	wait(10);
-	iprintln("turn_divetonuke_on");
 	machine = getentarray("vending_divetonuke", "targetname");
 	level waittill("divetonuke_on");
-	iprintln("PROCEEDING turn_divetonuke_on");
 
 	for( i = 0; i < machine.size; i++ )
 	{
@@ -1502,6 +1489,24 @@ electric_perks_dialog()
 	}
 }
 
+bonus_perk_think()
+{
+	//flag_wait( "all_players_connected" );
+	wait(10);
+	entBabyJugg = GetEntArray("zombie_babyjugg", "targetname");
+	perk = entBabyJugg.script_noteworthy;
+	iprintln("PRINT BABYJUGG");
+	iprintln("perk = " + perk);
+
+	array_thread( entBabyJugg , ::set_array_hints );
+}
+
+set_array_hints()
+{
+	self.cost=1500;
+	self SetHintString( &"REIMAGINED_PERK_BABYJUGG", self.cost );
+}
+
 vending_trigger_think()
 {
 	self endon("death");
@@ -1550,7 +1555,7 @@ vending_trigger_think()
 
 	if ( !solo )
 	{
-		self SetHintString( &"ZOMBIE_NEED_POWER" );
+		self SetHintString( &"ZOMBIE_PERK_QUICKREVIVE" );
 	}
 
 	self SetCursorHint( "HINT_NOICON" );
@@ -2337,58 +2342,72 @@ perk_hud_create( perk )
 
 	shader = "";
 
+	shader = "";
 	switch( perk )
 	{
-	case "specialty_armorvest_upgrade":
-		shader = "specialty_juggernaut_zombies_pro";
-		break;
-	case "specialty_armorvest":
-		shader = "specialty_juggernaut_zombies";
-		break;
+		case "specialty_armorvest":
+			shader = "specialty_juggernaut_zombies";
+			break;
 
-	case "specialty_quickrevive_upgrade":
-		shader = "specialty_quickrevive_zombies_pro";
-		break;
-	case "specialty_quickrevive":
-		shader = "specialty_quickrevive_zombies";
-		break;
+		case "specialty_quickrevive":
+			shader = "specialty_quickrevive_zombies";
+			break;
 
-	case "specialty_fastreload_upgrade":
-		shader = "specialty_fastreload_zombies_pro";
-		break;
-	case "specialty_fastreload":
-		shader = "specialty_fastreload_zombies";
-		break;
+		case "specialty_fastreload":
+			shader = "specialty_fastreload_zombies";
+			break;
 
-	case "specialty_rof_upgrade":
-	case "specialty_rof":
-		shader = "specialty_doubletap_zombies";
-		break;
+		case "specialty_rof":
+			shader = "specialty_doubletap_zombies";
+			break;
 
-	case "specialty_endurance_upgrade":
-	case "specialty_endurance":
-		shader = "specialty_marathon_zombies";
-		break;
+		case "specialty_longersprint":
+		case "specialty_endurance":
+			shader = "specialty_marathon_zombies";
+			break;
 
-	case "specialty_flakjacket_upgrade":
-	case "specialty_flakjacket":
-		shader = "specialty_divetonuke_zombies";
-		break;
+		case "specialty_flakjacket":
+			shader = "specialty_divetonuke_zombies";
+			break;
 
-	case "specialty_deadshot_upgrade":
-	case "specialty_deadshot":
-		shader = "specialty_ads_zombies";
-		break;
+		case "specialty_deadshot":
+			shader = "specialty_deadshot_zombies";
+			break;
 
-	case "specialty_additionalprimaryweapon_upgrade":
-	case "specialty_additionalprimaryweapon":
-		shader = "specialty_extraprimaryweapon_zombies";
-		break;
+		case "specialty_additionalprimaryweapon":
+			shader = "specialty_mulekick_zombies";
+			break;
 
-	default:
-		shader = "";
-		break;
+		case "specialty_bulletaccuracy":
+			shader = "specialty_chugabud_zombies";
+			break;
+
+		case "specialty_bulletdamage":
+			shader = "specialty_cherry_zombies";
+			break;
+
+		case "specialty_altmelee":
+			shader = "specialty_vulture_zombies";
+			break;
+
+		case "specialty_extraammo":
+			shader = "specialty_widowswine_zombies";
+			break;
+
+		case "specialty_stockpile":
+			shader = "specialty_bandolier_zombies";
+			break;			
+
+		case "specialty_scavanger":
+			shader = "specialty_timeslip_zombies";
+			break;
+			
+		default:
+			shader = "";
+			break;
 	}
+
+	iprintln("shader: " + shader);
 
 	hud = create_simple_hud( self );
 	hud.foreground = true;
@@ -2520,69 +2539,76 @@ perk_give_bottle_begin( perk )
 	}
 
 	gun = self GetCurrentWeapon();
-	iprintln( "perk: " + perk );
-
 	weapon = "";
-	model_index = 0;
+	modelIndex=0;
+
 	switch( perk )
 	{
-		case "specialty_armorvest":	//jugg
-			model_index = 0;
-			break;
+	case " _upgrade":
+	case "specialty_armorvest":
+		weapon = "zombie_perk_bottle_jugg";
+		modelIndex = 0;
+		break;
 
-		case "specialty_quickrevive":	//revive
-			model_index = 1;
-			break;
+	case "specialty_quickrevive_upgrade":
+	case "specialty_quickrevive":
+		weapon = "zombie_perk_bottle_revive";
+		modelIndex = 1;
+		break;
 
-		case "specialty_fastreload":	//speed
-			model_index = 2;
-			break;
+	case "specialty_fastreload_upgrade":
+	case "specialty_fastreload":
+		weapon = "zombie_perk_bottle_sleight";
+		modelIndex = 2;
+		break;
 
-		case "specialty_rof":		//dbtap
-			model_index = 3;
-			break;
+	case "specialty_rof_upgrade":
+	case "specialty_rof":
+		weapon = "zombie_perk_bottle_doubletap";
+		modelIndex = 3;
+		break;
 
-		case "specialty_longersprint":	//stamina, marathon
-			model_index = 4;
-			break;
+	case "specialty_endurance_upgrade":
+	case "specialty_endurance":
+		weapon = "zombie_perk_bottle_marathon";
+		modelIndex = 4;
+		break;
 
-		case "specialty_flakjacket":	//phd
-			model_index = 5;
-			break;
+	case "specialty_flakjacket_upgrade":
+	case "specialty_flakjacket":
+		weapon = "zombie_perk_bottle_nuke";
+		modelIndex = 5;
+		break;
 
-		case "specialty_deadshot":	//deadshot
-			model_index = 6;
-			break;
+	case "specialty_deadshot_upgrade":
+	case "specialty_deadshot":
+		weapon = "zombie_perk_bottle_deadshot";
+		modelIndex = 6;
+		break;
 
-		case "specialty_additionalprimaryweapon":	//mule kick
-			model_index = 7;
-			break;
+	case "specialty_additionalprimaryweapon_upgrade":
+	case "specialty_additionalprimaryweapon":
+		weapon = "zombie_perk_bottle_additionalprimaryweapon";
+		modelIndex = 7;
+		break;
 
-		case "specialty_bulletaccuracy":	//
-			model_index = 10;
-			break;
+	case "specialty_cherry": // ww: cherry
+	case "specialty_cherry_upgrade":
+		weapon = "zombie_perk_bottle_additionalprimaryweapon";
+		modelIndex = 8;
+		break;
 
-		case "specialty_bulletdamage":
-			model_index = 8;
-			break;
-
-		case "specialty_altmelee":
-			model_index = 11;
-			break;
-
-		case "specialty_extraammo":
-			model_index = 9;
-			break;
+	case "specialty_vulture": // ww: cherry
+	case "specialty_vulture_upgrade":
+		weapon = "zombie_perk_bottle_additionalprimaryweapon";
+		modelIndex = 9;
+		break;
 	}
 
-	
-
-	self GiveWeapon( "zombie_perk_bottle_jugg", model_index );
-	self SwitchToWeapon( "zombie_perk_bottle_jugg" );
-
-	//iprintln( "perk weapon: " + weapon );
+	self GiveWeapon( "zombie_perk_bottle", modelIndex );
 	//self GiveWeapon( weapon );
 	//self SwitchToWeapon( weapon );
+	self SwitchToWeapon( "zombie_perk_bottle" );
 
 	return gun;
 }
@@ -2642,12 +2668,12 @@ perk_give_bottle_end( gun, perk )
 
 	case "specialty_deadshot_upgrade":
 	case "specialty_deadshot":
-		weapon = "zombie_perk_bottle_deadshot";
+		weapon = "t6_wpn_zmb_perk_bottle_deadshot";
 		break;
 
 	case "specialty_additionalprimaryweapon_upgrade":
 	case "specialty_additionalprimaryweapon":
-		weapon = "zombie_perk_bottle_additionalprimaryweapon";
+		weapon = "t6_wpn_zmb_perk_bottle_mule_kick";
 		break;
 
 	}
@@ -2656,7 +2682,7 @@ perk_give_bottle_end( gun, perk )
 	if ( self maps\_laststand::player_is_in_laststand() || is_true( self.intermission ) )
 	{
 		self TakeWeapon(weapon);
-		self TakeWeapon("zombie_perk_bottle");
+		//self TakeWeapon("zombie_perk_bottle");
 		return;
 	}
 
@@ -2667,6 +2693,7 @@ perk_give_bottle_end( gun, perk )
 		gun = "none";
 	}
 
+	iprintln("taking weapon line 2681: " + weapon);
 	self TakeWeapon(weapon);
 
 	if( self is_multiple_drinking() )
