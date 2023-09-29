@@ -16,10 +16,11 @@ init()
 	level.zombiemode_using_additionalprimaryweapon_perk = true;
 	level.zombiemode_using_electriccherry_perk = true;
 	level.zombiemode_using_vulture_perk = true;
-	
+	level.zombiemode_using_widowswine_perk = true;
+
 	/*
 	level.zombiemode_using_chugabud_perk = true;
-	level.zombiemode_using_widowswine_perk = true;
+	
 	level.zombiemode_using_bandolier_perk = true;
 	level.zombiemode_using_timeslip_perk = true;
 	level.zombiemode_using_pack_a_punch = true;
@@ -95,7 +96,7 @@ init()
 		[[level.quantum_bomb_register_result_func]]( "give_nearest_perk", ::quantum_bomb_give_nearest_perk_result, 100, ::quantum_bomb_give_nearest_perk_validation );
 	}
 	
-	level thread bonus_perk_think();
+	//level thread bonus_perk_think();
 }
 
 
@@ -321,6 +322,7 @@ default_vending_precaching()
 {
 
 	PrecacheItem( "zombie_perk_bottle" );
+	PreCacheModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
 
 	if( is_true( level.zombiemode_using_juggernaut_perk ) )
 	{
@@ -400,38 +402,29 @@ default_vending_precaching()
 		level._effect[ "additionalprimaryweapon_light" ] = LoadFX( "misc/fx_zombie_cola_arsenal_on" );
 		level thread turn_additionalprimaryweapon_on();
 	}
-	if( is_true( level.zombiemode_using_chugabud_perk ) )
-	{
-		PreCacheShader( "specialty_chugabud_zombies" );
-		PreCacheModel( "p6_zm_vending_chugabud" );
-		PreCacheModel( "p6_zm_vending_chugabud_on" );
-		PreCacheString( &"ZOMBIE_PERK_CHUGABUD" );
-		level._effect[ "chugabud_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
-		//level thread turn_chugabud_on();
-	}
 	if( is_true( level.zombiemode_using_electriccherry_perk ) )
 	{
 		PreCacheShader( "specialty_cherry_zombies" );
-		PreCacheModel( "p6_zm_vending_electric_cherry" );
+		PreCacheModel( "p6_zm_vending_electric_cherry_off" );
 		PreCacheModel( "p6_zm_vending_electric_cherry_on" );
 		PreCacheString( &"ZOMBIE_PERK_CHERRY" );
 		level._effect[ "electriccherry_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
-		//level thread turn_electriccherry_on();
+		level thread turn_electriccherry_on();
 	}
 	if( is_true( level.zombiemode_using_vulture_perk ) )
 	{
 		PreCacheShader( "specialty_vulture_zombies" );
-		PreCacheModel( "p6_zm_vending_vultureaid" );
-		PreCacheModel( "p6_zm_vending_vultureaid_on" );
+		PreCacheModel( "bo2_zombie_vending_vultureaid" );
+		PreCacheModel( "bo2_zombie_vending_vultureaid_on" );
 		PreCacheString( &"ZOMBIE_PERK_VULTURE" );
 		level._effect[ "vulture_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
-		//level thread turn_vulture_on();
+		level thread turn_vulture_on();
 	}
 	if( is_true( level.zombiemode_using_widowswine_perk ) )
 	{
 		PreCacheShader( "specialty_widowswine_zombies" );
-		PreCacheModel( "p7_zm_vending_widows_wine" );
-		PreCacheModel( "p7_zm_vending_widows_wine_on" );
+		PreCacheModel( "bo3_p7_zm_vending_widows_wine_off" );
+		PreCacheModel( "bo3_p7_zm_vending_widows_wine_on" );
 		PreCacheString( &"ZOMBIE_PERK_WIDOWS_WINE" );
 		level._effect[ "widow_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
 		//level thread turn_widowswine_on();
@@ -1324,6 +1317,9 @@ turn_jugger_on()
 	level notify("doubletap_on");
 	level notify("deadshot_on");
 	level notify("additionalprimaryweapon_on");
+	level notify("electriccherry_on");
+	level notify("vultureon");
+	level notify("widowswine_on");
 
 
 	for( i = 0; i < machine.size; i++ )
@@ -1455,6 +1451,51 @@ turn_additionalprimaryweapon_on()
 	level notify( "specialty_additionalprimaryweapon_power_on" );
 }
 
+turn_electriccherry_on()
+{
+	//init_electric_cherry();
+	machine = GetEntArray( "vending_electriccherry", "targetname" );
+	level waittill( "electriccherry_on" );
+	for( i = 0; i < machine.size; i ++ )
+	{
+		machine[i] SetModel( "p6_zm_vending_electric_cherry_on" );
+		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
+		machine[i] PlaySound( "zmb_perks_power_on" );
+		machine[i] thread perk_fx( "electriccherry_light" );
+	}
+	level notify( "specialty_bulletdamage_power_on" );
+}
+
+turn_vulture_on()
+{
+	//init_vulture();
+	machine = GetEntArray( "vending_vulture", "targetname" );
+	level waittill( "vulture_on" );
+	for( i = 0; i < machine.size; i ++ )
+	{
+		machine[i] SetModel( "p6_zm_vending_vultureaid_on" );
+		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
+		machine[i] PlaySound( "zmb_perks_power_on" );
+		machine[i] thread perk_fx( "vulture_light" );
+	}
+	level notify( "specialty_altmelee_power_on" );
+}
+
+turn_widowswine_on()
+{
+	//init_widows_wine();
+	machine = GetEntArray( "vending_widowswine", "targetname" );
+	level waittill( "widowswine_on" );
+	for( i = 0; i < machine.size; i ++ )
+	{
+		machine[i] SetModel( "p7_zm_vending_widows_wine_on" );
+		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
+		machine[i] PlaySound( "zmb_perks_power_on" );
+		machine[i] thread perk_fx( "widow_light" );
+	}
+	level notify( "specialty_extraammo_power_on" );
+}
+
 //
 //
 perk_fx( fx )
@@ -1510,18 +1551,6 @@ electric_perks_dialog()
 	}
 }
 
-bonus_perk_think()
-{
-	//flag_wait( "all_players_connected" );
-	wait(10);
-	entBabyJugg = GetEnt("zombie_vending_babyjugg", "targetname");
-	perk = entBabyJugg.script_noteworthy;
-	iprintln("PRINT BABYJUGG");
-	iprintln("perk = " + perk);
-
-	//entBabyJugg SetHintString( "Hold ^3[{+activate}]^7 to buy Baby Jugg [Cost: &&1]" , self.cost );
-}
-
 vending_trigger_think()
 {
 	self endon("death");
@@ -1534,12 +1563,15 @@ vending_trigger_think()
 	//self thread turn_cola_off();
 	perk = self.script_noteworthy;
 	solo = false;
-
+	iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
-	if ( IsDefined(perk) && perk == "specialty_babyjugg" )
+	if ( IsDefined(perk) && perk == "specialty_bulletaccuracy" )
 	{
 		cost = 1500;
-		self SetHintString(&"REIMAGINED_PERK_QUICKREVIVE", cost );
+		self SetCursorHint( "HINT_NOICON" );
+		self UseTriggerRequireLookAt();
+		self SetHintString( &"REIMAGINED_PERK_BABYJUGG", cost );
+		iprintln("set babyjugg hintstring");
 
 		for(;;)
 		{
@@ -1594,20 +1626,25 @@ vending_trigger_think()
 			player maps\_zombiemode_score::minus_to_player_score( cost );
 
 			player playLocalSound("chr_breathing_hurt");
-			self thread event_heart_beat( "panicked" , 1 );
+			player thread maps\_gameskill::event_heart_beat( "panicked" , 1 );
+			player player_flag_set( "player_has_red_flashing_overlay" );
 
 			level notify ("player_pain");
 			//self playloopsound("NULL");
 			//self thread playerSndHearbeatOneShots
 
-			self waittill( "end_heartbeat_loop" );
+			player waittill( "end_heartbeat_loop" );
 			//self stoploopsound (1);
 
 			wait (.2);
-			self thread event_heart_beat( "none" , 0 );
-
+			player thread maps\_gameskill::event_heart_beat( "none" , 0 );
+			player.preMaxHealth = 100;
 			player.preMaxHealth += 40;
-			player SetMaxHealth( player.preMaxHealth );
+			iprintln("player max health: " + player.preMaxHealth);
+			player SetMaxHealth( 140 );
+
+			wait( 1 );
+			player player_flag_clear("player_has_red_flashing_overlay");
 
 		}
 
@@ -2360,7 +2397,7 @@ perk_think( perk )
 			break;
 
 		case "specialty_armorvest":
-			self SetMaxHealth( 100 );
+			self SetMaxHealth( self.preMaxHealth );
 			break;
 
 		case "specialty_fastreload":
@@ -3198,3 +3235,324 @@ remove_stockpile_ammo()
 		}
 	}
 }
+
+
+
+/*
+//=========================================================================================================
+// Electric Cherry
+//=========================================================================================================
+#using_animtree( "generic_human" );
+
+init_electric_cherry()
+{
+	level._effect[ "electric_cherry_explode" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
+	level._effect[ "electric_cherry_reload_small" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
+	level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
+	level._effect[ "electric_cherry_reload_large" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
+	level._effect[ "tesla_shock" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock" );
+	level._effect[ "tesla_shock_secondary" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock_secondary" );
+	//level.custom_laststand_func = ::electric_cherry_laststand;
+	set_zombie_var( "tesla_head_gib_chance", 50 );
+	//OnPlayerConnect_Callback( ::on_player_spawned );
+	level.electric_stun = [];
+	level.electric_stun[0] = %ai_zombie_afterlife_stun_a;
+	level.electric_stun[1] = %ai_zombie_afterlife_stun_b;
+	level.electric_stun[2] = %ai_zombie_afterlife_stun_c;
+	level.electric_stun[3] = %ai_zombie_afterlife_stun_d;
+	level.electric_stun[4] = %ai_zombie_afterlife_stun_e;
+}
+
+/*
+on_player_spawned()
+{
+	while( true )
+	{
+		self waittill( "spawned_player" );
+		self thread init_electric_cherry_reload_fx();
+	}
+}
+/
+
+init_electric_cherry_reload_fx()
+{
+	wait 1;
+	self SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
+}
+
+/*
+electric_cherry_laststand()
+{
+	VisionSetLastStand( "zombie_last_stand", 1 );
+	if( IsDefined( self ) )
+	{
+		PlayFX( level._effect[ "electric_cherry_explode" ], self.origin );
+		self PlaySound( "zmb_cherry_explode" );
+		self notify( "electric_cherry_start" );
+		wait 0.05;
+		a_zombies = GetAISpeciesArray( "axis", "all" );
+		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, 500 );
+		for( i = 0; i < a_zombies.size; i ++ )
+		{
+			if( IsAlive( self ) )
+			{
+				if( a_zombies[i].health <= 1000 )
+				{
+					a_zombies[i] thread electric_cherry_death_fx();
+					if( IsDefined( self.cherry_kills ) )
+					{
+						self.cherry_kills ++;
+					}
+					self maps\_zombiemode_score::add_to_player_score( 40 );
+				}
+				else
+				{
+					a_zombies[i] thread electric_cherry_stun();
+					a_zombies[i] thread electric_cherry_shock_fx();
+				}
+				wait 0.1;
+				a_zombies[i] DoDamage( 1000, self.origin, self, self );
+			}
+		}
+		self notify( "electric_cherry_end" );
+	}
+}
+/
+
+electric_cherry_death_fx()
+{
+	self endon( "death" );
+	tag = "J_SpineUpper";
+	fx = "tesla_shock";
+	if( self.isdog )
+	{
+		tag = "J_Spine1";
+	}
+	self PlaySound( "zmb_elec_jib_zombie" );
+	network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect[ fx ], self, tag );
+	if( IsDefined( self.tesla_head_gib_func ) && !self.head_gibbed )
+	{
+		[[ self.tesla_head_gib_func ]]();
+	}
+}
+
+electric_cherry_shock_fx()
+{
+	self endon( "death" );
+	tag = "J_SpineUpper";
+	fx = "tesla_shock_secondary";
+	if( self.isdog )
+	{
+		tag = "J_Spine1";
+	}
+	self PlaySound( "zmb_elec_jib_zombie" );
+	network_safe_play_fx_on_tag( "tesla_shock_fx", 2, level._effect[ fx ], self, tag );
+}
+
+electric_cherry_stun()
+{
+	self endon( "death" );
+	self notify( "stun_zombie" );
+	self endon( "stun_zombie" );
+	if( self.health <= 0 )
+	{
+		return;
+	}
+	if( !self.has_legs )
+	{
+		return;
+	}
+	if( self.animname != "zombie" )
+	{
+		return;
+	}
+	self.forcemovementscriptstate = true;
+	self.ignoreall = true;
+	for( i = 0; i < 2; i ++ )
+	{
+		self AnimScripted( "stunned", self.origin, self.angles, random( level.electric_stun ) );
+		self animscripts\zombie_shared::DoNoteTracks( "stunned" );
+	}
+	self.forcemovementscriptstate = false;
+	self.ignoreall = true;
+	self SetGoalPos( self.origin );
+	self thread maps\_zombiemode_spawner::find_flesh();
+}
+
+electric_cherry_reload_attack()
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon( "stop_electric_cherry_reload_attack" );
+	self.wait_on_reload = [];
+	self.consecutive_electric_cherry_attacks = 0;
+	while( true )
+	{
+		self waittill( "reload_start" );
+		str_current_weapon = self GetCurrentWeapon();
+		if( is_in_array( self.wait_on_reload, str_current_weapon ) )
+		{
+			continue;
+		}
+		self.wait_on_reload[ self.wait_on_reload.size ] = str_current_weapon;
+		self.consecutive_electric_cherry_attacks ++;
+		n_clip_current = self GetWeaponAmmoClip( str_current_weapon );
+		n_clip_max = WeaponClipSize( str_current_weapon );
+		n_fraction = n_clip_current / n_clip_max;
+		perk_radius = linear_map( n_fraction, 1, 0, 32, 128 );
+		perk_dmg = linear_map( n_fraction, 1, 0, 1, 1045 );
+		self thread check_for_reload_complete( str_current_weapon );
+		if( IsDefined( self ) )
+		{
+			switch( self.consecutive_electric_cherry_attacks )
+			{
+				case 0:
+				case 1:
+					n_zombie_limit = undefined;
+					break;
+
+				case 2:
+					n_zombie_limit = 8;
+					break;
+
+				case 3:
+					n_zombie_limit = 4;
+					break;
+
+				case 4:
+					n_zombie_limit = 2;
+					break;
+
+				default:
+					n_zombie_limit = 0;
+					break;
+			}
+			self thread electric_cherry_cooldown_timer( str_current_weapon );
+			if( IsDefined( n_zombie_limit ) && n_zombie_limit == 0 )
+			{
+				continue;
+			}
+			self thread electric_cherry_reload_fx( n_fraction );
+			self notify( "electric_cherry_start" );
+			self PlaySound( "zmb_cherry_explode" );
+			a_zombies = GetAISpeciesArray( "axis", "all" );
+			a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
+			n_zombies_hit = 0;
+			for( i = 0; i < a_zombies.size; i ++ )
+			{
+				if( IsAlive( self ) && IsAlive( a_zombies[i] ) && a_zombies[i].animName != "bo2_zm_mech" && a_zombies[i].animName != "kf2_scrake" && a_zombies[i].animName != "bo1_simianaut" )
+				{
+					if( IsDefined( n_zombie_limit ) )
+					{
+						if( n_zombies_hit < n_zombie_limit )
+						{
+							n_zombies_hit ++;
+						}
+						else
+						{
+							break;
+						}
+					}
+					if( a_zombies[i].health <= perk_dmg )
+					{
+						a_zombies[i] thread electric_cherry_death_fx();
+						if( IsDefined( self.cherry_kills ) )
+						{
+							self.cherry_kills ++;
+						}
+						self maps\_zombiemode_score::add_to_player_score( 40 );
+					}
+					else
+					{
+						if( !IsDefined( a_zombies[i].is_brutus ) )
+						{
+							a_zombies[i] thread electric_cherry_stun();
+						}
+						a_zombies[i] thread electric_cherry_shock_fx();
+					}
+					wait 0.1;
+					a_zombies[i] DoDamage( perk_dmg, self.origin, self, self );
+				}
+			}
+			self notify( "electric_cherry_end" );
+		}
+	}
+}
+
+electric_cherry_cooldown_timer( str_current_weapon )
+{
+	self notify( "electric_cherry_cooldown_started" );
+	self endon( "electric_cherry_cooldown_started" );
+	self endon( "death" );
+	self endon( "disconnect" );
+	n_reload_time = WeaponReloadTime( str_current_weapon );
+	if( self HasPerk( "specialty_fastreload" ) )
+	{
+		n_reload_time *= GetDvarFloat( "perk_weapReloadMultiplier" );
+	}
+	n_cooldown_time = n_reload_time + 3;
+	wait n_cooldown_time;
+	self.consecutive_electric_cherry_attacks = 0;
+}
+
+check_for_reload_complete( weapon )
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon( "player_lost_weapon_" + weapon );
+	self thread weapon_replaced_monitor( weapon );
+	while( true )
+	{
+		self waittill( "reload" );
+		str_current_weapon = self GetCurrentWeapon();
+		if( str_current_weapon == weapon )
+		{
+			self.wait_on_reload = array_remove_nokeys( self.wait_on_reload, weapon );
+			self notify( "weapon_reload_complete_" + weapon );
+			return;
+		}
+	}
+}
+
+weapon_replaced_monitor( weapon )
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon( "weapon_reload_complete_" + weapon );
+	while( true )
+	{
+		self waittill( "weapon_change" );
+		primaryweapons = self GetWeaponsListPrimaries();
+		if( !is_in_array( primaryweapons, weapon ) )
+		{
+			self notify( "player_lost_weapon_" + weapon );
+			self.wait_on_reload = array_remove_nokeys( self.wait_on_reload, weapon );
+			return;
+		}
+	}
+}
+
+electric_cherry_reload_fx( n_fraction )
+{
+	if( n_fraction >= 0.67 )
+	{
+		setClientSysState( "levelNotify", "cherry_fx_small_" + self GetEntityNumber() );
+	}
+	else if( n_fraction >= 0.33 && n_fraction < 0.67 )
+	{
+		setClientSysState( "levelNotify", "cherry_fx_medium_" + self GetEntityNumber() );
+	}
+	else
+	{
+		setClientSysState( "levelNotify", "cherry_fx_large_" + self GetEntityNumber() );
+	}
+	wait 1;
+	setClientSysState( "levelNotify", "cherry_fx_cancel_" + self GetEntityNumber() );
+}
+
+electric_cherry_perk_lost()
+{
+	self notify( "stop_electric_cherry_reload_attack" );
+}
+
+*/

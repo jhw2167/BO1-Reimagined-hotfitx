@@ -8,11 +8,11 @@ init()
 	place_divetonuke();
 	place_deadshot();
 	place_marathon();
-	place_martyrdom();
-	//place_extraammo();
-	//place_chugabud();
 	place_mulekick();
-	place_vulture();	
+	place_vulture();
+	place_martyrdom();
+	//place_extraammo(); Windows is availible by not placed
+	
 }
 
 place_babyjug()
@@ -24,9 +24,9 @@ place_babyjug()
 	bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
 
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
-	perk_trigger.targetname = "zombie_vending_babyjugg";
+	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_babyjugg";
-	perk_trigger.script_noteworthy = "specialty_babyjugg";
+	perk_trigger.script_noteworthy = "specialty_bulletaccuracy";
 
 }
 
@@ -105,7 +105,7 @@ place_martyrdom()
 	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_electric_cherry" );
+	perk setModel( "p6_zm_vending_electric_cherry_off" );
 	perk.targetname = "vending_electriccherry";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -128,7 +128,7 @@ place_extraammo()
 	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p7_zm_vending_widows_wine" );
+	perk setModel( "bo3_p7_zm_vending_widows_wine_off" );
 	perk.targetname = "vending_widowswine";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -197,7 +197,7 @@ place_vulture()
 	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_vultureaid" );
+	perk setModel( "bo2_zombie_vending_vultureaid" );
 	perk.targetname = "vending_vulture";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
