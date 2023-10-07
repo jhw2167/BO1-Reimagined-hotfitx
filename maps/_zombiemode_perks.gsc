@@ -185,7 +185,6 @@ place_perk_machines_by_map()
 	case "zombie_cod5_factory":
 		maps\zombie_cod5_factory_perk_machines::init();
 		break;
-	/*
 	case "zombie_theater":
     	maps\zombie_theater_perk_machines::init();
     	break;
@@ -204,7 +203,7 @@ place_perk_machines_by_map()
 	case "zombie_moon":
 		maps\zombie_moon_perk_machines::init();
 		break;
-	*/
+	
 	}
 
 	if ( !isdefined( level.zombie_additionalprimaryweapon_machine_origin ) )
