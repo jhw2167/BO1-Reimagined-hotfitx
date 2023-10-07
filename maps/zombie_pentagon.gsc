@@ -47,7 +47,6 @@ main()
 	level.delete_when_in_createfx = ::delete_in_createfx;
 
 	override_blocker_prices();
-	maps\zombie_pentagon_perk_machines::init();
 
 
 	// DO ACTUAL ZOMBIEMODE INIT

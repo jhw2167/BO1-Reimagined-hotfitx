@@ -5,14 +5,12 @@ init()
 {
 	place_babyjug();
 
-	place_divetonuke();
+	//place_doubletap();
 	place_deadshot();
-	place_marathon();
-	place_mulekick();
-	//place_vulture();
 	//place_martyrdom();
-	//place_extraammo(); Windows is availible by not placed
-	
+	//place_extraammo();
+	//place_chugabud();
+	place_mulekick();
 }
 
 place_babyjug()
@@ -30,20 +28,20 @@ place_babyjug()
 
 }
 
-place_divetonuke()
+place_doubletap()
 {
-	machine_origin = (-1413.35, 3372.56, -712.875);
-	machine_angles = (0, 120, 0);
+	machine_origin = (1141.7, 736.3, -326.6);
+	machine_angles = (0, -180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "zombie_vending_nuke" );
-	perk.targetname = "vending_divetonuke";
+	perk setModel( "zombie_vending_doubletap" );
+	perk.targetname = "vending_doubletap";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
-	perk_trigger.target = "vending_divetonuke";
-	perk_trigger.script_noteworthy = "specialty_flakjacket";
-	perk_trigger.script_sound = "mus_perks_phd_jingle";
-	perk_trigger.script_label = "mus_perks_phd_sting";
+	perk_trigger.target = "vending_doubletap";
+	perk_trigger.script_noteworthy = "specialty_rof";
+	perk_trigger.script_sound = "mus_perks_doubletap_jingle";
+	perk_trigger.script_label = "mus_perks_doubletap_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
 	perk_clip SetModel( "zm_collision_perks1" );
@@ -55,8 +53,8 @@ place_divetonuke()
 
 place_deadshot()
 {
-	machine_origin = (-696.359, 4220.95, -712.875);
-	machine_angles = (0, 90, 0);
+	machine_origin = (-1531.9, 887.6, -133.0);
+	machine_angles = (0, -180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "zombie_vending_ads" );
@@ -76,36 +74,13 @@ place_deadshot()
 	bump_trigger.targetname = "audio_bump_trigger";
 }
 
-place_marathon()
-{
-	machine_origin = (-1528.3, 4579.4, -712.9);
-	machine_angles = (0, -90, 0);
-	perk = Spawn( "script_model", machine_origin );
-	perk.angles = machine_angles;
-	perk setModel( "zombie_vending_marathon" );
-	perk.targetname = "vending_marathon";
-	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
-	perk_trigger.targetname = "zombie_vending";
-	perk_trigger.target = "vending_marathon";
-	perk_trigger.script_noteworthy = "specialty_longersprint";
-	perk_trigger.script_sound = "mus_perks_stamin_jingle";
-	perk_trigger.script_label = "mus_perks_stamin_sting";
-	perk_clip = spawn( "script_model", machine_origin );
-	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "zm_collision_perks1" );
-	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
-	bump_trigger.script_activated = 1;
-	bump_trigger.script_sound = "fly_bump_bottle";
-	bump_trigger.targetname = "audio_bump_trigger";
-}
-
 place_martyrdom()
 {
-	machine_origin = (-1086.7, 3887.8, -712.9);
-	machine_angles = (0, 180, 0);
+	machine_origin = (58.9087, -886.359, -165.875);
+	machine_angles = (0, -180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_electric_cherry_off" );
+	perk setModel( "p6_zm_vending_electric_cherry" );
 	perk.targetname = "vending_electriccherry";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -124,11 +99,11 @@ place_martyrdom()
 
 place_extraammo()
 {
-	machine_origin = (-864.7, 1821.9, -543.9);
-	machine_angles = (0, 180, 0);
+	machine_origin = (1387.1, 16.4, -343.2);	
+	machine_angles = (0, -180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "bo3_p7_zm_vending_widows_wine_off" );
+	perk setModel( "p7_zm_vending_widows_wine" );
 	perk.targetname = "vending_widowswine";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -147,8 +122,8 @@ place_extraammo()
 
 place_chugabud()
 {
-	machine_origin = (-439.2, 5336.4, -712.9);
-	machine_angles = (0, 360, 0);
+	machine_origin = (627.7, -1825.6, -134.5);
+	machine_angles = (0, 260, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "p6_zm_vending_chugabud" );
@@ -170,8 +145,8 @@ place_chugabud()
 
 place_mulekick()
 {
-	machine_origin = (-1081.4, 1496.9, -512);
-	machine_angles = (0, 162.2, 0);
+	machine_origin = (420.8, 1359.1, 55);
+	machine_angles = (0, 270, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk SetModel( "zombie_vending_three_gun" );
@@ -183,29 +158,6 @@ place_mulekick()
 	perk_trigger.script_sound = "mus_perks_mulekick_jingle";
 	perk_trigger.script_label = "mus_perks_mulekick_sting";
 	perk_clip = Spawn( "script_model", machine_origin );
-	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "zm_collision_perks1" );
-	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
-	bump_trigger.script_activated = 1;
-	bump_trigger.script_sound = "fly_bump_bottle";
-	bump_trigger.targetname = "audio_bump_trigger";
-}
-
-place_vulture()
-{
-	machine_origin = (-1884.9, 1681.6, -511.9);
-	machine_angles = (0, 180, 0);
-	perk = Spawn( "script_model", machine_origin );
-	perk.angles = machine_angles;
-	perk setModel( "bo2_zombie_vending_vultureaid" );
-	perk.targetname = "vending_vulture";
-	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
-	perk_trigger.targetname = "zombie_vending";
-	perk_trigger.target = "vending_vulture";
-	perk_trigger.script_noteworthy = "specialty_altmelee";
-	perk_trigger.script_sound = "mus_perks_vulture_jingle";
-	perk_trigger.script_label = "mus_perks_vulture_sting";
-	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
 	perk_clip SetModel( "zm_collision_perks1" );
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );

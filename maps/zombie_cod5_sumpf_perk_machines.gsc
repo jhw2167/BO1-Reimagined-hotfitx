@@ -2,23 +2,23 @@
 #include common_scripts\utility;
 
 init()
-{
+{		
 	place_babyjug();
 
 	place_divetonuke();
-	place_deadshot();
-	place_marathon();
+	place_deadshot();	
+	place_marathon();		
+	//place_martyrdom();	
+	//place_extraammo();		
+	//place_chugabud();
 	place_mulekick();
-	//place_vulture();
-	//place_martyrdom();
-	//place_extraammo(); Windows is availible by not placed
-	
+	//place_vulture();	
 }
 
 place_babyjug()
 {
-	machine_origin = (-880, 2377, 65);
-	machine_angles = (0, 120, 0);
+	machine_origin = (10568, 815, -475);
+	machine_angles = (90, 15, 0);
 	bottle = Spawn( "script_model", machine_origin );
 	bottle.angles = machine_angles;
 	bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
@@ -32,11 +32,11 @@ place_babyjug()
 
 place_divetonuke()
 {
-	machine_origin = (-1413.35, 3372.56, -712.875);
-	machine_angles = (0, 120, 0);
+	machine_origin = (11205.7, 3390.3, -657.9);
+	machine_angles = (0, 315, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "zombie_vending_nuke" );
+	perk setModel( "zombie_vending_nuke_on" );
 	perk.targetname = "vending_divetonuke";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -55,11 +55,11 @@ place_divetonuke()
 
 place_deadshot()
 {
-	machine_origin = (-696.359, 4220.95, -712.875);
+	machine_origin = (10129.6, 1409.9, -528.9);
 	machine_angles = (0, 90, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "zombie_vending_ads" );
+	perk setModel( "zombie_vending_ads_on" );
 	perk.targetname = "vending_deadshot";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -78,11 +78,11 @@ place_deadshot()
 
 place_marathon()
 {
-	machine_origin = (-1528.3, 4579.4, -712.9);
-	machine_angles = (0, -90, 0);
+	machine_origin = (8034.5, 138.0, -707.9);
+	machine_angles = (0, -360, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "zombie_vending_marathon" );
+	perk setModel( "zombie_vending_marathon_on" );
 	perk.targetname = "vending_marathon";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -101,11 +101,11 @@ place_marathon()
 
 place_martyrdom()
 {
-	machine_origin = (-1086.7, 3887.8, -712.9);
+	machine_origin = (9530.7, 500.4, -665.1);
 	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_electric_cherry_off" );
+	perk setModel( "p6_zm_vending_electric_cherry_on" );
 	perk.targetname = "vending_electriccherry";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -124,11 +124,11 @@ place_martyrdom()
 
 place_extraammo()
 {
-	machine_origin = (-864.7, 1821.9, -543.9);
-	machine_angles = (0, 180, 0);
+	machine_origin = (8667.3, 3024.0, -715.0);
+	machine_angles = (0, 45, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "bo3_p7_zm_vending_widows_wine_off" );
+	perk setModel( "p7_zm_vending_widows_wine_on" );
 	perk.targetname = "vending_widowswine";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -147,11 +147,11 @@ place_extraammo()
 
 place_chugabud()
 {
-	machine_origin = (-439.2, 5336.4, -712.9);
-	machine_angles = (0, 360, 0);
+	machine_origin = (11224.8, -975.8, -709.4);
+	machine_angles = (0, 26.9, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_chugabud" );
+	perk setModel( "p6_zm_vending_chugabud_on" );
 	perk.targetname = "vending_chugabud";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -170,11 +170,11 @@ place_chugabud()
 
 place_mulekick()
 {
-	machine_origin = (-1081.4, 1496.9, -512);
-	machine_angles = (0, 162.2, 0);
+	machine_origin = (8521.5, 3200.5, -667);
+	machine_angles = (0, 314.5, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk SetModel( "zombie_vending_three_gun" );
+	perk SetModel( "zombie_vending_three_gun_on" );
 	perk.targetname = "vending_additionalprimaryweapon";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + ( 0, 0, 30 ), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -193,11 +193,11 @@ place_mulekick()
 
 place_vulture()
 {
-	machine_origin = (-1884.9, 1681.6, -511.9);
-	machine_angles = (0, 180, 0);
+	machine_origin = (10714.4, 990.9, -661.4);
+	machine_angles = (0, -90, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "bo2_zombie_vending_vultureaid" );
+	perk setModel( "p6_zm_vending_vultureaid_on" );
 	perk.targetname = "vending_vulture";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
