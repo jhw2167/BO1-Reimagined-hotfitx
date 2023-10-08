@@ -15,7 +15,7 @@ main()
 
 	level.player_too_many_weapons_monitor = true;
 	level.player_too_many_weapons_monitor_func = ::player_too_many_weapons_monitor;
-	level.player_out_of_playable_area_monitor = true;
+	level.player_out_of_playable_area_monitor = false;
 	level._dontInitNotifyMessage = 1;
 
 	// put things you'd like to be able to turn off in here above this line
@@ -6123,7 +6123,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	iprintln("Origin: ( " + attacker.origin.x + " " + attacker.origin.y + " " + attacker.origin.z + " )");
-	iprintln("Origin: " + attacker.origin);
+	//iprintln("Origin: " + attacker.origin);
 
 	// damage scaling for explosive weapons
 	// consistent damage and scales for zombies farther away from explosion better

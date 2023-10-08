@@ -14,9 +14,9 @@ init()
 	level.zombiemode_using_marathon_perk = true;
 	level.zombiemode_using_deadshot_perk = true;
 	level.zombiemode_using_additionalprimaryweapon_perk = true;
-	level.zombiemode_using_electriccherry_perk = true;
-	level.zombiemode_using_vulture_perk = true;
-	level.zombiemode_using_widowswine_perk = true;
+	//level.zombiemode_using_electriccherry_perk = true;
+	//level.zombiemode_using_vulture_perk = true;
+	//level.zombiemode_using_widowswine_perk = true;
 
 	/*
 	level.zombiemode_using_chugabud_perk = true;
@@ -61,6 +61,7 @@ init()
 	}
 
 	//Perks machine
+	//load_fx();
 	default_vending_precaching();
 	if( !isDefined( level.custom_vending_precaching ) )
 	{
@@ -272,6 +273,20 @@ remove_bump_trigger(perk)
 	level send_message_to_csc("zombiemode_perks", perk + "|delete_bump");
 }
 
+load_fx()
+{
+	//Phd
+	level._effect["divetonuke_groundhit"] = LoadFx( "maps/zombie/fx_perk_phd" );
+
+	//Stamina
+
+	//Vulture
+
+	//Cherry
+
+
+}
+
 //
 //	Precaches all machines
 //
@@ -325,14 +340,16 @@ default_vending_precaching()
 	}
 	if( is_true( level.zombiemode_using_divetonuke_perk ) )
 	{
+		level.zombiemode_divetonuke_perk_func = ::divetonuke_explode;
+
 		PreCacheShader( "specialty_divetonuke_zombies" );
 		PreCacheModel( "zombie_vending_nuke" );
 		PreCacheModel( "zombie_vending_nuke_on" );
 		PreCacheString( &"ZOMBIE_PERK_DIVETONUKE" );
 		level._effect[ "divetonuke_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 
-		set_zombie_var( "zombie_perk_divetonuke_radius", 300 ); // WW (01/12/2011): Issue 74726:DLC 2 - Zombies - Cosmodrome - PHD Flopper - Increase the radius on the explosion (Old: 150)
-		set_zombie_var( "zombie_perk_divetonuke_min_damage", 1000 );
+		set_zombie_var( "zombie_perk_divetonuke_radius", 500 ); // WW (01/12/2011): Issue 74726:DLC 2 - Zombies - Cosmodrome - PHD Flopper - Increase the radius on the explosion (Old: 150)
+		set_zombie_var( "zombie_perk_divetonuke_min_damage", 1550 );
 		set_zombie_var( "zombie_perk_divetonuke_max_damage", 5000 );
 
 		level thread turn_divetonuke_on();
@@ -1352,9 +1369,23 @@ turn_divetonuke_on()
 divetonuke_explode( attacker, origin )
 {
 	// tweakable vars
+	//iprintln("divetonuke_explode");
 	radius = level.zombie_vars["zombie_perk_divetonuke_radius"];
 	min_damage = level.zombie_vars["zombie_perk_divetonuke_min_damage"];
 	max_damage = level.zombie_vars["zombie_perk_divetonuke_max_damage"];
+
+	
+		
+	if(false) //if player has specialty_flakjacket_upgraded,
+	{
+		//Increase radius and damage significantly
+		radius *= 3;
+		min_damage *= 3;
+		max_damage *= 3;
+		PlayFx( level._effect["custom_large_explosion"], origin );
+	} else {
+		PlayFx( level._effect["def_explosion"], origin );
+	}
 
 	// radius damage
 	attacker.divetonuke_damage = true;
@@ -1362,10 +1393,12 @@ divetonuke_explode( attacker, origin )
 	attacker.divetonuke_damage = undefined;
 
 	// play fx
-	PlayFx( level._effect["divetonuke_groundhit"], origin );
+	//PlayFx( level._effect["divetonuke_groundhit"], origin );
+	PlayFx( level._effect["custom_large_explosion"], origin );
 
 	// play sound
-	attacker playsound("zmb_phdflop_explo");
+	attacker PlaySound("wpn_grenade_explode");
+	//attacker playsound("zmb_phdflop_explo");
 
 	// WW (01/12/11): start clientsided effects - These client flags are defined in _zombiemode.gsc & _zombiemode.csc
 	// Used for zombie_dive2nuke_visionset() in _zombiemode.csc
