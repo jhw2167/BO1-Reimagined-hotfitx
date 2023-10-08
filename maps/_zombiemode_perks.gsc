@@ -1375,7 +1375,7 @@ divetonuke_explode( attacker, origin )
 	max_damage = level.zombie_vars["zombie_perk_divetonuke_max_damage"];
 
 	
-		
+	//Perkapunch
 	if(false) //if player has specialty_flakjacket_upgraded,
 	{
 		//Increase radius and damage significantly
@@ -1384,6 +1384,7 @@ divetonuke_explode( attacker, origin )
 		max_damage *= 3;
 		PlayFx( level._effect["custom_large_explosion"], origin );
 	} else {
+		iprintln("divetonuke_explode");
 		PlayFx( level._effect["def_explosion"], origin );
 	}
 
@@ -2081,6 +2082,8 @@ give_perk( perk, bought )
 	else if(perk == "specialty_armorvest_upgrade")
 	{
 		self.preMaxHealth = self.maxhealth;
+		//Perkapunch
+		self SetMaxHealth( 300 );
 		self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health_upgrade"] );
 	}
 
