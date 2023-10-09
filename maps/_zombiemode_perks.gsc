@@ -304,36 +304,40 @@ default_vending_precaching()
 	if( is_true( level.zombiemode_using_juggernaut_perk ) )
 	{
 		PreCacheShader( "specialty_juggernaut_zombies" );
+		PreCacheShader( "specialty_juggernaut_zombies_pro" );
 		PreCacheModel( "zombie_vending_jugg" );
 		PreCacheModel( "zombie_vending_jugg_on" );
-		PreCacheString( &"ZOMBIE_PERK_JUGGERNAUT" );
+		PreCacheString( &"REIMAGINED_PERK_JUGGERNAUT" );
 		level._effect[ "jugger_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
 		level thread turn_jugger_on();
 	}
 	if( is_true( level.zombiemode_using_sleightofhand_perk ) )
 	{
 		PreCacheShader( "specialty_fastreload_zombies" );
+		PreCacheShader( "specialty_fastreload_zombies_pro" );
 		PreCacheModel( "zombie_vending_sleight" );
 		PreCacheModel( "zombie_vending_sleight_on" );
-		PreCacheString( &"ZOMBIE_PERK_FASTRELOAD" );
+		PreCacheString( &"REIMAGINED_PERK_FASTRELOAD" );
 		level._effect[ "sleight_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
 		level thread turn_sleight_on();
 	}
 	if( is_true( level.zombiemode_using_doubletap_perk ) )
 	{
 		PreCacheShader( "specialty_doubletap_zombies" );
+		PreCacheShader( "specialty_doubletap_zombies_pro" );
 		PreCacheModel( "zombie_vending_doubletap" );
 		PreCacheModel( "zombie_vending_doubletap_on" );
-		PreCacheString( &"ZOMBIE_PERK_DOUBLETAP" );
+		PreCacheString( &"REIMAGINED_PERK_DOUBLETAP" );
 		level._effect[ "doubletap_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 		level thread turn_doubletap_on();
 	}
 	if( is_true( level.zombiemode_using_revive_perk ) )
 	{
 		PreCacheShader( "specialty_quickrevive_zombies" );
+		PreCacheShader( "specialty_quickrevive_zombies_pro" );
 		PreCacheModel( "zombie_vending_revive" );
 		PreCacheModel( "zombie_vending_revive_on" );
-		PreCacheString( &"ZOMBIE_PERK_QUICKREVIVE" );
+		PreCacheString( &"REIMAGINED_PERK_QUICKREVIVE" );
 		level._effect[ "revive_light" ] = LoadFX( "misc/fx_zombie_cola_revive_on" );
 		level._effect[ "revive_light_flicker" ] = LoadFX( "maps/zombie/fx_zmb_cola_revive_flicker" );
 		level thread turn_revive_on();
@@ -343,9 +347,10 @@ default_vending_precaching()
 		level.zombiemode_divetonuke_perk_func = ::divetonuke_explode;
 
 		PreCacheShader( "specialty_divetonuke_zombies" );
+		PreCacheShader( "specialty_divetonuke_zombies_pro" );
 		PreCacheModel( "zombie_vending_nuke" );
 		PreCacheModel( "zombie_vending_nuke_on" );
-		PreCacheString( &"ZOMBIE_PERK_DIVETONUKE" );
+		PreCacheString( &"REIMAGINED_PERK_DIVETONUKE" );
 		level._effect[ "divetonuke_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 
 		set_zombie_var( "zombie_perk_divetonuke_radius", 500 ); // WW (01/12/2011): Issue 74726:DLC 2 - Zombies - Cosmodrome - PHD Flopper - Increase the radius on the explosion (Old: 150)
@@ -357,54 +362,60 @@ default_vending_precaching()
 	if( is_true( level.zombiemode_using_marathon_perk ) )
 	{
 		PreCacheShader( "specialty_marathon_zombies" );
+		PreCacheShader( "specialty_marathon_zombies_pro" );
 		PreCacheModel( "zombie_vending_marathon" );
 		PreCacheModel( "zombie_vending_marathon_on" );
-		PreCacheString( &"ZOMBIE_PERK_MARATHON" );
+		PreCacheString( &"REIMAGINED_PERK_MARATHON" );
 		level._effect[ "marathon_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 		level thread turn_marathon_on();
 	}
 	if( is_true( level.zombiemode_using_deadshot_perk ) )
 	{
 		PreCacheShader( "specialty_deadshot_zombies" );
+		PreCacheShader( "specialty_deadshot_zombies_pro" );
 		PreCacheModel( "zombie_vending_ads" );
 		PreCacheModel( "zombie_vending_ads_on" );
-		PreCacheString( &"ZOMBIE_PERK_DEADSHOT" );
+		PreCacheString( &"REIMAGINED_PERK_DEADSHOT" );
 		level._effect[ "deadshot_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 		level thread turn_deadshot_on();
 	}
 	if( is_true( level.zombiemode_using_additionalprimaryweapon_perk ) )
 	{
 		PreCacheShader( "specialty_mulekick_zombies" );
+		PreCacheShader( "specialty_mulekick_zombies_pro" );
 		PreCacheModel( "zombie_vending_three_gun" );
 		PreCacheModel( "zombie_vending_three_gun_on" );
-		PreCacheString( &"ZOMBIE_PERK_ADDITIONALWEAPONPERK" );
+		PreCacheString( &"REIMAGINED_PERK_MULEKICK" );
 		level._effect[ "additionalprimaryweapon_light" ] = LoadFX( "misc/fx_zombie_cola_arsenal_on" );
 		level thread turn_additionalprimaryweapon_on();
 	}
 	if( is_true( level.zombiemode_using_electriccherry_perk ) )
 	{
 		PreCacheShader( "specialty_cherry_zombies" );
+		PreCacheShader( "specialty_cherry_zombies_pro" );
 		PreCacheModel( "p6_zm_vending_electric_cherry_off" );
 		PreCacheModel( "p6_zm_vending_electric_cherry_on" );
-		PreCacheString( &"ZOMBIE_PERK_CHERRY" );
+		PreCacheString( &"REIMAGINED_PERK_CHERRY" );
 		level._effect[ "electriccherry_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
 		level thread turn_electriccherry_on();
 	}
 	if( is_true( level.zombiemode_using_vulture_perk ) )
 	{
 		PreCacheShader( "specialty_vulture_zombies" );
+		PreCacheShader( "specialty_vulture_zombies_pro" );
 		PreCacheModel( "bo2_zombie_vending_vultureaid" );
 		PreCacheModel( "bo2_zombie_vending_vultureaid_on" );
-		PreCacheString( &"ZOMBIE_PERK_VULTURE" );
+		PreCacheString( &"REIMAGINED_PERK_VULTURE" );
 		level._effect[ "vulture_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
 		level thread turn_vulture_on();
 	}
 	if( is_true( level.zombiemode_using_widowswine_perk ) )
 	{
 		PreCacheShader( "specialty_widowswine_zombies" );
+		PreCacheShader( "specialty_widowswine_zombies_pro" );
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_off" );
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_on" );
-		PreCacheString( &"ZOMBIE_PERK_WIDOWS_WINE" );
+		PreCacheString( &"REIMAGINED_PERK_WIDOWSWINE" );
 		level._effect[ "widow_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
 		//level thread turn_widowswine_on();
 	}
@@ -1547,6 +1558,50 @@ electric_perks_dialog()
 	}
 }
 
+//Self is player
+hasProPerk( plr , perk )
+{
+	iprintln( " TEST HAS PRO PERK : ");
+	index = maps\_zombiemode_weapons::get_player_index( plr );
+	player = GetPlayers()[index];
+	proPerk = perk + "_upgrade";
+
+	iprintln( " TESTING FOR UNDEFINED ");
+	if( player.proPerks == undefined ) {
+		player.proPerks = array();
+		iprintln( " ARRAY " + player.proPerks );
+	}
+		
+	
+	iprintln( " Parsing Perks array of size: " + player.proPerks.size);
+	for( i = 0; i < player.proPerks.size; i++ )
+	{
+		iprintln( " At array interval: " + player.proPerks[i] + " 	perk" + perk );
+		if( player.proPerks[i] == proPerk || player.proPerks[i] == perk )
+			return true;
+	}
+
+	return false;
+}
+
+//player is player
+// perk is always _upgraded
+addProPerk( plr, proPerk )
+{
+	index = maps\_zombiemode_weapons::get_player_index( plr );
+	player = GetPlayers()[index];
+
+	if( !hasProPerk( player, proPerk ) )
+		player.proPerks = array_add( player.proPerks , proPerk );
+	
+	//total Pro Perks
+	iprintln( "SHOW ALL PERKS: 		SIZE: " + player.proPerks.size);
+	for( i = 0; i < player.proPerks.size; i++ )
+	{
+		iprintln( "	 		- " + player.proPerks[i] );
+	}
+}
+
 vending_trigger_think()
 {
 	self endon("death");
@@ -1603,11 +1658,13 @@ vending_trigger_think()
 				continue;
 			}
 
+			/*
 			if ( player.maxHealth > 100 )
 			{
 				wait( 1 );
 				continue;
 			}
+			*/
 
 			if ( player.score < cost )
 			{
@@ -1636,8 +1693,11 @@ vending_trigger_think()
 			player thread maps\_gameskill::event_heart_beat( "none" , 0 );
 			player.preMaxHealth = 100;
 			player.preMaxHealth += 40;
-			iprintln("player max health: " + player.preMaxHealth);
-			player SetMaxHealth( 140 );
+			//iprintln("player max health: " + player.preMaxHealth);
+			if(player.maxHealth < 140)
+			{
+				player SetMaxHealth( 140 );
+			}
 
 			wait( 1 );
 			player player_flag_clear("player_has_red_flashing_overlay");
@@ -1774,59 +1834,84 @@ vending_trigger_think()
 
 	self thread check_player_has_perk(perk);
 
+	upgrade_perk_cost = 10000;
 	switch( perk )
 	{
-	case "specialty_armorvest_upgrade":
-	case "specialty_armorvest":
-		self SetHintString( &"ZOMBIE_PERK_JUGGERNAUT", cost );
-		break;
+		case "specialty_armorvest_upgrade":
+		case "specialty_armorvest":
+			self SetHintString( &"REIMAGINED_PERK_JUGGERNAUT", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_quickrevive_upgrade":
-	case "specialty_quickrevive":
-		/*if( solo )
-		{
-			self SetHintString( &"ZOMBIE_PERK_QUICKREVIVE_SOLO", cost );
-		}
-		else
-		{
-			self SetHintString( &"ZOMBIE_PERK_QUICKREVIVE", cost );
-		}*/
-		self SetHintString(&"REIMAGINED_PERK_QUICKREVIVE", cost);
-		break;
+		case "specialty_quickrevive_upgrade":
+		case "specialty_quickrevive":
+			self SetHintString( &"REIMAGINED_PERK_QUICKREVIVE", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_fastreload_upgrade":
-	case "specialty_fastreload":
-		self SetHintString( &"ZOMBIE_PERK_FASTRELOAD", cost );
-		break;
+		case "specialty_fastreload_upgrade":
+		case "specialty_fastreload":
+			self SetHintString( &"REIMAGINED_PERK_FASTRELOAD", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_rof_upgrade":
-	case "specialty_rof":
-		self SetHintString( &"ZOMBIE_PERK_DOUBLETAP", cost );
-		break;
+		case "specialty_rof_upgrade":
+		case "specialty_rof":
+			self SetHintString( &"REIMAGINED_PERK_DOUBLETAP", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_endurance_upgrade":
-	case "specialty_endurance":
-		self SetHintString( &"ZOMBIE_PERK_MARATHON", cost );
-		break;
+		case "specialty_endurance_upgrade":
+		case "specialty_endurance":
+			self SetHintString( &"REIMAGINED_PERK_MARATHON", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_flakjacket_upgrade":
-	case "specialty_flakjacket":
-		self SetHintString( &"ZOMBIE_PERK_DIVETONUKE", cost );
-		break;
+		case "specialty_flakjacket_upgrade":
+		case "specialty_flakjacket":
+			self SetHintString( &"REIMAGINED_PERK_DIVETONUKE", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_deadshot_upgrade":
-	case "specialty_deadshot":
-		self SetHintString( &"ZOMBIE_PERK_DEADSHOT", cost );
-		break;
+		case "specialty_deadshot_upgrade":
+		case "specialty_deadshot":
+			self SetHintString( &"REIMAGINED_PERK_DEADSHOT", cost, upgrade_perk_cost );
+			break;
 
-	case "specialty_additionalprimaryweapon_upgrade":
-	case "specialty_additionalprimaryweapon":
-		self SetHintString( &"ZOMBIE_PERK_ADDITIONALPRIMARYWEAPON", cost );
-		break;
+		case "specialty_additionalprimaryweapon_upgrade":
+		case "specialty_additionalprimaryweapon":
+			self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_bulletaccuracy_upgrade":
+		case "specialty_bulletaccuracy":
+			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_bulletdamage_upgrade":
+		case "specialty_bulletdamage":
+			self SetHintString( &"REIMAGINED_PERK_CHERRY", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_altmelee_upgrade":
+		case "specialty_altmelee":
+			self SetHintString( &"REIMAGINED_PERK_VULTURE", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_extraammo_upgrade":
+		case "specialty_extraammo":
+			self SetHintString( &"REIMAGINED_PERK_WIDOWSWINE", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_stockpile_upgrade":
+		case "specialty_stockpile":
+			self SetHintString( &"REIMAGINED_PERK_BANDOLIER", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_scavanger_upgrade":
+		case "specialty_scavanger":
+			self SetHintString( &"REIMAGINED_PERK_TIMESLIP", cost, upgrade_perk_cost );
+			break;
+
 
 	default:
 		self SetHintString( perk + " Cost: " + level.zombie_vars["zombie_perk_cost"] );
 	}
+
 
 	for( ;; )
 	{
@@ -1873,7 +1958,13 @@ vending_trigger_think()
 			}
 			#/
 
-			if ( cheat != true )
+			//Reimagined-Expanded perkapunch
+			if ( !( hasProPerk( player, perk ) ) && player.score > upgrade_perk_cost )
+			{
+				perk = perk + "_upgrade";
+				cost = upgrade_perk_cost;
+				player.num_perks--;		//Will be incremented later when perk is perchased
+			} else if ( cheat != true )
 			{
 				//player iprintln( "Already using Perk: " + perk );
 				self playsound("deny");
@@ -2053,6 +2144,11 @@ unlocked_perk_upgrade( perk )
 give_perk( perk, bought )
 {
 	self SetPerk( perk );
+	//Reimagined-Expanded
+	if( IsSubStr( perk, "_upgrade" ) )
+		addProPerk( self, perk );
+	boolHasPerk = hasProPerk( self, perk );
+	iprintln("Has Perk: " + perk  + " bool: " + boolHasPerk);
 	self.num_perks++;
 
 	perk_str = perk + "_stop";
@@ -2081,7 +2177,7 @@ give_perk( perk, bought )
 	}
 	else if(perk == "specialty_armorvest_upgrade")
 	{
-		self.preMaxHealth = self.maxhealth;
+		//self.preMaxHealth = self.maxhealth; Dont set for upgraded jugg
 		//Perkapunch
 		self SetMaxHealth( 300 );
 		self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health_upgrade"] );
@@ -2145,7 +2241,12 @@ give_perk( perk, bought )
 	//stat tracking
 	self.stats["perks"]++;
 
-	self thread perk_think( perk );
+	//Reimagined-Expanded Dont need to watch for perks lost when they are permanent
+	if( !IsSubStr( perk, "_upgrade" ) )
+	{
+		self thread perk_think( perk );
+	}
+	
 }
 
 give_back_additional_weapon()
@@ -2326,6 +2427,12 @@ check_player_has_perk(perk)
 				else if(!players[i] hasperk(perk) && !(players[i] in_revive_trigger()) && (!players[i] hacker_active()))
 				{
 					self SetInvisibleToPlayer(players[i], false);
+				} 
+				else if( !(  hasProPerk( players[i], perk ) ) )
+				{
+					iprintln("testing perk: " + perk);
+					self SetInvisibleToPlayer(players[i], false);
+					wait(2);
 				}
 				else
 				{
@@ -2337,17 +2444,6 @@ check_player_has_perk(perk)
 	}
 }
 
-
-vending_set_hintstring( perk )
-{
-	switch( perk )
-	{
-	case "specialty_armorvest_upgrade":
-	case "specialty_armorvest":
-		break;
-
-	}
-}
 
 
 perk_think( perk )
@@ -2371,6 +2467,14 @@ perk_think( perk )
 	{
 		do_retain = false;
 	}*/
+
+	//Reimagined-Expanded perkapunch
+	if( hasProPerk( self,  perk ) )
+	{
+		wait_network_frame();
+		return;
+	}
+
 
 	if(do_retain && IsDefined(self._retain_perks) && self._retain_perks)
 	{
@@ -2469,65 +2573,77 @@ perk_hud_create( perk )
 	}
 #/
 
-
-	shader = "";
-
 	shader = "";
 	switch( perk )
 	{
+		case "specialty_armorvest_upgrade":
 		case "specialty_armorvest":
 			shader = "specialty_juggernaut_zombies";
 			break;
 
+		case "specialty_quickrevive_upgrade":
 		case "specialty_quickrevive":
 			shader = "specialty_quickrevive_zombies";
 			break;
 
+		case "specialty_fastreload_upgrade":
 		case "specialty_fastreload":
 			shader = "specialty_fastreload_zombies";
 			break;
 
+		case "specialty_rof_upgrade":
 		case "specialty_rof":
 			shader = "specialty_doubletap_zombies";
 			break;
 
 		case "specialty_longersprint":
+		case "specialty_longersprint_upgrade":
+		case "specialty_endurance_upgrade":
 		case "specialty_endurance":
 			shader = "specialty_marathon_zombies";
 			break;
 
+		case "specialty_flakjacket_upgrade":
 		case "specialty_flakjacket":
 			shader = "specialty_divetonuke_zombies";
 			break;
 
+		case "specialty_deadshot_upgrade":
 		case "specialty_deadshot":
 			shader = "specialty_deadshot_zombies";
 			break;
 
+		case "specialty_additionalprimaryweapon_upgrade":
 		case "specialty_additionalprimaryweapon":
 			shader = "specialty_mulekick_zombies";
 			break;
 
+		case "specialty_bulletaccuracy_upgrade":
 		case "specialty_bulletaccuracy":
 			shader = "specialty_chugabud_zombies";
 			break;
 
+		case "specialty_bulletdamage_upgrade":
 		case "specialty_bulletdamage":
 			shader = "specialty_cherry_zombies";
 			break;
 
+		case "specialty_altmelee_upgrade":
 		case "specialty_altmelee":
 			shader = "specialty_vulture_zombies";
 			break;
 
+		case "specialty_extraammo_upgrade":
 		case "specialty_extraammo":
 			shader = "specialty_widowswine_zombies";
 			break;
 
+		case "specialty_stockpile_upgrade":
 		case "specialty_stockpile":
 			shader = "specialty_bandolier_zombies";
-			break;			
+			break;
 
+		case "specialty_scavanger_upgrade":
 		case "specialty_scavanger":
 			shader = "specialty_timeslip_zombies";
 			break;
@@ -2535,6 +2651,15 @@ perk_hud_create( perk )
 		default:
 			shader = "";
 			break;
+	}
+
+	if( IsSubStr(perk , "upgrade") )
+	{
+		shader = shader + "_pro";
+		//Destroy the old shader
+		oldPerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
+		iprintln("oldPerk: " + oldPerk);
+		self perk_hud_destroy( oldPerk  );
 	}
 
 	iprintln("shader: " + shader);
@@ -2674,7 +2799,7 @@ perk_give_bottle_begin( perk )
 
 	switch( perk )
 	{
-	case " _upgrade":
+	case "specialty_armorvest_upgrade":
 	case "specialty_armorvest":
 		weapon = "zombie_perk_bottle_jugg";
 		modelIndex = 0;
@@ -2722,16 +2847,22 @@ perk_give_bottle_begin( perk )
 		modelIndex = 7;
 		break;
 
-	case "specialty_cherry": // ww: cherry
-	case "specialty_cherry_upgrade":
-		weapon = "zombie_perk_bottle_additionalprimaryweapon";
+	case "specialty_bulletdamage": // ww: cherry
+	case "specialty_bulletdamage_upgrade":
+		weapon = "t6_wpn_zmb_perk_bottle_cherry";
 		modelIndex = 8;
 		break;
 
-	case "specialty_vulture": // ww: cherry
-	case "specialty_vulture_upgrade":
-		weapon = "zombie_perk_bottle_additionalprimaryweapon";
+	case "specialty_altmelee": // ww: vulture
+	case "specialty_altmelee_upgrade":
+		weapon = "t6_wpn_zmb_perk_bottle_vulture";
 		modelIndex = 9;
+		break;
+
+	case "specialty_extraamo": // ww: wine
+	case "specialty_extraamo_upgrade":
+		weapon = "bo3_widows_wine_bottle";
+		modelIndex = 10;
 		break;
 	}
 
@@ -2806,6 +2937,20 @@ perk_give_bottle_end( gun, perk )
 		weapon = "t6_wpn_zmb_perk_bottle_mule_kick";
 		break;
 
+	case "specialty_bulletdamage": // ww: cherry
+	case "specialty_bulletdamage_upgrade":
+		weapon = "t6_wpn_zmb_perk_bottle_cherry";
+		break;
+
+	case "specialty_altmelee": // ww: vulture
+	case "specialty_altmelee_upgrade":
+		weapon = "t6_wpn_zmb_perk_bottle_vulture";
+		break;
+
+	case "specialty_extraamo": // ww: wine
+	case "specialty_extraamo_upgrade":
+		weapon = "bo3_widows_wine_bottle";
+		break;
 	}
 
 	// TODO: race condition?
@@ -2816,6 +2961,7 @@ perk_give_bottle_end( gun, perk )
 		return;
 	}
 
+	iprintln("give perk: " + perk);
 	self give_perk(perk, true);
 
 	if(self HasWeapon(gun) && is_placeable_mine(gun) && self GetWeaponAmmoClip(gun) == 0)
@@ -2823,7 +2969,7 @@ perk_give_bottle_end( gun, perk )
 		gun = "none";
 	}
 
-	iprintln("taking weapon line 2681: " + weapon);
+	//iprintln("taking weapon line 2681: " + weapon);
 	self TakeWeapon(weapon);
 
 	if( self is_multiple_drinking() )

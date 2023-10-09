@@ -16,7 +16,7 @@
 //HINTSTRINGS
 
 REFERENCE           PERK_PACKAPUNCH
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Pack A Punch [Cost: &&1],\n                     or Double Pack A Punch [Cost: &&2]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Pack A Punch [Cost: &&1]\n                     or Double Pack A Punch [Cost: &&2]"
 
 REFERENCE           WEAPONCOSTAMMO
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Weapon [Cost: &&1], Ammo [Cost: &&2]"
@@ -45,8 +45,38 @@ LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to Pick Up Bouncing Betty"
 REFERENCE          	BETTY_PURCHASE
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Bouncing Betty [Cost: 1000]"
 
+REFERENCE          	PERK_JUGGERNAUT
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Juggernog [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
 REFERENCE          	PERK_QUICKREVIVE
-LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to buy Quick Revive [Cost: &&1]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Quick Revive [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_FASTRELOAD
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Speed Cola [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_DOUBLETAP
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Double Tap [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_MARATHON
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Marathon [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_DIVETONUKE
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy PhD Flopper [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_DEADSHOT
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Deadshot Daiquiri [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_MULEKICK
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Mule Kick [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_CHERRY
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Electric Cherry [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_VULTURE
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Vulture Aid [Cost: &&1]\n        or upgrade [Cost: &&2]"
+
+REFERENCE          	PERK_WIDOWSWINE
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Widow's Wine [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
 REFERENCE          	PERK_BABYJUGG
 LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to buy Baby Jugg [Cost: &&1]"
