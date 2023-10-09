@@ -95,7 +95,6 @@ player_add_points( event, mod, hit_location ,is_dog)
 		case "rebuild_board":
 		case "carpenter_powerup":
 			player_points	= mod* (Int(level.round_number/10)+1);
-			iprintln("points calc");
 			break;
 
 		case "bonus_points_powerup":

@@ -85,7 +85,7 @@ place_martyrdom()
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_electriccherry";
-	perk_trigger.script_noteworthy = "specialty_bulletdamage";
+	perk_trigger.script_noteworthy = "specialty_grenadepulldeath";
 	perk_trigger.script_sound = "mus_perks_cherry_jingle";
 	perk_trigger.script_label = "mus_perks_cherry_sting";
 	perk_clip = spawn( "script_model", machine_origin );
