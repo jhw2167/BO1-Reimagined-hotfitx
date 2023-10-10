@@ -280,8 +280,8 @@ unsetPerks()
 	self UnsetPerk("specialty_flakjacket");
 	self UnsetPerk("specialty_deadshot");
 	self UnsetPerk("specialty_additionalprimaryweapon");
-	self UnsetPerk("specialty_grenadepulldeath");		//cherry
-	self UnsetPerk("specialty_scavenger");				//Vulture
+	self UnsetPerk("specialty_bulletdamage");		//cherry
+	self UnsetPerk("specialty_altmelee");				//Vulture
 	self UnsetPerk("specialty_extraammo");				//Widows wine
 
 	//Pro Perks
@@ -292,9 +292,9 @@ unsetPerks()
 	self UnsetPerk("specialty_movefaster");
 	self UnsetPerk("specialty_explosivedamage");
 	self UnsetPerk("specialty_stalker");
+	iprintln("Has special stalker: " + self HasPerk("specialty_stalker"));
 	self UnsetPerk("specialty_stockpile");
 	self UnsetPerk("specialty_shellshock");
-	self UnsetPerk("specialty_stocker");
 	self UnsetPerk("specialty_delayexplosive");
 
 self UnsetPerk("specialty_longersprint");
@@ -359,8 +359,8 @@ iprintln("Has Perk Hold Breath: " + self HasPerk("specialty_holdbreath"));
 self UnsetPerk("specialty_healthregen");
 iprintln("Has Perk Health Regen: " + self HasPerk("specialty_healthregen"));
 
-self UnsetPerk("specialty_grenadepulldeath");
-iprintln("Has Perk Grenade Pull Death: " + self HasPerk("specialty_grenadepulldeath"));
+self UnsetPerk("specialty_bulletdamage");
+iprintln("Has Perk Grenade Pull Death: " + self HasPerk("specialty_bulletdamage"));
 
 self UnsetPerk("specialty_gpsjammer");
 iprintln("Has Perk GPS Jammer: " + self HasPerk("specialty_gpsjammer"));
@@ -980,6 +980,20 @@ init_levelvars()
 	level.counter_model[9] = "p_zom_counter_9";
 
 	level.zombie_vars = [];
+
+	//Reimagined-Expanded -- Pro Perk Vars
+	level.JUG_PRO = "specialty_armorvest_upgrade";
+	level.QRV_PRO = "specialty_quickrevive_upgrade";
+	level.SPD_PRO = "specialty_fastreload_upgrade";
+	level.DTP_PRO = "specialty_rof_upgrade";
+	level.STM_PRO = "specialty_endurance_upgrade";
+	level.PHD_PRO = "specialty_flakjacket_upgrade";
+	level.DST_PRO = "specialty_deadshot_upgrade";
+	level.MUL_PRO = "specialty_additionalprimaryweapon_upgrade";
+	level.ECH_PRO = "specialty_bulletdamage_upgrade";
+	level.VLT_PRO = "specialty_altmelee_upgrade";
+	level.WWN_PRO = "specialty_extraamo_upgrade";
+
 
 	difficulty = 1;
 	column = int(difficulty) + 1;
@@ -6306,20 +6320,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 	}
 
-	iprintln("Origin: ( " + attacker.origin.x + " " + attacker.origin.y + " " + attacker.origin.z + " )");
-	iprintln("Testing NORMAL Jugg: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_armorvest"));
-	iprintln("Testing NORMAL Jugg DIRECT : " + attacker HasPerk("specialty_armorvest"));
-	iprintln("Testing has Upp Jugg: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_armorvest_upgrade"));
-	iprintln("Testing has Upp Quick Revive: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_quickrevive_upgrade"));
-	iprintln("Testing has Upp Fast Reload: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_fastreload_upgrade"));
-	iprintln("Testing has Upp ROF: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_rof_upgrade"));
-	iprintln("Testing has Upp Endurance: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_endurance_upgrade"));
-	iprintln("Testing has Upp Flak Jacket: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_flakjacket_upgrade"));
-	iprintln("Testing has Upp Deadshot: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_deadshot_upgrade"));
-	iprintln("Testing has Upp Additional Primary Weapon: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_additionalprimaryweapon_upgrade"));
-	iprintln("Testing has Upp Bullet Damage: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_grenadepulldeath_upgraded"));
-	iprintln("Testing has Upp Alt Melee: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_scavenger_upgraded"));
-	iprintln("Testing has Upp Extra Ammo: " + attacker maps\_zombiemode_perks::hasProPerk("specialty_extraammo_upgraded"));
+	iprintln("Origin: " + attacker.origin );
+	iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
+	iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
+	iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
+	iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DTP_PRO));
+	iprintln("Testing has Upp STM: " + attacker hasProPerk(level.STM_PRO));
+	iprintln("Testing has Upp PHD: " + attacker hasProPerk(level.PHD_PRO));
+	iprintln("Testing has Upp DST: " + attacker hasProPerk(level.DST_PRO));
+	iprintln("Testing has Upp MUL: " + attacker hasProPerk(level.MUL_PRO));
+	iprintln("Testing has Upp ECH: " + attacker hasProPerk(level.ECH_PRO));
+	iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
+	iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO));
+
 
 
 	// damage scaling for explosive weapons
@@ -6902,6 +6915,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	// return unchanged damage
 	//iPrintln( final_damage );
 	return int( final_damage );
+}
+
+hasProPerk( perk )
+{
+	return self maps\_zombiemode_perks::hasProPerk( perk );
 }
 
 is_boss_zombie( animname )

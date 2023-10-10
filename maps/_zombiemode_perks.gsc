@@ -97,7 +97,6 @@ init()
 		[[level.quantum_bomb_register_result_func]]( "give_nearest_perk", ::quantum_bomb_give_nearest_perk_result, 100, ::quantum_bomb_give_nearest_perk_validation );
 	}
 	
-	//level thread bonus_perk_think();
 }
 
 
@@ -1470,7 +1469,7 @@ turn_electriccherry_on()
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		machine[i] thread perk_fx( "electriccherry_light" );
 	}
-	level notify( "specialty_grenadepulldeath_power_on" );
+	level notify( "specialty_bulletdamage_power_on" );
 }
 
 turn_vulture_on()
@@ -1485,7 +1484,7 @@ turn_vulture_on()
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		machine[i] thread perk_fx( "vulture_light" );
 	}
-	level notify( "specialty_scavenger_power_on" );
+	level notify( "specialty_altmelee_power_on" );
 }
 
 turn_widowswine_on()
@@ -1577,9 +1576,9 @@ electric_perks_dialog()
 		return "specialty_deadshot_zombies_pro";
 	if (perk == "specialty_additionalprimaryweapon_upgrade")
 		return "specialty_mulekick_zombies_pro";
-	if (perk == "specialty_grenadepulldeath_upgraded")
+	if (perk == "specialty_bulletdamage_upgraded")
 		return "specialty_cherry_zombies_pro";
-	if (perk == "specialty_scavenger_upgrade")
+	if (perk == "specialty_altmelee_upgrade")
 		return "specialty_vulture_zombies_pro";
 	if (perk == "specialty_extraammo_upgraded")
 		return "specialty_widowswine_zombies_pro";
@@ -1590,107 +1589,66 @@ return "UNKOWN";
 //Self is player
 hasProPerk( perk )
 {
-	iprintln( " TEST HAS PRO PERK : " + perk);
-	scuffed = convertPerkToScuffed( perk );
-	
-	//if convertFromScuffed != "" && has perk -- 
-		//(exists in list of pro perks  and player has must be pro perk
-	if( convertFromScuffedProPerk( perk ) != "" && self HasPerk( perk ) )
-	{
-		iprintln( " RETURNED TRUE, has pro perk: " + perk);
-		return true;
-	} else if( IsSubStr( perk, "_upgrade" ) )
-	{
-		
-		iprintln( " SCUFFED PERK : " + scuffed);
-		if( scuffed == "" )
-			return false;
-
-		if( self HasPerk( scuffed ) )
-			return true;
-	}
-		
-	iprintln( "RETURNED FALSE, not upgraded or not scuffed: " + scuffed);
+	if (perk == "specialty_armorvest_upgrade")
+		return self.specialty_armorvest_upgrade;
+	if (perk == "specialty_quickrevive_upgrade")
+		return self.specialty_quickrevive_upgrade;
+	if (perk == "specialty_fastreload_upgrade")
+		return self.specialty_fastreload_upgrade;
+	if (perk == "specialty_rof_upgrade")
+		return self.specialty_rof_upgrade;
+	if (perk == "specialty_endurance_upgrade")
+		return self.specialty_endurance_upgrade;
+	if (perk == "specialty_flakjacket_upgrade")
+		return self.specialty_flakjacket_upgrade;
+	if (perk == "specialty_deadshot_upgrade")
+		return self.specialty_deadshot_upgrade;
+	if (perk == "specialty_additionalprimaryweapon_upgrade")
+		return self.specialty_additionalprimaryweapon_upgrade;
+	if (perk == "specialty_bulletdamage_upgrade")
+		return self.specialty_bulletdamage_upgrade;
+	if (perk == "specialty_altmelee_upgrade")
+		return self.specialty_altmelee_upgrade;
+	if (perk == "specialty_extraamo_upgrade")
+		return self.specialty_extraamo_upgrade;
 	
 	return false;
 }
 
 
-convertPerkToScuffed( perk )
-{
-	if (perk == "specialty_armorvest_upgrade")
-		return "specialty_armorpiercing";
-	if (perk == "specialty_quickrevive_upgrade")
-		return "specialty_finalstand";
-	if (perk == "specialty_fastreload_upgrade")
-		return "specialty_fastinteract";
-	if (perk == "specialty_rof_upgrade")
-		return "specialty_bulletpenetration";
-	if (perk == "specialty_endurance_upgrade")
-		return "specialty_movefaster";
-	if (perk == "specialty_flakjacket_upgrade")
-		return "specialty_explosivedamage";
-	if (perk == "specialty_deadshot_upgrade")
-		return "specialty_stalker";
-	if (perk == "specialty_additionalprimaryweapon_upgrade")
-		return "specialty_stockpile";
-	if (perk == "specialty_grenadepulldeath_upgrade")
-		return "specialty_shellshock";
-	if (perk == "specialty_scavenger_upgrade")
-		return "specialty_stocker";	
-	if (perk == "specialty_extraamo_upgrade")
-		return "specialty_delayexplosive";
-    
-return "";
 
-
-}
-
-convertFromScuffedProPerk( perk )
-{
-	if (perk == "specialty_armorpiercing")
-        return "specialty_armorvest_upgrade";
-    if (perk == "specialty_finalstand")
-        return "specialty_quickrevive_upgrade";
-    if (perk == "specialty_fastinteract")
-        return "specialty_fastreload_upgrade";
-    if (perk == "specialty_bulletpenetration")
-        return "specialty_rof_upgrade";
-    if (perk == "specialty_movefaster")
-        return "specialty_endurance_upgrade";
-    if (perk == "specialty_explosivedamage")
-        return "specialty_flakjacket_upgrade";
-    if (perk == "specialty_stalker")
-        return "specialty_deadshot_upgrade";
-    if (perk == "specialty_stockpile")
-        return "specialty_additionalprimaryweapon_upgrade";
-    if (perk == "specialty_shellshock")
-        return "specialty_grenadepulldeath_upgrade";
-	if (perk == "specialty_stocker")
-		return "specialty_scavenger_upgrade";	
-    if (perk == "specialty_delayexplosive")
-        return "specialty_extraamo_upgrade";
-	
-	return "";
-}
 
 //player is player
 // perk is always _upgraded
-/* addProPerk( plr, proPerk )
+addProPerk( perk )
 {
-	player = self;
+	if (perk == "specialty_armorvest_upgrade")
+		self.specialty_armorvest_upgrade = true;
+	if (perk == "specialty_quickrevive_upgrade")
+		self.specialty_quickrevive_upgrade = true;
+	if (perk == "specialty_fastreload_upgrade")
+		self.specialty_fastreload_upgrade = true;
+	if (perk == "specialty_rof_upgrade")
+		self.specialty_rof_upgrade = true;
+	if (perk == "specialty_endurance_upgrade")
+		self.specialty_endurance_upgrade = true;
+	if (perk == "specialty_flakjacket_upgrade")
+		self.specialty_flakjacket_upgrade = true;
+	if (perk == "specialty_deadshot_upgrade")
+		self.specialty_deadshot_upgrade = true;
+	if (perk == "specialty_additionalprimaryweapon_upgrade")
+		self.specialty_additionalprimaryweapon_upgrade = true;
+	if (perk == "specialty_bulletdamage_upgrade")
+		self.specialty_bulletdamage_upgrade = true;
+	if (perk == "specialty_altmelee_upgrade")
+		self.specialty_altmelee_upgrade = true;
+	if (perk == "specialty_extraamo_upgrade")
+		self.specialty_extraamo_upgrade = true;
 
-	if( !has1ProPerk( player, proPerk ) )
-		player.proPerks = array_add( player.proPerks , proPerk );
-	
-	//total Pro Perks
-	iprintln( "SHOW ALL PERKS: 		SIZE: " + player.proPerks.size);
-	for( i = 0; i < player.proPerks.size; i++ )
-	{
-		iprintln( "	 		- " + player.proPerks[i] );
-	}
+	iprintln( " ADD PRO PERK : " + perk);
 }
- */
+
+
 vending_trigger_think()
 {
 	self endon("death");
@@ -1971,13 +1929,13 @@ vending_trigger_think()
 			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
 			break;
 
-		case "specialty_grenadepulldeath_upgrade":
-		case "specialty_grenadepulldeath":
+		case "specialty_bulletdamage_upgrade":
+		case "specialty_bulletdamage":
 			self SetHintString( &"REIMAGINED_PERK_CHERRY", cost, upgrade_perk_cost );
 			break;
 
-		case "specialty_scavenger_upgrade":
-		case "specialty_scavenger":
+		case "specialty_altmelee_upgrade":
+		case "specialty_altmelee":
 			self SetHintString( &"REIMAGINED_PERK_VULTURE", cost, upgrade_perk_cost );
 			break;
 
@@ -2234,25 +2192,16 @@ unlocked_perk_upgrade( perk )
 give_perk( perk, bought )
 {
 	
-	iprintln( "GIVE PERK: " + perk );
 	//Reimagined-Expanded
-	scuffed = "";
 	if( IsSubStr( perk, "_upgrade" ) )
-	{	scuffed = convertPerkToScuffed( perk );
-		iprintln( "GIVE PERK: " + scuffed );
-		self SetPerk( scuffed );	
+	{	
+		player = GetPlayers()[ self GetEntityNumber() ];
+		player addProPerk( perk );
 	} else
 	{
 		self SetPerk( perk );
 	}
 	
-	if(scuffed != "")
-	{
-		boolHasPerk = self hasProPerk( scuffed );
-	} else 
-		boolHasPerk = self hasProPerk( perk );
-
-	iprintln("Has Perk: " + perk  + " bool: " + boolHasPerk);
 	self.num_perks++;
 
 	perk_str = perk + "_stop";
@@ -2294,10 +2243,18 @@ give_perk( perk, bought )
 		//self SetPerk("specialty_fastoffhand");
 	}
 
+	if(perk == "specialty_endurance")
+	{
+		self SetPerk("specialty_unlimitedsprint");
+	}
+
 	//increase burst fire rate with double tap
 	if(perk == "specialty_rof")
 	{
 		self SetClientDvar("player_burstFireCoolDown", .2 * GetDvarFloat("perk_weapRateMultiplier"));
+	} else if(perk == "specialty_rof_upgrade")
+	{
+		self SetClientDvar("player_burstFireCoolDown", .1 * GetDvarFloat("perk_weapRateMultiplier"));
 	}
 
 	// WW (02-03-11): Deadshot csc call
@@ -2534,9 +2491,8 @@ check_player_has_perk(perk)
 				} 
 				else if( !(  players[i] hasProPerk( perk + "_upgrade" ) ) )
 				{
-					iprintln("testing perk: " + perk);
+					//Reimagined-Expanded Upgraded Perks check
 					self SetInvisibleToPlayer(players[i], false);
-					wait(2);
 				}
 				else
 				{
@@ -2545,7 +2501,6 @@ check_player_has_perk(perk)
 			}
 		}
 		wait(0.05);
-		wait(2);
 	}
 }
 
@@ -2728,13 +2683,13 @@ perk_hud_create( perk )
 			shader = "specialty_chugabud_zombies";
 			break;
 
-		case "specialty_grenadepulldeath_upgrade":
-		case "specialty_grenadepulldeath":
+		case "specialty_bulletdamage_upgrade":
+		case "specialty_bulletdamage":
 			shader = "specialty_cherry_zombies";
 			break;
 
-		case "specialty_scavenger_upgrade":
-		case "specialty_scavenger":
+		case "specialty_altmelee_upgrade":
+		case "specialty_altmelee":
 			shader = "specialty_vulture_zombies";
 			break;
 
@@ -2952,14 +2907,14 @@ perk_give_bottle_begin( perk )
 		modelIndex = 7;
 		break;
 
-	case "specialty_grenadepulldeath": // ww: cherry
-	case "specialty_grenadepulldeath_upgrade":
+	case "specialty_bulletdamage": // ww: cherry
+	case "specialty_bulletdamage_upgrade":
 		weapon = "t6_wpn_zmb_perk_bottle_cherry";
 		modelIndex = 8;
 		break;
 
-	case "specialty_scavenger": // ww: vulture
-	case "specialty_scavenger_upgrade":
+	case "specialty_altmelee": // ww: vulture
+	case "specialty_altmelee_upgrade":
 		weapon = "t6_wpn_zmb_perk_bottle_vulture";
 		modelIndex = 9;
 		break;
@@ -3042,13 +2997,13 @@ perk_give_bottle_end( gun, perk )
 		weapon = "t6_wpn_zmb_perk_bottle_mule_kick";
 		break;
 
-	case "specialty_grenadepulldeath": // ww: cherry
-	case "specialty_grenadepulldeath_upgrade":
+	case "specialty_bulletdamage": // ww: cherry
+	case "specialty_bulletdamage_upgrade":
 		weapon = "t6_wpn_zmb_perk_bottle_cherry";
 		break;
 
-	case "specialty_scavenger": // ww: vulture
-	case "specialty_scavenger_upgrade":
+	case "specialty_altmelee": // ww: vulture
+	case "specialty_altmelee_upgrade":
 		weapon = "t6_wpn_zmb_perk_bottle_vulture";
 		break;
 
@@ -3127,6 +3082,9 @@ give_random_perk()
 	for ( i = 0; i < vending_triggers.size; i++ )
 	{
 		perk = vending_triggers[i].script_noteworthy;
+
+		if(perk == "specialty_bulletaccuracy") //babyjugg
+			continue;
 
 		if ( isdefined( self.perk_purchased ) && self.perk_purchased == perk )
 		{
@@ -4542,7 +4500,7 @@ add_zombie_eye_glow()
 zombies_drop_stink_on_death()
 {
 	self ClearClientFlag( level._ZOMBIE_ACTOR_FLAG_VULTURE_EYE_GLOW );
-	if( IsDefined( self.attacker ) && IsPlayer( self.attacker ) && self.attacker HasPerk( "specialty_scavenger" ) )
+	if( IsDefined( self.attacker ) && IsPlayer( self.attacker ) && self.attacker HasPerk( "specialty_altmelee" ) )
 	{
 		self thread do_vulture_death( self.attacker );
 	}
@@ -4961,7 +4919,7 @@ vulture_perk_watch_waypoints()
 		perk = vending_triggers[i].script_noteworthy;
 		struct = SpawnStruct();
 		struct.location = vending_triggers[i] get_waypoint_origin( "perk" );
-		struct.check_perk = perk != "specialty_scavenger";
+		struct.check_perk = perk != "specialty_altmelee";
 		struct.perk_to_check = perk;
 		struct.is_revive = perk == "specialty_quickrevive";
 		struct.is_chest = false;
@@ -5047,8 +5005,8 @@ setup_perk_machine_fx()
 	register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
 	register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
 	register_perk_machine_fx( "specialty_bulletaccuracy", "vulture_perk_machine_glow_whos_who" );
-	register_perk_machine_fx( "specialty_grenadepulldeath", "vulture_perk_machine_glow_electric_cherry" );
-	register_perk_machine_fx( "specialty_scavenger", "vulture_perk_machine_glow_vulture" );
+	register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
+	register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
 	register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_widows_wine" );
 }
 
@@ -5186,13 +5144,13 @@ watch_vulture_shader_glow()
 	hud_stink SetShader( "hud_vulture_aid_stink", 48, 48 );
 	while( true )
 	{
-		if( IsDefined( self.perk_hud[ "specialty_scavenger" ] ) )
+		if( IsDefined( self.perk_hud[ "specialty_altmelee" ] ) )
 		{
-			hud_outline.x = self.perk_hud[ "specialty_scavenger" ].x - 12;
-			hud_outline.y = self.perk_hud[ "specialty_scavenger" ].y + 12;
+			hud_outline.x = self.perk_hud[ "specialty_altmelee" ].x - 12;
+			hud_outline.y = self.perk_hud[ "specialty_altmelee" ].y + 12;
 			hud_outline.alpha = self.vulture_glow_alpha;
-			hud_stink.x = self.perk_hud[ "specialty_scavenger" ].x - 12;
-			hud_stink.y = self.perk_hud[ "specialty_scavenger" ].y - 24;
+			hud_stink.x = self.perk_hud[ "specialty_altmelee" ].x - 12;
+			hud_stink.y = self.perk_hud[ "specialty_altmelee" ].y - 24;
 			hud_stink.alpha = self.vulture_glow_alpha;
 		}
 		else
