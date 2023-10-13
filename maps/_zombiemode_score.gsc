@@ -78,7 +78,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 		case "damage_ads":
 		case "damage":
 			//Reimagined-Expanded
-			if(level.apocalypse != 1) {
+			if(!level.apocalypse) {
 				player_points = level.zombie_vars["zombie_score_damage_light"];
 			}
 			else if (level.round_number < 10) {
@@ -208,7 +208,8 @@ get_zombie_death_player_points()
 	
 	//Reimagined-Expanded, zombies increase exponentially, points decrease to compensate
 	//Players get a few extra points in later rounds
-	if(level.apocalypse == 1) {
+	if(level.apocalypse)
+	{
 		if (level.round_number < 10) {
 			player_points = 50;
 		} else if (level.round_number < 20) {

@@ -714,7 +714,7 @@ vending_weapon_upgrade()
 		self SetHintString("");
 		self disable_trigger();
 
-		iprintln("Call knuckle crack from main thread");
+		//iprintln("Call knuckle crack from main thread");
 		player thread do_knuckle_crack();
 
 		// Remember what weapon we have.  This is needed to check unique weapon counts.
@@ -1386,7 +1386,7 @@ divetonuke_explode( attacker, origin )
 
 	
 	//Perkapunch
-	if(false) //if player has specialty_flakjacket_upgraded,
+	if( attacker hasProPerk(level.PHD_PRO) ) //if player has specialty_flakjacket_upgraded,
 	{
 		//Increase radius and damage significantly
 		radius *= 3;
@@ -1645,7 +1645,7 @@ addProPerk( perk )
 	if (perk == "specialty_extraamo_upgrade")
 		self.specialty_extraamo_upgrade = true;
 
-	iprintln( " ADD PRO PERK : " + perk);
+	//iprintln( " ADD PRO PERK : " + perk);
 }
 
 
@@ -1665,11 +1665,15 @@ vending_trigger_think()
 	//Reimagined-Expanded babyjugg!
 	if ( IsDefined(perk) && perk == "specialty_bulletaccuracy" )
 	{
-		cost = 1500;
+		cost = 500;
+		if(level.apocalypse)
+		{
+			cost = 1000;
+		}
+
 		self SetCursorHint( "HINT_NOICON" );
 		self UseTriggerRequireLookAt();
 		self SetHintString( &"REIMAGINED_PERK_BABYJUGG", cost );
-		iprintln("set babyjugg hintstring");
 
 		for(;;)
 		{
@@ -2230,9 +2234,9 @@ give_perk( perk, bought )
 	}
 	else if(perk == "specialty_armorvest_upgrade")
 	{
-		//self.preMaxHealth = self.maxhealth; Dont set for upgraded jugg
 		//Perkapunch
 		self SetMaxHealth( 300 );
+		self.preMaxHealth = self.maxhealth; //Upgraded Jugg is permanent
 		//self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health_upgrade"] );
 	}
 
@@ -2531,13 +2535,16 @@ perk_think( perk )
 	//Reimagined-Expanded perkapunch
 	if( self hasProPerk( perk + "_upgrade" ) )
 	{
+		iprintln( "Apparently has pro perk: " + perk );
 		wait_network_frame();
+		self update_perk_hud();
 		return;
 	}
 
 
 	if(do_retain && IsDefined(self._retain_perks) && self._retain_perks)
 	{
+		iprintln( "Apparently is retained: " + perk );
 		wait_network_frame();
 		self update_perk_hud();
 		return;
@@ -2549,6 +2556,7 @@ perk_think( perk )
 		self notify(perk_str);
 	}
 
+	iprintln( "Perk Lost: " + perk );
 	self UnsetPerk( perk );
 	self.num_perks--;
 
@@ -2719,7 +2727,14 @@ perk_hud_create( perk )
 		//Destroy the old shader
 		oldPerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
 		iprintln("oldPerk: " + oldPerk);
-		self perk_hud_destroy( oldPerk  );
+		//self perk_hud_destroy( oldPerk  );
+		hud = self.perk_hud[oldPerk];
+		if(isdefined(hud))
+		{
+			hud SetShader( shader, 24, 24 );
+			self.perk_hud[oldPerk] = hud;
+		}
+		return;
 	}
 
 	iprintln("shader: " + shader);

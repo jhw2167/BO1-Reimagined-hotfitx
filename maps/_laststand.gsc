@@ -137,6 +137,7 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 		self VisionSetLastStand( "laststand", 1 );
 	}
 
+	/*
 	if(IsDefined(self._retain_perks))
 	{
 		self.health = 250;
@@ -145,6 +146,9 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 	{
 		self.health = 100;
 	}
+	*/
+
+	self.health = self.preMaxHealth;
 
 	//self thread call_overloaded_func( "maps\_arcademode", "arcademode_player_laststand" );
 

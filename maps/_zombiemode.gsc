@@ -30,7 +30,16 @@ main()
 	level.put_timed_out_zombies_back_in_queue = true;
 	level.use_alternate_poi_positioning = true;
 	SetDvar( "zombie_pause", "0" );		//zombie pause was being innit to 1 instead
+
+	//Reimagined Expanded options
 	level.apocalypse=GetDvarInt("zombie_apocalypse");
+	level.alt_bosses=GetDvarInt("zombie_alt_bosses");
+	level.expensive_perks=GetDvarInt("zombie_expensive_perks");
+	level.tough_zombies=GetDvarInt("zombie_tough_zombies");
+	level.zombie_types=GetDvarInt("zombie_types");
+	level.no_perks=GetDvarInt("zombie_no_perks");
+	level.bo2_perks=GetDvarInt("zombie_bo2_perks");
+	level.extra_drops=GetDvarInt("zombie_extra_drops");
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -280,171 +289,23 @@ unsetPerks()
 	self UnsetPerk("specialty_flakjacket");
 	self UnsetPerk("specialty_deadshot");
 	self UnsetPerk("specialty_additionalprimaryweapon");
+	self UnsetPerk("specialty_bulletaccuracy");		//babyjugg
 	self UnsetPerk("specialty_bulletdamage");		//cherry
 	self UnsetPerk("specialty_altmelee");				//Vulture
 	self UnsetPerk("specialty_extraammo");				//Widows wine
 
-	//Pro Perks
-	self UnsetPerk("specialty_armorpiercing");
-	self UnsetPerk("specialty_finalstand");
-	self UnsetPerk("specialty_fastinteract");
-	self UnsetPerk("specialty_bulletpenetration");
-	self UnsetPerk("specialty_movefaster");
-	self UnsetPerk("specialty_explosivedamage");
-	self UnsetPerk("specialty_stalker");
-	iprintln("Has special stalker: " + self HasPerk("specialty_stalker"));
-	self UnsetPerk("specialty_stockpile");
-	self UnsetPerk("specialty_shellshock");
-	self UnsetPerk("specialty_delayexplosive");
 
-self UnsetPerk("specialty_longersprint");
-iprintln("Has Perk Longer Sprint: " + self HasPerk("specialty_longersprint"));
-
-self UnsetPerk("specialty_extraammo");
-iprintln("Has Perk Extra Ammo: " + self HasPerk("specialty_extraammo"));
-
-self UnsetPerk("specialty_flakjacket");
-iprintln("Has Perk Flak Jacket: " + self HasPerk("specialty_flakjacket"));
-
-self UnsetPerk("specialty_fastreload");
-iprintln("Has Perk Fast Reload: " + self HasPerk("specialty_fastreload"));
-
-self UnsetPerk("specialty_bulletaccuracy");
-iprintln("Has Perk Bullet Accuracy: " + self HasPerk("specialty_bulletaccuracy"));
-
-self UnsetPerk("specialty_armorvest");
-iprintln("Has Perk Armor Vest: " + self HasPerk("specialty_armorvest"));
-
-
-/* 
-self UnsetPerk("specialty_fastweaponswitch");
-iprintln("Has Perk Fast Weapon Switch: " + self HasPerk("specialty_fastweaponswitch"));
-
-self UnsetPerk("specialty_fastads");
-iprintln("Has Perk Fast ADS: " + self HasPerk("specialty_fastads"));
-
-self UnsetPerk("specialty_reconnaissance");
-iprintln("Has Perk Reconnaissance: " + self HasPerk("specialty_reconnaissance"));
-
-self UnsetPerk("specialty_quieter");
-iprintln("Has Perk Quieter: " + self HasPerk("specialty_quieter"));
-
-self UnsetPerk("specialty_pistoldeath");
-iprintln("Has Perk Pistol Death: " + self HasPerk("specialty_pistoldeath"));
-
-self UnsetPerk("specialty_pin_back");
-iprintln("Has Perk Pin Back: " + self HasPerk("specialty_pin_back"));
-
-self UnsetPerk("specialty_nottargetedbyai");
-iprintln("Has Perk Not Targeted By AI: " + self HasPerk("specialty_nottargetedbyai"));
-
-self UnsetPerk("specialty_noname");
-iprintln("Has Perk No Name: " + self HasPerk("specialty_noname"));
-
-self UnsetPerk("specialty_nomotionsensor");
-iprintln("Has Perk No Motion Sensor: " + self HasPerk("specialty_nomotionsensor"));
-
-self UnsetPerk("specialty_movefaster");
-iprintln("Has Perk Move Faster: " + self HasPerk("specialty_movefaster"));
-
-self UnsetPerk("specialty_loudenemies");
-iprintln("Has Perk Loud Enemies: " + self HasPerk("specialty_loudenemies"));
-
-self UnsetPerk("specialty_killstreak");
-iprintln("Has Perk Killstreak: " + self HasPerk("specialty_killstreak"));
-
-self UnsetPerk("specialty_holdbreath");
-iprintln("Has Perk Hold Breath: " + self HasPerk("specialty_holdbreath"));
-
-self UnsetPerk("specialty_healthregen");
-iprintln("Has Perk Health Regen: " + self HasPerk("specialty_healthregen"));
-
-self UnsetPerk("specialty_bulletdamage");
-iprintln("Has Perk Grenade Pull Death: " + self HasPerk("specialty_bulletdamage"));
-
-self UnsetPerk("specialty_gpsjammer");
-iprintln("Has Perk GPS Jammer: " + self HasPerk("specialty_gpsjammer"));
-
-
-
-self UnsetPerk("specialty_gambler");
-iprintln("Has Perk Gambler: " + self HasPerk("specialty_gambler"));
-
-self UnsetPerk("specialty_fireproof");
-iprintln("Has Perk Fireproof: " + self HasPerk("specialty_fireproof"));
-
-self UnsetPerk("specialty_finalstand");
-iprintln("Has Perk Final Stand: " + self HasPerk("specialty_finalstand"));
-
-self UnsetPerk("specialty_fastmeleerecovery");
-iprintln("Has Perk Fast Melee Recovery: " + self HasPerk("specialty_fastmeleerecovery"));
-
-self UnsetPerk("specialty_fastmantle");
-iprintln("Has Perk Fast Mantle: " + self HasPerk("specialty_fastmantle"));
-
-self UnsetPerk("specialty_fastinteract");
-iprintln("Has Perk Fast Interact: " + self HasPerk("specialty_fastinteract"));
-
-self UnsetPerk("specialty_fallheight");
-iprintln("Has Perk Fall Height: " + self HasPerk("specialty_fallheight"));
-
-self UnsetPerk("specialty_extramoney");
-iprintln("Has Perk Extra Money: " + self HasPerk("specialty_extramoney"));
-
-self UnsetPerk("specialty_explosivedamage");
-iprintln("Has Perk Explosive Damage: " + self HasPerk("specialty_explosivedamage"));
-
-self UnsetPerk("specialty_disarmexplosive");
-iprintln("Has Perk Disarm Explosive: " + self HasPerk("specialty_disarmexplosive"));
-
-self UnsetPerk("specialty_detectexplosive");
-iprintln("Has Perk Detect Explosive: " + self HasPerk("specialty_detectexplosive"));
-
-self UnsetPerk("specialty_delayexplosive");
-iprintln("Has Perk Delay Explosive: " + self HasPerk("specialty_delayexplosive"));
-
-self UnsetPerk("specialty_copycat");
-iprintln("Has Perk Copycat: " + self HasPerk("specialty_copycat"));
-
-
-self UnsetPerk("specialty_bulletpenetration");
-iprintln("Has Perk Bullet Penetration: " + self HasPerk("specialty_bulletpenetration"));
-
-self UnsetPerk("specialty_bulletflinch");
-iprintln("Has Perk Bullet Flinch: " + self HasPerk("specialty_bulletflinch"));
-
-self UnsetPerk("specialty_bulletdamage");
-iprintln("Has Perk Bullet Damage: " + self HasPerk("specialty_bulletdamage"));
-
-self UnsetPerk("specialty_armorpiercing");
-iprintln("Has Perk Armor Piercing: " + self HasPerk("specialty_armorpiercing"));
-
-self UnsetPerk("specialty_twoprimaries");
-iprintln("Has Perk Two Primaries: " + self HasPerk("specialty_twoprimaries"));
-
-self UnsetPerk("specialty_twogrenades");
-iprintln("Has Perk Two Grenades: " + self HasPerk("specialty_twogrenades"));
-
-self UnsetPerk("specialty_twoattach");
-iprintln("Has Perk Two Attachments: " + self HasPerk("specialty_twoattach"));
-
-self UnsetPerk("specialty_showonradar");
-iprintln("Has Perk Show on Radar: " + self HasPerk("specialty_showonradar"));
-
-self UnsetPerk("specialty_sprintrecovery");
-iprintln("Has Perk Sprint Recovery: " + self HasPerk("specialty_sprintrecovery"));
-
-self UnsetPerk("specialty_shellshock");
-iprintln("Has Perk Shell Shock: " + self HasPerk("specialty_shellshock"));
-
-self UnsetPerk("specialty_stunprotection");
-iprintln("Has Perk Stun Protection: " + self HasPerk("specialty_stunprotection"));
-
-self UnsetPerk("specialty_showenemyequipment");
-iprintln("Has Perk Show Enemy Equipment: " + self HasPerk("specialty_showenemyequipment"));
-*/
-
-
+	self.specialty_armorvest_upgrade = false;
+	self.specialty_quickrevive_upgrade = false;
+	self.specialty_fastreload_upgrade = false;
+	self.specialty_rof_upgrade = false;
+	self.specialty_endurance_upgrade = false;
+	self.specialty_flakjacket_upgrade = false;
+	self.specialty_deadshot_upgrade = false;
+	self.specialty_additionalprimaryweapon_upgrade = false;
+	self.specialty_bulletdamage_upgrade = false;
+	self.specialty_altmelee_upgrade = false;
+	self.specialty_extraamo_upgrade = false;
 }
 
 zombiemode_melee_miss()
@@ -1065,7 +926,8 @@ init_levelvars()
 		set_zombie_var( "zombie_timer_offset", 			280 );	// hud offsets
 	}
 
-	if(level.apocalypse == 1) {
+	//Reimagined Apocalypse
+	if(level.expensive_perks) {
 		level.zombie_vars["zombie_score_bonus_melee"] = 20;
 		//level.zombie_vars["zombie_score_bonus_head"] = 50;
 	}
@@ -4351,8 +4213,9 @@ round_spawning_test()
 //
 
 check_zombie_pause() {
-		
-	if ( GetDvarInt("zombie_pause") > 0 && level.apocalypse==0 )
+	
+	//Reimagined-Expanded added ability to pause zombie spawning, apocalypse
+	if ( GetDvarInt("zombie_pause") > 0 && !level.apocalypse)
 	{
 		level.countdown_hud = create_counter_hud();
 		level.countdown_hud settext( "Paused" );
@@ -4973,9 +4836,45 @@ chalk_round_over()
 	wait ( 2.0 );
 }
 
+setApocalypseOptions()
+{
+
+	if(level.apocalypse > 0)
+		level.apocalypse = true;
+	if(level.alt_bosses > 0 || level.apocalypse)
+		level.alt_bosses = true;
+	if(level.expensive_perks > 0 || level.apocalypse)
+		level.expensive_perks = true;
+	if(level.tough_zombies > 0 || level.apocalypse)
+		level.tough_zombies = true;
+	if(level.zombie_types > 0 || level.apocalypse)
+		level.types = true;
+	if(level.no_perks > 0)
+		level.no_perks = true;
+	if(level.bo2_perks > 0 || level.apocalypse)
+		level.bo2_perks = true;
+	if(level.extra_drops > 0 || level.apocalypse)
+		level.extra_drops = true;	
+
+	wait(10);
+
+	iprintln("Apocalypse is: "+ level.apocalypse);
+	iprintln("Alt Bosses is: "+ level.alt_bosses);
+	iprintln("Expensive Perks is: "+ level.expensive_perks);
+	iprintln("Tough Zombies is: "+ level.tough_zombies);
+	iprintln("Zombie Types is: "+ level.types);
+	iprintln("No Perks is: "+ level.no_perks);
+	iprintln("BO2 Perks is: "+ level.bo2_perks);
+	iprintln("Extra Drops is: "+ level.extra_drops);
+
+}
+
+
 round_think()
 {
 	//Reimagined-Expanded
+	self thread setApocalypseOptions();
+
 	level.round_number = 20;
 	level.zombie_move_speed = 105;
 	level.zombie_vars["zombie_spawn_delay"] = .08;
