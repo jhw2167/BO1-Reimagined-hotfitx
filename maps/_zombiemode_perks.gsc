@@ -831,13 +831,16 @@ vending_weapon_upgrade_cost()
 	while ( 1 )
 	{
 		self.cost = 5000;
-		self.cost2 = 15000;
+		self.cost2 = 5000;
+		if(level.expensive_perks)
+			self.cost2 = 10000;
+		
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
 		level waittill( "powerup bonfire sale" );
 
 		self.cost = 1000;
-		self.cost2 = 5000;
+		self.cost2 = self.cost2 / 2;
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
 		level waittill( "bonfire_sale_off" );
@@ -1885,7 +1888,10 @@ vending_trigger_think()
 
 	self thread check_player_has_perk(perk);
 
-	upgrade_perk_cost = 10000;
+	upgrade_perk_cost = 5000;
+	if(level.expensive_perks)
+		upgrade_perk_cost *= 2;
+
 	switch( perk )
 	{
 		case "specialty_armorvest_upgrade":

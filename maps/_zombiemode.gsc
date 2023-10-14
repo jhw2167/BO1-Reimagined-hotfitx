@@ -155,6 +155,7 @@ main()
 
 	init_utility();
 	maps\_utility::registerClientSys("zombify");	// register a client system...
+	maps\_utility::registerClientSys("levelNotify");
 	init_anims(); 	// zombie ai and anim inits
 
 	if( isDefined( level.custom_ai_type ) )
@@ -6220,7 +6221,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	iprintln("Origin: " + attacker.origin );
-	iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
+	/* iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
 	iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
 	iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DTP_PRO));
@@ -6231,7 +6232,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("Testing has Upp ECH: " + attacker hasProPerk(level.ECH_PRO));
 	iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
 	iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO));
+ */
 
+ 	iprintln("doDamage::zombeieblood");
+	attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 10);
+	
 
 
 	// damage scaling for explosive weapons

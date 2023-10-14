@@ -586,6 +586,7 @@ teleport_player(user)
 	//now check if and empty floors to clean up.
 	level thread check_if_empty_floors();
 
+	iprintln("calling tp cool fx");
 	setClientSysState( "levelNotify", "cool_fx", user );
 
 	//teleporter after effects.

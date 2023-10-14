@@ -10,32 +10,32 @@
 
 init()
 {
-	PreCacheModel( "c_zom_player_honorguard_fb" );
+	//PreCacheModel( "c_zom_player_honorguard_fb" );
+	PreCacheModel( "c_viet_zombie_napalm" );
 	level._effect[ "bo2_powerup_zombie_blood_glow" ] = LoadFX( "custom/zombie_blood/fx_bo2_powerup_zombie_blood_glow" );
+	level._effect["fx_trail_blood_streak"]			= LoadFx("trail/fx_trail_blood_streak");
 	level.plr_currently_using_zombie_blood = false;
 }
 
-zombie_blood_powerup( player )
+zombie_blood_powerup( player, powerup_time )
 {
 	player endon( "disconnect" );
 	player endon( "zombie_blood_over" );
 	level.plr_currently_using_zombie_blood = true;
-	if( player HasPerk( "specialty_scavanger" ) )
-	{
-		powerup_time = 60;
-	}
-	else
-	{
-		powerup_time = 30;
-	}
 	player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] += powerup_time;
+	iprintln("bloodPowerup::zombeieblood");
 	if( player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] )
 	{
 		return;
 	}
+
 	player thread zombie_blood_on_death();
 	player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = true;
+	
+	iprintln("Setting clientSysState for player with weapon: " + player GetCurrentWeapon() );
+
 	setClientSysState( "levelNotify", "zblood_on", player );
+	setClientSysState( "levelNotify", "zblood_on");
 	player thread zombie_blood_change_playermodel( true );
 	player thread zombie_blood_create_fx();
 	while( player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] > 0 )
@@ -68,7 +68,7 @@ zombie_blood_change_playermodel( change_to_zombie )
 		}
 		else
 		{
-			self SetModel( "c_zom_player_honorguard_fb" );
+			self SetModel( "c_viet_zombie_napalm" );
 			if( IsDefined( self.headModel ) )
 			{
 				self Detach( self.headModel, "" );
@@ -118,6 +118,7 @@ zombie_blood_create_fx()
 	fx_origin LinkTo( self );
 	fx_origin PlayLoopSound( "zmb_bo2_powerup_zombie_blood_loop" );
 	PlayFXOnTag( level._effect[ "bo2_powerup_zombie_blood_glow" ], fx_origin, "tag_origin" );
+	iprintln("waiting for zombie blood over");
 	self waittill_any( "zombie_blood_over", "disconnect" );
 	fx_origin StopLoopSound();
 	fx_origin Delete();

@@ -109,7 +109,13 @@ init_powerups()
 	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
 	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+
+	//add_zombie_powerup( "lose_perk", "p7_zm_power_up_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+	//add_zombie_powerup( "empty_clip", "p7_zm_power_up_max_ammo", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+	//add_zombie_powerup( "meat", GetWeaponModel( "meat_zm" ), &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	
+	//Reimagined-Expanded
+	add_zombie_powerup( "zombie_blood", "p8_zm_power_up_blood", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "mtl_bo2_zm_powerup_zombie_blood", "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
 
 	//GZheng - Temp VO
 	//add the correct VO for firesale in the 3rd parameter of this function.
@@ -224,6 +230,9 @@ init_player_zombie_vars()
 
 		players[p].zombie_vars["zombie_point_scalar"] = 1;
 		players[p].zombie_vars["zombie_damage_scalar"] = 1;
+
+		players[p].zombie_vars[ "zombie_powerup_zombie_blood_on" ] = false;
+		players[p].zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 	}
 }
 

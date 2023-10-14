@@ -180,6 +180,9 @@ rawfile,clientscripts/zombie_pentagon_teleporter.csc
 rawfile,clientscripts/zombie_coast_player_zipline.csc
 rawfile,clientscripts/zombie_moon.csc
 rawfile,clientscripts/zombie_moon_amb.csc
+rawfile,clientscripts/_zombiemode.csc
+rawfile,clientscripts/_utility.csc
+rawfile,clientscripts/_zombiemode_weapons.csc
 
 //ANIMSCRIPTS
 rawfile,animscripts/zombie_melee.gsc
@@ -350,7 +353,6 @@ fx,maps/zombie/fx_zombie_tesla_electric_bolt
 fx,maps/zombie/fx_zombie_tesla_shock_secondary
 fx,maps/zombie/fx_zombie_tesla_shock
 
-
 fx,explosions/fx_explosion_charge_large
 fx,explosions/fx_default_explosion
 fx,env/smoke/fx_grenade_smoke
@@ -358,7 +360,7 @@ fx,env/fire/fx_fire_xlg_fuel
 fx,env/fire/fx_fire_player_torso_mp
 fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
 fx,weapon/freeze_gun/fx_exp_freezegun_impact
-
+fx,trail/fx_trail_blood_streak
 
 
 //MATERIALS
@@ -374,6 +376,9 @@ material,terrain_scorch_dirt
 material,terrain_scorch_grass
 material,terrain_scorch_sand
 material,terrain_scorch_mud
+
+material,mtl_viet_zombie_napalm_head
+material,mtl_viet_zombie_napalm_body
 
 
 //Material Properties
@@ -540,6 +545,11 @@ xmodel,t5_weapon_quantum_bomb_world
 xmodel,p_glo_cinder_block_large
 xmodel,p_jun_wood_plank_large01
 xmodel,zombie_moon_treasure_box_bottom
+
+xmodel,c_viet_zombie_napalm_head
+xmodel,c_viet_zombie_napalm
+
+
 
 //Perk XMODELS
 xmodel,bo2_p6_zm_perk_vulture_ammo

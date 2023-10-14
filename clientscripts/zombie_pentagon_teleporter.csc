@@ -106,6 +106,7 @@ teleporter_fx_cool_down(ClientNum)
 	{
 
 		level waittill("cool_fx", ClientNum);
+		iprintlnbold("Pentagon tp cool effects triggered");
 
 		players = GetLocalPlayers();
 
