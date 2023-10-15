@@ -3,7 +3,7 @@
 
 main()
 {
-	iprintlnbold("zombiemode init csc");
+	//iprintlnbold("zombiemode init csc");
 	level thread clientscripts\_zombiemode_ffotd::main_start();
 	level.zombiemode = true;
 	level.swimmingFeature = false;
@@ -76,7 +76,7 @@ main()
 	level thread clientscripts\_zombiemode_ffotd::main_end();
 	
 	wait(5);
-	iprintlnbold("FINISHED zombiemode init csc");
+	//iprintlnbold("FINISHED zombiemode init csc");
 }
 
 init_local_player_count()
@@ -1040,13 +1040,13 @@ add_level_notify_callback( message, callback_func, arg1, arg2, arg3 )
 	if(message == "zblood_on")
 	{
 		level waittill( "zblood_on", localclientnum );
-		iprintlnbold("zblood_on came" + localClientNum);
+		//iprintlnbold("zblood_on came" + localClientNum);
 	
 	} else if (message == "zblood_off")
 	{
 
 		level waittill( "power_on", localclientnum );
-		iprintlnbold("zblood_off came" + localClientNum);
+		//iprintlnbold("zblood_off came" + localClientNum);
 	
 	}
 	
@@ -1056,9 +1056,9 @@ level_notify_callback_think( message, callback_func, arg1, arg2, arg3 )
 {
     while( true )
     {
-		iprintlnbold("Waiting for message " + message);
+		//iprintlnbold("Waiting for message " + message);
         level waittill( message, localclientnum );
-		iprintlnbold("Received message " + message);
+		//iprintlnbold("Received message " + message);
         if( IsDefined( arg1 ) && IsDefined( arg2 ) && IsDefined( arg3 ) )
         {
             level thread [[ callback_func ]]( localclientnum, arg1, arg2, arg3 );
@@ -1085,14 +1085,14 @@ level_notify_callback_think( message, callback_func, arg1, arg2, arg3 )
 
 init_zombie_blood()
 {
-	iprintlnbold("zombieblood init");
+	//iprintlnbold("zombieblood init");
 	level thread add_level_notify_callback( "zblood_on", ::zblood_vision, "1" );
 	level thread add_level_notify_callback( "zblood_off", ::zblood_vision, "0" );
 }
 
 zblood_vision( localclientnum, state )
 {
-	iprintlnbold("zblood vision  :  " + localClientNum );
+	//iprintlnbold("zblood vision  :  " + localClientNum );
 	player = GetLocalPlayers()[ localclientnum ];
 	if( state == "1" )
 	{

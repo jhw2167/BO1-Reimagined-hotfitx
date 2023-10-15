@@ -2270,8 +2270,25 @@ double_points_powerup_player( drop_item )
 	self.zombie_vars["zombie_point_scalar"] = 1;
 }
 
+//Reimaged-Expanded
+//Orignal function call, for all vanila uses
 full_ammo_powerup( drop_item, player )
 {
+	level full_ammo_powerup_implementation( drop_item, player, -1 );
+}
+
+full_ammo_powerup_implementation( drop_item, player, player_num )
+{
+	iprintln("Calling full ammo with: " + player.name + " and " + player_num + "");
+
+	if( drop_item == undefined )
+	{
+		player thread powerup_vo("full_ammo");
+		drop_item = SpawnStruct();
+		//drop_item.caution = f; //makes text red
+		drop_item.hint = &"ZOMBIE_POWERUP_MAX_AMMO";
+	}
+
 	players = get_players();
 	for(i = 0; i < players.size; i++)
 	{
@@ -2280,6 +2297,12 @@ full_ammo_powerup( drop_item, player )
 			continue;
 		}
 		
+		//Reimagined-Expanded - allows us to give max ammo's to particular players
+		if( player_num != -1 && i != player_num )
+		{
+			continue;
+		}
+
 		// skip players in last stand
 		if ( players[i] maps\_laststand::player_is_in_laststand() )
 		{

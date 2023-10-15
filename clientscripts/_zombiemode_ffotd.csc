@@ -31,7 +31,7 @@ notetrack_think()
 	{
 		level waittill( "notetrack", localclientnum, note );
 
-		iprintlnbold(note);
+		//iprintlnbold(note);
 	}
 }
 

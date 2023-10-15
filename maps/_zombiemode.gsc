@@ -6234,8 +6234,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO));
  */
 
- 	iprintln("doDamage::zombeieblood");
-	attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 10);
+ 	//iprintln("doDamage::zombeieblood");
+	//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 10);
 	
 
 

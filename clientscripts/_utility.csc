@@ -1713,7 +1713,7 @@ trigger_thread(ent, on_enter_payload, on_exit_payload)
 		
 	add_trigger_to_ent(ent, self);
 
-//	iprintlnbold("Trigger " + self.targetname + " hit by ent " + ent getentitynumber());
+//	//iprintlnbold("Trigger " + self.targetname + " hit by ent " + ent getentitynumber());
 	
 	if(isdefined(on_enter_payload))
 	{
@@ -1733,7 +1733,7 @@ trigger_thread(ent, on_enter_payload, on_exit_payload)
 		}		
 	}
 
-//	iprintlnbold(ent getentitynumber() + " leaves trigger " + self.targetname + ".");
+//	//iprintlnbold(ent getentitynumber() + " leaves trigger " + self.targetname + ".");
 
 	if(isdefined(ent) && isdefined(on_exit_payload))
 	{

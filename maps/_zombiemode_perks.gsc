@@ -1639,8 +1639,10 @@ addProPerk( perk )
 		self.specialty_flakjacket_upgrade = true;
 	if (perk == "specialty_deadshot_upgrade")
 		self.specialty_deadshot_upgrade = true;
-	if (perk == "specialty_additionalprimaryweapon_upgrade")
+	if (perk == "specialty_additionalprimaryweapon_upgrade") {
 		self.specialty_additionalprimaryweapon_upgrade = true;
+		self giveAdditionalprimaryweaponUpgrade();
+	}	
 	if (perk == "specialty_bulletdamage_upgrade")
 		self.specialty_bulletdamage_upgrade = true;
 	if (perk == "specialty_altmelee_upgrade")
@@ -1649,6 +1651,12 @@ addProPerk( perk )
 		self.specialty_extraamo_upgrade = true;
 
 	//iprintln( " ADD PRO PERK : " + perk);
+}
+
+giveAdditionalprimaryweaponUpgrade() 
+{
+	//Give player max ammo for all weapons
+	level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, self, self.entity_num );
 }
 
 

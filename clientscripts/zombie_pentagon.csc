@@ -11,7 +11,7 @@ main()
 	include_weapons();
 
 	// _load!
-	iprintlnbold("pentagon init csc");
+	//iprintlnbold("pentagon init csc");
 	clientscripts\_zombiemode::main();
 	clientscripts\zombie_pentagon_fx::main();
 
