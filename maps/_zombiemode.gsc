@@ -410,18 +410,9 @@ magicReload()
 
 zombiemode_melee_miss()
 {
-	while(1)
+	if( isDefined( self.enemy.curr_pay_turret ) )
 	{
-		if(self.specialty_endurance_upgrade)
-		{
-			//wait till player sprints
-			self waittill("sprint");
-			iprintln("Observed sprint");
-			
-
-			wait(5);
-		}
-		wait(0.1);
+		self.enemy doDamage( GetDvarInt( #"ai_meleeDamage" ), self.origin, self, undefined, "melee", "none" );
 	}
 }
 
