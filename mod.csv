@@ -37,6 +37,9 @@ rawfile,maps/_zombiemode_grief.gsc
 //New
 rawfile,maps/sb_bo2_zombie_blood_powerup.gsc
 
+//vision
+rawfile,vision/zombie_blood.vision
+
 //NACHT
 rawfile,maps/zombie_cod5_prototype.gsc
 rawfile,maps/zombie_cod5_prototype_fx.gsc
@@ -582,6 +585,7 @@ xmodel,t6_wpn_zmb_perk_bottle_vulture_world
 xanim,p_zombie_perkacola_drink
 xanim,ai_zombie_fast_sprint_01
 xanim,ai_zombie_fast_sprint_02
+xanim,ai_zombie_fast_sprint_03
 xanim,ai_zombie_attack_v6
 xanim,ai_zombie_run_attack_v2
 xanim,ai_zombie_run_attack_v3

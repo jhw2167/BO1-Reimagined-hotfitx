@@ -264,10 +264,15 @@ post_all_players_connected()
 		level.music_override = false;
 	}
 
+	//Reimagined-Expanded -- bonus player perk fx
 	players = GetPlayers();
-	for(i=0;i<players.size;i++)
+	for(i=0;i<players.size;i++) 
 	{
 		players[i] unsetPerks();
+
+		players[i] thread watch_stamina_upgraded();
+		players[i] thread watch_fastreload_upgraded();
+		
 	}
 
 	level thread disable_character_dialog();
@@ -309,11 +314,114 @@ unsetPerks()
 	self.specialty_extraamo_upgrade = false;
 }
 
+
+watch_stamina_upgraded()
+{
+	while(1)
+	{
+		if(self.specialty_endurance_upgrade)
+		{
+			//wait till player sprints
+			self waittill("sprint");
+			iprintln("Observed sprint");
+			//self waittill_any_return("reload", "melee", "sprint", "weapon_switch");
+
+			//give player zombie blood
+			//iprintln("Sprint zm blood triggered");
+			//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 2);
+			//make nearby zombies immune to player collision
+
+			//Get all zombies near player
+			zombies = GetAiSpeciesArray( "axis", "all" );
+			iprintln("zombies: " + zombies.size);
+			distance_squared = 1024 * 1024;
+			for(i=0;i<zombies.size;i++)
+			{
+				if( DistanceSquared( self.origin, zombies[i].origin ) < distance_squared )
+					zombies[i] thread setZombiePlayerCollisionOff( 2 );
+			}
+
+			wait(5);
+		}
+		wait(0.1);
+	}
+
+}
+
+setZombiePlayerCollisionOff( time )
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+
+	iprintln("Zombie collision off");
+	self SetPlayerCollision( 0 );
+	wait( time );
+	self SetPlayerCollision( 1 );
+}
+
+watch_fastreload_upgraded()
+{
+
+	while(1)
+	{
+		if(self.specialty_fastreload_upgrade)
+		{
+			//wait till player switches weapons
+			self waittill("weapon_switch_complete");
+			//iprintln("Observed weapon switch");	
+
+			self thread magicReload();
+		}
+		wait(0.1);
+	}
+
+}
+
+magicReload()
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon("weapon_switch");
+
+	//this is the weapon we skip reload
+	primary = self getcurrentweapon();
+	weapons = self GetWeaponsListPrimaries();
+	wait(3.5);
+	for(i=0;i<weapons.size;i++)
+	{
+		clip = self GetWeaponAmmoClip( weapons[i] );
+		clipSize = WeaponClipSize(weapons[i]);
+
+		stock = self GetWeaponAmmoStock( weapons[i] );
+		diff = clipSize - clip;
+
+		if(stock - diff < 0)
+			diff = stock;
+		
+		if(weapons[i] == primary || diff == 0 || stock == 0)
+			continue;
+
+		self SetWeaponAmmoClip(weapons[i], clip + diff);
+		self SetWeaponAmmoStock(weapons[i], stock - diff);		
+	}
+
+}
+
+
 zombiemode_melee_miss()
 {
-	if( isDefined( self.enemy.curr_pay_turret ) )
+	while(1)
 	{
-		self.enemy doDamage( GetDvarInt( #"ai_meleeDamage" ), self.origin, self, undefined, "melee", "none" );
+		if(self.specialty_endurance_upgrade)
+		{
+			//wait till player sprints
+			self waittill("sprint");
+			iprintln("Observed sprint");
+			
+
+			wait(5);
+		}
+		wait(0.1);
 	}
 }
 
@@ -4879,7 +4987,8 @@ round_think()
 	level.round_number = 20;
 	level.zombie_move_speed = 105;
 	level.zombie_vars["zombie_spawn_delay"] = .08;
-	level.zombie_ai_limit = 3;
+	//MAX ZOMBIES
+	level.zombie_ai_limit = 20;
 
 	if(level.max_perks == undefined)
 	{

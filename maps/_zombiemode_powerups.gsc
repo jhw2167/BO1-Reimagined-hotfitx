@@ -2279,13 +2279,14 @@ full_ammo_powerup( drop_item, player )
 
 full_ammo_powerup_implementation( drop_item, player, player_num )
 {
-	iprintln("Calling full ammo with: " + player.name + " and " + player_num + "");
+	iprintln("Calling full ammo with player num: " + player_num + "");
 
 	if( drop_item == undefined )
 	{
+		iprintln("Drop item is undefined");
 		player thread powerup_vo("full_ammo");
 		drop_item = SpawnStruct();
-		//drop_item.caution = f; //makes text red
+		drop_item.caution = false; //makes text red
 		drop_item.hint = &"ZOMBIE_POWERUP_MAX_AMMO";
 	}
 
@@ -2298,7 +2299,7 @@ full_ammo_powerup_implementation( drop_item, player, player_num )
 		}
 		
 		//Reimagined-Expanded - allows us to give max ammo's to particular players
-		if( player_num != -1 && i != player_num )
+		if( player_num != -1 && players[i].entity_num != player_num )
 		{
 			continue;
 		}
