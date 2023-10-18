@@ -333,10 +333,28 @@ bonus_freeze_damage( zomb, player, radius, time )
 		
 }
 
+//After 5 seconds, unmark zombies for freeze
+unmark_frozen_zombies()
+{
+
+	if ( !IsDefined( self ) || !IsAlive( self ) )
+	{
+		// guy died on us
+		return;
+	}
+
+	wait(5);
+	if(isDefined(self.marked_for_freeze)) {
+		self.marked_for_freeze = false;
+		//make him run again
+	}
+
+}
+
 freezegun_get_enemies_in_range() {
 	
-	inner_range = 300;
-	outer_range = 600;
+	inner_range = 100;
+	outer_range = 300;
 	cylinder_radius = 120;
 
 	view_pos = self GetWeaponMuzzlePoint();
@@ -664,7 +682,6 @@ tesla_play_death_fx( arc_num )
 	}
 
 	if(arc_num==0) {
-		iPrintln("playfx");
 		PlayFxOnTag( level._effect["tesla_shock"], self, tag );
 	}
 	

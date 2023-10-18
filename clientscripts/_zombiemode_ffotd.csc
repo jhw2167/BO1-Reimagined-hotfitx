@@ -470,6 +470,20 @@ hud_message_handler(clientnum, state)
 		fade_type = "fadeout";
 		fade_time = 250;
 	}
+	else if(state == "stamina_ghost_start")
+	{
+		menu_name = "stamina_ghost_indicator";
+		item_name = "stamina_ghost_indicator_image";
+		fade_type = "fadein";
+		fade_time = 250;
+	}
+	else if(state == "stamina_ghost_end")
+	{
+		menu_name = "stamina_ghost_indicator";
+		item_name = "stamina_ghost_indicator_image";
+		fade_type = "fadeout";
+		fade_time = 250;
+	}
 
 	AnimateUI(clientnum, menu_name, item_name, fade_type, fade_time);
 }

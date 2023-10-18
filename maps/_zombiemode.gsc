@@ -96,8 +96,9 @@ main()
 	//Limit zombie to 24 max, must have for network purposes
 	if ( !isdefined( level.zombie_ai_limit ) )
 	{
-		level.zombie_ai_limit = 24;
-		SetAILimit( 31 );//allows zombies to spawn in as some were just killed
+		//Reimagined-Expanded - raised from 24 to 40
+		level.zombie_ai_limit = 40;
+		SetAILimit( 45 );//allows zombies to spawn in as some were just killed
 	}
 
 	init_fx();
@@ -269,10 +270,9 @@ post_all_players_connected()
 	for(i=0;i<players.size;i++) 
 	{
 		players[i] unsetPerks();
-
-		players[i] thread watch_stamina_upgraded();
-		players[i] thread watch_fastreload_upgraded();
-		
+		players[i] thread watch_player_hellfire();
+		players[i] thread watch_player_sheercold();
+		players[i] thread watch_player_electric();
 	}
 
 	level thread disable_character_dialog();
@@ -312,101 +312,168 @@ unsetPerks()
 	self.specialty_bulletdamage_upgrade = false;
 	self.specialty_altmelee_upgrade = false;
 	self.specialty_extraamo_upgrade = false;
+
+	level.COOLDOWN_STAMINA_PRO_GHOST = 1; 	//20
+	level.COOLDOWN_SPEED_PRO_RELOAD = 3.5;
+
+	level.THRESHOLD_HELLFIRE_TIME = 2.0;
+	level.THRESHOLD_SHEERCOLD_DIST = 40;
+	level.THRESHOLD_ELECTRIC_BULLETS = 5;
+
+	level.RANGE_SHEERCOLD_DIST = 120;
+}
+
+//Reimagined-Expanded -- get zombies in provided range
+getZombiesInRange( range, type )
+{
+	if(!isDefined(type))
+		type = "all";
+	//type = "all", "zombie", "zombie_dog"
+	zombies = GetAiSpeciesArray( "axis", type );
+	distance_squared = range * range;
+	zombies_in_range = [];
+	for(i=0;i<zombies.size;i++)
+	{
+		if( DistanceSquared( self.origin, zombies[i].origin ) < distance_squared )
+			zombies_in_range[zombies_in_range.size] = zombies[i];
+	}
+	return zombies_in_range;
 }
 
 
-watch_stamina_upgraded()
+//Reimagined-Expanded Weapon Effect!
+
+//Eletric effect triggers on random bullets E(x) = 5 / clip
+
+//Electric Effect
+
+watch_player_electric()
 {
+	self.bullet_electric = false;
+	electric_weapons = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2");
+
 	while(1)
 	{
-		if(self.specialty_endurance_upgrade)
+		weapon = self getcurrentweapon();
+		if( is_in_array( electric_weapons, weapon) )
 		{
-			//wait till player sprints
-			self waittill("sprint");
-			iprintln("Observed sprint");
-			//self waittill_any_return("reload", "melee", "sprint", "weapon_switch");
+			self watch_electric_trigger( weapon );
+		}
+		self.bullet_electric = false;
+		wait(0.1);
+	}
+}
 
-			//give player zombie blood
-			//iprintln("Sprint zm blood triggered");
-			//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 2);
-			//make nearby zombies immune to player collision
+	watch_electric_trigger( weapon )
+	{
+		self endon("weapon_switch");
+		self endon("reload");
 
-			//Get all zombies near player
-			zombies = GetAiSpeciesArray( "axis", "all" );
-			iprintln("zombies: " + zombies.size);
-			distance_squared = 1024 * 1024;
-			for(i=0;i<zombies.size;i++)
-			{
-				if( DistanceSquared( self.origin, zombies[i].origin ) < distance_squared )
-					zombies[i] thread setZombiePlayerCollisionOff( 2 );
+		//Get Max clip size of weapon
+		clip_size = WeaponClipSize(weapon);
+
+		//Get 4 random numbers between 0 and clip_size
+		random_numbers = [];
+		for(i=0;i<level.THRESHOLD_ELECTRIC_BULLETS;i++) {
+			random_numbers[i] = randomInt( clip_size );
+		}
+
+		while(1)
+		{
+			self.bullet_electric = false;
+			if( is_in_array( random_numbers, (self GetWeaponAmmoClip( weapon )) ) ) {
+				self.bullet_electric = true;
 			}
-
-			wait(5);
+				
+			wait(0.05);
 		}
-		wait(0.1);
+
+		
 	}
 
-}
-
-setZombiePlayerCollisionOff( time )
+//Hellfire triggers after 2 seconds of holding down fire button
+watch_player_hellfire()
 {
-	self endon( "death" );
-	self endon( "disconnect" );
-
-	iprintln("Zombie collision off");
-	self SetPlayerCollision( 0 );
-	wait( time );
-	self SetPlayerCollision( 1 );
-}
-
-watch_fastreload_upgraded()
-{
+	self.bullet_hellfire = false;
+	hellfire_weapons = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2");
 
 	while(1)
 	{
-		if(self.specialty_fastreload_upgrade)
+		weapon = self getcurrentweapon();
+		if( is_in_array( hellfire_weapons, weapon) )
 		{
-			//wait till player switches weapons
-			self waittill("weapon_switch_complete");
-			//iprintln("Observed weapon switch");	
-
-			self thread magicReload();
+			self watch_hellfire_trigger();
 		}
+		self.bullet_hellfire = false;
 		wait(0.1);
 	}
-
 }
 
-magicReload()
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon("weapon_switch");
-
-	//this is the weapon we skip reload
-	primary = self getcurrentweapon();
-	weapons = self GetWeaponsListPrimaries();
-	wait(3.5);
-	for(i=0;i<weapons.size;i++)
+	watch_hellfire_trigger()
 	{
-		clip = self GetWeaponAmmoClip( weapons[i] );
-		clipSize = WeaponClipSize(weapons[i]);
+		//iprintln("watch_hellfire_trigger");
+		self endon("weapon_switch");
 
-		stock = self GetWeaponAmmoStock( weapons[i] );
-		diff = clipSize - clip;
+		if( isDefined(self.buttonpressed_attack) )
+			self.buttonpressed_attack = false;		
 
-		if(stock - diff < 0)
-			diff = stock;
-		
-		if(weapons[i] == primary || diff == 0 || stock == 0)
-			continue;
+		while(1)
+		{
+			time = 0;
+			while( (self AttackButtonPressed()) )
+			{
+				
+				if( time >= level.THRESHOLD_HELLFIRE_TIME )
+				{
+					self.bullet_hellfire = true;
+				}
+				time += 0.05;	
+				wait(0.05);
+			}
+			self.bullet_hellfire = false;
+			wait(0.1);
+		}
 
-		self SetWeaponAmmoClip(weapons[i], clip + diff);
-		self SetWeaponAmmoStock(weapons[i], stock - diff);		
 	}
 
+//HERE_
+//Reimagined-Expanded Weapon Effect!
+watch_player_sheercold()
+{
+	self.bullet_sheercold = false;
+	sheercold_weapons = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2");
+	while(1)
+	{
+		weapon = self getcurrentweapon();
+		if( is_in_array(sheercold_weapons, weapon) )
+		{
+			self watch_sheercold_trigger();
+		}
+		wait(0.1);
+		self.bullet_sheercold = false;
+	}
 }
 
+
+	watch_sheercold_trigger()
+	{
+		self endon("weapon_switch");
+
+		while(1)
+		{
+			zombies = getZombiesInRange( level.THRESHOLD_SHEERCOLD_DIST );
+			if( zombies.size > 0 )
+			{
+				self.bullet_sheercold = true;
+			}
+			wait(0.1);
+		}
+
+		
+	}
+
+
+//##############################################
 
 zombiemode_melee_miss()
 {
@@ -2144,7 +2211,8 @@ onPlayerSpawned()
 		self SetClientDvars( "cg_thirdPerson", "0",
 			"cg_fov", "90",
 			"cg_thirdPersonAngle", "0",
-			"ui_show_mule_wep_indicator", "0" );
+			"ui_show_mule_wep_indicator", "0",
+			"ui_show_stamina_ghost_indicator", "0" );
 		
 		if(level.gamemode == "snr" || level.gamemode == "race" || level.gamemode == "gg")
 		{
@@ -2822,7 +2890,7 @@ player_laststand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, s
 
 	self thread revive_waypoint();
 
- 	if ( self HasPerk( "specialty_additionalprimaryweapon" ) )
+ 	if ( self HasPerk( "specialty_additionalprimaryweapon" ) && !(self hasProPerk(level.MUL_PRO)) )
  	{
  		//must take weapon from here if downed, does not take weapon correctly if called in _zombiemode_perks::perk_think()
  		self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
@@ -6320,7 +6388,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 	}
 
-	iprintln("Origin: " + attacker.origin );
+	//ORIGIN_
+	//iprintln("Origin: " + attacker.origin );
 	/* iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
 	iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
@@ -6762,7 +6831,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	///*
 	
 	//Reimagined-Expanded Hellfire spreads more hellfire
-	if(meansOfDeath=="hellfire" ) {
+	if(meansOfDeath=="hellfire" ) 
+	{
 		if( is_boss_zombie(self.animname) ) {
 			return 1000;
 		}
@@ -6772,18 +6842,18 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		return self.maxhealth + 1000; // should always kill 
 	}
 	
-		if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_zm") 
-		{
-			if( !is_boss_zombie(self.animname)) {
-				self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
-				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );
-				return self.maxhealth + 1000; // should always kill
-			} else {
-				final_damage = 4000; //against boss zombies
-			}
-		
+	if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_zm") 
+	{
+		if( !is_boss_zombie(self.animname)) {
+			self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
+			level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );
+			return self.maxhealth + 1000; // should always kill
+		} else {
+			final_damage = 4000; //against boss zombies
 		}
 	
+	}
+
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
 	{	
 
@@ -6791,59 +6861,85 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			//flat 2x damage increase for double pap'ed weapon
 			final_damage = int(final_damage * 2);
 		}
-	
+
+			//Hellfire
+		//  case "ppsh_upgraded_zm_x2":
+		//  case "rpk_upgraded_zm_x2":
+		//  case "ak47_ft_upgraded_zm_x2":
+		if( attacker.bullet_hellfire && !is_true( self.in_water )) 
+		{
+			if(is_boss_zombie(self.animname))
+			{	//just double damage
+			} else
+			{
+				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
+			wait(2);											//zomb, player, radius, time
+			if( !is_true( self.in_water ) )
+				
+				return self.maxhealth + 1000; //hellfire should always kill
+			}
+			final_damage = int(final_damage * 2);
+		}
+		
+			//Freeze
+		//	case "spectre_upgraded_zm_x2":
+		//	case "hk21_upgraded_zm_x2":
+		//	case "galil_upgraded_zm_x2":
+		if( attacker.bullet_sheercold ) 
+		{	
+			if(is_boss_zombie(self.animname))
+			{	//just double damage
+			} else if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) 
+			{
+				self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
+				wait(0.05);
+			}
+
+			final_damage = int(final_damage * 2);
+		}
+
+		//Electric Effect
+		//	case "ak74u_upgraded_zm_x2":
+		//	case "aug_acog_mk_upgraded_zm_x2":
+		//	case "famas_upgraded_zm_x2":
+		 
+		if(attacker.bullet_electric) 
+		{
+			if(is_boss_zombie(self.animname)) { 
+			//nothing
+			} else 
+			{
+				attacker.bullet_electric=false;
+				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 3);
+																		//zomb, player, arc range, num arcs
+				wait(1);
+			}
+
+			final_damage = int(final_damage * 2);
+		}						
+
 		switch(weapon)
 		{
 			//Electric Effect
-			case "ppsh_upgraded_zm_x2":
-			case "ak74u_upgraded_zm_x2":
-			case "spectre_upgraded_zm_x2":
-			case "aug_acog_upgraded_zm_x2":
+			case "ak74u_upgraded_zm_x2":	//currently not in game
+			case "aug_acog_mk_upgraded_zm_x2":
 			case "famas_upgraded_zm_x2":
-			if(is_boss_zombie(self.animname)) { //nothing
-			}
-			else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0) {
-						self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 2);
-																			//zomb, player, arc range, num arcs
-						wait(1);
-				}									
+			//Handled Above
 			break;
 			
 			//Fire
+			case "ppsh_upgraded_zm_x2":
 			case "rpk_upgraded_zm_x2":
 			case "ak47_ft_upgraded_zm_x2":
-				if(is_boss_zombie(self.animname)) { //nothing
-				}
-				else if(attacker GetWeaponAmmoClip(weapon) % 20 == 0 && !is_true( self.in_water )) {
-					self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
-					wait(1);											//zomb, player, radius, time
-					return self.maxhealth + 1000; // should always kill
-				}
+			//Handled Above
 			break;
 			
 			//Freeze
+			case "spectre_upgraded_zm_x2":
 			case "hk21_upgraded_zm_x2":
-			if(is_boss_zombie(self.animname)) { //nothing
-			}
-				else if((attacker GetWeaponAmmoClip(weapon) ) < 60 ) {
-					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
-						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
-						wait(0.05);
-						return self.maxhealth + 1000; // should always kill
-					}
-				}
-			break;
-			case "galil_upgraded_zm_x2":	
-				if(is_boss_zombie(self.animname)) { //nothing
-				}
-				else if((attacker GetWeaponAmmoClip(weapon) ) < 20 ) {
-					if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) {
-						self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
-						wait(0.05);
-						return self.maxhealth + 1000; // should always kill
-					}
-				}
-			break;
+			case "galil_upgraded_zm_x2":
+			//Handled Above
+			break;	
 			
 			case "commando_upgraded_zm_x2":
 			case "stoner63_upgraded_zm_x2":

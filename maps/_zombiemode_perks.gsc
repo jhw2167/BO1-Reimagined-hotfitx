@@ -1629,19 +1629,24 @@ addProPerk( perk )
 		self.specialty_armorvest_upgrade = true;
 	if (perk == "specialty_quickrevive_upgrade")
 		self.specialty_quickrevive_upgrade = true;
-	if (perk == "specialty_fastreload_upgrade")
+	if (perk == "specialty_fastreload_upgrade") {
 		self.specialty_fastreload_upgrade = true;
+		giveFastreloadUpgrade();
+	}
+		
 	if (perk == "specialty_rof_upgrade")
 		self.specialty_rof_upgrade = true;
-	if (perk == "specialty_endurance_upgrade")
+	if (perk == "specialty_endurance_upgrade") {
 		self.specialty_endurance_upgrade = true;
+		giveStaminaUpgrade();
+	}
 	if (perk == "specialty_flakjacket_upgrade")
 		self.specialty_flakjacket_upgrade = true;
 	if (perk == "specialty_deadshot_upgrade")
 		self.specialty_deadshot_upgrade = true;
 	if (perk == "specialty_additionalprimaryweapon_upgrade") {
 		self.specialty_additionalprimaryweapon_upgrade = true;
-		self giveAdditionalprimaryweaponUpgrade();
+		self giveAdditionalPrimaryWeaponUpgrade();
 	}	
 	if (perk == "specialty_bulletdamage_upgrade")
 		self.specialty_bulletdamage_upgrade = true;
@@ -1653,10 +1658,23 @@ addProPerk( perk )
 	//iprintln( " ADD PRO PERK : " + perk);
 }
 
-giveAdditionalprimaryweaponUpgrade() 
+giveAdditionalPrimaryWeaponUpgrade() 
 {
 	//Give player max ammo for all weapons
 	level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, self, self.entity_num );
+}
+
+giveStaminaUpgrade()
+{
+	self SetClientDvar("ui_show_stamina_ghost_indicator", "1");
+	self thread watch_stamina_upgrade(level.STM_PRO + "_stop");
+}
+
+giveFastreloadUpgrade()
+{
+	//some indicator for fast reload complete
+	//self SetClientDvar("ui_show_stamina_ghost_indicator", "1");
+	self thread watch_fastreload_upgrade(level.SPD_PRO + "_stop");
 }
 
 
@@ -1720,13 +1738,13 @@ vending_trigger_think()
 				continue;
 			}
 
-			/*
-			if ( player.maxHealth > 100 )
+			
+			if ( player.maxHealth >= 140 )
 			{
-				wait( 1 );
+				wait( 0.1 );
 				continue;
 			}
-			*/
+			
 
 			if ( player.score < cost )
 			{
@@ -3347,11 +3365,10 @@ additional_weapon_indicator(perk, perk_str)
 		if(IsDefined(additional_wep) && (current_wep == additional_wep || current_wep == WeaponAltWeaponName(additional_wep)))
 		{
 			self send_message_to_csc("hud_anim_handler", "hud_mule_wep_in");
-		}
-		else
-		{
+			wait(1);
 			self send_message_to_csc("hud_anim_handler", "hud_mule_wep_out");
 		}
+		//HERE_
 
 		self waittill_any("weapon_change", "weapon_change_complete");
 	}
@@ -3456,7 +3473,7 @@ move_faster_while_ads(perk_str)
 			self SetMoveSpeedScale(self.move_speed * move_speed_increase);
 		}
 		previous_ads = current_ads;
-		wait .001;
+		wait .01;
 	}
 }
 
@@ -3473,8 +3490,124 @@ remove_stockpile_ammo()
 }
 
 
+//=========================================================================================================
+// STAMINA PRO
+//=========================================================================================================
+
+//Reimagined-Expanded -- Stamina Upgraded
+watch_stamina_upgrade(perk_str)
+{
+	self endon("disconnect");
+	self endon(perk_str);
+
+	while(1)
+	{
+
+		//wait till player sprints
+		self waittill("sprint");
+		
+		//give player zombie blood
+		self.ignoreme = true;
+		self VisionSetNaked( "zombie_blood", 0.5 );
+		self send_message_to_csc("hud_anim_handler", "stamina_ghost_start");
+		
+		//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 2);
+		//make nearby zombies immune to player collision
+
+		//Get all zombies near player
+		zombies = maps\_zombiemode::getZombiesInRange( 512 );
+		//iprintln("zombies: " + zombies.size);
+		
+		for(i=0;i<zombies.size;i++) {
+			zombies[i] thread setZombiePlayerCollisionOff( 2 );
+		}
+
+		wait(1);
+		//this is a little slow to trigger
+		self.ignoreme = false;
+		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
+
+		wait(1);
+		self VisionSetNaked( "undefined", 0.5 );
+
+		wait(level.COOLDOWN_STAMINA_PRO_GHOST);
+	}
+
+}
+
+
+	setZombiePlayerCollisionOff( time )
+	{
+		self endon( "death" );
+		self endon( "disconnect" );
+
+		iprintln("Zombie collision off");
+		self SetPlayerCollision( 0 );
+		wait( time );
+		self SetPlayerCollision( 1 );
+	}
+
+
+
+//=========================================================================================================
+// SPEED PRO
+//=========================================================================================================
+
+
+//Reimagined-Expanded -- Speed Upgraded
+watch_fastreload_upgrade(perk_str)
+{
+	self endon("disconnect");
+	self endon(perk_str);
+
+	while(1)
+	{
+		if(self.specialty_fastreload_upgrade)
+		{
+			//wait till player switches weapons
+			self waittill("weapon_switch_complete");
+			//iprintln("Observed weapon switch");	
+
+			self thread magicReload();
+		}
+		wait(0.1);
+	}
+
+}
+
+magicReload()
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon("weapon_switch");
+
+	//this is the weapon we skip reload
+	primary = self getcurrentweapon();
+	weapons = self GetWeaponsListPrimaries();
+	wait(level.COOLDOWN_SPEED_PRO_RELOAD);
+	for(i=0;i<weapons.size;i++)
+	{
+		clip = self GetWeaponAmmoClip( weapons[i] );
+		clipSize = WeaponClipSize(weapons[i]);
+
+		stock = self GetWeaponAmmoStock( weapons[i] );
+		diff = clipSize - clip;
+
+		if(stock - diff < 0)
+			diff = stock;
+		
+		if(weapons[i] == primary || diff == 0 || stock == 0)
+			continue;
+
+		self SetWeaponAmmoClip(weapons[i], clip + diff);
+		self SetWeaponAmmoStock(weapons[i], stock - diff);		
+	}
+
+}
+
 
 /*
+
 //=========================================================================================================
 // Electric Cherry
 //=========================================================================================================
