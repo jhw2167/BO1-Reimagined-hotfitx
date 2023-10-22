@@ -3,6 +3,7 @@
 init()
 {
 	clientscripts\_zombiemode_ffotd::register_client_system("zombiemode_perks", ::perks_message_handler);
+	clientscripts\_zombiemode_ffotd::register_client_system("zombiemode_perks_actions", ::perks_action_handler);
 
 	// Delete old perk bump triggers
 	bump_trigs = GetEntArray(0, "audio_bump_trigger", "targetname");
@@ -45,6 +46,33 @@ init()
 			removed++;
 		}
 	}
+}
+
+//Reimagined-Expanded
+/*
+Struct:
+	- message
+	- state
+	- 
+
+*/
+perks_action_handler(clientnum, struct)
+{
+	message = struct.message;
+	iprintlnbold("Perks action handler: " + message + " " + struct.state);
+	
+	if(message == "zombie_blood")
+	{
+		clientscripts\_zombiemode::zblood_vision(clientnum, struct.state);
+		if(struct.state=="1")
+			clientscripts\_zombiemode_ffotd::hud_message_handler(clientnum, "stamina_ghost_start");
+		else
+			clientscripts\_zombiemode_ffotd::hud_message_handler(clientnum, "stamina_ghost_end");
+	} else if (message == "deadshot")
+	{
+		//deadshot hitmarker
+	}
+
 }
 
 perks_message_handler(clientnum, message)

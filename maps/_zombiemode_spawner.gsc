@@ -413,10 +413,7 @@ set_run_speed()
 
 		if(rand > 105)
 		{
-			if(level.script == "zombie_cod5_asylum" && flag("power_on"))
-			{
-				self.zombie_move_speed_supersprint = true;
-			}
+			self.zombie_move_speed_supersprint = true;
 		}
 	}
 }

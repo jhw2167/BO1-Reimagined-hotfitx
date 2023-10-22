@@ -384,6 +384,8 @@ material,mtl_viet_zombie_napalm_head
 material,mtl_viet_zombie_napalm_body
 
 
+
+
 //Material Properties
 material,specialty_juggernaut_zombies
 material,specialty_juggernaut_zombies_pro
@@ -483,6 +485,15 @@ material,mtl_zombie_vending_three_gun_logo_off
 material,mtl_zombie_vending_three_gun_logo_on
 material,mtl_zombie_vending_vent_power_off
 material,mtl_zombie_vending_vent_power_on
+
+
+//Drop Icons
+material,i_t6_bonfire_shader
+material,i_t6_minigun_shader
+material,i_t6_specialty_2x_points_shader
+material,i_t6_specialty_firesale_shader
+material,i_t6_specialty_instakill_shader
+material,i_t6_specialty_zomblood_shader
 
 
 //XMODELS

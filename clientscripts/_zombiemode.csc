@@ -1086,13 +1086,13 @@ level_notify_callback_think( message, callback_func, arg1, arg2, arg3 )
 init_zombie_blood()
 {
 	//iprintlnbold("zombieblood init");
-	level thread add_level_notify_callback( "zblood_on", ::zblood_vision, "1" );
-	level thread add_level_notify_callback( "zblood_off", ::zblood_vision, "0" );
+	//level thread add_level_notify_callback( "zblood_on", ::zblood_vision, "1" );
+	//level thread add_level_notify_callback( "zblood_off", ::zblood_vision, "0" );
 }
 
 zblood_vision( localclientnum, state )
 {
-	//iprintlnbold("zblood vision  :  " + localClientNum );
+	iprintlnbold("zblood vision  :  " + localClientNum );
 	player = GetLocalPlayers()[ localclientnum ];
 	if( state == "1" )
 	{
@@ -1110,13 +1110,13 @@ zombie_blood_change_fov()
 {
 	self endon( "disconnect" );
 	self endon( "zombie_blood_over" );
-	start_time = GetRealTime();
+	/* start_time = GetRealTime();
 	while( GetRealTime() - start_time < 1000 )
 	{
 		progress = ( GetRealTime() - start_time ) / 1000;
 		SetClientDvar( "cg_fovscale", 1 + ( 0.2 * progress ) );
 		wait 1 / 60;
-	}
+	} */
 	//SetClientDvar( "cg_fovscale", 1.2 );
 	SetClientDvar( "cg_fovscale", GetDvar("cg_fovscale") + 0.2 );
 }
