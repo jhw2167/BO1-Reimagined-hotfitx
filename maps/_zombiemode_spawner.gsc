@@ -413,7 +413,8 @@ set_run_speed()
 
 		if(rand > 105)
 		{
-			self.zombie_move_speed_supersprint = true;
+			//self.zombie_move_speed_supersprint = true; anims only on verucket
+			self.zombie_move_speed_supersprint = false;
 		}
 	}
 }

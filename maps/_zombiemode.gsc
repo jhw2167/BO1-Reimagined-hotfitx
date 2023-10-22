@@ -313,7 +313,9 @@ unsetPerks()
 	self.specialty_altmelee_upgrade = false;
 	self.specialty_extraamo_upgrade = false;
 
-	level.COOLDOWN_STAMINA_PRO_GHOST = 1; 	//20
+	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
+
+	level.COOLDOWN_STAMINA_PRO_GHOST = 5; 	//20
 	level.COOLDOWN_SPEED_PRO_RELOAD = 3.5;
 
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
@@ -324,29 +326,62 @@ unsetPerks()
 }
 
 //Reimagined-Expanded -- get zombies in provided range
+
+checkDist(a, b, distance)
+{
+	if( DistanceSquared( a.origin, b.origin ) < distance * distance )
+		return true;
+	else
+		return false;
+}
+
 getZombiesInRange( range, type )
 {
 	if(!isDefined(type))
 		type = "all";
 	//type = "all", "zombie", "zombie_dog"
 	zombies = GetAiSpeciesArray( "axis", type );
-	distance_squared = range * range;
 	zombies_in_range = [];
 	for(i=0;i<zombies.size;i++)
 	{
-		if( DistanceSquared( self.origin, zombies[i].origin ) < distance_squared )
+		if( checkDist( self, zombies[i], range ) )
 			zombies_in_range[zombies_in_range.size] = zombies[i];
 	}
 	return zombies_in_range;
 }
 
 
+
+setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
+{
+	if( isdefined( endon_str ) )
+		self endon( endon_str );
+	
+		
+	condition = true;
+	time = 0;
+	while(time < totalTime)
+	{
+		while( condition ) 
+		{
+			self SetPlayerCollision( 0 );
+			condition = isdefined( self ) && ( self isAlive() ) && ( checkDist( player.origin, self.origin, dist ) );
+			time += 0.1;
+			wait( 0.1 );
+		}
+		time += 0.1;
+		wait( 0.1 );
+		condition = isdefined( self ) && ( self isAlive() ) && ( checkDist( player.origin, self.origin, dist ) );
+	}
+
+	iprintln("zombbie out of range");
+	self SetPlayerCollision( 1 );
+}
+
+
 //Reimagined-Expanded Weapon Effect!
 
 //Eletric effect triggers on random bullets E(x) = 5 / clip
-
-//Electric Effect
-
 watch_player_electric()
 {
 	self.bullet_electric = false;
@@ -6351,25 +6386,27 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		if(is_boss_zombie(self.animname)) {
 			return 200;
-		}	
-		
-		if(IsDefined(weapon) && weapon == "knife_zm")
-		{
+		} else if( self.animname != "zombie") {
+			return final_damage;
+			//TO DO: add support for dogs and crawlers
+		} else if(IsDefined(weapon) && weapon == "knife_zm") {
+
 			//Reimagined-Expanded Push Zombies down with Knife
 			wait_anim = 2;
-			if(damage >= self.health) {
+			if( damage >= self.health ) {
 				return final_damage;
 			}
 			
 			fall_anim = %ai_zombie_thundergun_hit_upontoback;
-			self SetPlayerCollision( 0 );
+			endon_str = "zombie_knockdown_" + attacker.entity_num;
+			self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
 			self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
 			animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
 			
+			wait( 2 );
 			getup_anim = %ai_zombie_thundergun_getup_b;
 			self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
 			animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
-			self SetPlayerCollision( 1 );
 			
 		} else if ( IsDefined(weapon) && weapon == "upgraded_knife_zm" )
 		{

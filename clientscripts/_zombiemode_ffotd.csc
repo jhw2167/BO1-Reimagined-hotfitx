@@ -16,7 +16,6 @@ main_start()
 	// registerSystem("hud", ::hud);
 	registerSystem("client_systems", ::client_systems_message_handler);
 	register_client_system("hud_anim_handler", ::hud_message_handler);
-	register_client_system("hud_anim_handler", ::hud_message_handler);
 
 	//level thread notetrack_think();
 }

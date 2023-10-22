@@ -3507,27 +3507,19 @@ watch_stamina_upgrade(perk_str)
 		self waittill("sprint");
 		
 		//give player zombie blood
+		totaltime = level.TOTALTIME_STAMINA_PRO_GHOST;
 		self.ignoreme = true;
 		self VisionSetNaked( "zombie_blood", 0.5 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_start");
 		
 		//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 2);
 		//make nearby zombies immune to player collision
+		self thread managePlayerZombieCollisions( totaltime , 800 ); //total time, dist
 
-		//Get all zombies near player
-		zombies = maps\_zombiemode::getZombiesInRange( 512 );
-		//iprintln("zombies: " + zombies.size);
-		
-		for(i=0;i<zombies.size;i++) {
-			zombies[i] thread setZombiePlayerCollisionOff( 2 );
-		}
-
-		wait(1);
-		//this is a little slow to trigger
+		wait( totaltime );
 		self.ignoreme = false;
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
-		wait(1);
 		self VisionSetNaked( "undefined", 0.5 );
 
 		wait(level.COOLDOWN_STAMINA_PRO_GHOST);
@@ -3535,17 +3527,31 @@ watch_stamina_upgrade(perk_str)
 
 }
 
-
-	setZombiePlayerCollisionOff( time )
+	checkDist(a, b, distance )
 	{
-		self endon( "death" );
-		self endon( "disconnect" );
-
-		iprintln("Zombie collision off");
-		self SetPlayerCollision( 0 );
-		wait( time );
-		self SetPlayerCollision( 1 );
+		maps\_zombiemode::checkDist( a, b, distance );
 	}
+
+	managePlayerZombieCollisions( totaltime, dist )
+	{
+		//Get all zombies near player
+		zombies = maps\_zombiemode::getZombiesInRange( dist );
+		iprintln("zombies: " + zombies.size);
+		
+		endon_str = "stamina_ghost_end_" + self.entity_num;
+		for(i=0;i<zombies.size;i++) {
+			zombies[i] thread maps\_zombiemode::setZombiePlayerCollisionOff( self, totaltime, 80, endon_str);
+		}
+
+		wait( totaltime );
+		level notify( endon_str );
+		iprintln( endon_str );
+		
+		for(i=0;i<zombies.size;i++) {
+			zombies[i] SetPlayerCollision( 1 );
+		} 
+
+	}	
 
 
 

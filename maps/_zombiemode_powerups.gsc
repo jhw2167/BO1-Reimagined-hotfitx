@@ -105,8 +105,8 @@ init_powerups()
 	// Random Drops
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
 //	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
-	add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
-	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
+	add_zombie_powerup( "insta_kill", 	"i_t6_specialty_instakill_shader",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
+	add_zombie_powerup( "double_points","i_t6_specialty_2x_points_shader",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
 	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
@@ -115,16 +115,16 @@ init_powerups()
 	//add_zombie_powerup( "meat", GetWeaponModel( "meat_zm" ), &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	
 	//Reimagined-Expanded
-	add_zombie_powerup( "zombie_blood", "p8_zm_power_up_blood", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "mtl_bo2_zm_powerup_zombie_blood", "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
+	add_zombie_powerup( "zombie_blood", "i_t6_specialty_zomblood_shader", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "mtl_bo2_zm_powerup_zombie_blood", "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
 
 	//GZheng - Temp VO
 	//add the correct VO for firesale in the 3rd parameter of this function.
 	if( !level.mutators["mutator_noMagicBox"] )
 	{
-		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+		add_zombie_powerup( "fire_sale",  	"i_t6_specialty_firesale_shader",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	}
 
-	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	add_zombie_powerup( "bonfire_sale",  	"i_t6_bonfire_shader",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
 	//PI ESM - Temp VO
 	//TODO add the correct VO for revive all in the 3rd parameter of this function.
@@ -137,7 +137,7 @@ init_powerups()
 	add_zombie_special_drop( "dog" );
 
 	// minigun
-	add_zombie_powerup( "minigun",	"zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
+	add_zombie_powerup( "minigun",	"i_t6_minigun_shader", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
 
 	// free perk
 	add_zombie_powerup( "free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
@@ -306,19 +306,34 @@ powerup_hud_overlay()
 
 		players[p].active_powerup_hud = [];
 
-		players[p] thread power_up_hud( "zom_icon_minigun", players[p].powerup_hud[0], "zombie_powerup_minigun_time", "zombie_powerup_minigun_on" );
+		/*
+		zom_icon_minigun
+		specialty_lightningbolt_zombies
+		specialty_doublepoints_zombies
+		specialty_instakill_zombies
+		specialty_firesale_zombies
+		zom_icon_bonfire
+		*/
+		
+		//Reimagined-Expanded - typical drops
+		players[p] thread power_up_hud( "i_t6_minigun_shader", players[p].powerup_hud[0], "zombie_powerup_minigun_time", "zombie_powerup_minigun_on" );
 		players[p] thread power_up_hud( "specialty_lightningbolt_zombies", players[p].powerup_hud[1], "zombie_powerup_tesla_time", "zombie_powerup_tesla_on" );
-		players[p] thread power_up_hud( "specialty_doublepoints_zombies", players[p].powerup_hud[2], "zombie_powerup_point_doubler_time", "zombie_powerup_point_doubler_on" );
-		players[p] thread power_up_hud( "specialty_instakill_zombies", players[p].powerup_hud[3], "zombie_powerup_insta_kill_time", "zombie_powerup_insta_kill_on" );
-		players[p] thread power_up_hud( "specialty_firesale_zombies", players[p].powerup_hud[4], "zombie_powerup_fire_sale_time", "zombie_powerup_fire_sale_on" );
-		players[p] thread power_up_hud( "zom_icon_bonfire", players[p].powerup_hud[5], "zombie_powerup_bonfire_sale_time", "zombie_powerup_bonfire_sale_on" );
+		players[p] thread power_up_hud( "i_t6_specialty_2x_points_shader", players[p].powerup_hud[2], "zombie_powerup_point_doubler_time", "zombie_powerup_point_doubler_on" );
+		players[p] thread power_up_hud( "i_t6_specialty_instakill_shader", players[p].powerup_hud[3], "zombie_powerup_insta_kill_time", "zombie_powerup_insta_kill_on" );
+		players[p] thread power_up_hud( "i_t6_specialty_firesale_shader", players[p].powerup_hud[4], "zombie_powerup_fire_sale_time", "zombie_powerup_fire_sale_on" );
+		players[p] thread power_up_hud( "i_t6_bonfire_shader", players[p].powerup_hud[5], "zombie_powerup_bonfire_sale_time", "zombie_powerup_bonfire_sale_on" );
 
-		players[p] thread power_up_hud( "specialty_instakill_zombies", players[p].powerup_hud[6], "zombie_powerup_insta_kill_round_time", "zombie_powerup_insta_kill_round_on", false, true );
 
-		players[p] thread power_up_hud( "specialty_doublepoints_zombies", players[p].powerup_hud[7], "zombie_powerup_half_points_time", "zombie_powerup_half_points_on", true );
-		players[p] thread power_up_hud( "specialty_instakill_zombies", players[p].powerup_hud[8], "zombie_powerup_half_damage_time", "zombie_powerup_half_damage_on", true );
+		players[p] thread power_up_hud( "i_t6_specialty_instakill_shader", players[p].powerup_hud[6], "zombie_powerup_insta_kill_round_time", "zombie_powerup_insta_kill_round_on", false, true );
+
+		// Reimagined - Grief stuff
+		players[p] thread power_up_hud( "i_t6_specialty_2x_points_shader", players[p].powerup_hud[7], "zombie_powerup_half_points_time", "zombie_powerup_half_points_on", true );
+		players[p] thread power_up_hud( "i_t6_specialty_instakill_shader", players[p].powerup_hud[8], "zombie_powerup_half_damage_time", "zombie_powerup_half_damage_on", true );
 		players[p] thread power_up_hud( "specialty_slowdown_zombies", players[p].powerup_hud[9], "zombie_powerup_slow_down_time", "zombie_powerup_slow_down_on", true );
-		players[p] thread power_up_hud( "zom_icon_bonfire", players[p].powerup_hud[10], "zombie_powerup_upgrade_weapon_time", "zombie_powerup_upgrade_weapon_on" );
+		players[p] thread power_up_hud( "i_t6_bonfire_shader", players[p].powerup_hud[10], "zombie_powerup_upgrade_weapon_time", "zombie_powerup_upgrade_weapon_on" ); 
+		
+
+		players[p] thread power_up_hud( "i_t6_specialty_zomblood_shader", players[p].powerup_hud[11], "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
 	}
 }
 
