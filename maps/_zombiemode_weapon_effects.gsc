@@ -315,7 +315,6 @@ bonus_freeze_damage( zomb, player, radius, time )
 	new_move_speed="walk";
 	
 	//Slow zombies
-	self.marked_for_freeze = true;
 	for ( i = 0; i < zombies.size; i++ ) 
 	{
 		if ( is_true(zombies[i].zombie_move_speed_supersprint) )
@@ -327,22 +326,23 @@ bonus_freeze_damage( zomb, player, radius, time )
 		{
 			zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
 		}
-	
+
+		zombies[i].marked_for_freeze = true;
+		zombies[i] thread unmark_frozen_zombie();
 	}
 		
 }
 
 //After 5 seconds, unmark zombies for freeze
-unmark_frozen_zombies()
+unmark_frozen_zombie()
 {
-
+	wait(5);
 	if ( !IsDefined( self ) || !IsAlive( self ) )
 	{
 		// guy died on us
 		return;
 	}
 
-	wait(5);
 	if(isDefined(self.marked_for_freeze)) {
 		self.marked_for_freeze = false;
 		//make him run again as he thaws out
