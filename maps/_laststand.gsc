@@ -148,7 +148,10 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 	}
 	*/
 
-	self.health = self.preMaxHealth;
+	if(isDefined( self.preMaxHealth ))
+		self.health = self.preMaxHealth;
+	else
+		self.health = 100;
 
 	//self thread call_overloaded_func( "maps\_arcademode", "arcademode_player_laststand" );
 
