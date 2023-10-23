@@ -265,11 +265,16 @@ post_all_players_connected()
 		level.music_override = false;
 	}
 
+	//Reimagined-Expanded -- set up hitmarkers
+	precacheShader( "bo4_hitmarker_white" );
+	precacheShader( "bo4_hitmarker_red" );
+
 	//Reimagined-Expanded -- bonus player perk fx
 	players = GetPlayers();
 	for(i=0;i<players.size;i++) 
 	{
 		players[i] unsetPerks();
+		players[i] init_hitmarkers();
 		players[i] thread watch_player_hellfire();
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
@@ -283,6 +288,30 @@ post_all_players_connected()
 
 	level thread sidequest_hud();
 }
+
+
+init_hitmarkers() 
+{
+	self.hud_damagefeedback = newClientHUDElem( self );
+	self.hud_damagefeedback.horzAlign = "center";
+	self.hud_damagefeedback.vertAlign = "middle";
+	self.hud_damagefeedback.x = -12;
+	self.hud_damagefeedback.y = -12;
+	self.hud_damagefeedback.alpha = 0;
+	self.hud_damagefeedback.archived = true;
+	self.hud_damagefeedback SetShader( "bo4_hitmarker_white", 24, 24 );
+	//self.hud_damagefeedback SetShader( "specialty_juggernaut_zombies", 24, 24 );
+
+	self.hud_damagefeedback_death = newClientHUDElem( self );
+	self.hud_damagefeedback_death.horzAlign = "center";
+	self.hud_damagefeedback_death.vertAlign = "middle";
+	self.hud_damagefeedback_death.x = -12;
+	self.hud_damagefeedback_death.y = -12;
+	self.hud_damagefeedback_death.alpha = 0;
+	self.hud_damagefeedback_death.archived = true;
+	self.hud_damagefeedback_death SetShader( "bo4_hitmarker_red", 24, 24 );
+}
+
 
 unsetPerks()
 {
@@ -313,16 +342,21 @@ unsetPerks()
 	self.specialty_altmelee_upgrade = false;
 	self.specialty_extraamo_upgrade = false;
 
+	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
 
 	level.COOLDOWN_STAMINA_PRO_GHOST = 5; 	//20
 	level.COOLDOWN_SPEED_PRO_RELOAD = 3.5;
 
+	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
+
+	//Bullet Effects
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
-	level.THRESHOLD_SHEERCOLD_DIST = 40;
+	level.THRESHOLD_SHEERCOLD_DIST = 20;
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 
 	level.RANGE_SHEERCOLD_DIST = 120;
+
 }
 
 //Reimagined-Expanded -- get zombies in provided range
@@ -351,13 +385,11 @@ getZombiesInRange( range, type )
 }
 
 
-
+//*
 setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
 {
-	if( isdefined( endon_str ) )
-		self endon( endon_str );
-	
-		
+	level endon(endon_str);
+
 	condition = true;
 	time = 0;
 	while(time < totalTime)
@@ -365,19 +397,18 @@ setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
 		while( condition ) 
 		{
 			self SetPlayerCollision( 0 );
-			condition = isdefined( self ) && ( self isAlive() ) && ( checkDist( player.origin, self.origin, dist ) );
+			condition = isDefined( self ) && ( IsAlive( self ) ) && checkDist( player.origin, self.origin, dist ) ;
 			time += 0.1;
 			wait( 0.1 );
 		}
 		time += 0.1;
 		wait( 0.1 );
-		condition = isdefined( self ) && ( self isAlive() ) && ( checkDist( player.origin, self.origin, dist ) );
+		condition = isDefined( self ) && ( IsAlive( self ) ) && checkDist( player.origin, self.origin, dist ) ;
 	}
 
-	iprintln("zombbie out of range");
 	self SetPlayerCollision( 1 );
 }
-
+//*/
 
 //Reimagined-Expanded Weapon Effect!
 
@@ -2030,6 +2061,7 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("hud_round_time", "");
 	self SetClientDvar("hud_round_total_time", "");
 	self SetClientDvar("hud_zone_name", "");
+	self SetClientDvar("hitmarker_x", "");
 
 	// reset versus HUD dvars
 	self SetClientDvar("vs_logo_on", 0);
@@ -6398,15 +6430,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 			
 			fall_anim = %ai_zombie_thundergun_hit_upontoback;
-			endon_str = "zombie_knockdown_" + attacker.entity_num;
-			self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
+			self SetPlayerCollision( 0 );
+			//endon_str = "zombie_knockdown_" + attacker.entity_num;
+			//self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
 			self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
 			animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
 			
-			wait( 2 );
+			wait( wait_anim );
 			getup_anim = %ai_zombie_thundergun_getup_b;
 			self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
 			animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
+			self SetPlayerCollision( 1 );
 			
 		} else if ( IsDefined(weapon) && weapon == "upgraded_knife_zm" )
 		{
@@ -6929,6 +6963,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			} else if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) 
 			{
 				self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
+				attacker.bullet_sheercold = false;
 				wait(0.05);
 			}
 
@@ -7029,6 +7064,28 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		final_damage = int(final_damage * 2);
 	}
+
+		//Reimagined-Expanded -- Deadshot Hitmarkers
+		
+		if(attacker hasProPerk(level.DST_PRO) ) 
+		{
+			iprintln("deadshot");
+			if(!isDefined(self.weakpoint))
+				self.weakpoint = "";
+
+			weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
+			final_damage = int(final_damage * 1.5);
+			if( is_in_array(weakpoints, sHitLoc) ) 
+			{
+				final_damage = int(final_damage * 1.5);
+				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
+			} else {
+				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
+			}
+			
+		}
+		
+
 
 	if(!is_true(self.nuked) && !is_true(self.marked_for_death))
 	{
@@ -9506,6 +9563,7 @@ character_names_hud()
 	players = get_players();
 	for ( j = 0; j < players.size; j++ )
 	{
+		players[j].entity_num = players[j] GetEntityNumber();
 		// Allow custom maps to override this logic
 		if(isdefined(level._zombiemode_get_player_name_string))
 		{

@@ -285,6 +285,7 @@ powerup_hud_overlay()
 		players[p].powerup_hud_array[ players[p].powerup_hud_array.size ] = true; // half damage
 		players[p].powerup_hud_array[ players[p].powerup_hud_array.size ] = true; // slow down
 		players[p].powerup_hud_array[ players[p].powerup_hud_array.size ] = true; // upgrade weapon
+		players[p].powerup_hud_array[ players[p].powerup_hud_array.size ] = true; // zblood
 
 		players[p].powerup_hud = [];
 		players[p].powerup_hud_cover = [];

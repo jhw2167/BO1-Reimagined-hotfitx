@@ -3494,6 +3494,7 @@ remove_stockpile_ammo()
 // STAMINA PRO
 //=========================================================================================================
 
+
 //Reimagined-Expanded -- Stamina Upgraded
 watch_stamina_upgrade(perk_str)
 {
@@ -3540,7 +3541,7 @@ watch_stamina_upgrade(perk_str)
 		
 		endon_str = "stamina_ghost_end_" + self.entity_num;
 		for(i=0;i<zombies.size;i++) {
-			zombies[i] thread maps\_zombiemode::setZombiePlayerCollisionOff( self, totaltime, 80, endon_str);
+			zombies[i] thread maps\_zombiemode::setZombiePlayerCollisionOff( self, totaltime-0.1, 80, endon_str);
 		}
 
 		wait( totaltime );
@@ -3550,6 +3551,7 @@ watch_stamina_upgrade(perk_str)
 		for(i=0;i<zombies.size;i++) {
 			zombies[i] SetPlayerCollision( 1 );
 		} 
+		iprintln( "COLLISIONS BACK ON");
 
 	}	
 
@@ -3609,6 +3611,34 @@ magicReload()
 		self SetWeaponAmmoStock(weapons[i], stock - diff);		
 	}
 
+}
+
+
+//=========================================================================================================
+// DEADSHOT PRO
+//=========================================================================================================
+
+
+trigger_deadshot_pro_hitmarker( hitWeakpoint )
+{
+	self notify( "updatefeedback" );
+	self endon( "updatefeedback" );
+	
+	if( hitWeakpoint ) {
+		self playlocalsound( "prj_bullet_impact_headshot_helmet_nodie" );
+		self playlocalsound( "bullet_impact_headshot_helmet_nodie" );
+		self.hud_damagefeedback_death.alpha = 1;
+		self.hud_damagefeedback_death fadeOverTime( 1 );
+		self.hud_damagefeedback_death.alpha = 0;
+
+	} else {
+		iprintln("Regular hit");
+		self playlocalsound( "MP_hit_alert" );
+		self.hud_damagefeedback.alpha = 1;
+		self.hud_damagefeedback fadeOverTime( 1 );
+		self.hud_damagefeedback.alpha = 0;
+	}
+	
 }
 
 
