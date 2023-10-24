@@ -3634,11 +3634,13 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 	} else {
 		iprintln("Regular hit");
 		self playlocalsound( "MP_hit_alert" );
+		self playlocalsound( "MP_hit_indication" );
+		self playlocalsound( "hitmarker" );
 		self.hud_damagefeedback.alpha = 1;
 		self.hud_damagefeedback fadeOverTime( 1 );
 		self.hud_damagefeedback.alpha = 0;
 	}
-	
+	iprintln("Finished Hitmarker thread");
 }
 
 

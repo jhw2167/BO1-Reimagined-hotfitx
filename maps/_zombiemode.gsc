@@ -266,8 +266,8 @@ post_all_players_connected()
 	}
 
 	//Reimagined-Expanded -- set up hitmarkers
-	precacheShader( "bo4_hitmarker_white" );
-	precacheShader( "bo4_hitmarker_red" );
+	precacheShader( "specialty_bo4hitmarker_white" );
+	precacheShader( "specialty_bo4hitmarker_red__" );
 
 	//Reimagined-Expanded -- bonus player perk fx
 	players = GetPlayers();
@@ -275,6 +275,7 @@ post_all_players_connected()
 	{
 		players[i] unsetPerks();
 		players[i] init_hitmarkers();
+
 		players[i] thread watch_player_hellfire();
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
@@ -297,19 +298,19 @@ init_hitmarkers()
 	self.hud_damagefeedback.vertAlign = "middle";
 	self.hud_damagefeedback.x = -12;
 	self.hud_damagefeedback.y = -12;
-	self.hud_damagefeedback.alpha = 0;
+	self.hud_damagefeedback.alpha = 1;
 	self.hud_damagefeedback.archived = true;
-	self.hud_damagefeedback SetShader( "bo4_hitmarker_white", 24, 24 );
-	//self.hud_damagefeedback SetShader( "specialty_juggernaut_zombies", 24, 24 );
+	//self.hud_damagefeedback SetShader( "specialty_bo4hitmarker_white", 24, 24 );
+	self.hud_damagefeedback SetShader( "specialty_juggernaut_zombies", 24, 24 );
 
 	self.hud_damagefeedback_death = newClientHUDElem( self );
 	self.hud_damagefeedback_death.horzAlign = "center";
 	self.hud_damagefeedback_death.vertAlign = "middle";
 	self.hud_damagefeedback_death.x = -12;
 	self.hud_damagefeedback_death.y = -12;
-	self.hud_damagefeedback_death.alpha = 0;
+	self.hud_damagefeedback_death.alpha = 1;
 	self.hud_damagefeedback_death.archived = true;
-	self.hud_damagefeedback_death SetShader( "bo4_hitmarker_red", 24, 24 );
+	self.hud_damagefeedback_death SetShader( "specialty_bo4hitmarker_red__", 24, 24 );
 }
 
 
@@ -7066,8 +7067,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
-		
-		if(attacker hasProPerk(level.DST_PRO) ) 
+		always_true = true;
+		if(attacker hasProPerk(level.DST_PRO) || always_true) 
 		{
 			iprintln("deadshot");
 			if(!isDefined(self.weakpoint))
