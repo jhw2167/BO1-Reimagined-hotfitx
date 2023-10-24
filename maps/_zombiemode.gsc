@@ -293,22 +293,23 @@ post_all_players_connected()
 
 init_hitmarkers() 
 {
+
 	self.hud_damagefeedback = newClientHUDElem( self );
 	self.hud_damagefeedback.horzAlign = "center";
 	self.hud_damagefeedback.vertAlign = "middle";
 	self.hud_damagefeedback.x = -12;
 	self.hud_damagefeedback.y = -12;
-	self.hud_damagefeedback.alpha = 1;
+	self.hud_damagefeedback.alpha = 0;
 	self.hud_damagefeedback.archived = true;
-	//self.hud_damagefeedback SetShader( "specialty_bo4hitmarker_white", 24, 24 );
-	self.hud_damagefeedback SetShader( "specialty_juggernaut_zombies", 24, 24 );
+	self.hud_damagefeedback SetShader( "specialty_bo4hitmarker_white", 24, 24 );
+	//self.hud_damagefeedback SetShader( "specialty_juggernaut_zombies", 24, 24 );
 
 	self.hud_damagefeedback_death = newClientHUDElem( self );
 	self.hud_damagefeedback_death.horzAlign = "center";
 	self.hud_damagefeedback_death.vertAlign = "middle";
 	self.hud_damagefeedback_death.x = -12;
 	self.hud_damagefeedback_death.y = -12;
-	self.hud_damagefeedback_death.alpha = 1;
+	self.hud_damagefeedback_death.alpha = 0;
 	self.hud_damagefeedback_death.archived = true;
 	self.hud_damagefeedback_death SetShader( "specialty_bo4hitmarker_red__", 24, 24 );
 }
@@ -343,6 +344,9 @@ unsetPerks()
 	self.specialty_altmelee_upgrade = false;
 	self.specialty_extraamo_upgrade = false;
 
+	//Perk player variables
+	self.weakpoint_streak=0;
+
 	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
 
@@ -350,6 +354,9 @@ unsetPerks()
 	level.COOLDOWN_SPEED_PRO_RELOAD = 3.5;
 
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
+	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
+
+
 
 	//Bullet Effects
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
@@ -726,6 +733,10 @@ precache_shaders()
 	precacheshader("zom_icon_player_life");
 
 	PrecacheShader("waypoint_second_chance");
+
+	precacheShader( "specialty_bo4hitmarker_white" );
+	precacheShader( "specialty_bo4hitmarker_red__" );
+
 }
 
 precache_models()
@@ -7068,9 +7079,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
 		always_true = true;
-		if(attacker hasProPerk(level.DST_PRO) || always_true) 
+		if( attacker hasProPerk(level.DST_PRO) ) 
 		{
-			iprintln("deadshot");
+
 			if(!isDefined(self.weakpoint))
 				self.weakpoint = "";
 
@@ -7078,15 +7089,23 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = int(final_damage * 1.5);
 			if( is_in_array(weakpoints, sHitLoc) ) 
 			{
-				final_damage = int(final_damage * 1.5);
+				attacker.weakpoint_streak++;	//add HUD for this
+				headshot_streak_bonus = (1 + (attacker.weakpoint_streak * level.CONDITION_DEADSHOT_PRO_WEAKPOINT_BONUS) );
+				final_damage = int(final_damage * headshot_streak_bonus);
+
 				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
 			} else {
+				attacker.weakpoint_streak = 0;
 				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
 			}
 			
 		}
 		
+	//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
+	if( attacker hasProPerk(level.DTP_PRO) ) 
+	{
 
+	}
 
 	if(!is_true(self.nuked) && !is_true(self.marked_for_death))
 	{

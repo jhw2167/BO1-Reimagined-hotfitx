@@ -3626,13 +3626,13 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 	
 	if( hitWeakpoint ) {
 		self playlocalsound( "prj_bullet_impact_headshot_helmet_nodie" );
-		self playlocalsound( "bullet_impact_headshot_helmet_nodie" );
+		//self playlocalsound( "bullet_impact_headshot_helmet_nodie" );
 		self.hud_damagefeedback_death.alpha = 1;
 		self.hud_damagefeedback_death fadeOverTime( 1 );
 		self.hud_damagefeedback_death.alpha = 0;
 
 	} else {
-		iprintln("Regular hit");
+
 		self playlocalsound( "MP_hit_alert" );
 		self playlocalsound( "MP_hit_indication" );
 		self playlocalsound( "hitmarker" );
@@ -3640,7 +3640,7 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 		self.hud_damagefeedback fadeOverTime( 1 );
 		self.hud_damagefeedback.alpha = 0;
 	}
-	iprintln("Finished Hitmarker thread");
+
 }
 
 
