@@ -39,6 +39,117 @@ init()
 }
 
 
+/** DOUBLETAP PRO ZOMBIE PENETRATION DAMAGE **/
+
+//Thread called on player
+
+zombie_bullet_penetration( zomb , args )
+{
+	//Get All zombies on map
+	zombies = GetAiSpeciesArray( "axis", "all" );
+
+	//Get player gun angle and position
+	view_pos = self GetWeaponMuzzlePoint();
+	view_angles = self GetTagAngles( "tag_flash" );
+
+	zombies = GetAiSpeciesArray( "axis", "all" );
+	zombies = get_array_of_closest( view_pos, zombies, undefined, undefined, level.THRESHOLD_DBT_MAX_DIST );
+	if ( !isDefined( zombies ) )
+		return;
+	
+
+	forward_view_angles = self GetWeaponForwardDir();
+
+	iprintln("zombies: " + zombies.size);
+	
+	//Filter array by invalid enemies
+	for ( i = 0; i < zombies.size; i++ )
+	{
+		
+		if ( !IsDefined( zombies[i] ) || !IsAlive( zombies[i] ) )
+		{
+			// guy died on us
+			iprintln("died");
+			continue;
+		}
+		
+		if( !(zombies[i].animname=="zombie") )
+		{
+			//iprintln("not zombie");
+			//continue;
+		}
+		
+		if( ( IsDefined(zomb.dbtap_marked) && (zomb.dbtap_marked == self.entity_num) ) )
+		{
+			iprintln("marked");
+			continue;
+		}
+		
+
+		test_origin = zombies[i] GetCentroid();
+		test_range_squared = DistanceSquared( view_pos, test_origin );
+		if ( test_range_squared > level.THRESHOLD_DBT_MAX_DIST*level.THRESHOLD_DBT_MAX_DIST )
+		{
+			iprintln("RANGE");
+			return; // everything else in the list will be out of range
+		}
+
+		normal = VectorNormalize( test_origin - view_pos );
+		dot = VectorDot( forward_view_angles, normal );
+		if ( 0 > dot )
+		{
+			// guy's behind us
+			iprintln("behind");
+			continue;
+		}
+
+		if ( !( zombies[i] DamageConeTrace( view_pos, self ) ) )
+		{
+			// guy can't actually be hit from where we are
+			iprintln("not in damage cone trace");
+			continue;
+		}
+
+		if ( !BulletTracePassed( view_pos, test_origin, false, undefined ) )
+		{
+			// guy can't actually be hit from where we are
+			iprintln("trace not passed");
+			continue;
+		}
+
+		if ( !SightTracePassed( view_pos, test_origin, false, undefined ) )
+		{
+			// guy can't actually be hit from where we are
+			iprintln("slight trace not passed");
+			continue;
+		}
+		
+		iprintln("added!");
+		self.dbtp_pennetrated_zombs++;
+		zombies[i].dbtap_marked = self.entity_num;
+		zombies[i] thread process_dbt_penn_dmg( args );
+	}
+	
+	zomb.dbtap_marked = -1;	//Not marked for damage for DBtap penetration by any player
+}
+
+	//Thread called on zombie
+	process_dbt_penn_dmg( args )
+	{
+		dmg = maps\_zombiemode::actor_damage_override( args.inflictor, args.attacker, args.damage, args.flags, args.meansofdeath, args.weapon, args.vpoint, args.vdir, args.sHitLoc, args.modelIndex, args.psOffsetTime);
+		self dodamage( dmg , self.origin, args.attacker );
+		self.dbtap_marked = -1;
+		self.dbtp_pennetrated_zombs--;
+		if( self.dbtp_pennetrated_zombs <= 0 ) {
+			self.dbtp_pennetrated_zombs = 0;
+		}
+	}
+
+
+
+
+//##########################
+
 /** EXPLOSIVE EFFECTS **/
 
 //Starts from _zombie_weap_crossbow.gsc -- unused
@@ -351,6 +462,7 @@ unmark_frozen_zombie()
 
 }
 
+//HERE_
 freezegun_get_enemies_in_range() {
 	
 	inner_range = 100;

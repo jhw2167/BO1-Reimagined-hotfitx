@@ -346,6 +346,7 @@ unsetPerks()
 
 	//Perk player variables
 	self.weakpoint_streak=0;
+	self.dbtp_pennetrated_zombs=0;
 
 	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
@@ -356,7 +357,10 @@ unsetPerks()
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
 
-
+	level.VALUE_DBT_UNITS = 20;
+	level.VALUE_DBT_PENN_DIST = 10;
+	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
+	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3; 
 
 	//Bullet Effects
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
@@ -1091,7 +1095,7 @@ init_levelvars()
 	level.JUG_PRO = "specialty_armorvest_upgrade";
 	level.QRV_PRO = "specialty_quickrevive_upgrade";
 	level.SPD_PRO = "specialty_fastreload_upgrade";
-	level.DTP_PRO = "specialty_rof_upgrade";
+	level.DBT_PRO = "specialty_rof_upgrade";
 	level.STM_PRO = "specialty_endurance_upgrade";
 	level.PHD_PRO = "specialty_flakjacket_upgrade";
 	level.DST_PRO = "specialty_deadshot_upgrade";
@@ -6476,7 +6480,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	/* iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
 	iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
-	iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DTP_PRO));
+	iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DBT_PRO));
 	iprintln("Testing has Upp STM: " + attacker hasProPerk(level.STM_PRO));
 	iprintln("Testing has Upp PHD: " + attacker hasProPerk(level.PHD_PRO));
 	iprintln("Testing has Upp DST: " + attacker hasProPerk(level.DST_PRO));
@@ -7044,6 +7048,66 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		}
 		//End Switch
+
+
+		if( attacker HasPerk("specialty_rof") )
+		{
+			final_damage = int(final_damage * 1.5);
+		}
+
+		if(attacker HasPerk("specialty_deadshot") && WeaponClass(weapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
+		{
+			final_damage = int(final_damage * 2);
+		}
+
+		//Reimagined-Expanded -- Deadshot Hitmarkers
+		always_true = true;
+		if( attacker hasProPerk(level.DST_PRO) ) 
+		{
+
+			if(!isDefined(self.weakpoint))
+				self.weakpoint = "";
+
+			weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
+			final_damage = int(final_damage * 1.5);
+			if( is_in_array(weakpoints, sHitLoc) ) 
+			{
+				attacker.weakpoint_streak++;	//add HUD for this
+				headshot_streak_bonus = (1 + (attacker.weakpoint_streak * level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK) );
+				final_damage = int(final_damage * headshot_streak_bonus);
+
+				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
+			} else {
+				attacker.weakpoint_streak = 0;
+				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
+			}
+			
+		}
+		
+		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
+		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
+		if( always_true )//attacker hasProPerk(level.DBT_PRO) &&  !dbt_marked ) 
+		{
+			self.dbtap_marked = attacker.entity_num;
+
+			args = SpawnStruct();
+			args.inflictor = inflictor;
+			args.attacker = attacker;
+			args.damage = damage;
+			args.flags = flags;
+			args.meansofdeath = meansofdeath;
+			args.weapon = weapon;
+			args.vpoint = vpoint;
+			args.vdir = vdir;
+			args.sHitLoc = sHitLoc;
+			args.modelIndex = modelIndex;
+			args.psOffsetTime = psOffsetTime;
+			
+			attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args );
+
+		} else {
+			self.dbtap_marked = -1;
+		}
 	
 	} //End "bullet dmg only" wrapping if statment
 	//*/	
@@ -7067,45 +7131,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		return self.maxhealth + 1000;
 	}
 
-	if(attacker HasPerk("specialty_rof") && (meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET"))
-	{
-		final_damage = int(final_damage * 1.5);
-	}
 
-	if(attacker HasPerk("specialty_deadshot") && (meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET") && WeaponClass(weapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
-	{
-		final_damage = int(final_damage * 2);
-	}
 
-		//Reimagined-Expanded -- Deadshot Hitmarkers
-		always_true = true;
-		if( attacker hasProPerk(level.DST_PRO) ) 
-		{
 
-			if(!isDefined(self.weakpoint))
-				self.weakpoint = "";
-
-			weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
-			final_damage = int(final_damage * 1.5);
-			if( is_in_array(weakpoints, sHitLoc) ) 
-			{
-				attacker.weakpoint_streak++;	//add HUD for this
-				headshot_streak_bonus = (1 + (attacker.weakpoint_streak * level.CONDITION_DEADSHOT_PRO_WEAKPOINT_BONUS) );
-				final_damage = int(final_damage * headshot_streak_bonus);
-
-				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
-			} else {
-				attacker.weakpoint_streak = 0;
-				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
-			}
-			
-		}
-		
-	//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
-	if( attacker hasProPerk(level.DTP_PRO) ) 
-	{
-
-	}
+	
 
 	if(!is_true(self.nuked) && !is_true(self.marked_for_death))
 	{
