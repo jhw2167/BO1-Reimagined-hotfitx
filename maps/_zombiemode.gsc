@@ -346,7 +346,7 @@ unsetPerks()
 
 	//Perk player variables
 	self.weakpoint_streak=0;
-	self.dbtp_pennetrated_zombs=0;
+	self.dbtp_penetrated_zombs=0;
 
 	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
@@ -360,7 +360,7 @@ unsetPerks()
 	level.VALUE_DBT_UNITS = 20;
 	level.VALUE_DBT_PENN_DIST = 10;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
-	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3; 
+	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 6; 
 
 	//Bullet Effects
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
@@ -372,7 +372,6 @@ unsetPerks()
 }
 
 //Reimagined-Expanded -- get zombies in provided range
-
 checkDist(a, b, distance)
 {
 	if( DistanceSquared( a.origin, b.origin ) < distance * distance )
@@ -397,7 +396,6 @@ getZombiesInRange( range, type )
 }
 
 
-//*
 setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
 {
 	level endon(endon_str);
@@ -420,7 +418,7 @@ setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
 
 	self SetPlayerCollision( 1 );
 }
-//*/
+
 
 //Reimagined-Expanded Weapon Effect!
 
@@ -7086,7 +7084,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
-		if( always_true )//attacker hasProPerk(level.DBT_PRO) &&  !dbt_marked ) 
+		if( attacker hasProPerk(level.DBT_PRO) 
+		&&  !dbt_marked 
+		&& (attacker.dbtp_penetrated_zombs < level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) ) 
 		{
 			self.dbtap_marked = attacker.entity_num;
 
@@ -7106,6 +7106,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args );
 
 		} else {
+			//iprintln("Marked: " + dbt_marked);
+			iprintln("penn: " + attacker.dbtp_penetrated_zombs);
 			self.dbtap_marked = -1;
 		}
 	

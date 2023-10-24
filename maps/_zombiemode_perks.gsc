@@ -1397,7 +1397,7 @@ divetonuke_explode( attacker, origin )
 		max_damage *= 3;
 		PlayFx( level._effect["custom_large_explosion"], origin );
 	} else {
-		iprintln("divetonuke_explode");
+		//iprintln("divetonuke_explode");
 		PlayFx( level._effect["def_explosion"], origin );
 	}
 
@@ -2086,7 +2086,7 @@ vending_trigger_think()
 		//	perk += "_upgrade";
 		//}
 
-		iprintln( "Bought Perk: " + perk );
+		//iprintln( "Bought Perk: " + perk );
 		///bottle_dispense
 		switch( perk )
 		{
@@ -2567,7 +2567,6 @@ perk_think( perk )
 	//Reimagined-Expanded perkapunch
 	if( self hasProPerk( perk + "_upgrade" ) )
 	{
-		iprintln( "Apparently has pro perk: " + perk );
 		wait_network_frame();
 		self update_perk_hud();
 		return;
@@ -2576,7 +2575,6 @@ perk_think( perk )
 
 	if(do_retain && IsDefined(self._retain_perks) && self._retain_perks)
 	{
-		iprintln( "Apparently is retained: " + perk );
 		wait_network_frame();
 		self update_perk_hud();
 		return;
@@ -2588,7 +2586,7 @@ perk_think( perk )
 		self notify(perk_str);
 	}
 
-	iprintln( "Perk Lost: " + perk );
+	//iprintln( "Perk Lost: " + perk );
 	self UnsetPerk( perk );
 	self.num_perks--;
 
@@ -2758,7 +2756,7 @@ perk_hud_create( perk )
 		shader = shader + "_pro";
 		//Destroy the old shader
 		oldPerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
-		iprintln("oldPerk: " + oldPerk);
+		//iprintln("oldPerk: " + oldPerk);
 		//self perk_hud_destroy( oldPerk  );
 		hud = self.perk_hud[oldPerk];
 		if(isdefined(hud))
@@ -2769,7 +2767,7 @@ perk_hud_create( perk )
 		return;
 	}
 
-	iprintln("shader: " + shader);
+	//iprintln("shader: " + shader);
 
 	hud = create_simple_hud( self );
 	hud.foreground = true;
@@ -3068,7 +3066,7 @@ perk_give_bottle_end( gun, perk )
 		return;
 	}
 
-	iprintln("give perk: " + perk);
+	//iprintln("give perk: " + perk);
 	self give_perk(perk, true);
 
 	if(self HasWeapon(gun) && is_placeable_mine(gun) && self GetWeaponAmmoClip(gun) == 0)
@@ -3537,7 +3535,6 @@ watch_stamina_upgrade(perk_str)
 	{
 		//Get all zombies near player
 		zombies = maps\_zombiemode::getZombiesInRange( dist );
-		iprintln("zombies: " + zombies.size);
 		
 		endon_str = "stamina_ghost_end_" + self.entity_num;
 		for(i=0;i<zombies.size;i++) {
@@ -3546,12 +3543,10 @@ watch_stamina_upgrade(perk_str)
 
 		wait( totaltime );
 		level notify( endon_str );
-		iprintln( endon_str );
 		
 		for(i=0;i<zombies.size;i++) {
 			zombies[i] SetPlayerCollision( 1 );
 		} 
-		iprintln( "COLLISIONS BACK ON");
 
 	}	
 
