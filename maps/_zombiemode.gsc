@@ -7107,7 +7107,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		} else {
 			//iprintln("Marked: " + dbt_marked);
-			iprintln("penn: " + attacker.dbtp_penetrated_zombs);
 			self.dbtap_marked = -1;
 		}
 	
@@ -7116,7 +7115,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	
 	
-	//iprintln( "Final dmg for bullet guns: " + final_damage );
+	iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
 	//iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );

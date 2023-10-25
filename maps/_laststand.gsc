@@ -444,7 +444,8 @@ Laststand_Bleedout( delay )
 // spawns the trigger used for the player to get revived
 revive_trigger_spawn()
 {
-	radius = GetDvarInt( #"revive_trigger_radius" );
+	//Reimagined-expanded, larger revive trigger
+	radius = GetDvarInt( #"revive_trigger_radius" )*2;
 
 	self.revivetrigger = spawn( "trigger_radius", self.origin, 0, radius, radius );
 	//self.revivetrigger setHintString( "" ); // only show the hint string if the triggerer is facing me
@@ -453,6 +454,22 @@ revive_trigger_spawn()
 
 	self.revivetrigger EnableLinkTo();
 	self.revivetrigger LinkTo( self );
+
+
+	//PRO REVIVE TRIGGER
+
+	//Reimagined-expanded, QRV_PRO will have very large revive radius
+	qrv_pro_radius *= level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER;
+
+	self.proReviveTrigger = spawn( "trigger_radius", self.origin, 0, qrv_pro_radius, qrv_pro_radius );
+	//self.proReviveTrigger setHintString( "" ); // only show the hint string if the triggerer is facing me
+	self.proReviveTrigger setHintString( &"GAME_BUTTON_TO_REVIVE_PLAYER" );
+	self.proReviveTrigger setCursorHint( "HINT_NOICON" );
+
+	self.proReviveTrigger EnableLinkTo();
+	self.proReviveTrigger LinkTo( self );
+
+	//##########################
 
 	//CODER_MOD: TOMMYK 07/13/2008 - Revive text
 	self.revivetrigger.beingRevived = 0;
@@ -488,6 +505,7 @@ revive_trigger_think()
 			if(level.gamemode != "survival" && players[i].vsteam != self.vsteam)
 			{
 				self.revivetrigger SetInvisibleToPlayer( players[i], true );
+				self.proReviveTrigger SetInvisibleToPlayer( players[i], true );
 			}
 			else if ( players[i] can_revive( self ) || d > 20)
 			//END PI CHANGES
@@ -499,10 +517,14 @@ revive_trigger_think()
 				// or we need a new combined radius+lookat trigger type.
 				//self.revivetrigger setHintString( &"GAME_BUTTON_TO_REVIVE_PLAYER" );
 				//break;
-				self.revivetrigger SetInvisibleToPlayer( players[i], false );
+				if( players[i] maps\_zombiemode::hasProPerk(level.QRV_PRO) )
+					self.proReviveTrigger SetInvisibleToPlayer( players[i], false );
+				else
+					self.revivetrigger SetInvisibleToPlayer( players[i], false );
 			}
 			else
 			{
+				self.proReviveTrigger SetInvisibleToPlayer( players[i], true );
 				self.revivetrigger SetInvisibleToPlayer( players[i], true );
 			}
 		}
@@ -644,10 +666,19 @@ can_revive( revivee )
 		return false;
 	}
 
-	if ( !self IsTouching( revivee.revivetrigger ) )
+	//Reimagined-expanded, if you aren't even touching the large radius, leave
+	if ( !self IsTouching( revivee.proReviveTrigger )  )
 	{
 		return false;
 	}
+
+	//If you arent touching the small radius, but you have QRV_PRO, you must be at least inside big radius
+	//then you can revive
+	if ( !self IsTouching( revivee.revivetrigger ) && !self maps\_zombiemode::hasProPerk(level.QRV_PRO) )
+	{
+		return false;
+	}
+
 
 	if(level.gamemode != "survival" && revivee.vsteam != self.vsteam)
 	{
@@ -664,6 +695,12 @@ can_revive( revivee )
 	if ( !self is_facing( revivee ) )
 	{
 		return false;
+	}
+
+	//Reimagined-Expanded, you can revive through walls, congrats
+	if( self maps\_zombiemode::hasProPerk(level.QRV_PRO) )
+	{
+		return true;
 	}
 
 	if( !SightTracePassed( self.origin + ( 0, 0, 50 ), revivee.origin + ( 0, 0, 30 ), false, undefined ) )

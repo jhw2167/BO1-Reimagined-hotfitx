@@ -13,6 +13,16 @@ init()
 	PrecacheShader( "zom_icon_minigun" );
 	PrecacheShader( "specialty_lightningbolt_zombies" );
 
+	//Reimagined-Expanded
+	precacheShader("i_t6_specialty_instakill_shader");
+	precacheShader("i_t6_specialty_2x_points_shader");
+	precacheShader("i_t6_specialty_zomblood_shader");
+	precacheShader("i_t6_specialty_firesale_shader");
+	precacheShader("i_t6_bonfire_shader");
+	precacheShader("i_t6_minigun_shader");
+
+
+
 	PrecacheShader( "black" );
 	// powerup Vars
 	set_zombie_var( "zombie_insta_kill", 				0 );
@@ -103,6 +113,13 @@ init_powerups()
 	}
 
 	// Random Drops
+	//"specialty_doublepoints_zombies" );
+	//"specialty_instakill_zombies" );
+	//"specialty_firesale_zombies");
+	//"zom_icon_bonfire" );
+	//"zom_icon_minigun" );
+	//"specialty_lightningbolt_zombies" );
+
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
 //	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
 	add_zombie_powerup( "insta_kill", 	"i_t6_specialty_instakill_shader",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
