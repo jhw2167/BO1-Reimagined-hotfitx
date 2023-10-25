@@ -459,7 +459,7 @@ revive_trigger_spawn()
 	//PRO REVIVE TRIGGER
 
 	//Reimagined-expanded, QRV_PRO will have very large revive radius
-	qrv_pro_radius *= level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER;
+	qrv_pro_radius = radius * level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER;
 
 	self.proReviveTrigger = spawn( "trigger_radius", self.origin, 0, qrv_pro_radius, qrv_pro_radius );
 	//self.proReviveTrigger setHintString( "" ); // only show the hint string if the triggerer is facing me

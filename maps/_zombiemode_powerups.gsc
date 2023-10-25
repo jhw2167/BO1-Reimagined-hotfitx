@@ -120,28 +120,25 @@ init_powerups()
 	//"zom_icon_minigun" );
 	//"specialty_lightningbolt_zombies" );
 
+	// Random Drops
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
 //	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
-	add_zombie_powerup( "insta_kill", 	"i_t6_specialty_instakill_shader",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
-	add_zombie_powerup( "double_points","i_t6_specialty_2x_points_shader",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
+	add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
+	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
 	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-
-	//add_zombie_powerup( "lose_perk", "p7_zm_power_up_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
-	//add_zombie_powerup( "empty_clip", "p7_zm_power_up_max_ammo", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
-	//add_zombie_powerup( "meat", GetWeaponModel( "meat_zm" ), &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	
-	//Reimagined-Expanded
-	add_zombie_powerup( "zombie_blood", "i_t6_specialty_zomblood_shader", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "mtl_bo2_zm_powerup_zombie_blood", "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
+	//Reimagined-Expanded - Model not yet defined
+	add_zombie_powerup( "zombie_blood", "zombie_skull", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "mtl_bo2_zm_powerup_zombie_blood", "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
 
 	//GZheng - Temp VO
 	//add the correct VO for firesale in the 3rd parameter of this function.
 	if( !level.mutators["mutator_noMagicBox"] )
 	{
-		add_zombie_powerup( "fire_sale",  	"i_t6_specialty_firesale_shader",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	}
 
-	add_zombie_powerup( "bonfire_sale",  	"i_t6_bonfire_shader",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
 	//PI ESM - Temp VO
 	//TODO add the correct VO for revive all in the 3rd parameter of this function.
@@ -154,7 +151,7 @@ init_powerups()
 	add_zombie_special_drop( "dog" );
 
 	// minigun
-	add_zombie_powerup( "minigun",	"i_t6_minigun_shader", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
+	add_zombie_powerup( "minigun",	"zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
 
 	// free perk
 	add_zombie_powerup( "free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
