@@ -3487,6 +3487,13 @@ remove_stockpile_ammo()
 	}
 }
 
+//=========================================================================================================
+// QUICKREV PRO
+//=========================================================================================================
+
+
+//Reimagined-Expanded -- Quick Revive pro thread running for each player
+// HANDLED IN ZOMBIEMODE
 
 //=========================================================================================================
 // STAMINA PRO
@@ -3509,6 +3516,7 @@ watch_stamina_upgrade(perk_str)
 		totaltime = level.TOTALTIME_STAMINA_PRO_GHOST;
 		self.ignoreme = true;
 		self VisionSetNaked( "zombie_blood", 0.5 );
+		self setMoveSpeedScale( self.moveSpeed + 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_start");
 		
 		//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 2);
@@ -3517,6 +3525,7 @@ watch_stamina_upgrade(perk_str)
 
 		wait( totaltime );
 		self.ignoreme = false;
+		self setMoveSpeedScale( self.moveSpeed - 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
 		self VisionSetNaked( "undefined", 0.5 );

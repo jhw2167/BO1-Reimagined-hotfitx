@@ -136,6 +136,15 @@ zombie_bullet_penetration( zomb , args )
 
 /** EXPLOSIVE EFFECTS **/
 
+checkDist(a, b, distance)
+{
+	if( DistanceSquared( a.origin, b.origin ) < distance * distance )
+		return true;
+	else
+		return false;
+}
+
+
 //Starts from _zombie_weap_crossbow.gsc -- unused
 wait_projectile_impacts() {
 
@@ -173,95 +182,49 @@ wait_projectile_impacts() {
 	}
 }
 
-explosive_arc_damage( source_enemy, player, arc_num )
+explosive_arc_damage( zomb , dmg, radius, time )
 {
-	player endon( "disconnect" );
+
+	self endon( "disconnect" );
 	
-	player.tesla_enemies = undefined;
-	player.tesla_enemies_hit = 1;
-	player.tesla_powerup_dropped = false;
-	player.tesla_arc_count = 0;
-
-
-	//tesla_flag_hit( self, true );
-	wait_network_frame();
 
 	//Tesla start is 300 radius units, we'll star with 500
-	enemies = tesla_get_enemies_in_area( self GetCentroid(), 1000, player );
+	enemies = get_array_of_closest( zomb.origin, GetAiSpeciesArray( "axis", "all" ), undefined, undefined, radius );
 
 
 	for( i = 0; i < enemies.size; i++ )
 	{
-		enemies[i] thread explosive_do_damage( source_enemy, arc_num, player, 1);
+		//source object must have origin
+		if(!IsDefined(self.explosive_marked) || !self.explosive_marked) 
+		{
+			self.explosive_marked = true;
+			enemies[i] thread explosive_do_damage( dmg, zomb, radius, self );
+		}
+		
 	}
 }
 
 
-explosive_do_damage( source_enemy, arc_num, player, upgraded )
+explosive_do_damage( dmg, source, radius, player )
 {
 	player endon( "disconnect" );
 
-	if ( arc_num > 1 )
-	{
-		time = RandomFloat( 0.2, 0.6 ) * arc_num;
-
-		if(upgraded)
-		{
-			time /= 1.5;
-		}
-
-		wait time;
-	}
-
 	if( !IsDefined( self ) || !IsAlive( self ) )
 	{
 		// guy died on us
 		return;
 	}
+	inner_radius = radius/2;
 
-	if ( !self.isdog )
-	{
-		if( self.has_legs )
-		{
-			self.deathanim = random( level._zombie_tesla_death[self.animname] );
-		}
-		else
-		{
-			self.deathanim = random( level._zombie_tesla_crawl_death[self.animname] );
-		}
-	}
-	else
-	{
-		self.a.nodeath = undefined;
-	}
+	if( checkDist(self.origin, source.origin, radius / 2) )
+		self doDamage( dmg, self.origin, player );
+	else if( checkDist(self.origin, source.origin, radius) )
+		self doDamage( dmg / 2, self.origin, player );
+	else 
+		self.explosive_marked = false;
 
-	if( is_true( self.is_traversing))
-	{
-		self.deathanim = undefined;
-	}
-
-
-	if( !IsDefined( self ) || !IsAlive( self ) )
-	{
-		// guy died on us
-		return;
-	}
-
-
-	// use the origin of the arc orginator so it pics the correct death direction anim
-	origin = source_enemy.origin;
-	
-
-	if( !IsDefined( self ) || !IsAlive( self ) )
-	{
-		// guy died on us
-		return;
-	}
-
-	if(!self.isdog)
-	{
-		player maps\_zombiemode_score::player_add_points( "death", "", "" );
-	}
+	wait(0.5);
+	self.explosive_marked = false;
 
 }
 

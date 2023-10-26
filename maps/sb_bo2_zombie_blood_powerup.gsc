@@ -12,11 +12,12 @@ init()
 {
 	//PreCacheModel( "c_zom_player_honorguard_fb" );
 	PreCacheModel( "c_viet_zombie_napalm" );
-	level._effect[ "bo2_powerup_zombie_blood_glow" ] = LoadFX( "custom/zombie_blood/fx_bo2_powerup_zombie_blood_glow" );
-	level._effect["fx_trail_blood_streak"]			= LoadFx("trail/fx_trail_blood_streak");
+	//level._effect[ "bo2_powerup_zombie_blood_glow" ] = LoadFX( "custom/zombie_blood/fx_bo2_powerup_zombie_blood_glow" );
+	//level._effect["fx_trail_blood_streak"]			= LoadFx("trail/fx_trail_blood_streak");
 	level.plr_currently_using_zombie_blood = false;
 }
 
+/*
 zombie_blood_powerup( player, powerup_time )
 {
 	player endon( "disconnect" );
@@ -32,26 +33,44 @@ zombie_blood_powerup( player, powerup_time )
 	player thread zombie_blood_on_death();
 	player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = true;
 	
-	iprintln("Setting clientSysState for player with weapon: " + player GetCurrentWeapon() );
+	//iprintln("Setting clientSysState for player with weapon: " + player GetCurrentWeapon() );
 
-	setClientSysState( "levelNotify", "zblood_on", player );
-	setClientSysState( "levelNotify", "zblood_on");
+	//setClientSysState( "levelNotify", "zblood_on", player );
+	//setClientSysState( "levelNotify", "zblood_on");
 	player thread zombie_blood_change_playermodel( true );
 	player thread zombie_blood_create_fx();
+
+	self VisionSetNaked( "zombie_blood", 0.5 );
+	self setMoveSpeedScale( player.moveSpeed + 0.3 );
+	start_time = GetRealTime();
+	while( GetRealTime() - start_time < 1000 ) {
+		progress = ( GetRealTime() - start_time ) / 1000;
+	 	self SetClientDvar( "cg_fovscale", self GetDvar("cg_fovscale") + ( 0.2 * progress ) );
+		wait 1 / 60;
+	} 
+	//self SetClientDvar( "cg_fovscale", self GetDvar("cg_fovscale") + 0.2 );
 	while( player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] > 0 )
 	{
+		self VisionSetNaked( "zombie_blood", 0.0 );
 		player.ignoreme = true;
 		wait 0.1;
 		player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] -= 0.1;
 	}
+
+	self SetClientDvar( "cg_fovscale", self GetDvar("cg_fovscale") - 0.2 );
+	self VisionSetNaked( "undefined", 0.5 );
+	self setMoveSpeedScale( player.moveSpeed - 0.3 );
 	player.ignoreme = false;
+
 	player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = false;
 	player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
-	setClientSysState( "levelNotify", "zblood_off", player );
+	//setClientSysState( "levelNotify", "zblood_off", player );
 	player thread zombie_blood_change_playermodel( false );
+
 	level.plr_currently_using_zombie_blood = false;
 	player notify( "zombie_blood_over" );
 }
+*/
 
 zombie_blood_change_playermodel( change_to_zombie )
 {

@@ -266,8 +266,10 @@ post_all_players_connected()
 	}
 
 	//Reimagined-Expanded -- set up hitmarkers
-	precacheShader( "specialty_bo4hitmarker_white" );
-	precacheShader( "specialty_bo4hitmarker_red__" );
+	//precacheShader( "specialty_bo4hitmarker_white" );
+	//precacheShader( "specialty_bo4hitmarker_red__" );
+
+	maps\sb_bo2_zombie_blood_powerup::init();
 
 	//Reimagined-Expanded -- bonus player perk fx
 	players = GetPlayers();
@@ -364,12 +366,30 @@ unsetPerks()
 
 	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 4;
 
+	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 2;
+	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
+
+	level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE = 2;
+	level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE = 2;
+
 	//Bullet Effects
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
 	level.THRESHOLD_SHEERCOLD_DIST = 20;
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 
 	level.RANGE_SHEERCOLD_DIST = 120;
+	level.VALUE_HELLFIRE_RANGE = 20;
+	level.VALUE_HELLFIRE_TIME = 2;
+
+	level.VALUE_EXPLOSIVE_BASE_DMG = 20000;
+	level.VALUE_EXPLOSIVE_UPGD_DMG_SCALE = 4;
+
+	level.VALUE_EXPLOSIVE_BASE_RANGE = 250;
+	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
+
+	//Items and drops
+	player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
+	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 
 }
 
@@ -514,7 +534,6 @@ watch_player_hellfire()
 
 	}
 
-//HERE_
 //Reimagined-Expanded Weapon Effect!
 watch_player_sheercold()
 {
@@ -1176,7 +1195,7 @@ init_levelvars()
 	}
 
 	//Reimagined Apocalypse
-	if(level.expensive_perks) {
+	if(level.apocalypse) {
 		level.zombie_vars["zombie_score_bonus_melee"] = 20;
 		//level.zombie_vars["zombie_score_bonus_head"] = 50;
 	}
@@ -2002,7 +2021,7 @@ onPlayerConnect_clientDvars()
 		"compass", "0",
 		"hud_showStance", "0",
 		"cg_thirdPerson", "0",
-		"cg_fov", "90",
+		//"cg_fov", "90",
 		"cg_thirdPersonAngle", "0",
 		"ammoCounterHide", "1",
 		"miniscoreboardhide", "1",
@@ -2805,6 +2824,12 @@ player_revive_monitor()
 			points = self.score_lost_when_downed;
 			reviver maps\_zombiemode_score::player_add_points( "reviver", points );
 			self.score_lost_when_downed = 0;
+
+			//Reimagined-Expanded - Quickrevive Pro bonus
+			if( reviver hasProPerk(level.QRV_PRO))
+			{
+				//self thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( self, 10 );
+			}
 		}
 
 		wait_network_frame();
@@ -6550,7 +6575,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "cz75dw_zm":
 			final_damage = 400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 3.5;
+				final_damage *= 2;
 			break;
 		case "python_zm":
 			final_damage = 2200;
@@ -6565,40 +6590,44 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "ak74u_zm":
 		case "zombie_thompson":
-			final_damage = 400;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-			break;
-		case "mpl_zm":
-		case "m16_zm":
-		case "mp5k_zm":
 		case "mp40_zm":
-		case "pm63_zm":
-		case "g11_lps_zm":
-		case "famas_zm":
-		case "ppsh_zm":
-		case "zombie_stg44":
-		case "zombie_type100_smg":
 			final_damage = 360;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 2.5;
+			break;
+		case "mpl_zm":
+		case "mp5k_zm":
+		case "pm63_zm":
+			final_damage = 320;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
+		case "ppsh_zm":
 		case "spectre_zm":
+			final_damage = 360;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 2.25;
+			break;
+		case "m16_zm":
+		case "g11_lps_zm":
+		case "famas_zm":
+		case "zombie_stg44":
+		case "zombie_type100_smg":
 			final_damage = 400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.5;
 			break;
 		case "aug_acog_mk_acog_zm":
-			final_damage = 430;
+			final_damage = 460;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.25;
 			break;
 		case "commando_zm":
 		case "galil_zm":
 		case "ak47_zm":
 			final_damage = 470;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.5;
 			break;
 		case "fnfal_zm":
 			final_damage = 520;
@@ -6879,14 +6908,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		else if(weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_bowie_zm" || weapon == "knife_ballistic_sickle_zm")
 		{
-			final_damage = 500;
+			final_damage = 5000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 4;
 		}
 		else if(weapon == "knife_ballistic_upgraded_zm" || weapon == "knife_ballistic_bowie_upgraded_zm" || weapon == "knife_ballistic_sickle_upgraded_zm" ||
 				weapon == "knife_ballistic_upgraded_zm_x2")
 		{
-			final_damage = 1000;
+			final_damage = 10000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 4;
 		}
@@ -6907,10 +6936,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//Reimagined-Expanded - x2 Weapons
-	if(weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
+	if(weapon == "crossbow_explosive_upgraded_zm_x2" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
 	{	
 
-		self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 0);
+		radius=level.VALUE_EXPLOSIVE_BASE_RANGE / 2;
+		dmg=level.VALUE_EXPLOSIVE_BASE_DMG*2;
+		hellfire_time=0; //Handled in weapon fx
+
+		if(attacker hasProPerk(level.PHD_PRO)) {
+			radius*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE;
+			dmg*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE;
+		}
+
+		attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
 		return self.maxhealth + 1000; // should always kill
 			
 	}
@@ -6923,22 +6961,48 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( is_boss_zombie(self.animname) ) {
 			return 1000;
 		}
-		
-		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 2);
+
+		radius=level.VALUE_HELLFIRE_RANGE;
+		time=level.VALUE_HELLFIRE_TIME;
+		if(attacker hasProPerk(level.PHD_PRO)) {
+			radius*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE;
+			time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
+		}
+
+		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, radius, time);
 		wait(1);
 		return self.maxhealth + 1000; // should always kill 
 	}
 	
-	if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_zm") 
+	//Reimagined-Expanded, can china-lake be upgraded??
+	if(weapon == "m72_law_zm" || weapon == "china_lake_zm") 
 	{
-		if( !is_boss_zombie(self.animname)) {
-			self thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, attacker, 1);
-			level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, 4, self );
-			return self.maxhealth + 1000; // should always kill
-		} else {
-			final_damage = 4000; //against boss zombies
+		radius=level.VALUE_EXPLOSIVE_BASE_RANGE;
+		dmg=level.VALUE_EXPLOSIVE_BASE_DMG;
+		hellfire_time=level.VALUE_HELLFIRE_TIME;
+
+		if(attacker hasProPerk(level.PHD_PRO)) {
+			radius*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE;
+			dmg*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE;
+			hellfire_time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
 		}
-	
+
+		if(!IsDefined(self.explosive_marked))
+			self.explosive_marked = false;
+
+		if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_upgraded_zm") 
+		{
+			if( !is_boss_zombie(self.animname) && !self.explosive_marked) {
+				attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
+				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, hellfire_time, attacker );
+				return self.maxhealth + 1000; // should always kill
+			} 
+		}
+
+		if ( is_boss_zombie(self.animname) )
+		{
+			final_damage = dmg/10; //against boss zombies
+		}
 	}
 
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
@@ -7060,6 +7124,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = int(final_damage * 2);
 		}
 
+		iprintln( "Final dmg after main perks: " + final_damage );
+
 		//Reimagined-Expanded -- Deadshot Hitmarkers
 		always_true = true;
 		if( attacker hasProPerk(level.DST_PRO) ) 
@@ -7083,6 +7149,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 			
 		}
+
+		iprintln( "Final dmg after DST_PRO: " + final_damage );
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
@@ -7101,7 +7169,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			args.weapon = weapon;
 			args.vpoint = vpoint;
 			args.vdir = vdir;
-			args.sHitLoc = sHitLoc;
+			args.sHitLoc = "body";	//HERE_ maybe chest? Can't give people free headshots
 			args.modelIndex = modelIndex;
 			args.psOffsetTime = psOffsetTime;
 			

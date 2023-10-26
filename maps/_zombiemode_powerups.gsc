@@ -1544,7 +1544,7 @@ powerup_grab()
 			}
 
 			//no picking up death machine if waffe is active
-			if(self.powerup_name == "minigum" && IsDefined(players[i].has_tesla) && players[i].has_tesla)
+			if(self.powerup_name == "minigun" && IsDefined(players[i].has_tesla) && players[i].has_tesla)
 				continue;
 
 			//no picking up unupgraded waffe if upgraded waffe is active
@@ -1629,6 +1629,11 @@ powerup_grab()
 
 					case "tesla":
 						level thread tesla_weapon_powerup( players[i], self );
+						players[i] thread powerup_vo( "tesla" ); // TODO: Audio should uncomment this once the sounds have been set up
+						break;
+
+					case "zombie_blood":
+						level thread zombie_blood_powerup( players[i], level.VALUE_ZOMBIE_BLOOD_TIME );
 						players[i] thread powerup_vo( "tesla" ); // TODO: Audio should uncomment this once the sounds have been set up
 						break;
 
@@ -1732,6 +1737,12 @@ powerup_grab()
 		}
 		wait 0.1;
 	}
+}
+
+//Reimagined-Expanded - Call zombieblood script!
+zombie_blood_powerup( player, time )
+{
+	//player maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( player, time );
 }
 
 //PI ESM - revive all players in last stand on the map

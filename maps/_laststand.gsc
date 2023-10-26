@@ -42,6 +42,11 @@ init()
 }
 
 
+hasProPerk( perk )
+{
+	return self.specialty_quickrevive_upgrade;
+}
+
 player_is_in_laststand()
 {
 	return ( IsDefined( self.revivetrigger ) );
@@ -517,7 +522,7 @@ revive_trigger_think()
 				// or we need a new combined radius+lookat trigger type.
 				//self.revivetrigger setHintString( &"GAME_BUTTON_TO_REVIVE_PLAYER" );
 				//break;
-				if( players[i] maps\_zombiemode::hasProPerk(level.QRV_PRO) )
+				if( players[i] hasProPerk(level.QRV_PRO) )
 					self.proReviveTrigger SetInvisibleToPlayer( players[i], false );
 				else
 					self.revivetrigger SetInvisibleToPlayer( players[i], false );
@@ -674,7 +679,7 @@ can_revive( revivee )
 
 	//If you arent touching the small radius, but you have QRV_PRO, you must be at least inside big radius
 	//then you can revive
-	if ( !self IsTouching( revivee.revivetrigger ) && !self maps\_zombiemode::hasProPerk(level.QRV_PRO) )
+	if ( !self IsTouching( revivee.revivetrigger ) && !self hasProPerk(level.QRV_PRO) )
 	{
 		return false;
 	}
@@ -698,7 +703,7 @@ can_revive( revivee )
 	}
 
 	//Reimagined-Expanded, you can revive through walls, congrats
-	if( self maps\_zombiemode::hasProPerk(level.QRV_PRO) )
+	if( self hasProPerk(level.QRV_PRO) )
 	{
 		return true;
 	}
