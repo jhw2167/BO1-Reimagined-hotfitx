@@ -1742,7 +1742,7 @@ powerup_grab()
 //Reimagined-Expanded - Call zombieblood script!
 zombie_blood_powerup( player, time )
 {
-	//player maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( player, time );
+	player maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( player, time );
 }
 
 //PI ESM - revive all players in last stand on the map

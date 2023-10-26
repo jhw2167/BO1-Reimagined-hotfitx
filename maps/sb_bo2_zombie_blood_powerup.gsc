@@ -17,7 +17,7 @@ init()
 	level.plr_currently_using_zombie_blood = false;
 }
 
-/*
+
 zombie_blood_powerup( player, powerup_time )
 {
 	player endon( "disconnect" );
@@ -30,7 +30,7 @@ zombie_blood_powerup( player, powerup_time )
 		return;
 	}
 
-	player thread zombie_blood_on_death();
+	//player thread zombie_blood_on_death();
 	player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = true;
 	
 	//iprintln("Setting clientSysState for player with weapon: " + player GetCurrentWeapon() );
@@ -38,28 +38,34 @@ zombie_blood_powerup( player, powerup_time )
 	//setClientSysState( "levelNotify", "zblood_on", player );
 	//setClientSysState( "levelNotify", "zblood_on");
 	player thread zombie_blood_change_playermodel( true );
-	player thread zombie_blood_create_fx();
+	//player thread zombie_blood_create_fx();
 
-	self VisionSetNaked( "zombie_blood", 0.5 );
-	self setMoveSpeedScale( player.moveSpeed + 0.3 );
-	start_time = GetRealTime();
-	while( GetRealTime() - start_time < 1000 ) {
-		progress = ( GetRealTime() - start_time ) / 1000;
-	 	self SetClientDvar( "cg_fovscale", self GetDvar("cg_fovscale") + ( 0.2 * progress ) );
-		wait 1 / 60;
+	player VisionSetNaked( "zombie_blood", 0.5 );
+	player SetMoveSpeedScale( player.moveSpeed + 0.3 );
+	//start_time = GetRealTime();
+	/*
+	transition_time = 1.0;
+	time=0;
+	while( time < transition_time ) {
+		progress = time / transition_time;
+	 	player SetClientDvar( "cg_fovscale", player GetDvar("cg_fovscale") + ( 0.2 * progress ) );
+		time += 0.1;
+		wait (0.1);
 	} 
-	//self SetClientDvar( "cg_fovscale", self GetDvar("cg_fovscale") + 0.2 );
+	*/
+	
+	//player SetClientDvar( "cg_fovscale", player GetDvar("cg_fovscale") + 0.2 );
 	while( player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] > 0 )
 	{
-		self VisionSetNaked( "zombie_blood", 0.0 );
+		player VisionSetNaked( "zombie_blood", 0.0 );
 		player.ignoreme = true;
 		wait 0.1;
 		player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] -= 0.1;
 	}
 
-	self SetClientDvar( "cg_fovscale", self GetDvar("cg_fovscale") - 0.2 );
-	self VisionSetNaked( "undefined", 0.5 );
-	self setMoveSpeedScale( player.moveSpeed - 0.3 );
+	//player SetClientDvar( "cg_fovscale", player GetDvar("cg_fovscale") - 0.2 );
+	player VisionSetNaked( "undefined", 0.5 );
+	player SetMoveSpeedScale( player.moveSpeed - 0.3 );
 	player.ignoreme = false;
 
 	player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = false;
@@ -70,14 +76,15 @@ zombie_blood_powerup( player, powerup_time )
 	level.plr_currently_using_zombie_blood = false;
 	player notify( "zombie_blood_over" );
 }
-*/
+
+
 
 zombie_blood_change_playermodel( change_to_zombie )
 {
 	if( change_to_zombie )
 	{
 		self.hero_model = self.model;
-		if( level.script == "zombie_moon" && self is_player_equipment( "equip_gasmask_zm" ) )
+		if( level.script == "zombie_moon" )
 		{
 			if( !self maps\_zombiemode_equipment::is_equipment_active( "equip_gasmask_zm" ) )
 			{
@@ -113,6 +120,9 @@ zombie_blood_change_playermodel( change_to_zombie )
 	}
 }
 
+
+
+/*
 zombie_blood_on_death()
 {
 	self endon( "disconnect" );
@@ -120,7 +130,7 @@ zombie_blood_on_death()
 	self waittill_any( "player_downed", "fake_death" );
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 	self.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = false;
-	setClientSysState( "levelNotify", "zblood_off", self );
+	//setClientSysState( "levelNotify", "zblood_off", self );
 	self thread zombie_blood_change_playermodel( false );
 	level.plr_currently_using_zombie_blood = false;
 	self notify( "zombie_blood_over" );
@@ -143,3 +153,4 @@ zombie_blood_create_fx()
 	fx_origin Delete();
 	self PlaySound( "zmb_bo2_powerup_zombie_blood_end" );
 }
+*/

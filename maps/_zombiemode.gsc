@@ -388,7 +388,7 @@ unsetPerks()
 	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
 
 	//Items and drops
-	player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
+	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 
 }
@@ -2828,7 +2828,7 @@ player_revive_monitor()
 			//Reimagined-Expanded - Quickrevive Pro bonus
 			if( reviver hasProPerk(level.QRV_PRO))
 			{
-				//self thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( self, 10 );
+				self thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( self, 10 );
 			}
 		}
 
@@ -5340,40 +5340,56 @@ ai_calculate_health( round_number )
 		return;
 	}
 
-	//vanilla
-	/* level.zombie_health = level.zombie_vars["zombie_health_start"];
-	for ( i=2; i<=round_number; i++ )
-	{
-		// After round 10, get exponentially harder
-		if( i >= 10 )
-		{
-			level.zombie_health += Int( level.zombie_health * level.zombie_vars["zombie_health_increase_multiplier"] );
-		}
-		else
-		{
-			level.zombie_health = Int( level.zombie_health + level.zombie_vars["zombie_health_increase"] );
-		}
-	} */
-	
-	
-	//Reimagined-Expanded - logarithmic health scaling
-	base = 400;
-	rTenfactor = 0.5;
+
+	//HERE_
+	//Reimagined-Expanded - exponential health scaling
+	base = 1000;
+	rTenfactor = 0.15;
 	startHealth = 150;
-	logFactor = 7;
+	logFactor = 4;
 	
 	health = startHealth;
-	for ( i=2; i<=round_number; i++ ){	
-		if(i == 10)	
+	for ( i=2; i<=round_number; i++ )
+	{	
+		if(i == 15)	
 			rTenfactor=1;
 		health += base * ( Int( i / logFactor ) + rTenfactor);
-		//iprintln(health);
-		
-		//cap zombies health
-		if(health > MAX_ZOMBIE_HEALTH) {
-			break;
+		//iprintln(health);		
+	}
+
+	//Reimagined-Expanded - Reduce extreme scaling for non apocalypse players
+	if(!level.apocalypse && round_number > 10)
+	{
+		if(round_number < 20)
+		{
+			health = health * 0.6;
+		} else if(round_number < 30)
+		{
+			health = health * 0.4;
 		}
 	}
+
+		//cap zombies health, first round of capped == 45
+	if(health > MAX_ZOMBIE_HEALTH) {
+		health = MAX_ZOMBIE_HEALTH;
+	}
+
+		//Vanilla scaling is too weak for increased weapon damage
+		/*
+		level.zombie_health = level.zombie_vars["zombie_health_start"];
+		for ( i=2; i<=round_number; i++ )
+		{
+			// After round 10, get exponentially harder
+			if( i >= 10 )
+			{
+				level.zombie_health += Int( level.zombie_health * level.zombie_vars["zombie_health_increase_multiplier"] );
+			}
+			else
+			{
+				level.zombie_health = Int( level.zombie_health + level.zombie_vars["zombie_health_increase"] );
+			}
+		} 
+		*/
 	
 	//iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
@@ -6650,12 +6666,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 2;
 			break;
 		case "psg1_zm":
-			final_damage = 1800;
+			final_damage = 3600;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 3;
 			break;
 		case "l96a1_zm":
-			final_damage = 2200;
+			final_damage = 4400;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 3;
 			break;
@@ -6778,12 +6794,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "psg1_upgraded_zm":
-			final_damage = 4000;
+			final_damage = 8500;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 3;
 			break;
 		case "l96a1_upgraded_zm":
-			final_damage = 5000;
+			final_damage = 9000;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 3;
 			break;

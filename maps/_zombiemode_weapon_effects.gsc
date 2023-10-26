@@ -104,10 +104,20 @@ zombie_bullet_penetration( zomb , args )
 			continue;
 		}
 
-		if ( !zombies[i] DamageConeTrace( view_pos, self ) && !BulletTracePassed( view_pos, test_origin, false, undefined ) && !SightTracePassed( view_pos, test_origin, false, undefined ) )
+		if ( !zombies[i] DamageConeTrace( view_pos, self ) )
 		{
 			// guy can't actually be hit from where we are
 			//iprintln("trace not passed");
+			continue;
+		}
+
+		if( !BulletTracePassed( view_pos, test_origin, false, undefined ) )
+		{
+			continue;
+		}
+
+		if( !SightTracePassed( view_pos, test_origin, false, undefined )  )
+		{
 			continue;
 		}
 		
