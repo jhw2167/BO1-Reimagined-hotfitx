@@ -243,7 +243,8 @@ zombie_spawn_init( animname_set )
 	self.deathFunction = ::zombie_death_animscript;
 	self.flame_damage_time = 0;
 
-	self.meleeDamage = 50;
+	//Reimagined-Expanded, slightly more damage since we now have baby jug
+	self.meleeDamage = 60;
 	self.no_powerups = true;
 
 	self zombie_history( "zombie_spawn_init -> Spawned = " + self.origin );
@@ -396,7 +397,14 @@ set_zombie_run_cycle( new_move_speed )
 
 set_run_speed()
 {
-	rand = randomintrange( level.zombie_move_speed, level.zombie_move_speed + 35 );
+	rand = level.zombie_move_speed;
+	if(level.zombie_move_speed < 100 ) {
+		rand = randomintrange( level.zombie_move_speed, level.zombie_move_speed + 35 );
+	} else {
+		rand = randomintrange( 50, level.zombie_move_speed );
+	}
+	
+
 
 //	self thread print_run_speed( rand );
 	if( rand <= 35 && level.gamemode == "survival" )
@@ -409,12 +417,19 @@ set_run_speed()
 	}
 	else
 	{
+		//Sprinter
 		self.zombie_move_speed = "sprint";
 
+		//super sprinter
 		if(rand > 105)
 		{
 			//self.zombie_move_speed_supersprint = true; anims only on verucket
-			self.zombie_move_speed_supersprint = false;
+			self.zombie_move_speed_supersprint = true;
+		}
+
+		//Terror
+		if(rand > 140) {
+			self.zombie_speed_up = ( self.zombie_move_speed + 70 / rand ); // > 1
 		}
 	}
 }

@@ -305,8 +305,9 @@ sonic_zombie_spawn( animname_set )
 
 	//self.maxhealth = int(self.maxhealth * GetPlayers().size * level.sonicHealthMultiplier);
 	self.maxhealth = int(self.maxhealth * level.sonicHealthMultiplier);
-	if(self.maxhealth > 125000)
-		self.maxhealth = 125000;
+	if(self.maxhealth > level.MAX_ZOMBIE_HEALTH*2)
+		self.maxhealth = level.MAX_ZOMBIE_HEALTH*2;
+		
 	self.health = self.maxhealth;
 
 	//hack to prevent gibbing for now

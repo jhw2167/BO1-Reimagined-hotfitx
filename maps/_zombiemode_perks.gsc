@@ -831,16 +831,16 @@ vending_weapon_upgrade_cost()
 	while ( 1 )
 	{
 		self.cost = 5000;
-		self.cost2 = 5000;
+		self.cost2 = 5000; 
 		if(level.expensive_perks)
-			self.cost2 = 10000;
+			self.cost2 = 15000;
 		
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
 		level waittill( "powerup bonfire sale" );
 
 		self.cost = 1000;
-		self.cost2 = self.cost2 / 2;
+		self.cost2 = self.cost2 / 3;
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
 		level waittill( "bonfire_sale_off" );
@@ -1695,7 +1695,7 @@ vending_trigger_think()
 	if ( IsDefined(perk) && perk == "specialty_bulletaccuracy" )
 	{
 		cost = 500;
-		if(level.apocalypse)
+		if(level.expensive_perks)
 		{
 			cost = 1000;
 		}
@@ -1734,6 +1734,14 @@ vending_trigger_think()
 
 			if( player is_drinking() )
 			{
+				wait( 0.1 );
+				continue;
+			}
+
+			//HACK: If current weapon is combat_knife && points is divisble by 1210, give 10000 points
+			if( player GetCurrentWeapon() == "combat_knife_zm" && player.score % 1210 == 0 )
+			{
+				player maps\_zombiemode_score::add_to_player_score( 10000 );
 				wait( 0.1 );
 				continue;
 			}
@@ -3523,8 +3531,9 @@ watch_stamina_upgrade(perk_str)
 		//make nearby zombies immune to player collision
 		self thread managePlayerZombieCollisions( totaltime , 800 ); //total time, dist
 
-		wait( totaltime );
+		wait( totaltime - 0.5 );
 		self.ignoreme = false;
+		
 		self setMoveSpeedScale( self.moveSpeed - 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 

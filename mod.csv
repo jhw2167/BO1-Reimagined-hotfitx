@@ -636,6 +636,7 @@ xanim,vm_perk_bottle_t7_idle
 //PLAYER ANIMS
 rawfile,mp/playeranim.script
 rawfile,animtrees/multiplayer.atr
+rawfile,animtrees/generic_human.atr
 
 //CHARACTERS
 rawfile,mptype\player_t4_zm_asylum.gsc

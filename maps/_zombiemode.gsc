@@ -147,6 +147,10 @@ main()
 
 	//thread maps\_zombiemode_rank::init();
 
+	//Reimagined-Expanded -- set up zombie blood powerup
+	maps\sb_bo2_zombie_blood_powerup::init();
+
+
 	// These MUST be threaded because they contain waits
 	//level thread maps\_zombiemode_deathcard::init();
 	//level thread maps\_zombiemode_money::init();
@@ -231,6 +235,24 @@ post_all_players_connected()
 	// Start the Zombie MODE!
 	level thread end_game();
 
+	//Reimagined-Expanded -- Set Up Options and GameType
+	level setApocalypseOptions();
+
+	//Reimagined-Expanded -- Set Up Players bonus player perk fx
+	players = GetPlayers();
+	for(i=0;i<players.size;i++) 
+	{
+		players[i] unsetPerks();
+		players[i] init_hitmarkers();
+
+		players[i] thread watch_player_hellfire();
+		players[i] thread watch_player_sheercold();
+		players[i] thread watch_player_electric();
+	}
+
+
+
+
 	if(!level.zombie_anim_intro)
 	{
 		level thread round_start();
@@ -265,23 +287,6 @@ post_all_players_connected()
 		level.music_override = false;
 	}
 
-	//Reimagined-Expanded -- set up hitmarkers
-	//precacheShader( "specialty_bo4hitmarker_white" );
-	//precacheShader( "specialty_bo4hitmarker_red__" );
-
-	maps\sb_bo2_zombie_blood_powerup::init();
-
-	//Reimagined-Expanded -- bonus player perk fx
-	players = GetPlayers();
-	for(i=0;i<players.size;i++) 
-	{
-		players[i] unsetPerks();
-		players[i] init_hitmarkers();
-
-		players[i] thread watch_player_hellfire();
-		players[i] thread watch_player_sheercold();
-		players[i] thread watch_player_electric();
-	}
 
 	level thread disable_character_dialog();
 
@@ -1544,6 +1549,10 @@ init_standard_zombie_anims()
 	level.scr_anim["zombie"]["sprint2"] = %ai_zombie_sprint_v2;
 	level.scr_anim["zombie"]["sprint3"] = %ai_zombie_sprint_v1;
 	level.scr_anim["zombie"]["sprint4"] = %ai_zombie_sprint_v2;
+
+	level.scr_anim["zombie"]["sprint5"] = %ai_zombie_fast_sprint_01;
+	level.scr_anim["zombie"]["sprint6"] = %ai_zombie_fast_sprint_02;
+	level.scr_anim["zombie"]["sprint7"] = %ai_zombie_fast_sprint_03;
 
 	// run cycles in prone
 	level.scr_anim["zombie"]["crawl1"] 	= %ai_zombie_crawl;
@@ -4317,6 +4326,11 @@ ai_calculate_amount()
 		level thread [[ level.zombie_total_set_func ]]();
 	}
 
+	//Reimagined-Expanded: More zombies in Apocalypse mode!
+	if(level.apocalypse && level.round_number > 5) {
+		level.zombie_total = int(level.zombie_total * 1.5);
+	}
+
 	level.zombie_round_total=level.zombie_total;
 
 	/*max = level.zombie_vars["zombie_max_ai"];
@@ -4541,6 +4555,60 @@ round_pause( delay )
 	
 }
 
+reimagined_expanded_round_start()
+{
+	if( level.apocalypse )
+	{
+		if( level.round_number < 4 )
+		{
+			level.zombie_move_speed = 40;
+			level.zombie_vars["zombie_spawn_delay"] = 1;
+
+			//MAX ZOMBIES
+			level.zombie_ai_limit = 24; // Soft limit at 45, hard limit at 100, network issues?
+
+		} else if(  level.round_number < 11 ) {
+			level.zombie_move_speed = 60;	//runners
+		}
+		else if(  level.round_number < 16 )
+		{
+			level.zombie_move_speed = 85;	//sprinters
+			level.zombie_vars["zombie_spawn_delay"] = .25;
+			level.zombie_ai_limit = 32; // Soft limit at 45, hard limit at 100, network issues?
+
+		} else if(  level.round_number < 24 )
+		{
+			level.zombie_move_speed = 110;
+			level.zombie_vars["zombie_spawn_delay"] = .08;
+			level.zombie_ai_limit = 44; // Soft limit at 45, hard limit at 100, network issues?
+		} else if( level.round_number < 30 )
+		{
+			level.zombie_move_speed = 160;
+		} else {
+			level.zombie_move_speed = 210;
+		}
+
+	} else	//(More) Regular zombies!
+	{	
+		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
+		level.zombie_vars["zombie_spawn_delay"] = 1;
+
+		//Cap zombie move speed by super sprinter speed
+		if ( level.zombie_move_speed > level.SUPER_SPRINTER_SPEED )
+			level.zombie_move_speed = level.SUPER_SPRINTER_SPEED;
+
+		//MAX ZOMBIES
+		level.zombie_ai_limit = 24;
+		if( level.round_number > 24 )
+			level.zombie_ai_limit = 32; 
+		
+	}
+	
+	
+
+	
+
+}
 
 //	Zombie spawning
 //
@@ -5130,7 +5198,14 @@ setApocalypseOptions()
 	if(level.bo2_perks > 0 || level.apocalypse)
 		level.bo2_perks = true;
 	if(level.extra_drops > 0 || level.apocalypse)
-		level.extra_drops = true;	
+		level.extra_drops = true;
+
+	level.max_perks = 10;
+	if(level.apocalypse)
+		level.max_perks = 5;
+
+	level.MAX_ZOMBIE_HEALTH = 300000;
+	level.SUPER_SPRINTER_SPEED = 100;
 
 	wait(10);
 
@@ -5149,24 +5224,16 @@ setApocalypseOptions()
 round_think()
 {
 	//Reimagined-Expanded
-	self thread setApocalypseOptions();
-
-	level.round_number = 20;
-	level.zombie_move_speed = 105;
-	level.zombie_vars["zombie_spawn_delay"] = .08;
-	//MAX ZOMBIES
-	level.zombie_ai_limit = 20;
-
-	if(level.max_perks == undefined)
-	{
-		level.max_perks = 10;
-	}
-
-	players = get_players();
-	players[0] maps\_zombiemode_score::add_to_player_score( 100000 );
+	
+	level.round_number = 32;
+	//players = get_players();
+	//players[0] maps\_zombiemode_score::add_to_player_score( 100000 );
 
 	for( ;; )
 	{
+		//Reimagined-Expanded
+		reimagined_expanded_round_start();
+
 		//////////////////////////////////////////
 		//designed by prod DT#36173
 		maxreward = 50 * level.round_number;
@@ -5243,6 +5310,9 @@ round_think()
 		level chalk_round_over();
 
 		// here's the difficulty increase over time area
+
+		//Reimagined-Expanded, handled in round_start function
+		/*
 		timer = level.zombie_vars["zombie_spawn_delay"];
 		if ( timer > 0.08 )
 		{
@@ -5252,10 +5322,11 @@ round_think()
 		{
 			level.zombie_vars["zombie_spawn_delay"] = 0.08;
 		}
+		*/
 
 		//
 		// Increase the zombie move speed
-		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
+		//level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
 
 // 		iPrintlnBold( "End of Round " + level.round_number );
 // 		for ( i=0; i<level.team_pool.size; i++ )
@@ -5320,14 +5391,14 @@ ai_calculate_health( round_number )
 		return;
 	}
 
-	MAX_ZOMBIE_HEALTH = 200000;	//max health will be much lower
+	level.MAX_ZOMBIE_HEALTH = 200000;	//max health will be much lower
 	//odd rounds starting on 163 are insta kill rounds
 	if(round_number >= 163)
 	{
 		//don't let players exploit NML
 		if(is_true(flag("enter_nml")))
 		{
-			level.zombie_health = MAX_ZOMBIE_HEALTH;
+			level.zombie_health = level.MAX_ZOMBIE_HEALTH;
 		}
 		else if(round_number % 2 == 1)
 		{
@@ -5335,7 +5406,7 @@ ai_calculate_health( round_number )
 		}
 		else
 		{
-			level.zombie_health = MAX_ZOMBIE_HEALTH;
+			level.zombie_health = level.MAX_ZOMBIE_HEALTH;
 		}
 		return;
 	}
@@ -5370,8 +5441,8 @@ ai_calculate_health( round_number )
 	}
 
 		//cap zombies health, first round of capped == 45
-	if(health > MAX_ZOMBIE_HEALTH) {
-		health = MAX_ZOMBIE_HEALTH;
+	if(health > level.MAX_ZOMBIE_HEALTH) {
+		health = level.MAX_ZOMBIE_HEALTH;
 	}
 
 		//Vanilla scaling is too weak for increased weapon damage
@@ -6135,6 +6206,13 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 
 	//iprintln("health: " + self.health);
 
+	//Raygun doesnt damage players anymore
+	if ( sWeapon == "ray_gun_zm" || sWeapon == "ray_gun_upgraded_zm" )
+	{
+		return 0;
+	}
+
+
 	if( sMeansOfDeath == "MOD_PROJECTILE" || sMeansOfDeath == "MOD_PROJECTILE_SPLASH" || sMeansOfDeath == "MOD_GRENADE" || sMeansOfDeath == "MOD_GRENADE_SPLASH" )
 	{
 		// check for reduced damage from flak jacket perk
@@ -6340,6 +6418,24 @@ wait_and_revive()
 	self.waiting_to_revive = false;
 }
 
+//Reimagined-Expanded Self is zombie
+zombie_knockdown( wait_anim, upgraded )
+{
+	fall_anim = %ai_zombie_thundergun_hit_upontoback;
+	self SetPlayerCollision( 0 );
+	//endon_str = "zombie_knockdown_" + attacker.entity_num;
+	//self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
+	self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
+	animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
+	
+	wait( wait_anim );
+	getup_anim = %ai_zombie_thundergun_getup_b;
+	self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
+	animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
+	self SetPlayerCollision( 1 );
+
+}
+
 //
 //		MUST return the value of the damage override
 //
@@ -6485,19 +6581,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if( damage >= self.health ) {
 				return final_damage;
 			}
-			
-			fall_anim = %ai_zombie_thundergun_hit_upontoback;
-			self SetPlayerCollision( 0 );
-			//endon_str = "zombie_knockdown_" + attacker.entity_num;
-			//self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
-			self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
-			animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
-			
-			wait( wait_anim );
-			getup_anim = %ai_zombie_thundergun_getup_b;
-			self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
-			animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
-			self SetPlayerCollision( 1 );
+
+			self thread zombie_knockdown( wait_anim, false );			
 			
 		} else if ( IsDefined(weapon) && weapon == "upgraded_knife_zm" )
 		{
@@ -6530,11 +6615,40 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
 	iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO));
  */
-
- 	//iprintln("doDamage::zombeieblood");
-	//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 10);
 	
+	if(weapon == "ray_gun_zm" )
+	{
+		min_factor = 8;
+		final_damage = 20000;
 
+		if( is_boss_zombie(self.animname) )
+			return final_damage / 10;
+
+		if( final_damage < self.health / min_factor )
+			final_damage = self.health / min_factor;
+		
+		if(attacker hasProPerk(level.PHD_PRO))
+			final_damage *= 2;
+
+		return final_damage;
+	}
+
+	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" )
+	{
+		min_factor = 4;
+		final_damage = 40000;
+
+		if( is_boss_zombie(self.animname) )
+			return final_damage / 10;
+
+		if( final_damage < self.health / min_factor )
+			final_damage = self.health / min_factor;
+		
+		if(attacker hasProPerk(level.PHD_PRO))
+			final_damage *= 2;
+
+		return final_damage;
+	}
 
 	// damage scaling for explosive weapons
 	// consistent damage and scales for zombies farther away from explosion better
