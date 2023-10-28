@@ -256,22 +256,22 @@
 
 		// SURVIVAL
 
-		FRAME_CHOICE_DVARYESNO_VIS( 32, "@REIMAGINED_CHAR_DIALOG", character_dialog, ;, when(dvarString(zm_gamemode) == "survival") )
+		FRAME_CHOICE_DVARYESNO_VIS( 32, "@REIMAGINED_CHAR_DIALOG", character_dialog, ;, dvarString(zm_gamemode) == "survival" )
 
-		//FRAME_CHOICE_DVARYESNO_VIS( 33, "@REIMAGINED_ADDITIONAL_PRIMARY_WEAPON_CAPS", mule_kick_enabled, ;, when(dvarString(zm_gamemode) == "survival") )
+		//FRAME_CHOICE_DVARYESNO_VIS( 33, "@REIMAGINED_ADDITIONAL_PRIMARY_WEAPON_CAPS", mule_kick_enabled, ;, dvarString(zm_gamemode) == "survival" )
 
 		#undef	CHOICE_TEXT_COLOR_HL
 		#define	CHOICE_TEXT_COLOR_HL			0 0 0 1
 
-		FRAME_CHOICE_BUTTON_VIS( 33, "@REIMAGINED_MAP_SPECIFIC", setdvar ui_options_game_popup "map_options"; open mature_content_pc_disable_warning, when(dvarString(zm_gamemode) == "survival") )
+		FRAME_CHOICE_BUTTON_VIS( 33, "@REIMAGINED_MAP_SPECIFIC", setdvar ui_options_game_popup "map_options"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
 
-		FRAME_CHOICE_BUTTON_VIS( 34, "@REIMAGINED_INITIAL_MAGICBOX_CAPS", setdvar ui_options_game_popup "initial_box_locations"; open mature_content_pc_disable_warning, when(dvarString(zm_gamemode) == "survival") )
+		FRAME_CHOICE_BUTTON_VIS( 34, "@REIMAGINED_INITIAL_MAGICBOX_CAPS", setdvar ui_options_game_popup "initial_box_locations"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
 		
-		FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, ;, when(dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1") )
+		FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, ;, ( dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1" ) )
 		
-		FRAME_CHOICE_BUTTON_VIS( 36, "@REIMAGINED_GAME_OPTIONS", setdvar ui_options_game_popup "reimagined_expanded"; open mature_content_pc_disable_warning, when(dvarString(zm_gamemode) == "survival") )
+		FRAME_CHOICE_BUTTON_VIS( 36, "@REIMAGINED_GAME_OPTIONS", setdvar ui_options_game_popup "reimagined_expanded"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
 		
-		FRAME_CHOICE_DVARYESNO_VIS( 37, "@REIMAGINED_PAUSE", zombie_pause, ;, when(dvarString(zombie_apocalypse) == "0") )
+		FRAME_CHOICE_DVARYESNO_VIS( 37, "@REIMAGINED_PAUSE", zombie_pause, ;, dvarString(zombie_apocalypse) == "0" )
 		
 		// VERSUS
 
@@ -280,11 +280,11 @@
 
 		#undef	CHOICE_TEXT_COLOR_HL
 		#define	CHOICE_TEXT_COLOR_HL			1 1 1 1
-		FRAME_CHOICE_DVARSTRINGLIST_VIS( 32, "@REIMAGINED_TEAMS", vs_teams, { "@MPUI_RANDOM_CAPS"; "random"; "@REIMAGINED_FFA"; "ffa"; "@REIMAGINED_CUSTOM"; "custom"; }, ;, when(dvarString(zm_gamemode) != "survival") )
+		FRAME_CHOICE_DVARSTRINGLIST_VIS( 32, "@REIMAGINED_TEAMS", vs_teams, { "@MPUI_RANDOM_CAPS"; "random"; "@REIMAGINED_FFA"; "ffa"; "@REIMAGINED_CUSTOM"; "custom"; }, ;, dvarString(zm_gamemode) != "survival" )
 		#undef	CHOICE_TEXT_COLOR_HL
 		#define	CHOICE_TEXT_COLOR_HL			0 0 0 1
 
-		FRAME_CHOICE_BUTTON_VIS( 33, "@REIMAGINED_SET_TEAMS", setdvar ui_options_game_popup "set_teams"; open mature_content_pc_disable_warning, when(dvarString(zm_gamemode) != "survival" && dvarString(vs_teams) == "custom") )
+		FRAME_CHOICE_BUTTON_VIS( 33, "@REIMAGINED_SET_TEAMS", setdvar ui_options_game_popup "set_teams"; open mature_content_pc_disable_warning, (dvarString(zm_gamemode) != "survival" && dvarString(vs_teams) == "custom") )
 
 
 		// MP
@@ -320,7 +320,8 @@
 		
 		//Reimagined-Expanded In Game OPTIONS
 		
-		//POPUP_TITLE_VIS( 90 10 120 80, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when( dvarString("zombie_apocalypse") == "0" && dvarString("ui_options_game_popup") == "reimagined_expanded") )
+		//POPUP_TITLE_VIS( 90 10 120 80
+		//POPUP_TITLE_VIS( 90 10 120 0, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("zombie_apocalypse") == "0") && when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		
 		//POPUP_TITLE_VIS( 90 10 120 80, "@REIMAGINED_EXP_CUSTOM_OPTIONS_NOT_ALLOWED_TITLE", when(dvarString("zombie_apocalypse") == "1") && when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		/*
@@ -337,9 +338,9 @@
 		FRAME_CHOICE_DVARYESNO_VIS(6, "@REIMAGINED_BO2_PERKS", zombie_bo2_perks, ;, when( dvarString("zombie_apocalypse") == "0" && dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
 		FRAME_CHOICE_DVARYESNO_VIS(7, "@REIMAGINED_EXTRA_DROPS", zombie_tough_zombies, ;, when( dvarString("zombie_apocalypse") == "0" && dvarString("ui_options_game_popup") == "reimagined_expanded"))
-		
-		CHOICE_DVARFLOATLIST_VIS( 8, "@REIMAGINED_ROUND_START", zombie_round_start, { "1"; "1"; "10"; "10"; "15"; "15"; "20"; "20";  }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		*/
+		//CHOICE_DVARFLOATLIST_VIS( 8, "@REIMAGINED_ROUND_START", zombie_round_start, { "1"; "1"; "10"; "10"; "15"; "15"; "20"; "20";  }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		
 
 		// HUD OPTIONS
 
