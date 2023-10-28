@@ -329,6 +329,9 @@ body
 		ai_zombie_monkey_attack_06
 		ai_zombie_monkey_attack_07
 		
+		ai_zombie_monkey_slide_traverse
+		ai_zombie_monkey_temple_slide_exit
+		
 		ai_zombie_monkey_attack_perks_front
 		ai_zombie_monkey_attack_perks_left
 		ai_zombie_monkey_attack_perks_left_top
@@ -675,6 +678,9 @@ body
 					ai_zombie_walk_on_hands_b
 	 				ai_zombie_walk_on_hands_rise
  					ai_zombie_walk_on_hands_fall
+					
+					ai_zombie_crawl_temple_slide_exit
+					
 
 					ai_zombie_crawl_sprint
 					ai_zombie_crawl_sprint_1

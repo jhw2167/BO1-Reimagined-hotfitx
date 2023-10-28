@@ -862,10 +862,20 @@ vision_set_init()
 //-------------------------------------------------------------------------------
 // DCS 051011: special moon round think function to allow starting in No mans Land.
 //-------------------------------------------------------------------------------
+
+
 moon_round_think_func()
 {
+
+	//Reimagined-Expanded
+	level maps\_zombiemode::pre_round_think();
+
 	for( ;; )
 	{
+
+		//Reimagined-Expanded
+		level maps\_zombiemode::reimagined_expanded_round_start();
+
 		maxreward = 50 * level.round_number;
 		if ( maxreward > 500 )
 		maxreward = 500;
@@ -981,6 +991,8 @@ moon_round_think_func()
 			level maps\_zombiemode::chalk_round_over();
 		}
 
+		//Reimagined-Expanded - Handled in reimagine_expanded_round_start call
+		/*
 		// here's the difficulty increase over time area
 		timer = level.zombie_vars["zombie_spawn_delay"];
 		if ( timer > 0.08 )
@@ -993,6 +1005,7 @@ moon_round_think_func()
 		}
 
 		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
+		*/
 
 		// DCS 062811: if used teleporter to advance round stay at old round number.
 		if(flag("teleporter_used"))
@@ -1013,6 +1026,7 @@ moon_round_think_func()
 
 	}
 }
+
 
 // ------------------------------------------------------------------------------------------------
 // ZONE INIT

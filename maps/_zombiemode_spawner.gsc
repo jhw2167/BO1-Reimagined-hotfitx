@@ -382,6 +382,13 @@ set_zombie_run_cycle( new_move_speed )
 		if(is_true(self.zombie_move_speed_supersprint))
 		{
 			var = randomintrange(5, 7);
+			if(isDefined(self.zombie_speed_up)){
+				self.moveplaybackrate = self.zombie_speed_up;
+				self.animplaybackrate = self.zombie_speed_up;
+
+				self.moveplaybackrate = 2;
+				self.animplaybackrate = 2;
+			}
 		}
 		else
 		{

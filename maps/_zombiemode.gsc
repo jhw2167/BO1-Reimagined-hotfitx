@@ -34,12 +34,14 @@ main()
 	//Reimagined Expanded options
 	level.apocalypse=GetDvarInt("zombie_apocalypse");
 	level.alt_bosses=GetDvarInt("zombie_alt_bosses");
-	level.expensive_perks=GetDvarInt("zombie_expensive_perks");
+	level.expensive_perks=GetDvarInt("zombie_exp_perks");
 	level.tough_zombies=GetDvarInt("zombie_tough_zombies");
 	level.zombie_types=GetDvarInt("zombie_types");
-	level.no_perks=GetDvarInt("zombie_no_perks");
+	level.no_perks=GetDvarInt("zombie_perk_limit");
 	level.bo2_perks=GetDvarInt("zombie_bo2_perks");
 	level.extra_drops=GetDvarInt("zombie_extra_drops");
+
+	level.round_start=GetDvarInt("zombie_round_start");
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -236,20 +238,22 @@ post_all_players_connected()
 	level thread end_game();
 
 	//Reimagined-Expanded -- Set Up Options and GameType
+	
 	level setApocalypseOptions();
 
 	//Reimagined-Expanded -- Set Up Players bonus player perk fx
 	players = GetPlayers();
 	for(i=0;i<players.size;i++) 
 	{
-		players[i] unsetPerks();
+		players[i] reimagined_init_player();
 		players[i] init_hitmarkers();
 
 		players[i] thread watch_player_hellfire();
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
+		players[i] thread watch_player_shotgun_attrition();
 	}
-
+	
 
 
 
@@ -322,7 +326,7 @@ init_hitmarkers()
 }
 
 
-unsetPerks()
+reimagined_init_player()
 {
 	//Standard Perks
 	self UnsetPerk("specialty_armorvest");
@@ -354,6 +358,7 @@ unsetPerks()
 	//Perk player variables
 	self.weakpoint_streak=0;
 	self.dbtp_penetrated_zombs=0;
+	self.shotgun_attrition=0;
 
 	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
@@ -378,11 +383,15 @@ unsetPerks()
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE = 2;
 
 	//Bullet Effects
-	level.THRESHOLD_HELLFIRE_TIME = 2.0;
-	level.THRESHOLD_SHEERCOLD_DIST = 20;
+	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "spas_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 
+	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2", "ithaca_upgraded_zm_x2");
 	level.RANGE_SHEERCOLD_DIST = 120;
+	level.THRESHOLD_SHEERCOLD_DIST = 20;
+
+	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2", "rottweil72_upgraded_zm");
+	level.THRESHOLD_HELLFIRE_TIME = 2.0;
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
 
@@ -392,9 +401,17 @@ unsetPerks()
 	level.VALUE_EXPLOSIVE_BASE_RANGE = 250;
 	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
 
+	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
+	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x
+	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
+									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
+									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"
+									 );
+
 	//Items and drops
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
+	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
 
 }
 
@@ -453,12 +470,11 @@ setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
 watch_player_electric()
 {
 	self.bullet_electric = false;
-	electric_weapons = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2");
 
 	while(1)
 	{
 		weapon = self getcurrentweapon();
-		if( is_in_array( electric_weapons, weapon) )
+		if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon) )
 		{
 			self watch_electric_trigger( weapon );
 		}
@@ -498,12 +514,11 @@ watch_player_electric()
 watch_player_hellfire()
 {
 	self.bullet_hellfire = false;
-	hellfire_weapons = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2");
 
 	while(1)
 	{
 		weapon = self getcurrentweapon();
-		if( is_in_array( hellfire_weapons, weapon) )
+		if( is_in_array( level.ARRAY_HELLFIRE_WEAPONS , weapon) )
 		{
 			self watch_hellfire_trigger();
 		}
@@ -543,16 +558,14 @@ watch_player_hellfire()
 watch_player_sheercold()
 {
 	self.bullet_sheercold = false;
-	sheercold_weapons = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2");
 	while(1)
 	{
 		weapon = self getcurrentweapon();
-		if( is_in_array(sheercold_weapons, weapon) )
+		if( is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) )
 		{
 			self watch_sheercold_trigger();
 		}
 		wait(0.1);
-		self.bullet_sheercold = false;
 	}
 }
 
@@ -564,16 +577,47 @@ watch_player_sheercold()
 		while(1)
 		{
 			zombies = getZombiesInRange( level.THRESHOLD_SHEERCOLD_DIST );
-			if( zombies.size > 0 )
+			//If one of these zombies is !self.marked_for_freeze, then self.bullet_sheercold = true
+			for(i=0;i<zombies.size;i++)
 			{
-				self.bullet_sheercold = true;
+				if( !zombies[i].marked_for_freeze ) {
+					self.bullet_sheercold = true;
+					break;
+				}
 			}
-			wait(0.1);
+			wait(0.25);
 		}
 
 		
 	}
 
+
+//Do more damage with shotguns the more rounds you have one
+
+watch_player_shotgun_attrition()
+{
+	while(1)
+	{
+		//Get all players weapons and check if they are a shotgun
+		player_weapons = self GetWeaponsList();
+		hasShotgun = false;
+		for(i=0;i<player_weapons.size;i++)
+		{
+			weapon = player_weapons[i];
+			if( is_in_array(level.ARRAY_VALID_SHOTGUNS, weapon) && (self.shotgun_attrition < level.VALUE_MAX_SHOTGUN_ATTRITION) ) {
+				self.shotgun_attrition++;
+				hasShotgun = true;
+				break;
+			} 
+		}
+
+		if( !hasShotgun )
+			self.shotgun_attrition = 0;
+		
+		//wait til round over
+		level waittill( "start_of_round" );
+	}
+}
 
 //##############################################
 
@@ -5201,11 +5245,19 @@ setApocalypseOptions()
 		level.extra_drops = true;
 
 	level.max_perks = 10;
-	if(level.apocalypse)
+	if(level.apocalypse) {
 		level.max_perks = 5;
+		level.round_start = 1;
+	}
+		
 
-	level.MAX_ZOMBIE_HEALTH = 300000;
+	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
+	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
+
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 300000;
 	level.SUPER_SPRINTER_SPEED = 100;
+
+
 
 	wait(10);
 
@@ -5220,14 +5272,26 @@ setApocalypseOptions()
 
 }
 
+//Reimagined-Expanded
+
+pre_round_think()
+{
+	if(level.round_start > 1 && level.round_number == 1) 
+	{
+		level.round_number = level.round_start;
+
+		//Give all players 1000 points per round
+		players = GetPlayers();
+		for(i=0;i<players.size;i++) {
+			players[i] maps\_zombiemode_score::player_add_points(level.round_start * 1000);
+		}
+	}
+}
+
 
 round_think()
 {
-	//Reimagined-Expanded
-	
-	level.round_number = 32;
-	//players = get_players();
-	//players[0] maps\_zombiemode_score::add_to_player_score( 100000 );
+	pre_round_think();
 
 	for( ;; )
 	{
@@ -5346,7 +5410,6 @@ round_think()
 	}
 }
 
-
 award_grenades_for_survivors()
 {
 	players = get_players();
@@ -5391,14 +5454,13 @@ ai_calculate_health( round_number )
 		return;
 	}
 
-	level.MAX_ZOMBIE_HEALTH = 200000;	//max health will be much lower
 	//odd rounds starting on 163 are insta kill rounds
 	if(round_number >= 163)
 	{
 		//don't let players exploit NML
 		if(is_true(flag("enter_nml")))
 		{
-			level.zombie_health = level.MAX_ZOMBIE_HEALTH;
+			level.zombie_health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 		}
 		else if(round_number % 2 == 1)
 		{
@@ -5406,7 +5468,7 @@ ai_calculate_health( round_number )
 		}
 		else
 		{
-			level.zombie_health = level.MAX_ZOMBIE_HEALTH;
+			level.zombie_health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 		}
 		return;
 	}
@@ -5429,20 +5491,21 @@ ai_calculate_health( round_number )
 	}
 
 	//Reimagined-Expanded - Reduce extreme scaling for non apocalypse players
-	if(!level.apocalypse && round_number > 10)
+	
+	if(!level.tough_zombies && round_number > level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND)
 	{
-		if(round_number < 20)
-		{
-			health = health * 0.6;
-		} else if(round_number < 30)
-		{
-			health = health * 0.4;
-		}
+		round_diff = round_number - level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND;
+		health_scalar = 1 - (level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR * round_diff);
+		
+		if(health_scalar > 0.4)
+			health_scalar = 0.4;
+
+		health = health * health_scalar;
 	}
 
-		//cap zombies health, first round of capped == 45
-	if(health > level.MAX_ZOMBIE_HEALTH) {
-		health = level.MAX_ZOMBIE_HEALTH;
+		//cap zombies health, first round of capped == 46
+	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
+		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
 
 		//Vanilla scaling is too weak for increased weapon damage
@@ -6439,6 +6502,8 @@ zombie_knockdown( wait_anim, upgraded )
 //
 //		MUST return the value of the damage override
 //
+
+
 actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
 {
 	// WW (8/14/10) - define the owner of the monkey shot
@@ -6516,10 +6581,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	// debug
-/#
+	/#
 		if ( GetDvarInt( #"scr_perkdebug") )
 			println( "Perk/> Damage Factor: " + final_damage/old_damage + " - Pre Damage: " + old_damage + " - Post Damage: " + final_damage );
-#/
+	#/
 
 	if( attacker.classname == "script_vehicle" && isDefined( attacker.owner ) )
 		attacker = attacker.owner;
@@ -6577,7 +6642,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		} else if(IsDefined(weapon) && weapon == "knife_zm") {
 
 			//Reimagined-Expanded Push Zombies down with Knife
-			wait_anim = 2;
+			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME; 
 			if( damage >= self.health ) {
 				return final_damage;
 			}
@@ -6590,7 +6655,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			self [[ self.thundergun_fling_func ]]( attacker );
 		}
 		
-		if( IsDefined(weapon) && weapon == "combat_knife" && self.animname=="zombie") {
+		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) {
 			final_damage = int(self.maxhealth / 4) + 1;
 			if(damage < final_damage)
 				return final_damage;
@@ -6603,7 +6668,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	//ORIGIN_
 	//iprintln("Origin: " + attacker.origin );
-	/* iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
+	/*
+	iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
 	iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
 	iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DBT_PRO));
@@ -6613,8 +6679,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("Testing has Upp MUL: " + attacker hasProPerk(level.MUL_PRO));
 	iprintln("Testing has Upp ECH: " + attacker hasProPerk(level.ECH_PRO));
 	iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
-	iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO));
- */
+	iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO)); 
+	*/
 	
 	if(weapon == "ray_gun_zm" )
 	{
@@ -6660,21 +6726,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			// boss zombie types do not get damage scaling
 			if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
 			{
-				// stop damage scaling past round 100
-				scalar = level.round_number;
-				if(scalar > 100)
-				{
-					scalar = 100;
-				}
+				final_damage = int(self.maxhealth / 6) + 1;
 
-				if(is_lethal_grenade(weapon))
-				{
-					final_damage += 10 * scalar;
-				}
-				else
-				{
-					final_damage += 50 * scalar;
-				}
+				if(attacker hasProPerk(level.PHD_PRO))
+					final_damage *= 2;
 			}
 		}
 	}
@@ -6992,7 +7047,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 		}
 		
-
 		// Death Machine - kills in 4 body shots or 2 headshots
 		if(weapon == "minigun_zm")
 		{
@@ -7135,29 +7189,31 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
-	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
-	{	
 
-		if( IsSubStr( weapon, "x2" ) ) {
-			//flat 2x damage increase for double pap'ed weapon
-			final_damage = int(final_damage * 2);
-		}
+	if( IsSubStr( weapon, "x2" ) ) {
+			//flat 4x damage increase for double pap'ed weapon
+			final_damage *= 4;
+	}
+
+	//Non Shotgun bullet damage
+	if( meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET" || WeaponClass(weapon) == "spread")
+	{	
 
 			//Hellfire
 		//  case "ppsh_upgraded_zm_x2":
 		//  case "rpk_upgraded_zm_x2":
 		//  case "ak47_ft_upgraded_zm_x2":
-		if( attacker.bullet_hellfire && !is_true( self.in_water )) 
+		//  case "rottweil72_upgraded_zm":
+		if( (attacker.bullet_hellfire || weapon == "rottweil72_upgraded_zm") && !is_true( self.in_water ) ) 
 		{
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
 			} else
 			{
 				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
-			wait(2);											//zomb, player, radius, time
-			if( !is_true( self.in_water ) )
-				
-				return self.maxhealth + 1000; //hellfire should always kill
+				wait(2);										//zomb, player, radius, time
+				if( !is_true( self.in_water ) )
+					return self.maxhealth + 1000; //hellfire should always kill if victim not in water
 			}
 			final_damage = int(final_damage * 2);
 		}
@@ -7166,7 +7222,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//	case "spectre_upgraded_zm_x2":
 		//	case "hk21_upgraded_zm_x2":
 		//	case "galil_upgraded_zm_x2":
-		if( attacker.bullet_sheercold ) 
+		if( attacker.bullet_sheercold && is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) ) 
 		{	
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
@@ -7228,6 +7284,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					final_damage = int(final_damage * 1.2); //big damage
 			break;
 			case "fnfal_upgraded_zm_x2":
+			case "m14_upgraded_zm":
 				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
 					final_damage = int(final_damage * 2); //big damage
 				}
@@ -7257,8 +7314,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		iprintln( "Final dmg after main perks: " + final_damage );
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
-		always_true = true;
-		if( attacker hasProPerk(level.DST_PRO) ) 
+		if( attacker hasProPerk(level.DST_PRO) && WeaponClass(weapon) != "spread" ) 
 		{
 
 			if(!isDefined(self.weakpoint))
@@ -7280,7 +7336,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 		}
 
-		iprintln( "Final dmg after DST_PRO: " + final_damage );
+		//Shotgun Bonus Damage
+		if( WeaponClass(weapon) == "spread" ) 
+		{
+			for(i=0; i <= self.shotgun_attrition; i++) {
+				final_damage *= (1 + level.VALUE_SHOTGUN_DMG_ATTRITION);
+			}
+
+			if( is_boss_zombie(self.animname) ) {
+				return int(final_damage / 10);
+			}
+
+			if( final_damage > int(self.maxhealth / 4) && (self.health > self.max_health / 2) ) {
+				self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME, false );
+			}
+		}
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
@@ -7311,10 +7381,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	
 	} //End "bullet dmg only" wrapping if statment
-	//*/	
-	
-	
-	
+	//	
+
+
 	iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
@@ -7360,6 +7429,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iPrintln( final_damage );
 	return int( final_damage );
 }
+
 
 hasProPerk( perk )
 {

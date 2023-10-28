@@ -149,8 +149,8 @@ precache_createfx_fx()
 	level._effect["fx_ztem_pap_splash"]					      = LoadFX("maps/zombie_temple/fx_ztem_pap_splash");
 
 	//level._effect["fx_ztem_water_wake"]					      = loadfx("maps/zombie_temple/fx_ztem_water_wake");
-	level._effect["fx_ztem_waterfall_body"]				    = loadfx("maps/zombie_temple/fx_ztem_waterfall_body");
-	level._effect["fx_ztem_waterfall_body_b"]				  = loadfx("maps/zombie_temple/fx_ztem_waterfall_body_b");
+	//level._effect["fx_ztem_waterfall_body"]				    = loadfx("maps/zombie_temple/fx_ztem_waterfall_body");
+	//level._effect["fx_ztem_waterfall_body_b"]				  = loadfx("maps/zombie_temple/fx_ztem_waterfall_body_b");
 	level._effect["fx_ztem_waterfall_trap"]				    = loadfx("maps/zombie_temple/fx_ztem_waterfall_trap");
 	level._effect["fx_ztem_waterfall_notrap"]			    = loadfx("maps/zombie_temple/fx_ztem_waterfall_notrap");
 	level._effect["fx_ztem_waterfall_trap_h"]			    = loadfx("maps/zombie_temple/fx_ztem_waterfall_trap_h");
