@@ -179,7 +179,6 @@ precache_createfx_fx()
 	//level._effect["fx_ztem_pap_warning"]			        = loadfx("maps/zombie_temple/fx_ztem_pap_warning");
 	
 	level._effect["fx_ztem_dest_wood_barrier"]				= LoadFX("maps/zombie_temple/fx_ztem_dest_wood_barrier");						
-	
 
 //easter eggs	
 	level._effect["fx_ztem_fireflies"]			          = loadfx("maps/zombie_temple/fx_ztem_fireflies");

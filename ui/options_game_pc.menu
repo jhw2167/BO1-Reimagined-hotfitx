@@ -321,7 +321,7 @@
 		//Reimagined-Expanded In Game OPTIONS
 		
 		//POPUP_TITLE_VIS( 90 10 120 80
-		//POPUP_TITLE_VIS( 90 10 120 0, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("zombie_apocalypse") == "0") && when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
+		POPUP_TITLE_VIS( 90 10 120 0, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		
 		//POPUP_TITLE_VIS( 90 10 120 80, "@REIMAGINED_EXP_CUSTOM_OPTIONS_NOT_ALLOWED_TITLE", when(dvarString("zombie_apocalypse") == "1") && when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		/*
