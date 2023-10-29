@@ -2320,11 +2320,11 @@ full_ammo_powerup( drop_item, player )
 
 full_ammo_powerup_implementation( drop_item, player, player_num )
 {
-	iprintln("Calling full ammo with player num: " + player_num + "");
+	//iprintln("Calling full ammo with player num: " + player_num + "");
 
 	if( drop_item == undefined )
 	{
-		iprintln("Drop item is undefined");
+		//iprintln("Drop item is undefined");
 		player thread powerup_vo("full_ammo");
 		drop_item = SpawnStruct();
 		drop_item.caution = false; //makes text red

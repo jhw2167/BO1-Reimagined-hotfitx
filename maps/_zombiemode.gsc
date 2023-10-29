@@ -5249,7 +5249,8 @@ setApocalypseOptions()
 		level.max_perks = 5;
 		level.round_start = 1;
 	}
-		
+
+	level.round_start = 9;
 
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
@@ -7311,7 +7312,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = int(final_damage * 2);
 		}
 
-		iprintln( "Final dmg after main perks: " + final_damage );
+		//iprintln( "Final dmg after main perks: " + final_damage );
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
 		if( attacker hasProPerk(level.DST_PRO) && WeaponClass(weapon) != "spread" ) 
@@ -7384,7 +7385,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//	
 
 
-	iprintln( "Final dmg for bullet guns: " + final_damage );
+	//iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
 	//iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );

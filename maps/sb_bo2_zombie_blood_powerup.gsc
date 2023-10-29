@@ -24,7 +24,7 @@ zombie_blood_powerup( player, powerup_time )
 	player endon( "zombie_blood_over" );
 	level.plr_currently_using_zombie_blood = true;
 	player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] += powerup_time;
-	iprintln("bloodPowerup::zombeieblood");
+	//iprintln("bloodPowerup::zombeieblood");
 	if( player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] )
 	{
 		return;
