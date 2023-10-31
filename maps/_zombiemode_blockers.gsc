@@ -332,7 +332,7 @@ door_delay()
 	{
 		for ( i=0; i<self.explosives.size; i++ )
 		{
-			PlayFX( level._effect["def_explosion"], self.explosives[i].origin, AnglesToForward(self.explosives[i].angles) );
+			//PlayFX( level._effect["def_explosion"], self.explosives[i].origin, AnglesToForward(self.explosives[i].angles) );
 			self.explosives[i] Hide();
 		}
 	}

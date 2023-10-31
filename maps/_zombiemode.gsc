@@ -1559,7 +1559,7 @@ init_fx()
 	level._effect["character_fire_death_sm"]    = LoadFX( "env/fire/fx_fire_player_md" );
 	level._effect["character_fire_death_torso"] = LoadFX( "env/fire/fx_fire_player_torso" );
 
-	level._effect["def_explosion"]				= LoadFX("explosions/fx_default_explosion");
+	//level._effect["def_explosion"]				= LoadFX("explosions/fx_default_explosion");
 	//level._effect["betty_explode"]				= LoadFX("weapon/bouncing_betty/fx_explosion_betty_generic");
 
 	level._effect["ent_stolen"] 				= LoadFX( "maps/zombie/fx_zmb_ent_stolen" );

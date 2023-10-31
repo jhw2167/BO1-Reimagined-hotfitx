@@ -1398,7 +1398,7 @@ divetonuke_explode( attacker, origin )
 		PlayFx( level._effect["custom_large_explosion"], origin );
 	} else {
 		//iprintln("divetonuke_explode");
-		PlayFx( level._effect["def_explosion"], origin );
+		PlayFx( level._effect["divetonuke_groundhit"], origin );
 	}
 
 	// radius damage
@@ -1407,8 +1407,7 @@ divetonuke_explode( attacker, origin )
 	attacker.divetonuke_damage = undefined;
 
 	// play fx
-	//PlayFx( level._effect["divetonuke_groundhit"], origin );
-	PlayFx( level._effect["custom_large_explosion"], origin );
+	//PlayFx( level._effect["custom_large_explosion"], origin );
 
 	// play sound
 	attacker PlaySound("wpn_grenade_explode");
