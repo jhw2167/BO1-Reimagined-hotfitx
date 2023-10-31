@@ -142,16 +142,15 @@ main()
 	maps\_zombiemode_devgui::init();
 	#/
 
+	//Reimagined-Expanded -- set up zombie blood powerup
+	maps\sb_bo2_zombie_blood_powerup::init();
+
 	init_function_overrides();
 
 	// ww: init the pistols in the game so last stand has the importance order
 	level thread last_stand_pistol_rank_init();
 
 	//thread maps\_zombiemode_rank::init();
-
-	//Reimagined-Expanded -- set up zombie blood powerup
-	level thread maps\sb_bo2_zombie_blood_powerup::init();
-
 
 	// These MUST be threaded because they contain waits
 	//level thread maps\_zombiemode_deathcard::init();
@@ -238,6 +237,7 @@ post_all_players_connected()
 	level thread end_game();
 
 	//Reimagined-Expanded -- Set Up Options and GameType
+	
 	
 	level setApocalypseOptions();
 
