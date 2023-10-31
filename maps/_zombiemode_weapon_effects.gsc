@@ -63,8 +63,11 @@ zombie_bullet_penetration( zomb , args )
 	//Filter array by invalid enemies
 	for ( i = 0; i < zombies.size; i++ )
 	{
-		if(self.dbtp_penetrated_zombs >= level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS)
+		if(self.dbtp_penetrated_zombs >= level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) {
+			iprintln("Zombie penetration limit reached");
 			break;	//no more zombies can be penetrated
+		}
+			
 
 		if ( !IsDefined( zombies[i] ) || !IsAlive( zombies[i] ) )
 		{
@@ -104,22 +107,42 @@ zombie_bullet_penetration( zomb , args )
 			continue;
 		}
 
-		if ( !zombies[i] DamageConeTrace( view_pos, self ) )
+		if ( !zombies[i] DamageConeTrace( view_pos, self ) || !BulletTracePassed( view_pos, test_origin, false, undefined ) )
 		{
 			// guy can't actually be hit from where we are
 			//iprintln("trace not passed");
 			continue;
 		}
 
-		if( !BulletTracePassed( view_pos, test_origin, false, undefined ) )
+		//Calculate unit vector between player and zombie
+		unit_vector = VectorNormalize( test_origin - view_pos );
+
+		//For each unit of distance between player and zombie, check if there is a zombie within that range
+				//Unit of distance: level.VALUE_DBT_UNITS
+				//Penn distance: level.VALUE_DBT_PENN_DIST
+				//Max distance: level.THRESHOLD_DBT_MAX_DIST
+
+		dist_sq = DistanceSquared( zomb.origin, zombies[i].origin );
+		j = 0;
+		j_sqrd = j*j;
+		while( j_sqrd < dist_sq ) 
 		{
+			//Scale unit vector by dist
+			scaled_vector = vector_scale( unit_vector, j );
+			//Add to zomb position
+			test_pos = zomb.origin + scaled_vector;
+			//Check if there is a zombie within that range
+			if( checkPointDist(zombies[i].origin, test_pos, level.VALUE_DBT_PENN_DIST ) ) {
+				break;
+			}
+			j+=level.VALUE_DBT_UNITS;
+			j_sqrd = j*j;
+		}
+ 
+		if( j*level.VALUE_DBT_UNITS >= dist_sq ) {
 			continue;
 		}
 
-		if( !SightTracePassed( view_pos, test_origin, false, undefined )  )
-		{
-			continue;
-		}
 		
 		self.dbtp_penetrated_zombs++;
 		zombies[i].dbtap_marked = self.entity_num;
@@ -145,6 +168,16 @@ zombie_bullet_penetration( zomb , args )
 //##########################
 
 /** EXPLOSIVE EFFECTS **/
+
+
+checkPointDist(a, b, distance)
+{
+	if( DistanceSquared( a, b ) < distance * distance )
+		return true;
+	else
+		return false;
+}
+
 
 checkDist(a, b, distance)
 {

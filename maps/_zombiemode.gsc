@@ -369,10 +369,10 @@ reimagined_init_player()
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
 
-	level.VALUE_DBT_UNITS = 20;
+	level.VALUE_DBT_UNITS = 15;
 	level.VALUE_DBT_PENN_DIST = 10;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
-	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 6;
+	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3;
 
 	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 4;
 
@@ -415,8 +415,8 @@ reimagined_init_player()
 
 
 	//Misc
-	if(IsDefined(level.zombie_visionset))
-		self VisionSetNaked(level.zombie_visionset);
+	//if(IsDefined(level.zombie_visionset))
+		//self VisionSetNaked(level.zombie_visionset);
 
 }
 

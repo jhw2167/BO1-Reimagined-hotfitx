@@ -956,7 +956,7 @@ wait_for_timeout( weapon, packa_timer )
 //
 do_knuckle_crack()
 {
-	if(self HasPerk("specialty_fastreload"))
+	if(self HasPerk("specialty_fastreload") && !self hasProPerk(level.SPD_PRO))
 	{
 		self UnSetPerk("specialty_fastswitch");
 	}
@@ -965,7 +965,7 @@ do_knuckle_crack()
 
 	self waittill_any_or_timeout( 1.5, "fake_death", "death", "player_downed", "weapon_change_complete" );
 
-	if(self HasPerk("specialty_fastreload"))
+	if( self HasPerk("specialty_fastreload") )
 	{
 		self SetPerk("specialty_fastswitch");
 	}
@@ -2149,7 +2149,7 @@ vending_trigger_think()
 
 
 		// do the drink animation
-		if(player HasPerk("specialty_fastreload"))
+		if( player HasPerk("specialty_fastreload") && !self hasProPerk(level.SPD_PRO) )
 		{
 			player UnSetPerk("specialty_fastswitch");
 		}
