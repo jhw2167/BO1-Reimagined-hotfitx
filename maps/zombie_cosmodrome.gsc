@@ -80,6 +80,7 @@ main()
 
 	// Jluyties(02/22/10) added new lunar landing for intro of level.
 	// MMaestas - this needs to be defined about _zombiemode::main
+	
 	if(GetDvar("zm_gamemode") == "survival")
 	{
 		level.round_prestart_func = maps\zombie_cosmodrome_lander::new_lander_intro;
@@ -88,6 +89,7 @@ main()
 	{
 		level thread maps\zombie_cosmodrome_lander::skip_new_lander_intro();
 	}
+	
 
 	level.zombiemode_precache_player_model_override = ::precache_player_model_override;
 	level.zombiemode_give_player_model_override = ::give_player_model_override;
@@ -703,8 +705,8 @@ wait_for_power()
 
 
 	// Swap to the "power on" vision set
-	// level.zombie_visionset = "zombie_cosmodrome";
-	// VisionSetNaked( level.zombie_visionset, 2 );
+	level.zombie_visionset = "zombie_cosmodrome";
+	VisionSetNaked( level.zombie_visionset, 2 );
 	
 	master_switch waittill("rotatedone");
 	playfx(level._effect["switch_sparks"] ,getstruct("elec_switch_fx","targetname").origin);

@@ -41,7 +41,7 @@ main()
 	level.bo2_perks=GetDvarInt("zombie_bo2_perks");
 	level.extra_drops=GetDvarInt("zombie_extra_drops");
 
-	level.round_start=GetDvarInt("zombie_round_start");
+	level.starting_round=GetDvarInt("zombie_round_start");
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -150,7 +150,7 @@ main()
 	//thread maps\_zombiemode_rank::init();
 
 	//Reimagined-Expanded -- set up zombie blood powerup
-	maps\sb_bo2_zombie_blood_powerup::init();
+	level thread maps\sb_bo2_zombie_blood_powerup::init();
 
 
 	// These MUST be threaded because they contain waits
@@ -412,6 +412,11 @@ reimagined_init_player()
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
+
+
+	//Misc
+	if(IsDefined(level.zombie_visionset))
+		self VisionSetNaked(level.zombie_visionset);
 
 }
 
@@ -4637,6 +4642,11 @@ reimagined_expanded_round_start()
 		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
 		level.zombie_vars["zombie_spawn_delay"] = 1;
 
+		//Increase max perks every 5 rounds after 15
+		if( level.round_number > 15 && level.round_number % 5 == 0 ){
+			level.max_perks++;
+		}
+
 		//Cap zombie move speed by super sprinter speed
 		if ( level.zombie_move_speed > level.SUPER_SPRINTER_SPEED )
 			level.zombie_move_speed = level.SUPER_SPRINTER_SPEED;
@@ -5247,18 +5257,16 @@ setApocalypseOptions()
 	level.max_perks = 10;
 	if(level.apocalypse) {
 		level.max_perks = 5;
-		level.round_start = 1;
+		level.starting_round = 1;
 	}
 
-	level.round_start = 9;
+	level.starting_round = 20;
 
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 300000;
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 	level.SUPER_SPRINTER_SPEED = 100;
-
-
 
 	wait(10);
 
@@ -5277,14 +5285,14 @@ setApocalypseOptions()
 
 pre_round_think()
 {
-	if(level.round_start > 1 && level.round_number == 1) 
+	if(level.starting_round > 1 && level.round_number == 1) 
 	{
-		level.round_number = level.round_start;
+		level.round_number = level.starting_round;
 
 		//Give all players 1000 points per round
 		players = GetPlayers();
 		for(i=0;i<players.size;i++) {
-			players[i] maps\_zombiemode_score::player_add_points(level.round_start * 1000);
+			players[i] maps\_zombiemode_score::add_to_player_score( level.starting_round * 1000);
 		}
 	}
 }
@@ -5292,12 +5300,12 @@ pre_round_think()
 
 round_think()
 {
-	pre_round_think();
+	level pre_round_think();
 
 	for( ;; )
 	{
 		//Reimagined-Expanded
-		reimagined_expanded_round_start();
+		level reimagined_expanded_round_start();
 
 		//////////////////////////////////////////
 		//designed by prod DT#36173
@@ -5478,9 +5486,9 @@ ai_calculate_health( round_number )
 	//HERE_
 	//Reimagined-Expanded - exponential health scaling
 	base = 1000;
-	rTenfactor = 0.15;
+	rTenfactor = 0.40;
 	startHealth = 150;
-	logFactor = 4;
+	logFactor = 6;
 	
 	health = startHealth;
 	for ( i=2; i<=round_number; i++ )
@@ -5496,12 +5504,15 @@ ai_calculate_health( round_number )
 	if(!level.tough_zombies && round_number > level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND)
 	{
 		round_diff = round_number - level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND;
+
+		/*
 		health_scalar = 1 - (level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR * round_diff);
 		
 		if(health_scalar > 0.4)
 			health_scalar = 0.4;
 
 		health = health * health_scalar;
+		*/
 	}
 
 		//cap zombies health, first round of capped == 46
@@ -6485,6 +6496,10 @@ wait_and_revive()
 //Reimagined-Expanded Self is zombie
 zombie_knockdown( wait_anim, upgraded )
 {
+	if(IsDefined(self.knockdown) && self.knockdown)
+		return;
+	
+	self.knockdown = true;
 	fall_anim = %ai_zombie_thundergun_hit_upontoback;
 	self SetPlayerCollision( 0 );
 	//endon_str = "zombie_knockdown_" + attacker.entity_num;
@@ -6497,6 +6512,9 @@ zombie_knockdown( wait_anim, upgraded )
 	self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
 	animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
 	self SetPlayerCollision( 1 );
+
+	wait(0.25);
+	self.knockdown = false;
 
 }
 
@@ -6803,7 +6821,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
 			break;
-		case "aug_acog_mk_acog_zm":
+		case "aug_acog_zm":
 			final_damage = 460;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.25;
@@ -6927,7 +6945,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
 			break;
-		case "aug_acog_upgraded_zm":
+		case "aug_acog_mk_upgraded_zm":
 			final_damage = 1500;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
