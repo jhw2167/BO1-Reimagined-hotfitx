@@ -357,13 +357,13 @@ fx,maps/zombie/fx_zombie_tesla_shock_secondary
 fx,maps/zombie/fx_zombie_tesla_shock
 
 fx,explosions/fx_explosion_charge_large
-fx,explosions/fx_default_explosion
-fx,env/smoke/fx_grenade_smoke
+//fx,explosions/fx_default_explosion
+//fx,env/smoke/fx_grenade_smoke
 fx,env/fire/fx_fire_xlg_fuel
 fx,env/fire/fx_fire_player_torso_mp
 fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
 fx,weapon/freeze_gun/fx_exp_freezegun_impact
-fx,trail/fx_trail_blood_streak
+//fx,trail/fx_trail_blood_streak
 
 
 //MATERIALS
