@@ -161,7 +161,6 @@ main()
 
 	init_utility();
 	maps\_utility::registerClientSys("zombify");	// register a client system...
-	maps\_utility::registerClientSys("levelNotify");
 	init_anims(); 	// zombie ai and anim inits
 
 	if( isDefined( level.custom_ai_type ) )
@@ -242,6 +241,7 @@ post_all_players_connected()
 	level setApocalypseOptions();
 
 	//Reimagined-Expanded -- Set Up Players bonus player perk fx
+	level reimagined_init_level();
 	players = GetPlayers();
 	for(i=0;i<players.size;i++) 
 	{
@@ -326,39 +326,8 @@ init_hitmarkers()
 }
 
 
-reimagined_init_player()
+reimagined_init_level()
 {
-	//Standard Perks
-	self UnsetPerk("specialty_armorvest");
-	self UnsetPerk("specialty_quickrevive");
-	self UnsetPerk("specialty_fastreload");
-	self UnsetPerk("specialty_rof");
-	self UnsetPerk("specialty_endurance");
-	self UnsetPerk("specialty_flakjacket");
-	self UnsetPerk("specialty_deadshot");
-	self UnsetPerk("specialty_additionalprimaryweapon");
-	self UnsetPerk("specialty_bulletaccuracy");		//babyjugg
-	self UnsetPerk("specialty_bulletdamage");		//cherry
-	self UnsetPerk("specialty_altmelee");				//Vulture
-	self UnsetPerk("specialty_extraammo");				//Widows wine
-
-
-	self.specialty_armorvest_upgrade = false;
-	self.specialty_quickrevive_upgrade = false;
-	self.specialty_fastreload_upgrade = false;
-	self.specialty_rof_upgrade = false;
-	self.specialty_endurance_upgrade = false;
-	self.specialty_flakjacket_upgrade = false;
-	self.specialty_deadshot_upgrade = false;
-	self.specialty_additionalprimaryweapon_upgrade = false;
-	self.specialty_bulletdamage_upgrade = false;
-	self.specialty_altmelee_upgrade = false;
-	self.specialty_extraamo_upgrade = false;
-
-	//Perk player variables
-	self.weakpoint_streak=0;
-	self.dbtp_penetrated_zombs=0;
-	self.shotgun_attrition=0;
 
 	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
@@ -408,11 +377,47 @@ reimagined_init_player()
 									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"
 									 );
 
-	//Items and drops
-	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
 
+}
+
+reimagined_init_player()
+{
+	//Standard Perks
+	self UnsetPerk("specialty_armorvest");
+	self UnsetPerk("specialty_quickrevive");
+	self UnsetPerk("specialty_fastreload");
+	self UnsetPerk("specialty_rof");
+	self UnsetPerk("specialty_endurance");
+	self UnsetPerk("specialty_flakjacket");
+	self UnsetPerk("specialty_deadshot");
+	self UnsetPerk("specialty_additionalprimaryweapon");
+	self UnsetPerk("specialty_bulletaccuracy");		//babyjugg
+	self UnsetPerk("specialty_bulletdamage");		//cherry
+	self UnsetPerk("specialty_altmelee");				//Vulture
+	self UnsetPerk("specialty_extraammo");				//Widows wine
+
+
+	self.specialty_armorvest_upgrade = false;
+	self.specialty_quickrevive_upgrade = false;
+	self.specialty_fastreload_upgrade = false;
+	self.specialty_rof_upgrade = false;
+	self.specialty_endurance_upgrade = false;
+	self.specialty_flakjacket_upgrade = false;
+	self.specialty_deadshot_upgrade = false;
+	self.specialty_additionalprimaryweapon_upgrade = false;
+	self.specialty_bulletdamage_upgrade = false;
+	self.specialty_altmelee_upgrade = false;
+	self.specialty_extraamo_upgrade = false;
+
+	//Perk player variables
+	self.weakpoint_streak=0;
+	self.dbtp_penetrated_zombs=0;
+	self.shotgun_attrition=0;
+
+	//Items and drops
+	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 
 	//Misc
 	//if(IsDefined(level.zombie_visionset))
@@ -5260,7 +5265,7 @@ setApocalypseOptions()
 		level.starting_round = 1;
 	}
 
-	level.starting_round = 20;
+	//level.starting_round = 20;
 
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
@@ -5501,19 +5506,21 @@ ai_calculate_health( round_number )
 
 	//Reimagined-Expanded - Reduce extreme scaling for non apocalypse players
 	
+	/*
 	if(!level.tough_zombies && round_number > level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND)
 	{
 		round_diff = round_number - level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND;
 
-		/*
+		
 		health_scalar = 1 - (level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR * round_diff);
 		
 		if(health_scalar > 0.4)
 			health_scalar = 0.4;
 
 		health = health * health_scalar;
-		*/
+		
 	}
+	*/
 
 		//cap zombies health, first round of capped == 46
 	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
@@ -6675,13 +6682,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		
 		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) {
-			final_damage = int(self.maxhealth / 4) + 1;
+			final_damage = int(self.maxhealth / 4) + 10;
 			if(damage < final_damage)
 				return final_damage;
 			else
 				return damage;
 		}
-		
+
+
+		if( IsDefined(weapon) && ( isSubStr("bowie", weapon) || isSubStr("sickle", weapon) )  && !is_boss_zombie(self.animname)) {
+			final_damage = int(self.maxhealth / 2) + 10;
+			if( level.round_number < 12)
+				return int( self.maxhealth ) + 100;
+			else
+				return final_damage;
+		}
 		
 	}
 

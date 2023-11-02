@@ -4,10 +4,11 @@
 main()
 {
 	//iprintlnbold("zombiemode init csc");
+	
 	level thread clientscripts\_zombiemode_ffotd::main_start();
 	level.zombiemode = true;
 	level.swimmingFeature = false;
-	//clientscripts\_load::main();
+	clientscripts\_load::main();
 	//clientscripts\_footsteps::SetAIFootstepPrepend( "fly_step_zombie_" );
 	//level thread clientscripts\_audio::audio_init( 0 );
 	//init_client_flags();
@@ -58,24 +59,24 @@ main()
 	level._ZOMBIE_GIB_PIECE_INDEX_LEFT_LEG = 4;
 	level._ZOMBIE_GIB_PIECE_INDEX_HEAD = 5;
 	level._ZOMBIE_GIB_PIECE_INDEX_GUTS = 6;
+	
 	OnPlayerConnect_Callback( ::on_player_connect );
 	init_divetonuke();
 	init_deadshot();
 	//init_chugabud();
 	//init_electric_cherry();
 	//init_widows_wine();
+	clientscripts\_zombiemode_weap_tesla::init();
 	init_zombie_blood();
 	init_client_side_fx();
 	//init_vulture();
 	//init_lowhealth_sound();
 	//clientscripts\_zombiemode_weap_freezegun::init();
-	clientscripts\_zombiemode_weap_tesla::init();
 	//clientscripts\_zombiemode_weap_tazer_knuckles::init();
 	//clientscripts\_zombiemode_weap_thundergun::init();
 	level thread init_local_player_count();
 	level thread clientscripts\_zombiemode_ffotd::main_end();
 	
-	wait(5);
 	//iprintlnbold("FINISHED zombiemode init csc");
 }
 

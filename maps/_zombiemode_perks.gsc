@@ -2274,7 +2274,7 @@ give_perk( perk, bought )
 	else if(perk == "specialty_armorvest_upgrade")
 	{
 		//Perkapunch
-		self SetMaxHealth( 300 );
+		self SetMaxHealth( 325 );
 		self.preMaxHealth = self.maxhealth; //Upgraded Jugg is permanent
 		//self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health_upgrade"] );
 	}
