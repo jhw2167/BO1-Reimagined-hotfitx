@@ -67,7 +67,7 @@ main()
 	//init_electric_cherry();
 	//init_widows_wine();
 	clientscripts\_zombiemode_weap_tesla::init();
-	init_zombie_blood();
+	//init_zombie_blood();
 	init_client_side_fx();
 	//init_vulture();
 	//init_lowhealth_sound();
