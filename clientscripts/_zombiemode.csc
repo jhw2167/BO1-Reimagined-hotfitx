@@ -8,7 +8,7 @@ main()
 	level thread clientscripts\_zombiemode_ffotd::main_start();
 	level.zombiemode = true;
 	level.swimmingFeature = false;
-	clientscripts\_load::main();
+	//clientscripts\_load::main();
 	//clientscripts\_footsteps::SetAIFootstepPrepend( "fly_step_zombie_" );
 	//level thread clientscripts\_audio::audio_init( 0 );
 	//init_client_flags();
