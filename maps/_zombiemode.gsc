@@ -93,6 +93,10 @@ main()
 	init_flags();
 	init_client_flags();
 
+	//Reimagined-Expanded -- Set Up Options and GameType
+	//setApocalypseOptions();
+
+
 	register_offhand_weapons_for_level_defaults();
 
 	//Limit zombie to 24 max, must have for network purposes
@@ -102,6 +106,8 @@ main()
 		level.zombie_ai_limit = 40;
 		SetAILimit( 45 );//allows zombies to spawn in as some were just killed
 	}
+
+	
 
 	init_fx();
 	//maps\_zombiemode_ability::init();
@@ -234,11 +240,6 @@ post_all_players_connected()
 
 	// Start the Zombie MODE!
 	level thread end_game();
-
-	//Reimagined-Expanded -- Set Up Options and GameType
-	
-	
-	level setApocalypseOptions();
 
 	//Reimagined-Expanded -- Set Up Players bonus player perk fx
 	level reimagined_init_level();
@@ -414,7 +415,7 @@ reimagined_init_player()
 	//Perk player variables
 	self.weakpoint_streak=0;
 	self.dbtp_penetrated_zombs=0;
-	self.shotgun_attrition=0;
+	self.shotgun_attrition=1;
 
 	//Items and drops
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
@@ -615,14 +616,14 @@ watch_player_shotgun_attrition()
 		{
 			weapon = player_weapons[i];
 			if( is_in_array(level.ARRAY_VALID_SHOTGUNS, weapon) && (self.shotgun_attrition < level.VALUE_MAX_SHOTGUN_ATTRITION) ) {
-				self.shotgun_attrition++;
+				self.shotgun_attrition *= (1+level.VALUE_SHOTGUN_DMG_ATTRITION);
 				hasShotgun = true;
 				break;
 			} 
 		}
 
 		if( !hasShotgun )
-			self.shotgun_attrition = 0;
+			self.shotgun_attrition = 1;
 		
 		//wait til round over
 		level waittill( "start_of_round" );
@@ -5273,8 +5274,8 @@ setApocalypseOptions()
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 	level.SUPER_SPRINTER_SPEED = 100;
 
+	/*
 	wait(10);
-
 	iprintln("Apocalypse is: "+ level.apocalypse);
 	iprintln("Alt Bosses is: "+ level.alt_bosses);
 	iprintln("Expensive Perks is: "+ level.expensive_perks);
@@ -5283,7 +5284,7 @@ setApocalypseOptions()
 	iprintln("No Perks is: "+ level.no_perks);
 	iprintln("BO2 Perks is: "+ level.bo2_perks);
 	iprintln("Extra Drops is: "+ level.extra_drops);
-
+	*/
 }
 
 //Reimagined-Expanded
@@ -6681,7 +6682,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			self [[ self.thundergun_fling_func ]]( attacker );
 		}
 		
-		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) {
+		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) 
+		{
 			final_damage = int(self.maxhealth / 4) + 10;
 			if(damage < final_damage)
 				return final_damage;
@@ -6689,8 +6691,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				return damage;
 		}
 
-
-		if( IsDefined(weapon) && ( isSubStr("bowie", weapon) || isSubStr("sickle", weapon) )  && !is_boss_zombie(self.animname)) {
+		iprintln("Weapon: " + weapon);
+		if( IsDefined(weapon) && ( isSubStr( weapon, "bowie" ) || isSubStr( weapon, "sickle") )  && !is_boss_zombie(self.animname)) 
+		{
 			final_damage = int(self.maxhealth / 2) + 10;
 			if( level.round_number < 12)
 				return int( self.maxhealth ) + 100;
@@ -7373,10 +7376,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//Shotgun Bonus Damage
 		if( WeaponClass(weapon) == "spread" ) 
 		{
-			for(i=0; i <= self.shotgun_attrition; i++) {
-				final_damage *= (1 + level.VALUE_SHOTGUN_DMG_ATTRITION);
-			}
-
+			final_damage = int(final_damage * self.shotgun_attrition);
 			if( is_boss_zombie(self.animname) ) {
 				return int(final_damage / 10);
 			}
@@ -7385,6 +7385,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME, false );
 			}
 		}
+		iprintln("End Shotgun Attrition" + final_damage);
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
