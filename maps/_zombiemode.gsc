@@ -94,7 +94,7 @@ main()
 	init_client_flags();
 
 	//Reimagined-Expanded -- Set Up Options and GameType
-	//setApocalypseOptions();
+	setApocalypseOptions();
 
 
 	register_offhand_weapons_for_level_defaults();
@@ -4271,6 +4271,12 @@ round_spawning()
 			}
 		}
 
+		//Reimagined-Expanded: Mix up zombie spawning times into hordes
+		if( count % level.VALUE_HORDE_SIZE == 0 && count > 0 && level.zombie_total > 0 )
+		{
+			wait( level.VALUE_HORDER_DELAY );
+		}
+		
 		wait( level.zombie_vars["zombie_spawn_delay"] );
 		wait_network_frame();
 	}
@@ -4612,6 +4618,9 @@ round_pause( delay )
 
 reimagined_expanded_round_start()
 {
+	if( !isDefined(level.players_playing) )
+		level.players_playing = GetPlayers().size;
+
 	if( level.apocalypse )
 	{
 		if( level.round_number < 4 )
@@ -4620,25 +4629,39 @@ reimagined_expanded_round_start()
 			level.zombie_vars["zombie_spawn_delay"] = 1;
 
 			//MAX ZOMBIES
-			level.zombie_ai_limit = 24; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 8 + 2*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
 			level.zombie_move_speed = 60;	//runners
+			level.zombie_ai_limit = 8 + 4*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+
+			level.VALUE_HORDE_SIZE = int( level.zombie_ai_limit / 2 );
+			level.VALUE_HORDER_DELAY = int( 16 - level.players_playing * 2 ); 
 		}
 		else if(  level.round_number < 16 )
 		{
 			level.zombie_move_speed = 85;	//sprinters
 			level.zombie_vars["zombie_spawn_delay"] = .25;
-			level.zombie_ai_limit = 32; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 12 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+
+			level.VALUE_HORDE_SIZE = 8 + 2*level.players_playing;
+			level.VALUE_HORDER_DELAY = 8; 
 
 		} else if(  level.round_number < 24 )
 		{
 			level.zombie_move_speed = 110;
 			level.zombie_vars["zombie_spawn_delay"] = .08;
-			level.zombie_ai_limit = 44; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 18 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+
+			level.VALUE_HORDE_SIZE = 12 + 4*level.players_playing;
+			level.VALUE_HORDER_DELAY = 20 - 2*level.players_playing; 
+
 		} else if( level.round_number < 30 )
 		{
 			level.zombie_move_speed = 160;
+			level.VALUE_HORDE_SIZE = 12 + 4*level.players_playing;
+			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing;
+
 		} else {
 			level.zombie_move_speed = 210;
 		}
@@ -4647,6 +4670,11 @@ reimagined_expanded_round_start()
 	{	
 		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
 		level.zombie_vars["zombie_spawn_delay"] = 1;
+
+		if(level.round_number < 5)
+		{
+			level.zombie_move_speed *= 2;
+		}
 
 		//Increase max perks every 5 rounds after 15
 		if( level.round_number > 15 && level.round_number % 5 == 0 ){
@@ -4663,10 +4691,8 @@ reimagined_expanded_round_start()
 			level.zombie_ai_limit = 32; 
 		
 	}
-	
-	
 
-	
+	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 
 }
 
@@ -5274,6 +5300,9 @@ setApocalypseOptions()
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 	level.SUPER_SPRINTER_SPEED = 100;
 
+	level.VALUE_HORDE_SIZE = 100; /// none in early rounds
+	level.VALUE_HORDER_DELAY = 10;
+
 	/*
 	wait(10);
 	iprintln("Apocalypse is: "+ level.apocalypse);
@@ -5421,7 +5450,7 @@ round_think()
 
 		level.round_number++;
 
-		level notify( "between_round_over" );
+		//level notify( "between_round_over" );
 	}
 }
 
@@ -5511,8 +5540,6 @@ ai_calculate_health( round_number )
 	if(!level.tough_zombies && round_number > level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND)
 	{
 		round_diff = round_number - level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND;
-
-		
 		health_scalar = 1 - (level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR * round_diff);
 		
 		if(health_scalar > 0.4)
@@ -5545,7 +5572,7 @@ ai_calculate_health( round_number )
 		} 
 		*/
 	
-	//iprintln("Current health:  " + health);
+	iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
 }
 
@@ -6666,15 +6693,18 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		} else if( self.animname != "zombie") {
 			return final_damage;
 			//TO DO: add support for dogs and crawlers
-		} else if(IsDefined(weapon) && weapon == "knife_zm") {
+		} else if(IsDefined(weapon) && weapon == "knife_zm") 
+		{
 
 			//Reimagined-Expanded Push Zombies down with Knife
-			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME; 
-			if( damage >= self.health ) {
-				return final_damage;
+			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
+			if( final_damage >= self.health ) {
+				return int( final_damage );
+			} else
+			{
+				self thread zombie_knockdown( wait_anim, false );
+				return int( final_damage );
 			}
-
-			self thread zombie_knockdown( wait_anim, false );			
 			
 		} else if ( IsDefined(weapon) && weapon == "upgraded_knife_zm" )
 		{
@@ -6684,6 +6714,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) 
 		{
+			damage = int(self.maxhealth / level.round_number) + 100;
 			final_damage = int(self.maxhealth / 4) + 10;
 			if(damage < final_damage)
 				return final_damage;
@@ -7052,31 +7083,31 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		//Reiminaged-Expanded - Shotgun Damange increase
 		case "rottweil72_zm":
-			final_damage = 800 * ( damage / 180);
+			final_damage = 2000 * ( damage / 180);
 			break;
 		case "rottweil72_upgraded_zm":
-			final_damage = 2500 * ( damage / 300);
+			final_damage = 12500 * ( damage / 300);
 			break;
 		case "ithaca_zm":
-			final_damage = 1500 * ( damage / 160);
+			final_damage = 3000 * ( damage / 160);
 			break;
 		case "ithaca_upgraded_zm":
 			final_damage = 10000 * ( damage / 300);
 			break;
 		case "spas_zm":
-			final_damage = 1200 * ( damage / 160);
+			final_damage = 2600 * ( damage / 160);
 			break;
 		case "spas_upgraded_zm":
-			final_damage = 8000 * ( damage / 300);
+			final_damage = 18000 * ( damage / 300);
 			break;
 		case "hs10_zm":
-			final_damage = 1200 * ( damage / 160);
+			final_damage = 4200 * ( damage / 160);
 			break;
 		case "hs10_upgraded_zm":
-			final_damage = 7500 * ( damage / 300);
+			final_damage = 17500 * ( damage / 300);
 			break;
 		case "hs10lh_upgraded_zm":
-			final_damage = 7500 * ( damage / 300);
+			final_damage = 17500 * ( damage / 300);
 			break;
 		default:
 			iprintln("default case for damage weapons");
@@ -7374,18 +7405,22 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//Shotgun Bonus Damage
+
 		if( WeaponClass(weapon) == "spread" ) 
 		{
-			final_damage = int(final_damage * self.shotgun_attrition);
+			final_damage *= attacker.shotgun_attrition;
 			if( is_boss_zombie(self.animname) ) {
 				return int(final_damage / 10);
+			}
+
+			if( final_damage >= self.health ) {
+				return int( final_damage );
 			}
 
 			if( final_damage > int(self.maxhealth / 4) && (self.health > self.max_health / 2) ) {
 				self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME, false );
 			}
 		}
-		iprintln("End Shotgun Attrition" + final_damage);
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
