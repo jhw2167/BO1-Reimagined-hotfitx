@@ -242,10 +242,15 @@ zombie_spawn_init( animname_set )
 	}
 	self.deathFunction = ::zombie_death_animscript;
 	self.flame_damage_time = 0;
+	self.no_powerups = true;
 
 	//Reimagined-Expanded, slightly more damage since we now have baby jug
 	self.meleeDamage = 60;
-	self.no_powerups = true;
+	self.zombie_hash=randomint(level.VALUE_ZOMBIE_HASH_MAX);
+
+	//Effects
+	self.marked_for_freeze=false;
+
 
 	self zombie_history( "zombie_spawn_init -> Spawned = " + self.origin );
 
@@ -382,12 +387,12 @@ set_zombie_run_cycle( new_move_speed )
 		if(is_true(self.zombie_move_speed_supersprint))
 		{
 			var = randomintrange(5, 7);
-			if(isDefined(self.zombie_speed_up)){
+			if(isDefined(self.zombie_speed_up))
+			{
 				self.moveplaybackrate = self.zombie_speed_up;
 				self.animplaybackrate = self.zombie_speed_up;
 
-				self.moveplaybackrate = 2;
-				self.animplaybackrate = 2;
+				iprintln("super sprinter spawned - " + self.zombie_speed_up);
 			}
 		}
 		else
@@ -408,7 +413,7 @@ set_run_speed()
 	if(level.zombie_move_speed < 100 ) {
 		rand = randomintrange( level.zombie_move_speed, level.zombie_move_speed + 35 );
 	} else {
-		rand = randomintrange( 50, level.zombie_move_speed );
+		rand = randomintrange( 60, level.zombie_move_speed );
 	}
 	
 
@@ -436,7 +441,7 @@ set_run_speed()
 
 		//Terror
 		if(rand > 140) {
-			self.zombie_speed_up = ( self.zombie_move_speed + 70 / rand ); // > 1
+			self.zombie_speed_up = ( (level.zombie_move_speed + 70) / rand ); // > 1
 		}
 	}
 }

@@ -64,7 +64,7 @@ zombie_bullet_penetration( zomb , args )
 	for ( i = 0; i < zombies.size; i++ )
 	{
 		if(self.dbtp_penetrated_zombs >= level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) {
-			iprintln("Zombie penetration limit reached");
+			//iprintln("Zombie penetration limit reached");
 			break;	//no more zombies can be penetrated
 		}
 			
@@ -139,7 +139,7 @@ zombie_bullet_penetration( zomb , args )
 			j_sqrd = j*j;
 		}
  
-		if( j*level.VALUE_DBT_UNITS >= dist_sq ) {
+		if( j*j >= dist_sq ) {
 			continue;
 		}
 
@@ -148,7 +148,6 @@ zombie_bullet_penetration( zomb , args )
 		zombies[i].dbtap_marked = self.entity_num;
 		zombies[i] thread process_dbt_penn_dmg( args );
 	}
-
 	
 	self.dbtp_penetrated_zombs=0;
 	zomb.dbtap_marked = -1;	//Not marked for damage for DBtap penetration by any player
@@ -160,6 +159,17 @@ zombie_bullet_penetration( zomb , args )
 		dmg = maps\_zombiemode::actor_damage_override( args.inflictor, args.attacker, args.damage, args.flags, args.meansofdeath, args.weapon, args.vpoint, args.vdir, args.sHitLoc, args.modelIndex, args.psOffsetTime);
 		self dodamage( dmg , self.origin, args.attacker );
 		self.dbtap_marked = -1;
+	}
+
+	watch_place_bottle(origin)
+	{
+		machine_angles = (0, 135, 0);
+		bottle = Spawn( "script_model", origin );
+		bottle.angles = machine_angles;
+		bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+
+		wait(5);
+		bottle Delete();
 	}
 
 

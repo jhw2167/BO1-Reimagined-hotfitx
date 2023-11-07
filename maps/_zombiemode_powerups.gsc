@@ -338,7 +338,6 @@ powerup_hud_overlay()
 		players[p] thread power_up_hud( "i_t6_specialty_firesale_shader", players[p].powerup_hud[4], "zombie_powerup_fire_sale_time", "zombie_powerup_fire_sale_on" );
 		players[p] thread power_up_hud( "i_t6_bonfire_shader", players[p].powerup_hud[5], "zombie_powerup_bonfire_sale_time", "zombie_powerup_bonfire_sale_on" );
 
-
 		players[p] thread power_up_hud( "i_t6_specialty_instakill_shader", players[p].powerup_hud[6], "zombie_powerup_insta_kill_round_time", "zombie_powerup_insta_kill_round_on", false, true );
 
 		// Reimagined - Grief stuff
@@ -856,8 +855,11 @@ powerup_drop(drop_point, player, zombie)
 		}
 	} else if(type != "override")
 	{
-		//Reimagined expanded EV(X)=3 drops / round
-		dynamic_prob = (3 / level.zombie_round_total) * 100;
+		//Reimagined-expanded EV(X)=3 drops / round
+		dynamic_prob = (1 / level.zombie_round_total) * 100;
+		if( level.extra_drops )
+			dynamic_prob = (3 / level.zombie_round_total) * 100;
+
 		//iprintln("total: " + level.zombie_round_total);
 		//iprintln("Dynamic prob: " + dynamic_prob + " rand_drop: " + rand_drop);
 		if(rand_drop <= dynamic_prob) {

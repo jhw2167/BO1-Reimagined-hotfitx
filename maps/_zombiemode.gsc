@@ -339,8 +339,8 @@ reimagined_init_level()
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
 
-	level.VALUE_DBT_UNITS = 15;
-	level.VALUE_DBT_PENN_DIST = 10;
+	level.VALUE_DBT_UNITS = 12;
+	level.VALUE_DBT_PENN_DIST = 8;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
 	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3;
 
@@ -421,8 +421,10 @@ reimagined_init_player()
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 
 	//Misc
-	//if(IsDefined(level.zombie_visionset))
-		//self VisionSetNaked(level.zombie_visionset);
+	if(IsDefined(level.zombie_visionset))
+		self VisionSetNaked(level.zombie_visionset);
+
+	self.previous_zomb_attacked_by=0;
 
 }
 
@@ -593,10 +595,17 @@ watch_player_sheercold()
 			{
 				if( !zombies[i].marked_for_freeze ) {
 					self.bullet_sheercold = true;
+					iprintln("bulletsheetcold true");
 					break;
 				}
 			}
-			wait(0.25);
+			if( self.bullet_sheercold )	{
+				wait(2);
+				iprintln("wait for bulletsheetcold");
+			}
+				
+			wait(0.5);
+			self.bullet_sheercold=false;
 		}
 
 		
@@ -4389,7 +4398,7 @@ ai_calculate_amount()
 
 	//Reimagined-Expanded: More zombies in Apocalypse mode!
 	if(level.apocalypse && level.round_number > 5) {
-		level.zombie_total = int(level.zombie_total * 1.5);
+		level.zombie_total = int(level.zombie_total * 1.2);
 	}
 
 	level.zombie_round_total=level.zombie_total;
@@ -4621,7 +4630,7 @@ reimagined_expanded_round_start()
 	if( !isDefined(level.players_playing) )
 		level.players_playing = GetPlayers().size;
 
-	if( level.apocalypse )
+	if( level.tough_zombies )
 	{
 		if( level.round_number < 4 )
 		{
@@ -4633,10 +4642,10 @@ reimagined_expanded_round_start()
 
 		} else if(  level.round_number < 11 ) {
 			level.zombie_move_speed = 60;	//runners
-			level.zombie_ai_limit = 8 + 4*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 12 + 4*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( level.zombie_ai_limit / 2 );
-			level.VALUE_HORDER_DELAY = int( 16 - level.players_playing * 2 ); 
+			level.VALUE_HORDER_DELAY = int( 10 - level.players_playing * 2 ); 
 		}
 		else if(  level.round_number < 16 )
 		{
@@ -4644,8 +4653,8 @@ reimagined_expanded_round_start()
 			level.zombie_vars["zombie_spawn_delay"] = .25;
 			level.zombie_ai_limit = 12 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
-			level.VALUE_HORDE_SIZE = 8 + 2*level.players_playing;
-			level.VALUE_HORDER_DELAY = 8; 
+			level.VALUE_HORDE_SIZE = 16 + 4*level.players_playing;
+			level.VALUE_HORDER_DELAY = 4; 
 
 		} else if(  level.round_number < 24 )
 		{
@@ -4653,13 +4662,13 @@ reimagined_expanded_round_start()
 			level.zombie_vars["zombie_spawn_delay"] = .08;
 			level.zombie_ai_limit = 18 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
-			level.VALUE_HORDE_SIZE = 12 + 4*level.players_playing;
-			level.VALUE_HORDER_DELAY = 20 - 2*level.players_playing; 
+			level.VALUE_HORDE_SIZE = 18 + 6*level.players_playing;
+			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing; 
 
 		} else if( level.round_number < 30 )
 		{
 			level.zombie_move_speed = 160;
-			level.VALUE_HORDE_SIZE = 12 + 4*level.players_playing;
+			level.VALUE_HORDE_SIZE = 24 + 8*level.players_playing;
 			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing;
 
 		} else {
@@ -5286,13 +5295,16 @@ setApocalypseOptions()
 	if(level.extra_drops > 0 || level.apocalypse)
 		level.extra_drops = true;
 
+	//Not Implemented
+	level.extra_drops = false;
+
 	level.max_perks = 10;
 	if(level.apocalypse) {
 		level.max_perks = 5;
 		level.starting_round = 1;
 	}
 
-	//level.starting_round = 20;
+	level.starting_round = 25;
 
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
@@ -5302,6 +5314,7 @@ setApocalypseOptions()
 
 	level.VALUE_HORDE_SIZE = 100; /// none in early rounds
 	level.VALUE_HORDER_DELAY = 10;
+	level.VALUE_ZOMBIE_HASH_MAX=10000;
 
 	/*
 	wait(10);
@@ -6200,6 +6213,15 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		// tracking player damage
 		if(is_true(eAttacker.is_zombie))
 		{
+			if( isDefined(eAttacker.zombie_hash) )
+			{
+				hash = eAttacker.zombie_hash;
+				if( hash == self.previous_zomb_attacked_by )
+					iDamage = int(iDamage * 0.5);
+				self.previous_zomb_attacked_by = hash;
+
+				iprintln("zombie hash: " + hash);
+			}
 			self.stats["damage_taken"] += iDamage;
 		}
 
@@ -7297,7 +7319,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			} else if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) 
 			{
 				self thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( self, attacker, 20, 1.5);
-				attacker.bullet_sheercold = false;
 				wait(0.05);
 			}
 
@@ -7384,12 +7405,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//Reimagined-Expanded -- Deadshot Hitmarkers
 		if( attacker hasProPerk(level.DST_PRO) && WeaponClass(weapon) != "spread" ) 
 		{
+			//Flat damage increase for ADS
+			if( attacker AdsButtonPressed() )
+				final_damage = int(final_damage * 1.5);
 
 			if(!isDefined(self.weakpoint))
 				self.weakpoint = "";
 
 			weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
-			final_damage = int(final_damage * 1.5);
+			
 			if( is_in_array(weakpoints, sHitLoc) ) 
 			{
 				attacker.weakpoint_streak++;	//add HUD for this
