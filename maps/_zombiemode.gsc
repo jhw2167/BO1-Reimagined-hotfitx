@@ -45,7 +45,8 @@ main()
 
 	//Override
 	//level.zombie_ai_limit_override=2;
-	level.starting_round_override=30;
+	//level.starting_round_override=30;
+	level.apocalypse_override=false;
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -56,7 +57,7 @@ main()
 	level.zombie_pathing_failed = 0;
 	level.zombie_breadcrumb_failed = 0;
 
-	level.zombie_visionset = "zombie_neutral";
+	//level.zombie_visionset = "zombie_neutral";
 
 	if(GetDvar("anim_intro") == "1")
 	{
@@ -335,9 +336,9 @@ reimagined_init_level()
 {
 
 	//Perk Effects
-	level.TOTALTIME_STAMINA_PRO_GHOST = 2; //2 seconds
+	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //2 seconds
 
-	level.COOLDOWN_STAMINA_PRO_GHOST = 5; 	//20
+	level.COOLDOWN_STAMINA_PRO_GHOST = 15; 	//20
 	level.COOLDOWN_SPEED_PRO_RELOAD = 3.5;
 
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
@@ -5286,8 +5287,8 @@ chalk_round_over()
 
 setApocalypseOptions()
 {
-	level.apocalypse=1;
-	if(level.apocalypse > 0)
+
+	if(level.apocalypse > 0 || level.apocalypse_override)
 		level.apocalypse = true;
 	if(level.alt_bosses > 0 || level.apocalypse)
 		level.alt_bosses = true;
@@ -5345,7 +5346,7 @@ pre_round_think()
 	if( IsDefined(level.starting_round_override) )
 		level.starting_round = level.starting_round_override;	//Override
 
-	if(level.starting_round > 1 && level.round_number == 1) 
+	if(level.starting_round > 1) 
 	{
 		level.round_number = level.starting_round;
 
@@ -6761,12 +6762,16 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				return damage;
 		}
 
-		hasUgradedKnife = ( attacker HasWeapon("bowie_knife_zm") || attacker HasWeapon("sickle_knife_zm") );
+		hasUgradedKnife = ( attacker HasWeapon("bowie_knife_zm") ||
+							attacker HasWeapon("combat_bowie_knife_zm") ||
+							attacker HasWeapon("sickle_knife_zm") ||
+							attacker HasWeapon("combat_sickle_knife_zm") );
+		
 		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );
 		//if weapon is sickle or bowie	    && !is_boss_zombie(self.animname)
-		if( ( weapon == "bowie_knife_zm" || weapon == "sickle_knife_zm" || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
+		if( ( weapon == "combat_bowie_knife_zm" || weapon == "combat_sickle_knife_zm" || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
 		{
-			final_damage = int(self.maxhealth / 2) + 10;
+			final_damage = int(self.maxhealth / 3) + 10;
 			if( level.round_number < 12)
 				return int( self.maxhealth ) + 100;
 			else
@@ -7696,7 +7701,7 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 			{
 				gg_wep = "knife_ballistic_bowie_zm";
 			}
-			else if(attacker HasWeapon("sickle_knife_zm"))
+			else if(attacker HasWeapon("combat_sickle_knife_zm"))
 			{
 				gg_wep = "knife_ballistic_sickle_zm";
 			}
