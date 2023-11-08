@@ -364,7 +364,7 @@
 		
 		POPUP_TITLE_VIS( 90 10 120 80, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		
-		CHOICE_DVARFLOATLIST_VIS( 1, "@REIMAGINED_ROUND_START", zombie_round_start,{ "1" 1 "10" 10 "15" 15 "20" 20 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		CHOICE_DVARFLOATLIST_VIS( 1, "@REIMAGINED_ROUND_START", zombie_round_start,{ "1" 1 "10" 10 "15" 15 "20" 20 "30" 30 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 
 		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "0" 0 "5" 5 "10" 10 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		

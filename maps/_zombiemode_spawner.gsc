@@ -442,7 +442,7 @@ set_run_speed()
 	if(level.zombie_move_speed < 100 ) {
 		rand = randomintrange( level.zombie_move_speed, level.zombie_move_speed + 35 );
 	} else {
-		rand = randomintrange( 60, level.zombie_move_speed );
+		rand = randomintrange( 100, level.zombie_move_speed + 35 );
 	}
 	
 
@@ -469,7 +469,7 @@ set_run_speed()
 		//terror (super sprinter) -- NEED TO SPEED UP ATTACK ANIMS
 		self.zombie_move_speed = "sprint";
 		self.zombie_move_speed_supersprint = true;
-		self.zombie_speed_up = ( (level.zombie_move_speed + 50) / rand ); // > 1
+		self.zombie_speed_up = ( (level.zombie_move_speed + 30) / rand ); // > 1
 	}
 
 }

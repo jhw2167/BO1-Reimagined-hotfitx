@@ -43,6 +43,10 @@ main()
 
 	level.starting_round=GetDvarInt("zombie_round_start");
 
+	//Override
+	//level.zombie_ai_limit_override=2;
+	level.starting_round_override=30;
+
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
 	level.zombies_timeout_playspace = 0;
@@ -4668,12 +4672,12 @@ reimagined_expanded_round_start()
 
 		} else if( level.round_number < 30 )
 		{
-			level.zombie_move_speed = 160;
+			level.zombie_move_speed = 130;
 			level.VALUE_HORDE_SIZE = 24 + 8*level.players_playing;
 			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing;
 
 		} else {
-			level.zombie_move_speed = 210;
+			level.zombie_move_speed = 150;
 		}
 
 	} else	//(More) Regular zombies!
@@ -4702,7 +4706,9 @@ reimagined_expanded_round_start()
 		
 	}
 
-	//level.zombie_ai_limit = 2;	//OVERRIDE
+	if( IsDefined(level.zombie_ai_limit_override) )
+		level.zombie_ai_limit = level.zombie_ai_limit_override;	//Override
+	
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
 
@@ -5307,8 +5313,6 @@ setApocalypseOptions()
 		level.starting_round = 1;
 	}
 
-	level.starting_round = 25;
-
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
 
@@ -5336,9 +5340,11 @@ setApocalypseOptions()
 }
 
 //Reimagined-Expanded
-
 pre_round_think()
-{
+{	
+	if( IsDefined(level.starting_round_override) )
+		level.starting_round = level.starting_round_override;	//Override
+
 	if(level.starting_round > 1 && level.round_number == 1) 
 	{
 		level.round_number = level.starting_round;

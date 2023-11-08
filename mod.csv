@@ -1,4 +1,7 @@
 
+//vision
+rawfile,vision/zombie_blood.vision
+
 //ANIMSCRIPTS
 rawfile,animscripts/zombie_melee.gsc
 rawfile,animscripts/traverse/zombie_wall_crawl_drop.gsc
