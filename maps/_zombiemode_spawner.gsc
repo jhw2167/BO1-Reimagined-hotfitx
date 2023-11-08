@@ -209,6 +209,8 @@ zombie_spawn_init( animname_set )
 	self thread zombie_think();
 	self thread zombie_gib_on_damage();
 	self thread zombie_damage_failsafe();
+	if( level.tough_zombies && (isdefined( self.animname ) && is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname)) )
+		self thread zombie_watch_despawn_no_damage();
 
 	if(IsDefined(level._zombie_custom_spawn_logic))
 	{
@@ -273,6 +275,33 @@ zombie_spawn_init( animname_set )
 	self.zombie_init_done = true;
 	self notify( "zombie_init_done" );
 }
+
+//Reimagined-Expanded
+//If a zombie is not damaged for a period, delete it
+zombie_watch_despawn_no_damage() 
+{
+	wait( level.VALUE_ZOMBIE_UNDAMGED_TIME_MAX );
+	self.zombie_despawn=false;
+	self endon("death");
+	while( !self.zombie_despawn )
+	{
+		self zombie_watch_despawn_no_damage_trigger();
+		wait(0.1);
+	}
+
+	level.zombie_total++;
+	self notify("zombie_delete");
+	self DoDamage(self.health + 1000, self.origin);
+	return;
+
+}
+	zombie_watch_despawn_no_damage_trigger()
+	{
+		self endon("zombie_damaged");
+		self endon( "hit_player" );
+		wait( level.VALUE_ZOMBIE_UNDAMGED_TIME_MAX );
+		self.zombie_despawn=true;
+	}
 
 /*
 delayed_zombie_eye_glow:
@@ -391,8 +420,8 @@ set_zombie_run_cycle( new_move_speed )
 			{
 				self.moveplaybackrate = self.zombie_speed_up;
 				self.animplaybackrate = self.zombie_speed_up;
-
-				iprintln("super sprinter spawned - " + self.zombie_speed_up);
+				//iprintln("super sprinter spawned - " + self.zombie_speed_up);
+				var=5;
 			}
 		}
 		else
@@ -427,23 +456,22 @@ set_run_speed()
 	{
 		self.zombie_move_speed = "run";
 	}
-	else
-	{
+	else if( rand < 105 ) {
 		//Sprinter
 		self.zombie_move_speed = "sprint";
-
-		//super sprinter
-		if(rand > 105)
-		{
-			//self.zombie_move_speed_supersprint = true; anims only on verucket
-			self.zombie_move_speed_supersprint = true;
-		}
-
-		//Terror
-		if(rand > 140) {
-			self.zombie_speed_up = ( (level.zombie_move_speed + 70) / rand ); // > 1
-		}
 	}
+	else if( rand < 140 ) {
+		//super sprinter
+		self.zombie_move_speed = "sprint";
+		self.zombie_move_speed_supersprint = true;
+	}
+	else {
+		//terror (super sprinter) -- NEED TO SPEED UP ATTACK ANIMS
+		self.zombie_move_speed = "sprint";
+		self.zombie_move_speed_supersprint = true;
+		self.zombie_speed_up = ( (level.zombie_move_speed + 50) / rand ); // > 1
+	}
+
 }
 
 

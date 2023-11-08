@@ -356,30 +356,30 @@
 
 	menuDef
 	{
-		POPUP_SETUP_VIS( -180, -120, 300, 240, mature_content_pc_disable_warning, ;, ;, 0 0 0 .7, ;, 1 )
+		POPUP_SETUP_VIS( -180, -120, 240, 240, mature_content_pc_disable_warning, ;, ;, 0 0 0 .7, ;, 1 )
 		
 		//Reimagined-Expanded In Game OPTIONS
 		
 		//POPUP_TITLE_VIS( 90 10 120 80
-		//POPUP_TITLE_VIS( 90 10 120 0, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		
-		POPUP_TITLE_VIS( 180 10 120 80, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
+		POPUP_TITLE_VIS( 90 10 120 80, "@REIMAGINED_EXP_CUSTOM_OPTIONS_TITLE", when(dvarString("ui_options_game_popup") == "reimagined_expanded") )
 		
-		CHOICE_DVARFLOATLIST_VIS(1, "@REIMAGINED_ALT_BOSSES", zombie_alt_bosses, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		CHOICE_DVARFLOATLIST_VIS( 1, "@REIMAGINED_ROUND_START", zombie_round_start,{ "1" 1 "10" 10 "15" 15 "20" 20 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+
+		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "0" 0 "5" 5 "10" 10 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
-		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_EXP_PERKS", zombie_exp_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_EXP_PERKS", zombie_exp_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
-		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_TOUGH_ZOMBIES", zombie_tough_zombies, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		CHOICE_DVARFLOATLIST_VIS(4, "@REIMAGINED_TOUGH_ZOMBIES", zombie_tough_zombies, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
-		CHOICE_DVARFLOATLIST_VIS(4, "@REIMAGINED_ZOMBIE_TYPES", zombie_types, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_ZOMBIE_TYPES", zombie_types, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
-		CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_BO2_PERKS", zombie_bo2_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		//CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_BO2_PERKS", zombie_bo2_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+
+		//CHOICE_DVARFLOATLIST_VIS(1, "@REIMAGINED_ALT_BOSSES", zombie_alt_bosses, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
-		CHOICE_DVARFLOATLIST_VIS(6, "@REIMAGINED_EXTRA_DROPS", zombie_extra_drops, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
-		
-		CHOICE_DVARFLOATLIST_VIS(7, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "0" 0 "5" 5 "10" 10 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
-		
-		CHOICE_DVARFLOATLIST_VIS( 8, "@REIMAGINED_ROUND_START", zombie_round_start,{ "1" 1 "10" 10 "15" 15 "20" 20 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		//CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_EXTRA_DROPS", zombie_extra_drops, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+				
 
 		// HUD OPTIONS
 

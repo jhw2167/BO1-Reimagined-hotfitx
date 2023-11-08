@@ -358,7 +358,8 @@ reimagined_init_level()
 
 	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2", "ithaca_upgraded_zm_x2");
 	level.RANGE_SHEERCOLD_DIST = 120;
-	level.THRESHOLD_SHEERCOLD_DIST = 20;
+	level.THRESHOLD_SHEERCOLD_DIST = 50;
+	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2", "rottweil72_upgraded_zm");
 	level.THRESHOLD_HELLFIRE_TIME = 2.0;
@@ -378,8 +379,11 @@ reimagined_init_level()
 									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"
 									 );
 
+	//MISCELLANEOUS EFFECTS
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
+
+
 
 }
 
@@ -595,16 +599,13 @@ watch_player_sheercold()
 			{
 				if( !zombies[i].marked_for_freeze ) {
 					self.bullet_sheercold = true;
-					iprintln("bulletsheetcold true");
 					break;
 				}
 			}
-			if( self.bullet_sheercold )	{
-				wait(2);
-				iprintln("wait for bulletsheetcold");
-			}
+			if( self.bullet_sheercold )
+				wait( level.THRESHOLD_SHEERCOLD_ACTIVE_TIME );
 				
-			wait(0.5);
+			wait(0.1);
 			self.bullet_sheercold=false;
 		}
 
@@ -4397,7 +4398,7 @@ ai_calculate_amount()
 	}
 
 	//Reimagined-Expanded: More zombies in Apocalypse mode!
-	if(level.apocalypse && level.round_number > 5) {
+	if(level.tough_zombies && level.round_number > 5) {
 		level.zombie_total = int(level.zombie_total * 1.2);
 	}
 
@@ -4701,7 +4702,9 @@ reimagined_expanded_round_start()
 		
 	}
 
+	//level.zombie_ai_limit = 2;	//OVERRIDE
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
+	
 
 }
 
@@ -5277,7 +5280,7 @@ chalk_round_over()
 
 setApocalypseOptions()
 {
-
+	level.apocalypse=1;
 	if(level.apocalypse > 0)
 		level.apocalypse = true;
 	if(level.alt_bosses > 0 || level.apocalypse)
@@ -5315,6 +5318,9 @@ setApocalypseOptions()
 	level.VALUE_HORDE_SIZE = 100; /// none in early rounds
 	level.VALUE_HORDER_DELAY = 10;
 	level.VALUE_ZOMBIE_HASH_MAX=10000;
+
+	level.VALUE_ZOMBIE_UNDAMGED_TIME_MAX=20;
+	level.ARRAY_VALID_DESPAWN_ZOMBIES= array("zombie", "quad_zombie");
 
 	/*
 	wait(10);
@@ -6210,21 +6216,6 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			return 0;
 		}
 
-		// tracking player damage
-		if(is_true(eAttacker.is_zombie))
-		{
-			if( isDefined(eAttacker.zombie_hash) )
-			{
-				hash = eAttacker.zombie_hash;
-				if( hash == self.previous_zomb_attacked_by )
-					iDamage = int(iDamage * 0.5);
-				self.previous_zomb_attacked_by = hash;
-
-				iprintln("zombie hash: " + hash);
-			}
-			self.stats["damage_taken"] += iDamage;
-		}
-
 		if( isDefined( self.ignoreAttacker ) && self.ignoreAttacker == eAttacker )
 		{
 			return 0;
@@ -6250,6 +6241,20 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		}
 
 		eAttacker notify( "hit_player" );
+
+		// tracking player damage
+		if(is_true(eAttacker.is_zombie))
+		{
+			if( isDefined(eAttacker.zombie_hash) )
+			{
+				hash = eAttacker.zombie_hash;
+				if( hash == self.previous_zomb_attacked_by )
+					iDamage = int(iDamage * 0.5);
+				self.previous_zomb_attacked_by = hash;
+			}
+			self.stats["damage_taken"] += iDamage;
+		}
+
 
 		if( is_true(eattacker.is_zombie) && eattacker.animname == "director_zombie" )
 		{
@@ -6338,6 +6343,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 
 	//iprintln("health: " + self.health);
 
+	//Reimagined-Expanded
 	//Raygun doesnt damage players anymore
 	if ( sWeapon == "ray_gun_zm" || sWeapon == "ray_gun_upgraded_zm" )
 	{
@@ -6606,6 +6612,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
+	if( isdefined( self.animname ) && is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname) )
+	{
+		self notify("zombie_damaged");
+	}
+
 	// Turrets - kill in 4 shots
 	if(meansofdeath == "MOD_RIFLE_BULLET" && weapon == "zombie_bullet_crouch")
 	{
@@ -6710,7 +6721,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		final_damage -= final_damage % 50; // fix for melee weapons doing 1-4 extra damage
 		
-		if(is_boss_zombie(self.animname)) {
+		if(is_boss_zombie(self.animname) || !IsDefined(weapon)) {
 			return 200;
 		} else if( self.animname != "zombie") {
 			return final_damage;
@@ -6744,8 +6755,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				return damage;
 		}
 
-		iprintln("Weapon: " + weapon);
-		if( IsDefined(weapon) && ( isSubStr( weapon, "bowie" ) || isSubStr( weapon, "sickle") )  && !is_boss_zombie(self.animname)) 
+		hasUgradedKnife = ( attacker HasWeapon("bowie_knife_zm") || attacker HasWeapon("sickle_knife_zm") );
+		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );
+		//if weapon is sickle or bowie	    && !is_boss_zombie(self.animname)
+		if( ( weapon == "bowie_knife_zm" || weapon == "sickle_knife_zm" || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
 		{
 			final_damage = int(self.maxhealth / 2) + 10;
 			if( level.round_number < 12)
@@ -6753,6 +6766,28 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			else
 				return final_damage;
 		}
+
+		if( weapon == "knife_ballistic_zm" )
+		{
+			if( is_boss_zombie(self.animname) )
+				return 2000;
+			else
+				return int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.1);
+		} else if ( weapon == "knife_ballistic_upgraded_zm" )
+		{
+			if( is_boss_zombie(self.animname) )
+				return 4000;
+			else
+				return int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.2);
+		} else if ( weapon == "knife_ballistic_upgraded_zm_x2" )
+		{
+			if( is_boss_zombie(self.animname) )
+				return 8000;
+			else
+				return int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6);
+		}
+
+		
 		
 	}
 
