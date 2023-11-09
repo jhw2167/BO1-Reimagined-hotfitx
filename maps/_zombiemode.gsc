@@ -46,7 +46,7 @@ main()
 	//Override
 	//level.zombie_ai_limit_override=2;
 	//level.starting_round_override=30;
-	level.apocalypse_override=false;
+	//level.apocalypse_override=true;
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -334,6 +334,11 @@ init_hitmarkers()
 
 reimagined_init_level()
 {
+
+	//Weapon Pap	vending_2x_blacklist(current_weapon)
+	level.VALUE_PAP_X2_COST = 5000;
+	level.VALUE_PAP_X2_EXPENSIVE_COST = 15000;
+	
 
 	//Perk Effects
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //2 seconds

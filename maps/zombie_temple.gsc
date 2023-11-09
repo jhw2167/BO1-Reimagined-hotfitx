@@ -720,11 +720,13 @@ init_random_perk_machines()
 		[[level.override_place_revive_machine]]();
 		randMachines = _add_machine(randMachines, "vending_revive", "mus_perks_revive_sting", "specialty_quickrevive", "mus_perks_revive_jingle", "revive_perk", "zombie_vending_revive");
 	}
+	/* Reimagined-Expanded, Renn scripts handle Mule placement
 	if(IsDefined(level.override_place_additionalprimaryweapon_machine))
 	{
 		[[level.override_place_additionalprimaryweapon_machine]]();
 		randMachines = _add_machine(randMachines, "vending_additionalprimaryweapon", "mus_perks_mulekick_sting", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mulekick_perk", "zombie_vending_three_gun");
 	}
+	*/
 
 	machines = getEntArray("zombie_vending_random","targetname");
 

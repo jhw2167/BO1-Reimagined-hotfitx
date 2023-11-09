@@ -495,6 +495,7 @@ vending_machine_trigger_think()
 					current_weapon = "microwavegundw_zm";
 				}
 				primaryWeapons = players[i] GetWeaponsListPrimaries();
+				packInUseByThisPlayer = ( flag("pack_machine_in_use") && IsDefined(self.user) && self.user == players[i] );
 				if ( players[i] hacker_active() )
 				{
 					self SetInvisibleToPlayer( players[i], true );
@@ -511,15 +512,19 @@ vending_machine_trigger_think()
 		 		{
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
-		 		else if( flag("pack_machine_in_use") && IsDefined(self.user) && self.user != players[i] )
+		 		else if( !packInUseByThisPlayer && flag("pack_machine_in_use") )
 		 		{
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
-				else if ( !flag("pack_machine_in_use") && !IsDefined( level.zombie_include_weapons[current_weapon] ) )
+				else if ( !packInUseByThisPlayer && !IsDefined( level.zombie_include_weapons[current_weapon] ) )
 				{
 					self SetInvisibleToPlayer( players[i], true );
 				}
-				else if ( !flag("pack_machine_in_use") && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
+				else if ( !packInUseByThisPlayer && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
+				{
+					self SetInvisibleToPlayer( players[i], true );
+				}
+				else if ( !packInUseByThisPlayer && vending_2x_blacklist(current_weapon) )
 				{
 					self SetInvisibleToPlayer( players[i], true );
 				}
@@ -645,7 +650,11 @@ vending_weapon_upgrade()
 		self.user = player;
 		flag_set("pack_machine_in_use");
 
-		player maps\_zombiemode_score::minus_to_player_score( self.cost );
+		if( IsSubStr(current_weapon, "upgraded") )
+			player maps\_zombiemode_score::minus_to_player_score( self.cost2 ); //Double PaP
+		else
+			player maps\_zombiemode_score::minus_to_player_score( self.cost );
+
 		sound = "evt_bottle_dispense";
 		playsoundatposition(sound, self.origin);
 
@@ -742,12 +751,10 @@ vending_2x_blacklist(weapon) {
 			weapon == "starburst_ray_gun_zm" ||
 			weapon == "freezegun_upgraded_zm" ||
 			weapon == "shrink_ray_upgraded_zm" || 
-			weapon == "sniper_explosive_bolt_upgraded_zm" ||	//scavenger
+			weapon == "sniper_explosive_bolt_upgraded_zm" ||										//scavenger
 			(IsSubStr( weapon, "sniper" ) && IsSubStr( weapon, "upgraded" )) ||						///scavenger
-			weapon == "humangun_upgraded_zm" ||					//human gun
-			
+			weapon == "humangun_upgraded_zm" ||														//human gun
 			( IsSubStr( weapon, "zombie" ) && IsSubStr( weapon, "upgraded" )) ||					//no double pap WaW weapons
-			
 			weapon == "m14_upgraded_zm" ||
 			weapon == "mpl_upgraded_zm" ||
 			weapon == "mp5k_upgraded_zm" ||
@@ -782,9 +789,9 @@ vending_weapon_upgrade_cost()
 	while ( 1 )
 	{
 		self.cost = 5000;
-		self.cost2 = 5000; 
+		self.cost2 = level.VALUE_PAP_X2_COST; 
 		if(level.expensive_perks)
-			self.cost2 = 15000;
+			self.cost2 = level.VALUE_PAP_X2_EXPENSIVE_COST;
 		
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.cost2 );
 
