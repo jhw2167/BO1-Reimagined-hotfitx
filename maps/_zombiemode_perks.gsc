@@ -27,7 +27,7 @@ init()
 	*/
 
 	level thread place_perk_machines_by_map();
-	//level thread place_doubletap_machine();
+	level thread place_doubletap_machine();
 
 	// Perks-a-cola vending machine use triggers
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
@@ -206,55 +206,6 @@ place_perk_machines_by_map()
 	
 	}
 
-	if ( !isdefined( level.zombie_additionalprimaryweapon_machine_origin ) )
-	{
-		return;
-	}
-
-	machine = Spawn( "script_model", level.zombie_additionalprimaryweapon_machine_origin );
-	machine.angles = level.zombie_additionalprimaryweapon_machine_angles;
-	machine setModel( "zombie_vending_three_gun" );
-	machine.targetname = "vending_additionalprimaryweapon";
-
-	machine_trigger = Spawn( "trigger_radius_use", level.zombie_additionalprimaryweapon_machine_origin + (0, 0, 50), 0, 20, 70 );
-	machine_trigger.targetname = "zombie_vending";
-	machine_trigger.target = "vending_additionalprimaryweapon";
-	machine_trigger.script_noteworthy = "specialty_additionalprimaryweapon";
-
-	machine_trigger.script_sound = "mus_perks_mulekick_jingle";
-	machine_trigger.script_label = "mus_perks_mulekick_sting";
-
-	if ( isdefined( level.zombie_additionalprimaryweapon_machine_clip_origin ) )
-	{
-		machine_clip = spawn( "script_model", level.zombie_additionalprimaryweapon_machine_clip_origin );
-		machine_clip.angles = level.zombie_additionalprimaryweapon_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x256" );
-		machine_clip Hide();
-	}
-
-	if ( isdefined( level.zombie_additionalprimaryweapon_machine_monkey_origins ) )
-	{
-		machine.target = "vending_additionalprimaryweapon_monkey_structs";
-		for ( i = 0; i < level.zombie_additionalprimaryweapon_machine_monkey_origins.size; i++ )
-		{
-			machine_monkey_struct = SpawnStruct();
-			machine_monkey_struct.origin = level.zombie_additionalprimaryweapon_machine_monkey_origins[i];
-			machine_monkey_struct.angles = level.zombie_additionalprimaryweapon_machine_monkey_angles;
-			machine_monkey_struct.script_int = i + 1;
-			machine_monkey_struct.script_notetworthy = "cosmo_monkey_additionalprimaryweapon";
-			machine_monkey_struct.targetname = "vending_additionalprimaryweapon_monkey_structs";
-
-			if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
-			{
-				level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
-			}
-
-			size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
-			level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
-		}
-	}
-
-	level.zombiemode_using_additionalprimaryweapon_perk = true;
 }
 
 add_bump_trigger(perk, origin)
