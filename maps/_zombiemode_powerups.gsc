@@ -171,7 +171,7 @@ init_powerups()
 	add_zombie_powerup( "lose_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
 	// empty clip
-	add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+	//add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
 	// grief powerups - reimagined expanded
 	//add_zombie_powerup( "meat", GetWeaponModel("meat_zm"), &"REIMAGINED_CLIP_UNLOAD", true, false, false );
@@ -605,7 +605,7 @@ is_valid_powerup(powerup_name)
 	}
 	else if( powerup_name == "empty_clip" )					// never drops with regular powerups
 	{
-		return true;
+		return false;
 	}
 	
 	return true;
@@ -1515,8 +1515,8 @@ powerup_grab()
 {
 	if ( isdefined( self ) && self.zombie_grabbable )
 	{
-		self thread powerup_zombie_grab();
-		return;
+		//self thread powerup_zombie_grab();
+		//return;
 	}
 
 	self endon ("powerup_timedout");
@@ -2081,7 +2081,7 @@ powerup_timeout()
 	self endon( "death" );
 	self endon( "powerup_end" );
 
-	wait 15;
+	wait 30;
 
 	for ( i = 0; i < 60; i++ )
 	{

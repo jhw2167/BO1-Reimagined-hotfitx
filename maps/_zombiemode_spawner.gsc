@@ -209,7 +209,11 @@ zombie_spawn_init( animname_set )
 	self thread zombie_think();
 	self thread zombie_gib_on_damage();
 	self thread zombie_damage_failsafe();
-	if( level.tough_zombies && (isdefined( self.animname ) && is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname)) )
+	if( level.tough_zombies
+	 && is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
+	&& level.round_number > 5
+	&& level.zombie_total > 5
+	 )
 		self thread zombie_watch_despawn_no_damage();
 
 	if(IsDefined(level._zombie_custom_spawn_logic))
@@ -280,7 +284,7 @@ zombie_spawn_init( animname_set )
 //If a zombie is not damaged for a period, delete it
 zombie_watch_despawn_no_damage() 
 {
-	wait( level.VALUE_ZOMBIE_UNDAMGED_TIME_MAX );
+	wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 	self.zombie_despawn=false;
 	self endon("death");
 	while( !self.zombie_despawn )
@@ -299,8 +303,21 @@ zombie_watch_despawn_no_damage()
 	{
 		self endon("zombie_damaged");
 		self endon( "hit_player" );
-		wait( level.VALUE_ZOMBIE_UNDAMGED_TIME_MAX );
+		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
+		players = GetPlayers();
+		for(i=0; i < players.size ; i++) {
+			if (checkDist(self, players[i], level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS ))
+				return;
+		}
 		self.zombie_despawn=true;
+	}
+
+	checkDist(a, b, distance)
+	{
+		if( DistanceSquared( a.origin, b.origin ) < distance * distance )
+			return true;
+		else
+			return false;
 	}
 
 /*

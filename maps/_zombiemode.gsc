@@ -5324,8 +5324,9 @@ setApocalypseOptions()
 	level.VALUE_HORDER_DELAY = 10;
 	level.VALUE_ZOMBIE_HASH_MAX=10000;
 
-	level.VALUE_ZOMBIE_UNDAMGED_TIME_MAX=20;
-	level.ARRAY_VALID_DESPAWN_ZOMBIES= array("zombie", "quad_zombie");
+	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=20;
+	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
+	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 
 	/*
 	wait(10);

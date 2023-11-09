@@ -27,7 +27,7 @@ init()
 	*/
 
 	level thread place_perk_machines_by_map();
-	level thread place_doubletap_machine();
+	//level thread place_doubletap_machine();
 
 	// Perks-a-cola vending machine use triggers
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
