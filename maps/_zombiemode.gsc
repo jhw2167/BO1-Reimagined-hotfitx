@@ -44,8 +44,8 @@ main()
 	level.starting_round=GetDvarInt("zombie_round_start");
 
 	//Override
-	//level.zombie_ai_limit_override=2;
-	//level.starting_round_override=30;
+	level.zombie_ai_limit_override=8;
+	level.starting_round_override=30;
 	//level.apocalypse_override=true;
 
 	//for tracking stats
@@ -335,7 +335,7 @@ init_hitmarkers()
 reimagined_init_level()
 {
 
-	//Weapon Pap	vending_2x_blacklist(current_weapon)
+	//Weapon Pap
 	level.VALUE_PAP_X2_COST = 5000;
 	level.VALUE_PAP_X2_EXPENSIVE_COST = 15000;
 	
@@ -7115,46 +7115,51 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "fnfal_upgraded_zm":
-			final_damage = 400;
+			final_damage = 800;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 8;
 			break;
-		//UPGRADED CLASSIC WEAPONS
+		//UPGRADED WAW WEAPONS
 		case "zombie_kar98k_upgraded":
 			final_damage = 4200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
 		case "zombie_gewehr43_upgraded":
-			final_damage = 560;
+			final_damage = 2240;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
-			break;
+				final_damage *= 3;
+		break;
 		case "zombie_m1carbine_upgraded":
-			final_damage = 420;
+			final_damage = 1680;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 3;
 			break;
+
 		case "zombie_type100_smg_upgraded":
-			final_damage = 280;
+			final_damage = 1120;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 3;
 			break;
+
 		case "zombie_fg42_upgraded":
-			final_damage = 300;
+			final_damage = 1200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 3;
 			break;
+
 		case "zombie_stg44_upgraded":
-			final_damage = 250;
+			final_damage = 1000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 3;
 			break;
+
 		case "zombie_thompson_upgraded":
-			final_damage = 240;
+			final_damage = 960;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 3;
 			break;
+
 		//Reiminaged-Expanded - Shotgun Damange increase
 		case "rottweil72_zm":
 			final_damage = 2000 * ( damage / 180);
@@ -7184,7 +7189,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 17500 * ( damage / 300);
 			break;
 		default:
-			iprintln("default case for damage weapons");
+			//iprintln("default case for damage weapons");
 			break;
 			
 		}
@@ -7341,7 +7346,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET" || WeaponClass(weapon) == "spread")
 	{	
 
-			//Hellfire
+		// Hellfire Weapons
 		//  case "ppsh_upgraded_zm_x2":
 		//  case "rpk_upgraded_zm_x2":
 		//  case "ak47_ft_upgraded_zm_x2":
@@ -7360,7 +7365,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = int(final_damage * 2);
 		}
 		
-			//Freeze
+		// Sheercold Weapons
 		//	case "spectre_upgraded_zm_x2":
 		//	case "hk21_upgraded_zm_x2":
 		//	case "galil_upgraded_zm_x2":
@@ -7377,10 +7382,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = int(final_damage * 2);
 		}
 
-		//Electric Effect
+		//Shock Weapons
 		//	case "ak74u_upgraded_zm_x2":
 		//	case "aug_acog_mk_upgraded_zm_x2":
 		//	case "famas_upgraded_zm_x2":
+		//  "Balistic"
 		 
 		if(attacker.bullet_electric) 
 		{
@@ -7455,7 +7461,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//iprintln( "Final dmg after main perks: " + final_damage );
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
-		if( attacker hasProPerk(level.DST_PRO) && WeaponClass(weapon) != "spread" ) 
+		if( attacker hasProPerk(level.DST_PRO) ) //&& WeaponClass(weapon) != "spread" ) 
 		{
 			//Flat damage increase for ADS
 			if( attacker AdsButtonPressed() )

@@ -25,6 +25,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 	multiplier = self get_points_multiplier();
 	
 
+	iprintln("event: " + event + " mod: " + mod + " ");
 
 	switch( event )
 	{
@@ -39,6 +40,9 @@ player_add_points( event, mod, hit_location ,is_dog)
 
 			// Give bonus points
 			player_points	= player_points + points;
+
+			player_points	= player_points * weapon_points_multiplier( self getcurrentweapon(), mod );
+
 			// Don't give points if there's no team points involved.
 			if ( team_points > 0 )
 			{
@@ -150,7 +154,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 }
 
 //Reimagined-Expanded
-weapon_points_multiplier( weapon ) 
+weapon_points_multiplier( weapon, mod ) 
 {
 	multiplier = 1;
 	//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
@@ -168,9 +172,29 @@ weapon_points_multiplier( weapon )
 		multiplier = 2;	
 		break;
 
+		//No points for wonder weapons in apocalypse
+		case "microwavegundw_upgraded_zm":
+		case "tesla_gun_powerup_upgraded_zm":
+		case "tesla_gun_upgraded_zm":
+		case "thundergun_upgraded_zm":
+		case "ray_gun_upgraded_zm":
+		case "starburst_ray_gun_zm":
+		case "freezegun_upgraded_zm":
+		case "shrink_ray_upgraded_zm":
+		case "humangun_upgraded_zm":
+		if(level.apocalypse && mod != "MOD_GRENADE_SPLASH")
+			multiplier = 0;
+        break;
+
 	}
 	return multiplier;
 }
+
+/*
+
+
+
+*/
 
 
 get_points_multiplier()
