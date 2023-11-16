@@ -1323,7 +1323,6 @@ turn_marathon_on()
 //
 turn_divetonuke_on()
 {
-	wait(10);
 	machine = getentarray("vending_divetonuke", "targetname");
 	level waittill("divetonuke_on");
 

@@ -44,9 +44,9 @@ main()
 	level.starting_round=GetDvarInt("zombie_round_start");
 
 	//Override
-	level.zombie_ai_limit_override=8;
-	level.starting_round_override=30;
-	//level.apocalypse_override=true;
+	level.zombie_ai_limit_override=5;
+	level.starting_round_override=20;
+	level.apocalypse_override=false;
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -376,7 +376,7 @@ reimagined_init_level()
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
 
-	level.VALUE_EXPLOSIVE_BASE_DMG = 20000;
+	level.VALUE_EXPLOSIVE_BASE_DMG = 30000;
 	level.VALUE_EXPLOSIVE_UPGD_DMG_SCALE = 4;
 
 	level.VALUE_EXPLOSIVE_BASE_RANGE = 250;
@@ -7259,7 +7259,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon == "knife_ballistic_upgraded_zm_x2" && !is_boss_zombie(self.animname))
 		{	
 			//Custom Wunderwaff thread
-			self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 300, 6);
+			level thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 4);
 																//zomb, player, arc range, num arcs
 			wait(1);
 			return self.maxhealth + 1000; // should always kill
@@ -7321,6 +7321,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(!IsDefined(self.explosive_marked))
 			self.explosive_marked = false;
 
+		//Hellfire
 		if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_upgraded_zm") 
 		{
 			if( !is_boss_zombie(self.animname) && !self.explosive_marked) {
@@ -7395,7 +7396,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			} else 
 			{
 				attacker.bullet_electric=false;
-				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 100, 3);
+				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 3);
 																		//zomb, player, arc range, num arcs
 				wait(1);
 			}

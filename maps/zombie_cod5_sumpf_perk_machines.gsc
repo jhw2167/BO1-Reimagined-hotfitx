@@ -17,7 +17,7 @@ init()
 
 place_babyjug()
 {
-machine_origin = (10570, 809, -476);
+	machine_origin = (10570, 809, -476);
 	machine_angles = (68, 0, 90);
 	bottle = Spawn( "script_model", machine_origin );
 	bottle.angles = machine_angles;
@@ -176,8 +176,11 @@ place_chugabud()
 
 place_mulekick()
 {
-	machine_origin = (8521.5, 3200.5, -667);
-	machine_angles = (0, 314.5, 0);
+	//Reinaissance spawn
+	//machine_origin = (8521.5, 3200.5, -667);
+	//machine_angles = (0, 314.5, 0);
+	machine_origin = (9565, 327, -529);
+	machine_angles = (0, 90, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk SetModel( "zombie_vending_three_gun_on" );

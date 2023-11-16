@@ -93,7 +93,12 @@ main()
 
 	level.Player_Spawn_func = ::sumpf_player_spawn_placement;
 
+	//Reimagined-Expanded, setup game
 	maps\_zombiemode::main();
+	maps\zombie_cod5_sumpf_perk_machines::init();
+	maps\zombie_cod5_sumpf_perks::randomize_vending_machines();
+
+	level thread turn_on_all_perks();
 
 	level.zone_manager_init_func = ::sumpf_zone_init;
 	init_zones[0] = "center_building_upstairs";
@@ -285,6 +290,48 @@ include_weapons()
 	include_weapon("ray_gun_zm");
 	include_weapon("crossbow_explosive_zm");
 	include_weapon("knife_ballistic_zm");
+
+	include_weapon("python_upgraded_zm", false);
+	include_weapon("fnfal_upgraded_zm", false);
+	include_weapon("ak47_upgraded_zm", false);	
+	include_weapon("dragunov_upgraded_zm", false);	
+	include_weapon("cz75_upgraded_zm", false);
+	include_weapon("g11_lps_upgraded_zm", false);
+	include_weapon("famas_upgraded_zm", false);
+	include_weapon("spectre_upgraded_zm", false);
+	include_weapon("cz75dw_upgraded_zm", false);
+	include_weapon("spas_upgraded_zm", false);
+	include_weapon("hs10_upgraded_zm", false);
+	include_weapon("aug_acog_mk_upgraded_zm", false);
+	include_weapon("galil_upgraded_zm", false);
+	include_weapon("commando_upgraded_zm", false);
+	include_weapon("l96a1_upgraded_zm", false);
+	include_weapon("rpk_upgraded_zm", false);
+	include_weapon("hk21_upgraded_zm", false);	
+	include_weapon("m72_law_upgraded_zm", false);
+	include_weapon("china_lake_upgraded_zm", false);
+	include_weapon("crossbow_explosive_upgraded_zm", false);
+	include_weapon("knife_ballistic_upgraded_zm", false);
+	include_weapon( "zombie_type99_rifle_upgraded", false );
+	include_weapon( "ray_gun_upgraded_zm", false );
+	include_weapon( "zombie_fg42_upgraded", false );
+	include_weapon( "ithaca_upgraded_zm", false );
+	include_weapon( "zombie_shotgun_upgraded", false );		
+	include_weapon( "zombie_doublebarrel_sawed_upgraded", false );
+	include_weapon( "zombie_doublebarrel_upgraded", false );
+	include_weapon( "zombie_type100_smg_upgraded", false );
+	include_weapon( "mp40_upgraded_zm", false );
+	include_weapon( "zombie_thompson_upgraded", false );
+	include_weapon( "zombie_bar_upgraded", false );	
+	include_weapon( "zombie_stg44_upgraded", false );
+	include_weapon( "zombie_gewehr43_upgraded", false );
+	include_weapon( "zombie_m1carbine_upgraded", false );
+	include_weapon( "zombie_m1garand_upgraded", false );
+	include_weapon( "tesla_gun_upgraded_zm", false );	
+	include_weapon( "mg42_upgraded_zm", false );
+	include_weapon( "mg08_upgraded_zm", false );	
+	include_weapon( "win1894_upgraded_zm", false );			
+	include_weapon( "karabin_upgraded_zm", false );	
 
 	// Bolt Action
 	include_weapon( "zombie_type99_rifle", false, true);
@@ -977,4 +1024,27 @@ water_burst_overwrite()
 	level waittill("between_round_over");
 	level._effect["rise_burst_water"]		  	= LoadFX("maps/zombie/fx_zombie_body_wtr_burst_smpf");
 	level._effect["rise_billow_water"]			= LoadFX("maps/zombie/fx_zombie_body_wtr_billow_smpf");
+}
+
+
+//Reimagined-Expanded
+turn_on_all_perks()
+{
+	flag_wait( "all_players_connected" );
+	wait 1;
+	wait_network_frame();
+	level notify( "revive_on" );
+	wait_network_frame();
+	level notify( "Pack_A_Punch_on" );
+	wait_network_frame();
+	level notify( "deadshot_on" );
+	wait_network_frame();
+	level notify( "electriccherry_on" );
+	wait_network_frame();
+	level notify( "vulture_on" );
+	wait_network_frame();
+	level notify("marathon_on");
+	wait_network_frame();
+	level notify("divetonuke_on");
+	wait_network_frame();
 }

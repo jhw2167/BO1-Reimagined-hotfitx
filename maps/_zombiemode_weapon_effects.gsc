@@ -10,7 +10,8 @@ init()
 {
 	//These effects always included
 	level._effect["tesla_bolt"]				= loadfx( "maps/zombie/fx_zombie_tesla_bolt_secondary" );
-	level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
+	//level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
+	level._effect["fx_electric_cherry_shock"] = loadfx( "electric_cherry/fx_electric_cherry_shock" );
 	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 	
 	//Explosion
@@ -559,20 +560,21 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 	arc_num = 1;
 
 
-	tesla_flag_hit( self, true );
+	tesla_flag_hit( source_enemy, true );
 	wait_network_frame();
 	
-	enemies = tesla_get_enemies_in_area( self GetCentroid(), distance, player );
+	enemies = tesla_get_enemies_in_area( source_enemy.origin, distance, player );
 	tesla_flag_hit( enemies, true );
 
-	self thread tesla_do_damage( source_enemy, 0, player, 1);
+	iprintln("Enemies size: " + enemies.size);
+	source_enemy thread tesla_do_damage( source_enemy, 0, player, 1);
 	for( i = 0; i < enemies.size; i++ )
 	{
 		if( i > arcs )
 			return;
 		
-		if(enemies[i] == self) {
-			arcs++; continue;
+		if(enemies[i] == source_enemy) {
+			continue;
 		}
 		
 		enemies[i] thread tesla_do_damage( source_enemy, arc_num, player, 1);
@@ -595,9 +597,10 @@ tesla_get_enemies_in_area( origin, distance, player )
 	//if ( !IsDefined( player.tesla_enemies ) )
 	
 	player.tesla_enemies = GetAiSpeciesArray( "axis", "all" );
-	player.tesla_enemies = get_array_of_closest( origin, player.tesla_enemies );
+	zombies = get_array_of_closest( origin, player.tesla_enemies );
 
-	zombies = player.tesla_enemies;
+	// 
+	iprintln("Zombies size: " + zombies.size);
 
 	if ( IsDefined( zombies ) )
 	{
@@ -605,43 +608,34 @@ tesla_get_enemies_in_area( origin, distance, player )
 		{
 			 if ( !IsDefined( zombies[i] )  || !IsAlive( zombies[i] ) )
 			{
+				iprintln("dead zombie");
 				continue;
 			}
 			
-			if( !maps\_zombiemode::is_boss_zombie(self.animname) )
+			if( maps\_zombiemode::is_boss_zombie( zombies[i].animname ) )
 			{
-				//iprintln("boss zombie");
 				continue;
 			}
-
-			test_origin = zombies[i] GetCentroid();
 
 			
 			if ( is_magic_bullet_shield_enabled( zombies[i] ) )
 			{
+				iprintln("bullet shield zombie");
 				continue;
 			}
 			
-			if ( DistanceSquared( origin, test_origin ) > distance_squared )
+			
+			if ( DistanceSquared( origin, zombies[i].origin ) > distance_squared )
 			{
+				iprintln("out of range zombie");
 				continue;
 			} 
 			
-			/* if ( IsDefined( zombies[i].zombie_tesla_hit ) && zombies[i].zombie_tesla_hit == true )
+			if ( IsDefined( zombies[i].zombie_tesla_hit ) && zombies[i].zombie_tesla_hit == true )
 			{
+				iprintln("tesla zombie");
 				continue;
 			}
-
-			if ( !zombies[i] DamageConeTrace(origin, player) && !BulletTracePassed( origin, test_origin, false, undefined ) && !SightTracePassed( origin, test_origin, false, undefined ) )
-			{
-				iprintln("trace");
-				continue;
-			} */
-
-			if ( is_true(zombies[i].humangun_zombie_1st_hit_response) )
-			{
-				continue;
-			} 
 
 			zombies[i].bonus_fx=true;
 			zombies[i].marked_for_tesla=true;
@@ -781,21 +775,19 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 tesla_play_death_fx( arc_num )
 {
 	tag = "J_SpineUpper";
-	fx = "tesla_shock";
+	//fx = "tesla_shock";
+	fx = "fx_electric_cherry_shock";
+
+	// \give knife_ballistic_upgraded_zm_x2
 
 	if ( self.isdog )
 	{
 		tag = "J_Spine1";
 	}
 
-	if ( arc_num > 1 )
-	{
-		fx = "tesla_shock_secondary";
-	}
 
-	if(arc_num==0) {
-		PlayFxOnTag( level._effect["tesla_shock"], self, tag );
-	}
+	PlayFxOnTag( level._effect[fx], self, tag );
+
 	
 	self playsound( "wpn_imp_tesla" );
 
@@ -844,7 +836,7 @@ tesla_play_arc_fx( target )
 	fxOrg = Spawn( "script_model", origin );
 	fxOrg SetModel( "tag_origin" );
 
-	fx = PlayFxOnTag( level._effect["tesla_bolt"], fxOrg, "tag_origin" );
+	PlayFxOnTag( level._effect["tesla_bolt"], fxOrg, "tag_origin" );
 	playsoundatposition( "wpn_tesla_bounce", fxOrg.origin );
 
 	fxOrg MoveTo( target_origin, level.zombie_vars["tesla_arc_travel_time"] );

@@ -18,6 +18,7 @@ main()
 	level._use_choke_blockers = 1;
 
 	level thread maps\zombie_temple_ffotd::main_start();
+	maps\zombie_temple_fx::main();
 
 	// set excludes on chests so we can have a random start
 	level.random_pandora_box_start = true;
@@ -34,7 +35,6 @@ main()
 	precache_assets();
 
 	init_sounds();
-	maps\zombie_temple_fx::main();
 	maps\zombie_temple_amb::main();
 	maps\createart\zombie_temple_art::main();
 

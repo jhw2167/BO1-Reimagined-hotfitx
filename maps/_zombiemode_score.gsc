@@ -25,7 +25,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 	multiplier = self get_points_multiplier();
 	
 
-	iprintln("event: " + event + " mod: " + mod + " ");
+	//iprintln("event: " + event + " mod: " + mod + " ");
 
 	switch( event )
 	{
@@ -162,6 +162,10 @@ weapon_points_multiplier( weapon, mod )
 			weapon = GetSubStr(weapon, 0, weapon.size-3);
 	}
 
+	if(mod == undefined) {
+		mod = "MOD_UNKNOWN";
+	}
+
 	switch( weapon ) {
 		case "cz75_zm":
 		case "cz75dw_zm":
@@ -173,13 +177,21 @@ weapon_points_multiplier( weapon, mod )
 		break;
 
 		//No points for wonder weapons in apocalypse
+		case "microwavegund_zm":
+		case "microwavegund_upgraded_zm":
 		case "microwavegundw_upgraded_zm":
+		case "tesla_gun_powerup_zm":
 		case "tesla_gun_powerup_upgraded_zm":
+		case "tesla_gun_zm":
 		case "tesla_gun_upgraded_zm":
+		case "thundergun_zm":
 		case "thundergun_upgraded_zm":
+		case "ray_gun_zm":
 		case "ray_gun_upgraded_zm":
 		case "starburst_ray_gun_zm":
+		case "freezegun_zm":
 		case "freezegun_upgraded_zm":
+		case "shrink_ray_zm":
 		case "shrink_ray_upgraded_zm":
 		case "humangun_upgraded_zm":
 		if(level.apocalypse && mod != "MOD_GRENADE_SPLASH")

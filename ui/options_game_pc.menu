@@ -372,7 +372,7 @@
 		
 		CHOICE_DVARFLOATLIST_VIS(4, "@REIMAGINED_TOUGH_ZOMBIES", zombie_tough_zombies, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
-		CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_ZOMBIE_TYPES", zombie_types, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
+		//CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_ZOMBIE_TYPES", zombie_types, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 		
 		//CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_BO2_PERKS", zombie_bo2_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded"))
 
