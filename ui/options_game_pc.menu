@@ -67,9 +67,9 @@
 				setDvar zombie_apocalypse 0;
 			}
 
-			if(dvarString(zombie_cheat) == "")
+			if(dvarString(reimagined_cheat) == "")
 			{
-				setDvar zombie_cheat 0;
+				setDvar reimagined_cheat 0;
 			}
 
 			if(dvarString(zombie_alt_bosses) == "")
@@ -316,9 +316,13 @@
 			
 			FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_PAUSE", zombie_pause, ;, dvarString(zombie_apocalypse) == "0" && dvarString( #"zombiemode" ) == "1" ) 
 		
-		FRAME_CHOICE_BUTTON_VIS( 36, "@REIMAGINED_GAME_SETUP", setdvar ui_options_game_popup "reimagined_expanded_setup"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
+		FRAME_CHOICE_BUTTON_VIS( 36, "@REIMAGINED_GAME_SETUP", setdvar ui_options_game_popup "reimagined_expanded_setup"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" 
+			&& dvarString( #"zombiemode" ) != "1"
+			&& dvarString( "zombie_apocalypse" ) != "1" )
 
-		FRAME_CHOICE_BUTTON_VIS( 37, "@REIMAGINED_GAME_OPTIONS", setdvar ui_options_game_popup "reimagined_expanded_options"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
+		FRAME_CHOICE_BUTTON_VIS( 37, "@REIMAGINED_GAME_OPTIONS", setdvar ui_options_game_popup "reimagined_expanded_options"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" 
+			&& dvarString( #"zombiemode" ) != "1"
+			&& dvarString( "zombie_apocalypse" ) != "1" )
 		
 		
 		// VERSUS
@@ -378,7 +382,7 @@
 		
 		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_EXP_PERKS", zombie_exp_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		
-		CHOICE_DVARFLOATLIST_VIS(4, "@REIMAGINED_ZOMBIE_CHEAT", zombie_cheat, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
+		CHOICE_DVARFLOATLIST_VIS(4, "@REIMAGINED_ZOMBIE_CHEAT", reimagined_cheat, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 
 		//Reimagined-Expanded In Game OPTIONS
 

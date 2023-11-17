@@ -42,11 +42,13 @@ main()
 	level.extra_drops=GetDvarInt("zombie_extra_drops");
 
 	level.starting_round=GetDvarInt("zombie_round_start");
+	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Override
-	level.zombie_ai_limit_override=5;
-	level.starting_round_override=20;
-	level.apocalypse_override=false;
+	level.zombie_ai_limit_override=50;
+	level.starting_round_override=5;
+	level.apocalypse_override=true;
+	level.server_cheats_override=true;
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -2158,8 +2160,20 @@ onPlayerConnect_clientDvars()
 	// makes FPS area in corner smaller
 	self SetClientDvar("cg_drawFPSLabels", 0);
 
-	// no cheats
-	//self SetClientDvar("sv_cheats", 0);
+	// Reimagined-Expanded, toggle cheats
+	if(level.server_cheats)
+	{
+		iprintln("Cheats to 1");
+		self SetClientDvar("sv_cheats", 1,
+							"zombie_cheat", 1);
+	} else 
+	{
+		iprintln("Cheats to 0");
+		self SetClientDvar("sv_cheats", 0,
+							"zombie_cheat", 0);
+	}
+	
+	
 
 	// allows shooting while looking at players
 	self SetClientDvar("g_friendlyFireDist", 0);
@@ -5314,10 +5328,18 @@ setApocalypseOptions()
 	level.extra_drops = false;
 
 	level.max_perks = 10;
-	if(level.apocalypse) {
+	if(level.apocalypse) 
+	{
 		level.max_perks = 5;
 		level.starting_round = 1;
+		level.server_cheats=false;
+
+	} else if( level.server_cheats > 0) {
+		level.server_cheats=true;
 	}
+
+	if(IsDefined(level.server_cheats_override))
+		level.server_cheats = true;
 
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
