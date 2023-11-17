@@ -337,6 +337,25 @@ init_hitmarkers()
 reimagined_init_level()
 {
 
+	//Zombie Values
+	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
+	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
+
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
+	level.SUPER_SPRINTER_SPEED = 100;
+
+	level.VALUE_HORDE_SIZE = 100; /// none in early rounds
+	level.VALUE_HORDER_DELAY = 10;
+	level.VALUE_ZOMBIE_HASH_MAX=10000;
+
+	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=20;
+	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
+	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
+
+	//Boss Zombies
+	level.THRESHOLD_DIRECTOR_LIVES=10;
+
+
 	//Weapon Pap
 	level.VALUE_PAP_X2_COST = 5000;
 	level.VALUE_PAP_X2_EXPENSIVE_COST = 15000;
@@ -2163,12 +2182,10 @@ onPlayerConnect_clientDvars()
 	// Reimagined-Expanded, toggle cheats
 	if(level.server_cheats)
 	{
-		iprintln("Cheats to 1");
 		self SetClientDvar("sv_cheats", 1,
 							"zombie_cheat", 1);
 	} else 
 	{
-		iprintln("Cheats to 0");
 		self SetClientDvar("sv_cheats", 0,
 							"zombie_cheat", 0);
 	}
@@ -5304,6 +5321,7 @@ chalk_round_over()
 	wait ( 2.0 );
 }
 
+//Reimagined-Expanded
 setApocalypseOptions()
 {
 
@@ -5340,20 +5358,6 @@ setApocalypseOptions()
 
 	if(IsDefined(level.server_cheats_override))
 		level.server_cheats = true;
-
-	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
-	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
-
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
-	level.SUPER_SPRINTER_SPEED = 100;
-
-	level.VALUE_HORDE_SIZE = 100; /// none in early rounds
-	level.VALUE_HORDER_DELAY = 10;
-	level.VALUE_ZOMBIE_HASH_MAX=10000;
-
-	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=20;
-	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
-	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 
 	/*
 	wait(10);
@@ -5504,7 +5508,7 @@ round_think()
 
 		level.round_number++;
 
-		//level notify( "between_round_over" );
+		level notify( "between_round_over" );
 	}
 }
 

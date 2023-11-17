@@ -550,10 +550,12 @@ director_zombie_manager()
 			{
 				spawner director_zombie_spawn();
 			}
+
 			wait( 10 );
 		}
 		wait( 10 );
 	}
+
 }
 
 director_zombie_pick_best_spawner()
@@ -615,11 +617,18 @@ director_reset_health( easy )
 	 else 
 		self.times_died++;
 
+	/*
 	self.max_damage_taken = level.director_max_damage_taken * num_players * (self.times_died+1);
+	
 	if ( is_true( easy ) )
 	{
 		self.max_damage_taken = level.director_max_damage_taken_easy * num_players;
 	}
+	*/
+
+	self.max_damage_taken = level.THRESHOLD_MAX_ZOMBIE_HEALTH*level.round_number*(self.times_died+1)*num_players;
+	if(level.round_number < 20 )
+		self.max_damage_taken = int(self.max_damage_taken * 0.5);
 
 	self.damage_one = self.max_damage_taken * .33;
 	self.damage_two = self.max_damage_taken * .66;
@@ -987,7 +996,8 @@ director_zombie_think()
 	self.pathEnemyFightDist = 96;
 	self.meleeAttackDist = 96;
 
-	self.maxhealth = level.director_zombie_max_health;
+	//Max health = level.zombie_max_health*level.round_num*level.director_times_defeated
+	self.maxhealth = level.THRESHOLD_MAX_ZOMBIE_HEALTH*level.round_number*(self.times_died+1);
 	self.health = level.director_zombie_max_health;
 
 	//try to prevent always turning towards the enemy
@@ -2778,6 +2788,7 @@ director_reenter_map()
 		director_print( "leaving for " + s + " seconds" );
 		wait( s );
 	}
+
 
 	self.entering_level = true;
 	self [[ level.director_reenter_level ]]();
