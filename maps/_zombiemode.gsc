@@ -37,18 +37,19 @@ main()
 	level.expensive_perks=GetDvarInt("zombie_exp_perks");
 	level.tough_zombies=GetDvarInt("zombie_tough_zombies");
 	level.zombie_types=GetDvarInt("zombie_types");
-	level.no_perks=GetDvarInt("zombie_perk_limit");
+	level.total_perks=GetDvarInt("zombie_perk_limit");
 	level.bo2_perks=GetDvarInt("zombie_bo2_perks");
 	level.extra_drops=GetDvarInt("zombie_extra_drops");
 
 	level.starting_round=GetDvarInt("zombie_round_start");
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
-	//Override
-	level.zombie_ai_limit_override=50;
-	level.starting_round_override=5;
-	level.apocalypse_override=true;
-	level.server_cheats_override=true;
+	//Override 
+	/*
+	level.zombie_ai_limit_override=50;	///
+	level.starting_round_override=5;	///
+	level.apocalypse_override=true;		///
+	level.server_cheats_override=true;	*///
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -3787,6 +3788,8 @@ spectators_respawn()
 					players[i].old_score = players[i].score;
 					players[i].score = 1500;
 					players[i] maps\_zombiemode_score::set_player_score_hud();
+					//Reimagined_Expanded, give players pro perks back
+					
 				}
 			}
 		}
@@ -4728,7 +4731,7 @@ reimagined_expanded_round_start()
 		}
 
 		//Increase max perks every 5 rounds after 15
-		if( level.round_number > 15 && level.round_number % 5 == 0 ){
+		if( level.round_number > 14 && level.round_number % 5 == 0 ){
 			level.max_perks++;
 		}
 
@@ -5325,7 +5328,7 @@ chalk_round_over()
 setApocalypseOptions()
 {
 
-	if(level.apocalypse > 0 || level.apocalypse_override)
+	if(level.apocalypse > 0 || IsDefined(level.apocalypse_override) )
 		level.apocalypse = true;
 	if(level.alt_bosses > 0 || level.apocalypse)
 		level.alt_bosses = true;
@@ -5335,8 +5338,6 @@ setApocalypseOptions()
 		level.tough_zombies = true;
 	if(level.zombie_types > 0 || level.apocalypse)
 		level.types = true;
-	if(level.no_perks > 0)
-		level.no_perks = true;
 	if(level.bo2_perks > 0 || level.apocalypse)
 		level.bo2_perks = true;
 	if(level.extra_drops > 0 || level.apocalypse)
@@ -5345,7 +5346,7 @@ setApocalypseOptions()
 	//Not Implemented
 	level.extra_drops = false;
 
-	level.max_perks = 10;
+	level.max_perks = level.total_perks;
 	if(level.apocalypse) 
 	{
 		level.max_perks = 5;
@@ -5366,7 +5367,7 @@ setApocalypseOptions()
 	iprintln("Expensive Perks is: "+ level.expensive_perks);
 	iprintln("Tough Zombies is: "+ level.tough_zombies);
 	iprintln("Zombie Types is: "+ level.types);
-	iprintln("No Perks is: "+ level.no_perks);
+	iprintln("No Perks is: "+ level.total_perks);
 	iprintln("BO2 Perks is: "+ level.bo2_perks);
 	iprintln("Extra Drops is: "+ level.extra_drops);
 	*/

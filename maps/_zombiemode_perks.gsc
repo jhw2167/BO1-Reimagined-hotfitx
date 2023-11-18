@@ -1751,6 +1751,11 @@ vending_trigger_think()
 		return;
 	}
 
+	//Reimagined-Expanded - Do a no perk run!
+	if(level.max_perks == 0) {
+		return;
+	}
+
 	if(level.script != "zombie_cod5_sumpf")
 	{
 		machine = GetEntArray(self.target, "targetname");
@@ -2010,7 +2015,7 @@ vending_trigger_think()
 			{
 				perk = perk + "_upgrade";
 				cost = upgrade_perk_cost;
-				player.num_perks--;		//Will be incremented later when perk is perchased
+				player.num_perks--;		//Will be incremented later when perk is perchased, so we pre-decrement!
 			} else if ( cheat != true )
 			{
 				//player iprintln( "Already using Perk: " + perk );
