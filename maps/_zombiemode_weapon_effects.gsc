@@ -44,8 +44,10 @@ init()
 
 //Thread called on player
 
-zombie_bullet_penetration( zomb , args )
+zombie_bullet_penetration( zomb , args, bonus_penn )
 {
+	if(!IsDefined(bonus_penn))
+		bonus_penn = 1;
 	//Get All zombies on map
 	zombies = GetAiSpeciesArray( "axis", "all" );
 
@@ -62,9 +64,10 @@ zombie_bullet_penetration( zomb , args )
 	forward_view_angles = self GetWeaponForwardDir();
 	
 	//Filter array by invalid enemies
+	pre_count = -3;	//Zombies penetrated by the game engine
 	for ( i = 0; i < zombies.size; i++ )
 	{
-		if(self.dbtp_penetrated_zombs >= level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) {
+		if(self.dbtp_penetrated_zombs >= level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS * bonus_penn) {
 			//iprintln("Zombie penetration limit reached");
 			break;	//no more zombies can be penetrated
 		}
@@ -124,7 +127,7 @@ zombie_bullet_penetration( zomb , args )
 				//Max distance: level.THRESHOLD_DBT_MAX_DIST
 
 		dist_sq = DistanceSquared( zomb.origin, zombies[i].origin );
-		j = 0;
+		j = level.VALUE_DBT_UNITS;
 		j_sqrd = j*j;
 		while( j_sqrd < dist_sq ) 
 		{
@@ -144,7 +147,13 @@ zombie_bullet_penetration( zomb , args )
 			continue;
 		}
 
-		
+		//iprintln("Penn zombie " + pre_count + " PENN ZOMBS " + self.dbtp_penetrated_zombs);
+		if(pre_count < 0) {
+			pre_count++;
+			continue;
+		}
+		pre_count++;
+
 		self.dbtp_penetrated_zombs++;
 		zombies[i].dbtap_marked = self.entity_num;
 		zombies[i] thread process_dbt_penn_dmg( args );

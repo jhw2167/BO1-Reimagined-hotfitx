@@ -32,6 +32,7 @@ main()
 	SetDvar( "zombie_pause", "0" );		//zombie pause was being innit to 1 instead
 
 	//Reimagined Expanded options
+	level.user_options =GetDvarInt("zombie_custom_options");
 	level.apocalypse=GetDvarInt("zombie_apocalypse");
 	level.alt_bosses=GetDvarInt("zombie_alt_bosses");
 	level.expensive_perks=GetDvarInt("zombie_exp_perks");
@@ -46,10 +47,10 @@ main()
 
 	//Override 
 	/*
-	level.zombie_ai_limit_override=50;	///
-	level.starting_round_override=5;	///
-	level.apocalypse_override=true;		///
-	level.server_cheats_override=true;	*///
+	level.zombie_ai_limit_override=50;	*///
+	//level.starting_round_override=15;	///
+	//level.apocalypse_override=true;		///
+	//level.server_cheats_override=true;	///
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -371,8 +372,8 @@ reimagined_init_level()
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
 
-	level.VALUE_DBT_UNITS = 12;
-	level.VALUE_DBT_PENN_DIST = 8;
+	level.VALUE_DBT_UNITS = 5;
+	level.VALUE_DBT_PENN_DIST = 20;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
 	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3;
 
@@ -385,6 +386,9 @@ reimagined_init_level()
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE = 2;
 
 	//Bullet Effects
+	level.ARRAY_SNIPER_WEAPONS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
+	level.VALUE_SNIPER_PENN_BONUS = 2;
+
 	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "spas_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 
@@ -462,6 +466,7 @@ reimagined_init_player()
 
 	self.previous_zomb_attacked_by=0;
 
+	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
 
 //Reimagined-Expanded -- get zombies in provided range
@@ -2227,6 +2232,9 @@ onPlayerConnect_clientDvars()
 
 	// ammo on HUD never fades away
 	self SetClientDvar("hud_fade_ammodisplay", 0);
+
+	//Fog Off
+	self SetClientDvar("r_fog_settings", 0);
 }
 
 
@@ -3789,7 +3797,7 @@ spectators_respawn()
 					players[i].score = 1500;
 					players[i] maps\_zombiemode_score::set_player_score_hud();
 					//Reimagined_Expanded, give players pro perks back
-					
+
 				}
 			}
 		}
@@ -4730,11 +4738,6 @@ reimagined_expanded_round_start()
 			level.zombie_move_speed *= 2;
 		}
 
-		//Increase max perks every 5 rounds after 15
-		if( level.round_number > 14 && level.round_number % 5 == 0 ){
-			level.max_perks++;
-		}
-
 		//Cap zombie move speed by super sprinter speed
 		if ( level.zombie_move_speed > level.SUPER_SPRINTER_SPEED )
 			level.zombie_move_speed = level.SUPER_SPRINTER_SPEED;
@@ -4745,6 +4748,12 @@ reimagined_expanded_round_start()
 			level.zombie_ai_limit = 32; 
 		
 	}
+
+	//Increase max perks every 5 rounds after 15
+		if( level.round_number > 14 && level.round_number % 5 == 0 ){
+			level.max_perks++;
+		}
+
 
 	if( IsDefined(level.zombie_ai_limit_override) )
 		level.zombie_ai_limit = level.zombie_ai_limit_override;	//Override
@@ -5327,6 +5336,20 @@ chalk_round_over()
 //Reimagined-Expanded
 setApocalypseOptions()
 {
+	//User did not choose options, default game
+	if( level.user_options == 0)
+	{
+		level.apocalypse = false;
+		level.alt_bosses = false;
+		level.expensive_perks = false;
+		level.tough_zombies = false;
+		level.types = false;
+		level.total_perks = 5;
+		level.bo2_perks = true;
+		level.extra_drops = false;
+		level.server_cheats = false;
+		level.starting_round = 1;
+	}
 
 	if(level.apocalypse > 0 || IsDefined(level.apocalypse_override) )
 		level.apocalypse = true;
@@ -5345,6 +5368,7 @@ setApocalypseOptions()
 
 	//Not Implemented
 	level.extra_drops = false;
+
 
 	level.max_perks = level.total_perks;
 	if(level.apocalypse) 
@@ -7534,7 +7558,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
-		if( attacker hasProPerk(level.DBT_PRO) 
+		if( (attacker hasProPerk(level.DBT_PRO) || is_in_array(level.ARRAY_SNIPER_WEAPONS, weapon) )
 		&&  !dbt_marked 
 		&& (attacker.dbtp_penetrated_zombs < level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) ) 
 		{
@@ -7549,11 +7573,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			args.weapon = weapon;
 			args.vpoint = vpoint;
 			args.vdir = vdir;
-			args.sHitLoc = "body";	//HERE_ maybe chest? Can't give people free headshots
+			args.sHitLoc = sHitLoc;	//HERE_ maybe chest? Can't give people free headshots
 			args.modelIndex = modelIndex;
 			args.psOffsetTime = psOffsetTime;
 			
-			attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args );
+			if( (attacker hasProPerk(level.DBT_PRO) && is_in_array(level.ARRAY_SNIPER_WEAPONS, weapon) ) )
+				attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args, level.VALUE_SNIPER_PENN_BONUS );
+			else 
+				attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args );
 
 		} else {
 			//iprintln("Marked: " + dbt_marked);

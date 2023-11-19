@@ -57,60 +57,31 @@
 				setDvar character_dialog 1;
 			}
 			
-			if(dvarString(zombie_pause) == "")
-			{
-				setDvar zombie_pause 0;
-			}
+			//Reimagined-Expanded Game SETUP OPTIONS
+			setDvar zombie_custom_options 1;
+
+			setDvar zombie_pause 0;
 			
-			if(dvarString(zombie_apocalypse) == "")
-			{
-				setDvar zombie_apocalypse 0;
-			}
+			setDvar zombie_apocalypse 0;
 
-			if(dvarString(reimagined_cheat) == "")
-			{
-				setDvar reimagined_cheat 0;
-			}
+			setDvar reimagined_cheat 0;
 
-			if(dvarString(zombie_alt_bosses) == "")
-			{
-				setDvar zombie_alt_bosses 0;
-			}
+			setDvar zombie_alt_bosses 0;
 
-			if(dvarString(zombie_bo2_perks) == "")
-			{
-				setDvar zombie_bo2_perks 0;
-			}
-
-			if(dvarString(zombie_exp_perks) == "")
-			{
-				setDvar zombie_exp_perks 0;
-			}
-
-			if(dvarString(zombie_tough_zombies) == "")
-			{
-				setDvar zombie_tough_zombies 0;
-			}
+			setDvar zombie_bo2_perks 1;
 			
-			if(dvarString(zombie_types) == "")
-			{
-				setDvar zombie_types 0;
-			}
+			setDvar zombie_exp_perks 0;
 			
-			if(dvarString(zombie_extra_drops) == "")
-			{
-				setDvar zombie_extra_drops 0;
-			}
+			setDvar zombie_tough_zombies 0;
+						
+			setDvar zombie_types 0;
+			
+			setDvar zombie_extra_drops 0;
 
-			if(dvarString(zombie_perk_limit) == "")
-			{
-				setDvar zombie_perk_limit 5;
-			}
-
-			if(dvarString(zombie_round_start) == "")
-			{
-				setDvar zombie_round_start 1;
-			}		
+			setDvar zombie_perk_limit 5;
+			
+			setDvar zombie_round_start 1;
+				
 
 			if(dvarString(com_maxfps) == "85") // default value
 			{
@@ -378,7 +349,7 @@
 		
 		CHOICE_DVARFLOATLIST_VIS( 1, "@REIMAGINED_ROUND_START", zombie_round_start,{ "1" 1 "10" 10 "15" 15 "20" 20 "30" 30 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 
-		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "0" 0 "5" 5 "10" 10 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
+		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "5" 5 "10" 10 "0" 0  }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		
 		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_EXP_PERKS", zombie_exp_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		

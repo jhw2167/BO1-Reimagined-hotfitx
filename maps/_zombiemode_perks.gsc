@@ -1633,6 +1633,11 @@ giveFastreloadUpgrade()
 	self thread watch_fastreload_upgrade(level.SPD_PRO + "_stop");
 }
 
+player_print_msg(msg) {
+	flag_wait( "all_players_connected" );
+	wait(2);
+	iprintln( msg );
+}
 
 vending_trigger_think()
 {
@@ -1755,6 +1760,8 @@ vending_trigger_think()
 	if(level.max_perks == 0) {
 		return;
 	}
+
+	//player_print_msg( "Setting up perk: " + perk );
 
 	if(level.script != "zombie_cod5_sumpf")
 	{
@@ -2048,6 +2055,10 @@ vending_trigger_think()
 		playsoundatposition(sound, self.origin);
 		player maps\_zombiemode_score::minus_to_player_score( cost );
 
+		if( IsSubStr( perk, "_upgrade" ) ) {
+			player give_perk( perk, true );
+		} 
+
 		player.perk_purchased = perk;
 
 		//if( player unlocked_perk_upgrade( perk ) )
@@ -2200,6 +2211,10 @@ give_perk( perk, bought )
 	//Reimagined-Expanded
 	if( IsSubStr( perk, "_upgrade" ) )
 	{	
+		if( self hasProPerk( perk ) ) {
+			return;
+		}
+
 		player = GetPlayers()[ self GetEntityNumber() ];
 		player addProPerk( perk );
 	} else
