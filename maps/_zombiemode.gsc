@@ -46,11 +46,11 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Override 
-	/*
-	level.zombie_ai_limit_override=50;	*///
-	//level.starting_round_override=15;	///
+	//*
+	level.zombie_ai_limit_override=2;	///
+	level.starting_round_override=15;	///
 	//level.apocalypse_override=true;		///
-	//level.server_cheats_override=true;	///
+	level.server_cheats_override=true;	///
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -357,6 +357,7 @@ reimagined_init_level()
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
+	level.VALUE_THIEF_HEALTH_SCALAR = 25;	//this many times avg zombie max health of this round
 
 	//Weapon Pap
 	level.VALUE_PAP_X2_COST = 5000;
@@ -364,6 +365,35 @@ reimagined_init_level()
 	
 
 	//Perk Effects
+	level.ARRAY_VALID_PERKS = array(
+	 "specialty_armorvest",
+	 "specialty_quickrevive",
+	 "specialty_fastreload",
+	 "specialty_rof", 
+	 "specialty_endurance", 
+	 "specialty_flakjacket", 
+	 "specialty_deadshot", 
+	 "specialty_additionalprimaryweapon", 	//Mule
+	 "specialty_bulletdamage", 				//cherry
+	 "specialty_altmelee", 					//Vulture
+	 "specialty_extraammo"					//Widows wine
+	 );
+	 // "specialty_bulletaccuracy", 			//babyjugg
+
+	level.ARRAY_VALID_PRO_PERKS = array(
+		level.JUG_PRO,
+		level.QRV_PRO,
+		level.SPD_PRO,
+		level.DBT_PRO,
+		level.STM_PRO,
+		level.PHD_PRO,
+		level.DST_PRO,
+		level.MUL_PRO,
+		level.ECH_PRO,
+		level.VLT_PRO,
+		level.WWN_PRO
+	);
+
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //2 seconds
 
 	level.COOLDOWN_STAMINA_PRO_GHOST = 15; 	//20
@@ -377,7 +407,7 @@ reimagined_init_level()
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
 	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3;
 
-	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 4;
+	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
 
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 2;
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
@@ -439,19 +469,19 @@ reimagined_init_player()
 	self UnsetPerk("specialty_altmelee");				//Vulture
 	self UnsetPerk("specialty_extraammo");				//Widows wine
 
-
-	self.specialty_armorvest_upgrade = false;
-	self.specialty_quickrevive_upgrade = false;
-	self.specialty_fastreload_upgrade = false;
-	self.specialty_rof_upgrade = false;
-	self.specialty_endurance_upgrade = false;
-	self.specialty_flakjacket_upgrade = false;
-	self.specialty_deadshot_upgrade = false;
-	self.specialty_additionalprimaryweapon_upgrade = false;
-	self.specialty_bulletdamage_upgrade = false;
-	self.specialty_altmelee_upgrade = false;
-	self.specialty_extraamo_upgrade = false;
-
+	self.PRO_PERKS = [];
+	self.PRO_PERKS[ level.JUG_PRO ] = false;
+	self.PRO_PERKS[ level.QRV_PRO ] = false;
+	self.PRO_PERKS[ level.SPD_PRO ] = false;
+	self.PRO_PERKS[ level.DBT_PRO ] = false;
+	self.PRO_PERKS[ level.STM_PRO ] = false;
+	self.PRO_PERKS[ level.PHD_PRO ] = false;
+	self.PRO_PERKS[ level.DST_PRO ] = false;
+	self.PRO_PERKS[ level.MUL_PRO ] = false;
+	self.PRO_PERKS[ level.ECH_PRO ] = false;
+	self.PRO_PERKS[ level.VLT_PRO ] = false;
+	self.PRO_PERKS[ level.WWN_PRO ] = false;
+	
 	//Perk player variables
 	self.weakpoint_streak=0;
 	self.dbtp_penetrated_zombs=0;
@@ -461,8 +491,11 @@ reimagined_init_player()
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 
 	//Misc
-	if(IsDefined(level.zombie_visionset))
-		self VisionSetNaked(level.zombie_visionset);
+	if(IsDefined(level.zombie_visionset)) {
+		//iprintln(" Apply visionset: " + level.zombie_visionset);
+		self VisionSetNaked(level.zombie_visionset, 1);
+	}
+		
 
 	self.previous_zomb_attacked_by=0;
 
@@ -3796,13 +3829,45 @@ spectators_respawn()
 					players[i].old_score = players[i].score;
 					players[i].score = 1500;
 					players[i] maps\_zombiemode_score::set_player_score_hud();
-					//Reimagined_Expanded, give players pro perks back
-
 				}
+
+				//Reimagined_Expanded, give players pro perks back
+				//players[i] give_pro_perks();
 			}
 		}
 
 		wait( 1 );
+	}
+}
+
+give_pro_perks()
+{
+	//Create array of all pro perks player has
+	pro_perks = [];
+	for(i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++)
+	{
+		if(self hasProPerk( level.ARRAY_VALID_PRO_PERKS[i]) )
+			pro_perks[pro_perks.size] = level.ARRAY_VALID_PRO_PERKS[i];
+		
+	}
+
+	//Set all player pro perks to false
+	for(i = 0; i < pro_perks.size; i++) {
+		self maps\_zombiemode_perks::removeProPerk(pro_perks[i]);
+	}
+	
+
+	//For each pro perk, give regular perk, then give pro perk
+	TRIM = 8;	//"_upgrade"
+	for(i = 0; i < pro_perks.size; i++)
+	{
+		/*
+		pro perk looks like "specialty_fastreload_upgraded"
+		trim last several characters to get: "specialty_fastreload"
+		*/
+		perk = GetSubStr( pro_perks[i], 0, pro_perks[i].size - TRIM );
+		self maps\_zombiemode_perks::give_perk( perk );
+		self maps\_zombiemode_perks::give_perk( pro_perks[i] , true );
 	}
 }
 

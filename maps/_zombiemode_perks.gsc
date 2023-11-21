@@ -1543,76 +1543,97 @@ electric_perks_dialog()
 		return "specialty_widowswine_zombies_pro";
     
 return "UNKOWN";
-} */
+} 
 
+hasProPerk( p )
+{ return true; }
+
+addProPerk( p )
+{ }
 //Self is player
+*/
+
 hasProPerk( perk )
 {
 	if (perk == "specialty_armorvest_upgrade")
-		return self.specialty_armorvest_upgrade;
+		return self.PRO_PERKS[ level.JUG_PRO ];
 	if (perk == "specialty_quickrevive_upgrade")
-		return self.specialty_quickrevive_upgrade;
+		return self.PRO_PERKS[ level.QRV_PRO ];
 	if (perk == "specialty_fastreload_upgrade")
-		return self.specialty_fastreload_upgrade;
+		return self.PRO_PERKS[ level.SPD_PRO ];
 	if (perk == "specialty_rof_upgrade")
-		return self.specialty_rof_upgrade;
+		return self.PRO_PERKS[ level.DBT_PRO ];
 	if (perk == "specialty_endurance_upgrade")
-		return self.specialty_endurance_upgrade;
+		return self.PRO_PERKS[ level.STM_PRO ];
 	if (perk == "specialty_flakjacket_upgrade")
-		return self.specialty_flakjacket_upgrade;
+		return self.PRO_PERKS[ level.PHD_PRO ];
 	if (perk == "specialty_deadshot_upgrade")
-		return self.specialty_deadshot_upgrade;
+		return self.PRO_PERKS[ level.DST_PRO ];
 	if (perk == "specialty_additionalprimaryweapon_upgrade")
-		return self.specialty_additionalprimaryweapon_upgrade;
+		return self.PRO_PERKS[ level.MUL_PRO ];
 	if (perk == "specialty_bulletdamage_upgrade")
-		return self.specialty_bulletdamage_upgrade;
+		return self.PRO_PERKS[ level.ECH_PRO ];
 	if (perk == "specialty_altmelee_upgrade")
-		return self.specialty_altmelee_upgrade;
+		return self.PRO_PERKS[ level.VLT_PRO ];
 	if (perk == "specialty_extraamo_upgrade")
-		return self.specialty_extraamo_upgrade;
-	
+		return self.PRO_PERKS[ level.WWN_PRO ];
+
 	return false;
 }
 
-
-
-
 //player is player
-// perk is always _upgraded
+// perk is always _upgrade
+
 addProPerk( perk )
 {
 	if (perk == "specialty_armorvest_upgrade")
-		self.specialty_armorvest_upgrade = true;
+		self.PRO_PERKS[ level.JUG_PRO ] = true;
 	if (perk == "specialty_quickrevive_upgrade")
-		self.specialty_quickrevive_upgrade = true;
+		self.PRO_PERKS[ level.QRV_PRO ] = true;
 	if (perk == "specialty_fastreload_upgrade") {
-		self.specialty_fastreload_upgrade = true;
+		self.PRO_PERKS[ level.SPD_PRO ] = true;
 		giveFastreloadUpgrade();
 	}
 		
 	if (perk == "specialty_rof_upgrade")
-		self.specialty_rof_upgrade = true;
+		self.PRO_PERKS[ level.DBT_PRO ] = true;
 	if (perk == "specialty_endurance_upgrade") {
-		self.specialty_endurance_upgrade = true;
+		self.PRO_PERKS[ level.STM_PRO ] = true;
 		giveStaminaUpgrade();
 	}
 	if (perk == "specialty_flakjacket_upgrade")
-		self.specialty_flakjacket_upgrade = true;
+		self.PRO_PERKS[ level.PHD_PRO ] = true;
 	if (perk == "specialty_deadshot_upgrade")
-		self.specialty_deadshot_upgrade = true;
+		self.PRO_PERKS[ level.DST_PRO ] = true;
 	if (perk == "specialty_additionalprimaryweapon_upgrade") {
-		self.specialty_additionalprimaryweapon_upgrade = true;
+		self.PRO_PERKS[ level.MUL_PRO ] = true;
 		self giveAdditionalPrimaryWeaponUpgrade();
 	}	
 	if (perk == "specialty_bulletdamage_upgrade")
-		self.specialty_bulletdamage_upgrade = true;
+		self.PRO_PERKS[ level.ECH_PRO ] = true;
 	if (perk == "specialty_altmelee_upgrade")
-		self.specialty_altmelee_upgrade = true;
+		self.PRO_PERKS[ level.VLT_PRO ] = true;
 	if (perk == "specialty_extraamo_upgrade")
-		self.specialty_extraamo_upgrade = true;
+		self.PRO_PERKS[ level.WWN_PRO ] = true;
 
 	//iprintln( " ADD PRO PERK : " + perk);
 }
+
+
+removeProPerk( perk )
+{
+	//Set player pro perk to false
+	self.PRO_PERKS[perk] = false;
+
+	//Trigger notify pro perk + "_stop"
+	// AND remove regular perk
+	self notify( perk + "_stop" );
+
+	//Remove Pro Perk Shader
+	self perk_hud_destroy( perk );
+	self update_perk_hud();
+}
+
 
 giveAdditionalPrimaryWeaponUpgrade() 
 {
@@ -1971,6 +1992,8 @@ vending_trigger_think()
 		self SetHintString( perk + " Cost: " + level.zombie_vars["zombie_perk_cost"] );
 	}
 
+	CONST_PERK = perk;
+	CONST_COST = cost;
 
 	for( ;; )
 	{
@@ -2127,6 +2150,10 @@ vending_trigger_think()
 		}
 		gun = player perk_give_bottle_begin( perk );
 		self thread give_perk_think(player, gun, perk, cost);
+
+		//Reset Perk and Const values for next purchase
+		perk = CONST_PERK;
+		cost = CONST_COST;
 	}
 }
 
@@ -2207,11 +2234,14 @@ unlocked_perk_upgrade( perk )
 
 give_perk( perk, bought )
 {
-	
+	//iprintln( "Giving Perk " + perk );
+	//iprintln(" Player " + self.entity_num );
+
 	//Reimagined-Expanded
 	if( IsSubStr( perk, "_upgrade" ) )
 	{	
 		if( self hasProPerk( perk ) ) {
+			//iprintln( "Self has pro perk: " + self.entity_num);
 			return;
 		}
 
@@ -2553,7 +2583,14 @@ perk_think( perk )
 	{
 		wait_network_frame();
 		self update_perk_hud();
-		return;
+		self waittill( perk + "_stop" );
+		for( i=0; i < level.ARRAY_VALID_PRO_PERKS.size; i++) 
+		{
+			if( level.ARRAY_VALID_PRO_PERKS[i] == perk ) {
+				perk = level.ARRAY_VALID_PERKS[i];	//Get base perk name to remove
+				break;
+			}
+		}
 	}
 
 

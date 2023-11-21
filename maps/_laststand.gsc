@@ -522,10 +522,14 @@ revive_trigger_think()
 				// or we need a new combined radius+lookat trigger type.
 				//self.revivetrigger setHintString( &"GAME_BUTTON_TO_REVIVE_PLAYER" );
 				//break;
-				if( players[i] hasProPerk(level.QRV_PRO) )
+				if( players[i] hasProPerk(level.QRV_PRO) ) {
 					self.proReviveTrigger SetInvisibleToPlayer( players[i], false );
-				else
+					self.revivetrigger SetInvisibleToPlayer( players[i], true );
+				} else {
 					self.revivetrigger SetInvisibleToPlayer( players[i], false );
+					self.proReviveTrigger SetInvisibleToPlayer( players[i], true );
+				}
+					
 			}
 			else
 			{
@@ -783,6 +787,7 @@ revive_do_revive( playerBeingRevived, reviverGun )
 	playerBeingRevived notify("update_revive_waypoint");
 
 	playerBeingRevived.revivetrigger setHintString( "" );
+	playerBeingRevived.proReviveTrigger setHintString( "" );
 
 	playerBeingRevived startrevive( self );
 
@@ -863,6 +868,7 @@ revive_do_revive( playerBeingRevived, reviverGun )
 
 	//CODER_MOD: TOMMYK 07/13/2008
 	playerBeingRevived.revivetrigger setHintString( &"GAME_BUTTON_TO_REVIVE_PLAYER" );
+	playerBeingRevived.proReviveTrigger setHintString( &"GAME_BUTTON_TO_REVIVE_PLAYER" );
 	playerBeingRevived.revivetrigger.beingRevived = 0;
 
 	return revived;
@@ -916,6 +922,11 @@ auto_revive( reviver )
 	self notify( "stop_revive_trigger" );
 	self.revivetrigger delete();
 	self.revivetrigger = undefined;
+
+	//Reimagined-Expanded
+	self.proReviveTrigger delete();
+	self.proReviveTrigger = undefined;
+
 
 	self laststand_enable_player_weapons();
 

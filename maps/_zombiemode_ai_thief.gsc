@@ -686,11 +686,17 @@ thief_zombie_think()
 	self.pathEnemyFightDist = 64;
 	self.meleeAttackDist = 64;
 
+	/*
 	start_health = level.round_number * level.thief_health_multiplier;
 	if ( start_health > level.max_thief_health )
 	{
 		start_health = level.max_thief_health;
 	}
+	*/
+
+	//Reimagined-Expanded
+	start_health = level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR;
+
 	//start_health = thief_scale_health( start_health );
 	//pregame_health = thief_scale_health( GetDvarInt( #"scr_thief_health_pregame" ) );
 	self.maxhealth = start_health;

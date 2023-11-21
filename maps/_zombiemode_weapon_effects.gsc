@@ -575,7 +575,7 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 	enemies = tesla_get_enemies_in_area( source_enemy.origin, distance, player );
 	tesla_flag_hit( enemies, true );
 
-	iprintln("Enemies size: " + enemies.size);
+	//iprintln("Enemies size: " + enemies.size);
 	source_enemy thread tesla_do_damage( source_enemy, 0, player, 1);
 	for( i = 0; i < enemies.size; i++ )
 	{
@@ -609,7 +609,7 @@ tesla_get_enemies_in_area( origin, distance, player )
 	zombies = get_array_of_closest( origin, player.tesla_enemies );
 
 	// 
-	iprintln("Zombies size: " + zombies.size);
+	//iprintln("Zombies size: " + zombies.size);
 
 	if ( IsDefined( zombies ) )
 	{
@@ -617,7 +617,7 @@ tesla_get_enemies_in_area( origin, distance, player )
 		{
 			 if ( !IsDefined( zombies[i] )  || !IsAlive( zombies[i] ) )
 			{
-				iprintln("dead zombie");
+				//iprintln("dead zombie");
 				continue;
 			}
 			
@@ -629,20 +629,20 @@ tesla_get_enemies_in_area( origin, distance, player )
 			
 			if ( is_magic_bullet_shield_enabled( zombies[i] ) )
 			{
-				iprintln("bullet shield zombie");
+				//iprintln("bullet shield zombie");
 				continue;
 			}
 			
 			
 			if ( DistanceSquared( origin, zombies[i].origin ) > distance_squared )
 			{
-				iprintln("out of range zombie");
+				//iprintln("out of range zombie");
 				continue;
 			} 
 			
 			if ( IsDefined( zombies[i].zombie_tesla_hit ) && zombies[i].zombie_tesla_hit == true )
 			{
-				iprintln("tesla zombie");
+				//iprintln("tesla zombie");
 				continue;
 			}
 
