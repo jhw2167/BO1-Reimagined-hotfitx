@@ -277,11 +277,11 @@ director_health_watch()
 
 	while ( 1 )
 	{
-		/#
-		iprintln( "health = " + self.health );
-		#/
-
-		wait( 1 );
+		
+		//iprintln( "health = " + self.health );
+		//iprintln( "max health = " + self.maxhealth );
+		//iprintln( "dmg = " + self.dmg_taken );
+		wait( 5 );
 	}
 }
 

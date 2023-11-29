@@ -46,11 +46,12 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Override 
-	//*
+	/*
 	level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=15;	///
 	//level.apocalypse_override=true;		///
-	level.server_cheats_override=true;	///
+	level.drop_rate_override=10;		/// Rate = Expected drops per round
+	level.server_cheats_override=true;	*///
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;

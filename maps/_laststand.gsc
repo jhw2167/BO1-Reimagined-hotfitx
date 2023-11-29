@@ -44,7 +44,7 @@ init()
 
 hasProPerk( perk )
 {
-	return self.specialty_quickrevive_upgrade;
+	return self.PRO_PERKS[ perk ];
 }
 
 player_is_in_laststand()
@@ -996,8 +996,13 @@ revive_success( reviver )
 
 	setClientSysState("lsm", "0", self);	// Notify client last stand ended.
 
+	self notify( "stop_revive_trigger" );
 	self.revivetrigger delete();
 	self.revivetrigger = undefined;
+
+	//Reimagined-Expanded
+	self.proReviveTrigger delete();
+	self.proReviveTrigger = undefined;
 
 	self laststand_enable_player_weapons();
 

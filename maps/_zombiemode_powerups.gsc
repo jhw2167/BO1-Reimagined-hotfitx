@@ -860,6 +860,10 @@ powerup_drop(drop_point, player, zombie)
 		if( level.extra_drops )
 			dynamic_prob = (3 / level.zombie_round_total) * 100;
 
+
+		if(level.drop_rate_override)
+			dynamic_prob = (level.drop_rate_override / level.zombie_round_total) * 100;
+
 		//iprintln("total: " + level.zombie_round_total);
 		//iprintln("Dynamic prob: " + dynamic_prob + " rand_drop: " + rand_drop);
 		if(rand_drop <= dynamic_prob) {
