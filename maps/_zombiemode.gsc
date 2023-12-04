@@ -46,12 +46,12 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Override 
-	/*
+	/* */
 	level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=15;	///
 	//level.apocalypse_override=true;		///
 	level.drop_rate_override=10;		/// Rate = Expected drops per round
-	level.server_cheats_override=true;	*///
+	level.server_cheats_override=true;	///
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -113,7 +113,7 @@ main()
 	if ( !isdefined( level.zombie_ai_limit ) )
 	{
 		//Reimagined-Expanded - raised from 24 to 40
-		level.zombie_ai_limit = 40;
+		level.zombie_ai_limit = 45;
 		SetAILimit( 45 );//allows zombies to spawn in as some were just killed
 	}
 
@@ -339,6 +339,16 @@ init_hitmarkers()
 
 reimagined_init_level()
 {
+	//init-level
+
+	//Overrides
+	/* */
+	level.zombie_ai_limit_override=40;	///
+	level.starting_round_override=15;	///
+	//level.apocalypse_override=true;		///
+	level.drop_rate_override=5;		/// Rate = Expected drops per round
+	level.server_cheats_override=true;	///
+
 
 	//Zombie Values
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
@@ -347,13 +357,32 @@ reimagined_init_level()
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 	level.SUPER_SPRINTER_SPEED = 100;
 
-	level.VALUE_HORDE_SIZE = 100; /// none in early rounds
-	level.VALUE_HORDER_DELAY = 10;
-	level.VALUE_ZOMBIE_HASH_MAX=10000;
+	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
+
+	level.VALUE_HORDE_SIZE = 100; 			/// none in early rounds
+	level.VALUE_HORDER_DELAY = 10;			// Mini horde delays during between rounds
+	level.THRESHOLD_ZOMBIE_AI_LIMIT = 45;
 
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=20;
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
+
+
+	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than
+
+	//These are expected values * 10, so "10" is 1 drop expected per round,
+	//	 8 is 0.8 drops expected per round 
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
+	level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = 6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_RED_DROP_RATE_RED = 6;		//between 0-1000)
+
+		if(level.drop_rate_override) {
+			level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = level.drop_rate_override*10;
+			level.VALUE_ZOMBIE_DROP_RATE_GREEN = level.drop_rate_override*10;
+			level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = level.drop_rate_override*10;
+			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
+		}
 
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
@@ -440,7 +469,7 @@ reimagined_init_level()
 	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
 
 	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
-	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x
+	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x max 4.5x damage
 	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
 									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
 									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"
@@ -451,6 +480,12 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
 
 
+	//Real Time Variables
+	level.respawn_queue = [];
+	level.respawn_queue_locked = false;
+	level.respawn_queue_num = 0;
+	level.respawn_queue_unlocks_num = 0;
+	level.random_count = 0;
 
 }
 
@@ -4757,11 +4792,11 @@ reimagined_expanded_round_start()
 			level.zombie_vars["zombie_spawn_delay"] = 1;
 
 			//MAX ZOMBIES
-			level.zombie_ai_limit = 8 + 2*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 8 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
 			level.zombie_move_speed = 60;	//runners
-			level.zombie_ai_limit = 12 + 4*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 12 + 10*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( level.zombie_ai_limit / 2 );
 			level.VALUE_HORDER_DELAY = int( 10 - level.players_playing * 2 ); 
@@ -4770,7 +4805,7 @@ reimagined_expanded_round_start()
 		{
 			level.zombie_move_speed = 85;	//sprinters
 			level.zombie_vars["zombie_spawn_delay"] = .25;
-			level.zombie_ai_limit = 12 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = 16 + 4*level.players_playing;
 			level.VALUE_HORDER_DELAY = 4; 
@@ -4779,7 +4814,6 @@ reimagined_expanded_round_start()
 		{
 			level.zombie_move_speed = 110;
 			level.zombie_vars["zombie_spawn_delay"] = .08;
-			level.zombie_ai_limit = 18 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = 18 + 6*level.players_playing;
 			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing; 
@@ -5432,7 +5466,7 @@ setApocalypseOptions()
 	if(level.extra_drops > 0 || level.apocalypse)
 		level.extra_drops = true;
 
-	//Not Implemented
+	//Not Implemented - coerce to false
 	level.extra_drops = false;
 
 
@@ -7822,111 +7856,6 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 
 	//iprintln(sWeapon);
 
-	if(level.gamemode == "gg" && (self.animname == "zombie" || self.animname == "quad_zombie" || self.animname == "zombie_dog") && 
-		IsDefined(attacker) && IsPlayer(attacker) && is_player_valid(attacker) && IsDefined(sWeapon) && 
-		sMeansOfDeath != "MOD_CRUSH" && !IsDefined(attacker.divetonuke_damage) && !IsDefined(self.nuked) && !is_true(self.trap_death))
-	{
-		gg_wep = level.gg_weps[attacker.gg_wep_num];
-
-		if(gg_wep == "knife_ballistic_zm")
-		{
-			if(attacker HasWeapon("bowie_knife_zm"))
-			{
-				gg_wep = "knife_ballistic_bowie_zm";
-			}
-			else if(attacker HasWeapon("combat_sickle_knife_zm"))
-			{
-				gg_wep = "knife_ballistic_sickle_zm";
-			}
-		}
-
-		gg_wep_upgraded = level.zombie_weapons[gg_wep].upgrade_name;
-
-		if(gg_wep == "sniper_explosive_zm")
-		{
-			gg_wep = "sniper_explosive_bolt_zm";
-			gg_wep_upgraded = "sniper_explosive_bolt_upgraded_zm";
-		}
-
-		valid = false;
-
-		if(sWeapon == gg_wep || sWeapon == WeaponAltWeaponName(gg_wep) || sWeapon == gg_wep_upgraded || sWeapon == WeaponAltWeaponName(gg_wep_upgraded))
-		{
-			valid = true;
-		}
-
-		if(gg_wep == "tesla_gun_zm" && is_true(self.tesla_death))
-		{
-			valid = true;
-		}
-
-		if(gg_wep == "humangun_zm" && is_true(self.humangun_kill))
-		{
-			valid = true;
-		}
-
-		if(gg_wep == "shrink_ray_zm" && is_true(self.shrinked))
-		{
-			valid = true;
-		}
-
-		// ballistic knife - must be a kill from the projectile
-		if((gg_wep == "knife_ballistic_zm" || gg_wep == "knife_ballistic_bowie_zm" || gg_wep == "knife_ballistic_sickle_zm") && sMeansOfDeath != "MOD_IMPACT")
-		{
-			valid = false;
-		}
-
-		if(valid)
-		{
-			if(attacker.gg_kill_count < level.gg_kills_to_next_wep)
-			{
-				attacker.gg_kill_count++;
-			}
-
-			if(attacker.gg_kill_count == level.gg_kills_to_next_wep && !IsDefined(attacker.gg_wep_dropped) )
-			{
-				powerup = SpawnStruct();
-				powerup.powerup_name = "random_weapon";
-				powerup.gg_powerup = true;
-				powerup.player = attacker;
-
-				// only add if we haven't added it yet
-				add = true;
-				for(i=0;i<level.powerup_overrides.size;i++)
-				{
-					if(level.powerup_overrides[i].powerup_name == powerup.powerup_name && level.powerup_overrides[i].gg_powerup == powerup.gg_powerup && level.powerup_overrides[i].player == powerup.player)
-					{
-						add = false;
-						break;
-					}
-				}
-
-				if(add)
-				{
-					level.powerup_overrides[level.powerup_overrides.size] = powerup;
-				}
-
-				//allow weapons that normally cannot drop powerups to drop the gun game powerup
-				if(self.animname == "zombie" && 
-				(gg_wep == "thundergun_zm" || gg_wep == "tesla_gun_zm" || gg_wep == "freezegun_zm" || gg_wep == "humangun_zm" || gg_wep == "sniper_explosive_bolt_zm" || gg_wep == "microwavegundw_zm"))
-				{
-					// DCS 031611: hack to prevent risers from dropping powerups under the ground.
-					if(IsDefined(self.in_the_ground) && self.in_the_ground == true)
-					{
-						trace = BulletTrace(self.origin + (0, 0, 100), self.origin + (0, 0, -100), false, undefined);
-						origin = trace["position"];
-						level thread maps\_zombiemode_powerups::powerup_drop( origin, attacker, self );
-					}
-					else
-					{
-						trace = GroundTrace(self.origin + (0, 0, 5), self.origin + (0, 0, -300), false, undefined);
-						origin = trace["position"];
-						level thread maps\_zombiemode_powerups::powerup_drop( origin, attacker, self );
-					}
-				}
-			}
-		}
-	}
 }
 
 

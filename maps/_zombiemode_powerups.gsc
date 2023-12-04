@@ -120,62 +120,63 @@ init_powerups()
 	//"zom_icon_minigun" );
 	//"specialty_lightningbolt_zombies" );
 
-	// Random Drops
+	/* GREEN DROPS */
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
-//	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
 	add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
 	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
 	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-	
-	//Reimagined-Expanded - Model not yet defined
-	add_zombie_powerup( "zombie_blood", "zombie_skull", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "mtl_bo2_zm_powerup_zombie_blood", "zombie_powerup_zombie_blood_time", "zombie_powerup_zombie_blood_on" );
 
-	//GZheng - Temp VO
-	//add the correct VO for firesale in the 3rd parameter of this function.
 	if( !level.mutators["mutator_noMagicBox"] )
-	{
 		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-	}
-
 	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false);
 
-	//PI ESM - Temp VO
-	//TODO add the correct VO for revive all in the 3rd parameter of this function.
-	add_zombie_powerup( "all_revive",  	"zombie_revive",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
-	//	add_zombie_special_powerup( "monkey" );
+	
+	//Blue Drops
+	add_zombie_powerup("minigun", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
+	/*
+	add_zombie_powerup("superpower", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
+	add_zombie_powerup("upgrade_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false, undefined, "BLUE");
+	add_zombie_powerup("quad_points", "zombie_x4_icon", &"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false, undefined, "BLUE");
+	add_zombie_powerup("max_ammo", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false, undefined, "BLUE");
+	add_zombie_powerup("insta_kill", "zombie_skull", &"ZOMBIE_POWERUP_INSTA_KILL", false, false, false, undefined, "BLUE");
+	add_zombie_powerup("zombie_blood", "zombie_skull", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "BLUE");
 
-	// additional special "drops"
-//	add_zombie_special_drop( "nothing" );
-	add_zombie_special_drop( "dog" );
 
-	// minigun
-	add_zombie_powerup( "minigun",	"zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
+	//Red Drops
+	add_zombie_powerup("low_health", "zombie_bomb", &"ZOMBIE_POWERUP_NUKE", false, false, false, "misc/fx_zombie_mini_nuke_hotness", "RED");
+	add_zombie_powerup("insta_kill", "zombie_skull", &"ZOMBIE_POWERUP_INSTA_KILL", false, false, false, undefined, "RED");
+	add_zombie_powerup("half_points", "zombie_x2_icon", &"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false, undefined, "RED");
+	add_zombie_powerup("empty_stock", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false, undefined, "RED");
+	add_zombie_powerup("lockdown", "zombie_carpenter", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false, undefined, "RED");
+	*/
 
-	// free perk
-	add_zombie_powerup( "free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
+	/*
+		//Excess
+		//PI ESM - Temp VO
+		add_zombie_powerup( "all_revive",  	"zombie_revive",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
-	// tesla
-	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
+		// random weapon
+		add_zombie_powerup( "random_weapon", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false );
 
-	// random weapon
-	add_zombie_powerup( "random_weapon", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false );
+		// bonus points
+		add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", true, false, false );
+		add_zombie_powerup( "bonus_points_team", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", false, false, false );
+		add_zombie_powerup( "lose_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_LOSE_POINTS", false, false, true );
 
-	// bonus points
-	add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", true, false, false );
-	add_zombie_powerup( "bonus_points_team", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", false, false, false );
-	add_zombie_powerup( "lose_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_LOSE_POINTS", false, false, true );
+		// lose perk
+		add_zombie_powerup( "lose_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
-	// lose perk
-	add_zombie_powerup( "lose_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+		// empty clip
+		//add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
-	// empty clip
-	//add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+		// grief powerups - reimagined expanded
+		//add_zombie_powerup( "meat", GetWeaponModel("meat_zm"), &"REIMAGINED_CLIP_UNLOAD", true, false, false );
+		//add_zombie_powerup( "upgrade_weapon", "zombie_pickup_bonfire", &"REIMAGINED_CLIP_UNLOAD", true, false, false );
+		*/
 
-	// grief powerups - reimagined expanded
-	//add_zombie_powerup( "meat", GetWeaponModel("meat_zm"), &"REIMAGINED_CLIP_UNLOAD", true, false, false );
-	//add_zombie_powerup( "upgrade_weapon", "zombie_pickup_bonfire", &"REIMAGINED_CLIP_UNLOAD", true, false, false );
 
 	// Randomize the order
 	randomize_powerups();
@@ -475,35 +476,21 @@ randomize_powerups()
 //
 // Get the next powerup in the list
 //
-get_next_powerup()
+get_next_powerup( drop_color )
 {
-	powerup = level.zombie_powerup_array[ level.zombie_powerup_index ];
+	if( !isDefined( drop_color ) )
+		drop_color = "GREEN";
 
-	for(i=level.zombie_powerup_index;i<level.zombie_powerup_array.size;i++)
+	randomize_powerups();
+	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
-		//iprintln(level.zombie_powerup_array[i]);
-	}
-
-	while(1)
-	{
-		level.zombie_powerup_index++;
-
-		if( level.zombie_powerup_index >= level.zombie_powerup_array.size )
-		{
-			level.zombie_powerup_index = 0;
-			randomize_powerups();
-			level.last_powerup = true;
-		}
-
-		if(is_valid_powerup(level.zombie_powerup_array[level.zombie_powerup_index]))
-		{
-			break;
+		if(level.zombie_powerup_array[i].drop_color == drop_color) {
+			return level.zombie_powerup_array[i];
 		}
 	}
 
-	return powerup;
+	return undefined;
 }
-
 
 //
 // Figure out what the next powerup drop is
@@ -513,12 +500,15 @@ get_next_powerup()
 //   "fire_sale": Needs the box to have moved
 //
 //
-get_valid_powerup()
+get_valid_powerup( drop_color )
 {
 /#
 	if( isdefined( level.zombie_devgui_power ) && level.zombie_devgui_power == 1 )
 		return level.zombie_powerup_array[ level.zombie_powerup_index ];
 #/
+
+	if( !isDefined( drop_color ) )
+		drop_color = "GREEN";
 
 	if ( isdefined( level.zombie_powerup_boss ) )
 	{
@@ -534,12 +524,12 @@ get_valid_powerup()
 		return powerup;
 	}
 
-	powerup = get_next_powerup();
+	powerup = get_next_powerup( drop_color );
 	while( 1 )
 	{
 		if(!is_valid_powerup(powerup))
 		{
-			powerup = get_next_powerup();
+			powerup = get_next_powerup( drop_color );
 		}
 		else
 		{
@@ -614,11 +604,6 @@ is_valid_powerup(powerup_name)
 //gets random powerup without effecting the current powerup cycle
 get_random_valid_powerup()
 {
-	//iprintln("here");
-	for(i=0; i<level.zombie_powerup_array.size; i++) {
-		//iprintln(level.zombie_powerup_array[i].powerup_name);
-	} 
-
 	powerups = array_randomize(level.zombie_powerup_array);
 	i = 0;
 	powerup = powerups[i];
@@ -636,14 +621,6 @@ get_random_valid_powerup()
 
 minigun_no_drop()
 {
-	/*players = GetPlayers();
-	for ( i=0; i<players.size; i++ )
-	{
-		if( players[i].zombie_vars[ "zombie_powerup_minigun_on" ] == true )
-		{
-			return true;
-		}
-	}*/
 
 	if( !flag( "power_on" ) ) // if power is not on check for solo
 	{
@@ -670,23 +647,6 @@ get_num_window_destroyed()
 	num = 0;
 	for( i = 0; i < level.exterior_goals.size; i++ )
 	{
-		/*targets = getentarray(level.exterior_goals[i].target, "targetname");
-
-		barrier_chunks = [];
-		for( j = 0; j < targets.size; j++ )
-		{
-			if( IsDefined( targets[j].script_noteworthy ) )
-			{
-				if( targets[j].script_noteworthy == "clip" )
-				{
-					continue;
-				}
-			}
-
-			barrier_chunks[barrier_chunks.size] = targets[j];
-		}*/
-
-
 		if( all_chunks_destroyed( level.exterior_goals[i].barrier_chunks ) )
 		{
 			num += 1;
@@ -735,8 +695,11 @@ watch_for_drop()
 	}
 }
 
-add_zombie_powerup( powerup_name, model_name, hint, solo, caution, zombie_grabbable, fx )
+add_zombie_powerup( powerup_name, model_name, hint, solo, caution, zombie_grabbable, fx, drop_color )
 {
+	if( !isDefined(drop_color) )
+		drop_color = "GREEN";
+
 	if( IsDefined( level.zombie_include_powerups ) && !IsDefined( level.zombie_include_powerups[powerup_name] ) )
 	{
 		return;
@@ -759,6 +722,7 @@ add_zombie_powerup( powerup_name, model_name, hint, solo, caution, zombie_grabba
 	struct.solo = solo;
 	struct.caution = caution;
 	struct.zombie_grabbable = zombie_grabbable;
+	struct.drop_color = drop_color;
 
 	if( IsDefined( fx ) )
 	{
@@ -807,28 +771,6 @@ powerup_drop(drop_point, player, zombie)
 	type = "";
 	powerup_override = undefined;
 
-	if(level.powerup_overrides.size > 0)
-	{
-		powerup_override = level.powerup_overrides[0];
-		if(!IsDefined(powerup_override.player) || powerup_override.player == player)
-		{
-			type = "override";
-		}
-
-		if(IsDefined(powerup_override.player))
-		{
-			powerup_override.player.gg_wep_dropped = true;
-		}
-	}
-
-	/* if( type != "override" && level.powerup_drop_count >= level.zombie_vars["zombie_powerup_drop_max_per_round"] )
-	{
-		/#
-		println( "^3POWERUP DROP EXCEEDED THE MAX PER ROUND!" );
-		#/
-		return;
-	} */
-
 	if( !isDefined(level.zombie_include_powerups) || level.zombie_include_powerups.size == 0 )
 	{
 		return;
@@ -838,7 +780,7 @@ powerup_drop(drop_point, player, zombie)
 	rand_drop = RandomFloat(100);
 
 	//Reimagined-Expanded
-	if(type != "override" && level.round_number <= 15)
+	if(level.round_number < level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND)
 	{
 		if(level.zombie_vars["zombie_drop_item"])
 		{
@@ -853,34 +795,18 @@ powerup_drop(drop_point, player, zombie)
 			incremenet_powerup_chance();
 			return;
 		}
-	} else if(type != "override")
+
+	} else if(level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND)
 	{
-		//Reimagined-expanded EV(X)=3 drops / round
-		dynamic_prob = (1 / level.zombie_round_total) * 100;
-		if( level.extra_drops )
-			dynamic_prob = (3 / level.zombie_round_total) * 100;
-
-
-		if(level.drop_rate_override)
-			dynamic_prob = (level.drop_rate_override / level.zombie_round_total) * 100;
-
-		//iprintln("total: " + level.zombie_round_total);
-		//iprintln("Dynamic prob: " + dynamic_prob + " rand_drop: " + rand_drop);
-		if(rand_drop <= dynamic_prob) {
-			type = "random";
-		} else {
+		if( !IsDefined(zombie.hasDrop) )
 			return;
-		}
-			
+		type = "random";
 	}
 
 	// This needs to go above the network_safe_spawn because that has a wait.
 	// Otherwise, multiple threads could attempt to drop powerups.
-	if(type != "override")
-	{
-		level.powerup_drop_count++;
-	}
 
+	level.powerup_drop_count++;
 	powerup = maps\_zombiemode_net::network_safe_spawn( "powerup", 1, "script_model", drop_point + (0,0,40));
 
 	// Never drop unless in the playable area
@@ -893,6 +819,7 @@ powerup_drop(drop_point, player, zombie)
 			valid_drop = true;
 		}
 	}
+
 
 	// If a valid drop
 	// We will rarely override the drop with a "rare drop"  (MikeA 3/23/10)
@@ -909,81 +836,32 @@ powerup_drop(drop_point, player, zombie)
 	// If not a valid drop, allow another spawn to be attempted
 	if( !valid_drop )
 	{
-		if(type == "override" && IsDefined(powerup_override.player))
-		{
-			powerup_override.player.gg_wep_dropped = undefined;
-		}
-
 		if(type == "random")
 		{
 			incremenet_powerup_chance();
 		}
 
-		if(type != "override")
-		{
-			level.powerup_drop_count--;
-		}
+		level.powerup_drop_count--;
+		
 		powerup delete();
 		return;
 	}
 
-	if(type == "override")
-	{
-		powerup.gg_powerup = powerup_override.gg_powerup;
-		powerup.player = powerup_override.player;
-		powerup.powerup_notify = powerup_override.powerup_notify;
-		powerup powerup_setup(powerup_override.powerup_name);
+	//Color of the drop comes from zombiemode_spawner .hasDrop
+	powerup powerup_setup( undefined, zombie.hasDrop );
 
-		if(IsDefined(powerup.player))
-		{
-			players = get_players();
-			for(i=0;i<players.size;i++)
-			{
-				if(players[i] != powerup.player)
-				{
-					powerup SetInvisibleToPlayer(players[i], true);
-				}
-			}
-		}
-
-		if(IsDefined(powerup.gg_powerup))
-		{
-			powerup thread timeout_on_down();
-			powerup thread timeout_on_grabbed();
-		}
-
-		if(IsDefined(powerup.powerup_notify))
-		{
-			level notify( powerup.powerup_notify );
-		}
-
-		level.powerup_overrides = array_remove_nokeys(level.powerup_overrides, powerup_override);
+	if( !isDefined( powerup.powerup_name ) ) {
+		powerup delete();
+		return;
 	}
-	else
+
+	if(type == "score")
 	{
-		powerup powerup_setup();
-
-		if(level.last_powerup)
-		{
-			if(powerup.solo)
-			{
-				PlayFX( level._effect["powerup_grabbed_solo"], powerup.origin );
-			}
-			else
-			{
-				PlayFX( level._effect["powerup_grabbed"], powerup.origin );
-			}
-
-			level.last_powerup = false;
-		}
-
-		if(type == "score")
-		{
-			level.zombie_vars["zombie_drop_item"] = 0;
-		}
-
-		reset_powerup_chance();
+		level.zombie_vars["zombie_drop_item"] = 0;
 	}
+
+	reset_powerup_chance();
+
 
 	print_powerup_drop( powerup.powerup_name, type );
 
@@ -1175,13 +1053,13 @@ cleanup_random_weapon_list()
 
 //
 //	Pick the next powerup in the list
-powerup_setup( powerup_override )
+powerup_setup( powerup_override, drop_color )
 {
 	powerup = undefined;
 
 	if ( !IsDefined( powerup_override ) )
 	{
-		powerup = get_valid_powerup();
+		powerup = get_valid_powerup( drop_color );
 		//iprintln(powerup);
 		//TODO - check for next valid powerup here to see if cycle resets
 	}
@@ -1305,6 +1183,7 @@ powerup_setup( powerup_override )
 	self.solo 				= struct.solo;
 	self.caution 			= struct.caution;
 	self.zombie_grabbable 	= struct.zombie_grabbable;
+	self.drop_color 		= struct.drop_color;
 
 	if( IsDefined( struct.fx ) )
 	{

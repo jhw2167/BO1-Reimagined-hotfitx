@@ -208,13 +208,45 @@ zombie_spawn_init( animname_set )
 	self set_zombie_run_cycle();
 	self thread zombie_think();
 	self thread zombie_gib_on_damage();
-	self thread zombie_damage_failsafe();
-	if( level.tough_zombies
-	 && is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
-	&& level.round_number > 5
-	&& level.zombie_total > 5
-	 )
-		self thread zombie_watch_despawn_no_damage();
+	self thread zombie_damage_failsafe();	
+	
+	if(self.animname == "zombie" ) 
+	{
+		//Check respawn queue
+		if( respawn_queue_interface("SIZE") > 0)
+		{
+			self.zombie_type = respawn_queue_interface("POP");
+			self.respawn_zombie = true;
+			
+		} else {
+			self.respawn_zombie = false;
+
+			self.zombie_type = "normal";
+			if(level.zombie_types)
+			{
+				//Others
+			}
+		}
+
+		
+
+		//Reimagined-Expanded, despawn zombies if they are not damaged for a period
+		if(
+		level.tough_zombies
+		&& is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
+		&& level.round_number > 5
+		&& level.zombie_total > 5 ) 
+		{
+			self thread zombie_watch_despawn_no_damage();
+		}
+
+		//Reimagined-Expanded, zombie drops
+		if(level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND
+		&& !self.respawn_zombie
+		)
+			self zombie_determine_drop();
+	}
+	
 
 	if(IsDefined(level._zombie_custom_spawn_logic))
 	{
@@ -280,6 +312,57 @@ zombie_spawn_init( animname_set )
 	self notify( "zombie_init_done" );
 }
 
+zombie_determine_drop()
+{
+		total = 1000;
+		if( isDefined(level.zombie_round_total) )
+			total = level.zombie_round_total*10;
+		
+		//Expected drop rate is 1 green drop, 0.5 red drop, 0.5 blue drop per round, normalized by zombie total
+		rand = randomint(1000);	//Normalized to 1000, don't want to to deal with decimals
+
+		//print total and rand
+		//iprintln(" rand: " + rand);
+
+		green_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN / total ) * 1000);
+		blue_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
+		red_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
+
+		//Not Acpocalypse/extra drops
+		if(!level.extra_drops) 
+		{
+			green_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL / total ) * 1000);
+			//iprintln( "Green Rate: " + green_rate);
+
+			if( rand < green_rate ) {
+				self.hasDrop = "GREEN";
+				level.random_count++;
+				iprintln("SUCESS: rand: " + rand + " < " + green_rate + " count " + level.random_count);
+			}
+				
+		} else 
+		{
+			//Apocalypse or extra drops
+			if( rand < green_rate )
+			self.hasDrop = "GREEN";
+			else if( rand < green_rate + blue_rate )
+				self.hasDrop = "BLUE";
+			else if( rand < green_rate + blue_rate + red_rate )
+				self.hasDrop = "RED";
+		}
+			
+		if( isDefined(self.hasDrop) ) 
+		{
+			//iprintln("Zombie drop: " + self.hasDrop);
+			self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
+			self.zombie_drop_model setModel( "tag_origin" );
+			self.zombie_drop_model LinkTo( self, "tag_origin" );
+			PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
+			//PlayFXOnTag( level._effect["powerup_on"], self, "J_SpineLower" );
+		}
+			
+}
+
 //Reimagined-Expanded
 //If a zombie is not damaged for a period, delete it
 zombie_watch_despawn_no_damage() 
@@ -293,9 +376,11 @@ zombie_watch_despawn_no_damage()
 		wait(0.1);
 	}
 
-	level.zombie_total++;
+	
 	self notify("zombie_delete");
 	self DoDamage(self.health + 1000, self.origin);
+	level.zombie_total++;
+	//Add to queue
 	return;
 
 }
@@ -319,6 +404,68 @@ zombie_watch_despawn_no_damage()
 		else
 			return false;
 	}
+
+
+//Reimagined-Expanded
+/*	
+	Track Respawn zombies - FIFO queue
+
+	ACTION:
+		"PUSH"
+			- expects zombie type
+			- pushes type onto array
+		'POP'
+			- pops last zombie type off array
+
+		"size"
+			- returns size of array
+*/
+
+respawn_queue_interface( action, zombie_type )
+{
+	queue_num = level.respawn_queue_num;
+	while( level.respawn_queue_locked  || queue_num < level.respawn_queue_unlocks_num) 
+	{
+		wait 0.05;
+	}
+
+	level.respawn_queue_locked = true;
+	level.respawn_queue_num++;
+
+	zombie_type = alter_respawn_queue( action, zombie_type );
+
+	level.respawn_queue_unlocks_num++;
+	level.respawn_queue_locked = false;
+	return zombie_type;
+}
+
+alter_respawn_queue( action, zombie_type )
+{
+	response = "";
+	if( action == "PUSH" )
+	{
+		level.respawn_queue[level.respawn_queue.size] = zombie_type;
+	}
+	else if( action == "POP" )
+	{
+		if( level.respawn_queue.size > 0 )
+		{
+			response = level.respawn_queue[0];
+			queue = [];
+			for( i = 1; i < level.respawn_queue.size; i++ ) {
+				queue[queue.size] = level.respawn_queue[i];
+			}
+			level.respawn_queue = queue;
+		}
+	}
+	else if( action == "SIZE" )
+	{
+		response = level.respawn_queue.size;
+	}
+
+	return response;
+}
+
 
 /*
 delayed_zombie_eye_glow:
@@ -3470,6 +3617,12 @@ zombie_can_drop_powerups( zombie )
 		return false;
 	}
 
+	//Only Random drops after 10
+	if ( level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND && !isdefined(zombie.hasDrop) )
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -3483,6 +3636,7 @@ zombie_death_points( origin, mod, hit_location, attacker, zombie )
 		return;
 	}
 
+	
 	if( zombie_can_drop_powerups( zombie ) )
 	{
 		// DCS 031611: hack to prevent risers from dropping powerups under the ground.
@@ -3570,9 +3724,15 @@ dragons_breath_flame_death_fx()
 
 
 // Called from animscripts\zombie_death.gsc
+// self.death function
 zombie_death_animscript()
 {
 	self reset_attack_spot();
+
+	//Reimagined-Expanded, cleanup some stuff
+	if( isDefined(self.zombie_drop_model) ) {
+		self.zombie_drop_model Delete();
+	}
 
 	if ( self check_zombie_death_animscript_callbacks() )
 	{
