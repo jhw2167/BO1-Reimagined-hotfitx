@@ -217,11 +217,14 @@ zombie_spawn_init( animname_set )
 		{
 			self.zombie_type = respawn_queue_interface("POP");
 			self.respawn_zombie = true;
+
+			//iprintln("Respawning zombie from queue: " + self.zombie_type);
 			
 		} else {
-			self.respawn_zombie = false;
 
+			self.respawn_zombie = false;
 			self.zombie_type = "normal";
+
 			if(level.zombie_types)
 			{
 				//Others
@@ -308,10 +311,23 @@ zombie_spawn_init( animname_set )
 		self [[ level.zombie_init_done ]]();
 	}
 
+	//Reimagined-Expanded, zombie on death functions
+	zombie_on_death();
+
 	self.zombie_init_done = true;
 	self notify( "zombie_init_done" );
 }
 
+zombie_on_death()
+{
+	self waittill("death");
+
+	if( isDefined( self.zombie_drop_model ) )
+		self.zombie_drop_model Delete();
+	
+}
+
+//Determine Zombie Drop
 zombie_determine_drop()
 {
 		total = 1000;
@@ -337,7 +353,7 @@ zombie_determine_drop()
 			if( rand < green_rate ) {
 				self.hasDrop = "GREEN";
 				level.random_count++;
-				iprintln("SUCESS: rand: " + rand + " < " + green_rate + " count " + level.random_count);
+				//iprintln("SUCESS: rand: " + rand + " < " + green_rate + " count " + level.random_count);
 			}
 				
 		} else 
@@ -375,14 +391,11 @@ zombie_watch_despawn_no_damage()
 		self zombie_watch_despawn_no_damage_trigger();
 		wait(0.1);
 	}
-
 	
-	self notify("zombie_delete");
-	self DoDamage(self.health + 1000, self.origin);
+	respawn_queue_interface("PUSH", self.zombie_type);
 	level.zombie_total++;
-	//Add to queue
+	self DoDamage(self.health + 100, self.origin);
 	return;
-
 }
 	zombie_watch_despawn_no_damage_trigger()
 	{
@@ -423,6 +436,10 @@ zombie_watch_despawn_no_damage()
 
 respawn_queue_interface( action, zombie_type )
 {
+	if( !IsDefined(zombie_type) )
+		zombie_type = "normal";
+	
+	//iprintln("respawn_queue_interface: " + action + " | " + zombie_type);
 	queue_num = level.respawn_queue_num;
 	while( level.respawn_queue_locked  || queue_num < level.respawn_queue_unlocks_num) 
 	{
@@ -432,11 +449,12 @@ respawn_queue_interface( action, zombie_type )
 	level.respawn_queue_locked = true;
 	level.respawn_queue_num++;
 
-	zombie_type = alter_respawn_queue( action, zombie_type );
+	response = alter_respawn_queue( action, zombie_type );
 
 	level.respawn_queue_unlocks_num++;
 	level.respawn_queue_locked = false;
-	return zombie_type;
+	//iprintln("interface returning: " + response);
+	return response;
 }
 
 alter_respawn_queue( action, zombie_type )
@@ -3729,11 +3747,6 @@ zombie_death_animscript()
 {
 	self reset_attack_spot();
 
-	//Reimagined-Expanded, cleanup some stuff
-	if( isDefined(self.zombie_drop_model) ) {
-		self.zombie_drop_model Delete();
-	}
-
 	if ( self check_zombie_death_animscript_callbacks() )
 	{
 		return false;
@@ -4271,7 +4284,8 @@ zombie_death_event( zombie )
 	}
 
 	level notify( "zom_kill" );
-	level.total_zombies_killed++;
+	if(!IsDefined(zombie.zombie_despawn) && !zombie.zombie_despawn )
+		level.total_zombies_killed++;
 }
 
 

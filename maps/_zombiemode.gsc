@@ -46,12 +46,12 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Override 
-	/* */
+	/* /
 	level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=15;	///
-	//level.apocalypse_override=true;		///
 	level.drop_rate_override=10;		/// Rate = Expected drops per round
-	level.server_cheats_override=true;	///
+	level.server_cheats_override=true;	//*/
+	//level.apocalypse_override=true;		///
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -342,12 +342,11 @@ reimagined_init_level()
 	//init-level
 
 	//Overrides
-	/* */
-	level.zombie_ai_limit_override=40;	///
+	/* /
+	level.zombie_ai_limit_override=3;	///
 	level.starting_round_override=15;	///
-	//level.apocalypse_override=true;		///
-	level.drop_rate_override=5;		/// Rate = Expected drops per round
-	level.server_cheats_override=true;	///
+	level.drop_rate_override=1;		/// Rate = Expected drops per round
+	level.server_cheats_override=true;	*///
 
 
 	//Zombie Values
@@ -368,11 +367,11 @@ reimagined_init_level()
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 
 
-	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than
+	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than, only "random" drops after this round
 
 	//These are expected values * 10, so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 10;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
 	level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = 6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_RED_DROP_RATE_RED = 6;		//between 0-1000)
