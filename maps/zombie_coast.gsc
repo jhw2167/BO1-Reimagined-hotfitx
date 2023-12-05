@@ -86,6 +86,7 @@ main()
 	level.random_pandora_box_start = true;
 
 	level.zombie_coast_visionset = "zombie_coast";
+	level.zombie_visionset = level.zombie_coast_visionset;
 
 	//DCS (022211): anims from black hole bomb for cave slide, init before zombiemode.
 	level thread maps\zombie_coast_cave_slide::cave_slide_anim_init();

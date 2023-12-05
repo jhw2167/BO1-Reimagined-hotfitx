@@ -131,7 +131,7 @@ init_powerups()
 		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false);
-
+	add_zombie_powerup("free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
 
 	
 	//Blue Drops

@@ -46,12 +46,13 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Override 
-	/* /
-	level.zombie_ai_limit_override=2;	//*/
-	//level.starting_round_override=9;	///
+	/* 									/
+	level.zombie_ai_limit_override=2;	///
+	level.starting_round_override=20;	///
+	level.starting_points_override=500000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
-	//level.server_cheats_override=true;	//*/
-	//level.apocalypse_override=true;		//*/
+	level.server_cheats_override=true;	///
+	level.apocalypse_override=true;		//*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -355,11 +356,13 @@ reimagined_init_level()
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
 
+	level.THRESHOLD_ZOMBIE_PLAYER_BONUS_HEALTH_ROUND = 5;
+
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 0 ] = 1.00;
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 1 ] = 1.00;
-	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 2 ] = 1.25;
-	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.50;
-	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 2.00;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 2 ] = 1.10;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.20;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 1.25;
 
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 	level.SUPER_SPRINTER_SPEED = 100;
@@ -544,6 +547,22 @@ reimagined_init_player()
 	self.PRO_PERKS[ level.ECH_PRO ] = false;
 	self.PRO_PERKS[ level.VLT_PRO ] = false;
 	self.PRO_PERKS[ level.WWN_PRO ] = false;
+
+	self.PRO_PERKS_DISABLED = [];
+	self.PRO_PERKS_DISABLED[ level.JUG_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.QRV_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.SPD_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.DBT_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.STM_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.PHD_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.DST_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.MUL_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.ECH_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.VLT_PRO ] = false;
+	self.PRO_PERKS_DISABLED[ level.WWN_PRO ] = false;
+
+	
+	
 	
 	//Perk player variables
 	self.weakpoint_streak=0;
@@ -5527,6 +5546,9 @@ pre_round_think()
 			players[i] maps\_zombiemode_score::add_to_player_score( level.starting_round * 1000);
 		}
 	}
+
+	if( IsDefined(level.starting_points_override) )
+		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 }
 
 
@@ -5748,7 +5770,7 @@ ai_calculate_health( round_number )
 	*/
 
 	//Player zombie health multiplier
-	if(level.tough_zombies && level.round_number >= level.THRESHOLD_ZOMBIE_PLAYER_BONUS_HEALTH_ROUND) {
+	if(level.tough_zombies && level.round_number >= level.THRESHOLD_ZOMBIE_PLAYER_BONUS_HEALTH_ROUND ) {
 		health *= level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 	}
 

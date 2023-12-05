@@ -1627,15 +1627,21 @@ disableProPerk( perk, time )
 		return;
 	}
 
+	if( !self hasProPerk( perk ) ) 
+		return;
+
 	self removeProPerk( perk, "DISABLE" );
+	self.PRO_PERKS_DISABLED[ perk ] = true;
 
 	wait( time );
 
 	self returnProPerk( perk );
+	self.PRO_PERKS_DISABLED[ perk ] = false;
 }
 
 returnProPerk( perk )
 {
+	//here
 	len = "_upgrade".size;
 	base_perk = GetSubStr( perk, 0, perk.size - len );
 	self give_perk( base_perk );
@@ -1652,6 +1658,12 @@ removeProPerk( perk, removeOrDisableHud )
 	if( !IsDefined( removeOrDisableHud) )
 		removeOrDisableHud = "REMOVE";
 
+	len = "_upgrade".size;
+	base_perk = GetSubStr( perk, 0, perk.size - len );
+
+	if( !self hasProPerk( perk ) ) 
+		return;
+
 	//here
 	if( self hasProPerk( perk ) )
 	{
@@ -1662,19 +1674,17 @@ removeProPerk( perk, removeOrDisableHud )
 		if( removeOrDisableHud == "REMOVE" )
 			self perk_hud_destroy( perk );
 		else if( removeOrDisableHud == "DISABLE" ) {
-			hud  = self.perk_hud[ perk ];
-			hud.alpha = 0.5;
+			hud  = self.perk_hud[ base_perk ];
 			hud FadeOverTime(.5);
-			self.perk_hud[ perk ] = hud;
+			hud.alpha = 0.5;
+			self.perk_hud[ base_perk ] = hud;
 		}
 			
 		//Set player pro perk to false
 		self.PRO_PERKS[perk] = false;
 	}
 	//Unset base perk and reset stats by calling perk_think
-	len = "_upgrade".size;
-	base_perk = GetSubStr( perk, 0, perk.size - len );
-
+	
 	if (self HasPerk( base_perk ))
 	{
 		self thread perk_think( base_perk );
@@ -1709,6 +1719,11 @@ player_print_msg(msg) {
 	flag_wait( "all_players_connected" );
 	wait(2);
 	iprintln( msg );
+}
+
+disableSpeed( wait_time ) {
+		wait(wait_time);
+		self disableProPerk( level.SPD_PRO, 30 );
 }
 
 vending_trigger_think()
@@ -1816,6 +1831,9 @@ vending_trigger_think()
 				player SetMaxHealth( 140 );
 			}
 			//player SetMaxHealth( 100 );	//just use as trigger for now
+			
+			//player thread disableProPerk( level.STM_PRO, 30 );
+			//player thread disableSpeed();
 
 			wait( 1 );
 			player player_flag_clear("player_has_red_flashing_overlay");
@@ -1961,7 +1979,7 @@ vending_trigger_think()
 
 	upgrade_perk_cost = level.VALUE_PERK_PUNCH_COST;
 	if(level.expensive_perks)
-		upgrade_perk_cost *= level.VALUE_PERK_PUNCH_EXPENSIVE_COST;
+		upgrade_perk_cost = level.VALUE_PERK_PUNCH_EXPENSIVE_COST;
 
 	switch( perk )
 	{
@@ -2072,6 +2090,12 @@ vending_trigger_think()
  		}
 
 		if( player is_drinking() )
+		{
+			wait( 0.1 );
+			continue;
+		}
+		
+		if( player.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
 		{
 			wait( 0.1 );
 			continue;
@@ -2582,6 +2606,10 @@ check_player_has_perk(perk)
 				else if( players[i] is_drinking() )
 				{
 					self SetInvisibleToPlayer(players[i], true);
+				} 
+				else if( players[i].PRO_PERKS_DISABLED[ perk + "_upgrade"] ) 
+				{
+					self SetInvisibleToPlayer(players[i], true);
 				}
 				else if(!players[i] hasperk(perk) && !(players[i] in_revive_trigger()) && (!players[i] hacker_active()))
 				{
@@ -2697,7 +2725,10 @@ perk_think( perk )
 			break;
 	}
 
-	self perk_hud_destroy( perk );
+	//Reimagined-Expanded - don't destroy perk hud if pro perk is only disabled
+	if( !self.PRO_PERKS_DISABLED[ perk + "_upgrade" ] )
+		self perk_hud_destroy( perk );
+
 	self.perk_purchased = undefined;
 	//self iprintln( "Perk Lost: " + perk );
 
@@ -2815,21 +2846,23 @@ perk_hud_create( perk )
 
 	if( IsSubStr(perk , "upgrade") )
 	{
-		hud = self.perk_hud[ perk ];
-
-		if(isdefined(hud)) {	
+		//here
+		basePerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
+		
+		if( self.PRO_PERKS_DISABLED[ perk ] ) {	
 			//Reenable disabled pro perk
-			hud.alpha = 1;
-			self.perk_hud[ perk ] = hud;
-			return;
+			self.perk_hud[ basePerk ].alpha = 1;
 		} else {
-			//Delete regular perk shader, install pro shader
+			//Set Pro Shader
 			shader = shader + "_pro";
-			oldPerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
-			self perk_hud_destroy( oldPerk  );
+			self.perk_hud[ basePerk ] SetShader( shader, 24, 24 );
 		}
+
+		return;
 	}
 
+	if( self.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
+		return;
 	
 	//iprintln("shader: " + shader);
 
@@ -2850,6 +2883,8 @@ perk_hud_create( perk )
 
 	self.perk_hud[ perk ] = hud;
 	self.perk_hud_num[self.perk_hud_num.size] = perk;
+
+	//self update_perk_hud();
 }
 
 
@@ -3051,9 +3086,6 @@ perk_give_bottle_begin( perk )
 upgrade_perk_fx()
 {
 	weap = self GetCurrentWeapon();
-
-	iprintln("tag flash: " + self GetTagOrigin( "tag_flash" ) );
-	iprintln("weapon origin: " + weap.origin );
 
 	model = Spawn( "script_model", self GetTagOrigin( "tag_flash" ) );
 	model setModel( "tag_origin" );
@@ -3599,6 +3631,15 @@ watch_stamina_upgrade(perk_str)
 		if( ! self IsSprinting() )
 			continue;
 		
+		self thread activate_stamina_ghost_mode();
+
+		wait(level.COOLDOWN_STAMINA_PRO_GHOST);
+	}
+
+}
+
+	activate_stamina_ghost_mode()
+	{
 		//give player zombie blood
 		totaltime = level.TOTALTIME_STAMINA_PRO_GHOST;
 		self.ignoreme = true;
@@ -3616,12 +3657,11 @@ watch_stamina_upgrade(perk_str)
 		self setMoveSpeedScale( self.moveSpeed - 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
-		self VisionSetNaked( "undefined", 0.5 );
-
-		wait(level.COOLDOWN_STAMINA_PRO_GHOST);
+		if( IsDefined( level.zombie_visionset ) )
+			self VisionSetNaked( level.zombie_visionset, 0.5 );
+		else
+			self VisionSetNaked( "undefined", 0.5 );
 	}
-
-}
 
 	checkDist(a, b, distance )
 	{
