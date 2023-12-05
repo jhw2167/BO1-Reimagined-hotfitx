@@ -153,7 +153,11 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 	}
 	*/
 
-	if(isDefined( self.preMaxHealth ))
+
+	if( self hasProPerk( level.JUG_PRO ) ) {
+		//nothing, keep max health
+	}
+	else if(isDefined( self.preMaxHealth ))
 		self.health = self.preMaxHealth;
 	else
 		self.health = 100;

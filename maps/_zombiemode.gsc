@@ -47,11 +47,11 @@ main()
 
 	//Override 
 	/* /
-	level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=15;	///
-	level.drop_rate_override=10;		/// Rate = Expected drops per round
-	level.server_cheats_override=true;	//*/
-	//level.apocalypse_override=true;		///
+	level.zombie_ai_limit_override=2;	//*/
+	//level.starting_round_override=9;	///
+	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
+	//level.server_cheats_override=true;	//*/
+	//level.apocalypse_override=true;		//*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -79,7 +79,7 @@ main()
 	PrecacheItem( "frag_grenade_zm" );
 	PrecacheItem( "claymore_zm" );
 
-	//override difficulty
+	//difficulty
 	level.skill_override = 1;
 	maps\_gameskill::setSkill(undefined,level.skill_override);
 
@@ -341,42 +341,64 @@ reimagined_init_level()
 {
 	//init-level
 
+	if( !isDefined(level.players_size) )
+		level.players_size = GetPlayers().size;
+
 	//Overrides
-	/* /
+	/* /								/
 	level.zombie_ai_limit_override=3;	///
-	level.starting_round_override=15;	///
-	level.drop_rate_override=1;		/// Rate = Expected drops per round
-	level.server_cheats_override=true;	*///
+	level.starting_round_override=30;	///
+	//level.drop_rate_override=1;		*/// Rate = Expected drops per round
 
 
 	//Zombie Values
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR = 0.03;
 	level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND = 8;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 0 ] = 1.00;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 1 ] = 1.00;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 2 ] = 1.25;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.50;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 2.00;
+
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 	level.SUPER_SPRINTER_SPEED = 100;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
 
 	level.VALUE_HORDE_SIZE = 100; 			/// none in early rounds
-	level.VALUE_HORDER_DELAY = 10;			// Mini horde delays during between rounds
+	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
 	level.THRESHOLD_ZOMBIE_AI_LIMIT = 45;
+
+	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 50;
+
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 10;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
+
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_MED = 5;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 10;
+
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
+	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
 
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=20;
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
+	
+	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 25;	//25 points per zombie killed before it despawns
+	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT = 5; //goes up every 5 rounds
 
 
 	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than, only "random" drops after this round
 
 	//These are expected values * 10, so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 10;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
 	level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = 6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_RED_DROP_RATE_RED = 6;		//between 0-1000)
 
-		if(level.drop_rate_override) {
+		if( isDefined(level.drop_rate_override) ) {
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = level.drop_rate_override*10;
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN = level.drop_rate_override*10;
 			level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = level.drop_rate_override*10;
@@ -389,8 +411,11 @@ reimagined_init_level()
 	level.VALUE_THIEF_HEALTH_SCALAR = 25;	//this many times avg zombie max health of this round
 
 	//Weapon Pap
-	level.VALUE_PAP_X2_COST = 5000;
-	level.VALUE_PAP_X2_EXPENSIVE_COST = 15000;
+	level.VALUE_PAP_X2_COST = 10000;
+	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
+	
+	level.VALUE_PERK_PUNCH_COST = 10000;
+	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
 	
 
 	//Perk Effects
@@ -423,10 +448,12 @@ reimagined_init_level()
 		level.WWN_PRO
 	);
 
+	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 1.5; //After player melees, 1.5s to sprint and activate ghost
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //2 seconds
 
 	level.COOLDOWN_STAMINA_PRO_GHOST = 15; 	//20
-	level.COOLDOWN_SPEED_PRO_RELOAD = 3.5;
+
+	level.COOLDOWN_SPEED_PRO_RELOAD = 3.0;
 
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
@@ -437,6 +464,8 @@ reimagined_init_level()
 	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3;
 
 	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
+
+	level.VALUE_JUGG_PRO_MAX_HEALTH = 325;
 
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 2;
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
@@ -484,7 +513,6 @@ reimagined_init_level()
 	level.respawn_queue_locked = false;
 	level.respawn_queue_num = 0;
 	level.respawn_queue_unlocks_num = 0;
-	level.random_count = 0;
 
 }
 
@@ -2027,14 +2055,14 @@ zombie_intro_screen( string1, string2, string3, string4, string5 )
 
 players_playing()
 {
-	// initialize level.players_playing
+	// initialize level.players_size
 	players = get_players();
-	level.players_playing = players.size;
+	level.players_size = players.size;
 
 	wait( 20 );
 
 	players = get_players();
-	level.players_playing = players.size;
+	level.players_size = players.size;
 }
 
 
@@ -3867,7 +3895,7 @@ spectators_respawn()
 				}
 
 				//Reimagined_Expanded, give players pro perks back
-				//players[i] give_pro_perks();
+				players[i] give_pro_perks();
 			}
 		}
 
@@ -3886,23 +3914,13 @@ give_pro_perks()
 		
 	}
 
-	//Set all player pro perks to false
-	for(i = 0; i < pro_perks.size; i++) {
-		self maps\_zombiemode_perks::removeProPerk(pro_perks[i]);
+	//Remove all perks from player now
+	for(i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++) {
+		self maps\_zombiemode_perks::removeProPerk(level.ARRAY_VALID_PRO_PERKS[i]);
 	}
 	
-
-	//For each pro perk, give regular perk, then give pro perk
-	TRIM = 8;	//"_upgrade"
-	for(i = 0; i < pro_perks.size; i++)
-	{
-		/*
-		pro perk looks like "specialty_fastreload_upgraded"
-		trim last several characters to get: "specialty_fastreload"
-		*/
-		perk = GetSubStr( pro_perks[i], 0, pro_perks[i].size - TRIM );
-		self maps\_zombiemode_perks::give_perk( perk );
-		self maps\_zombiemode_perks::give_perk( pro_perks[i] , true );
+	for(i = 0; i < pro_perks.size; i++) {
+		self maps\_zombiemode_perks::returnProPerk( pro_perks[i] );
 	}
 }
 
@@ -4436,7 +4454,7 @@ round_spawning()
 		//Reimagined-Expanded: Mix up zombie spawning times into hordes
 		if( count % level.VALUE_HORDE_SIZE == 0 && count > 0 && level.zombie_total > 0 )
 		{
-			wait( level.VALUE_HORDER_DELAY );
+			wait( level.VALUE_HORDE_DELAY );
 		}
 		
 		wait( level.zombie_vars["zombie_spawn_delay"] );
@@ -4780,9 +4798,6 @@ round_pause( delay )
 
 reimagined_expanded_round_start()
 {
-	if( !isDefined(level.players_playing) )
-		level.players_playing = GetPlayers().size;
-
 	if( level.tough_zombies )
 	{
 		if( level.round_number < 4 )
@@ -4791,14 +4806,14 @@ reimagined_expanded_round_start()
 			level.zombie_vars["zombie_spawn_delay"] = 1;
 
 			//MAX ZOMBIES
-			level.zombie_ai_limit = 8 + 6*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 8 + 6*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
 			level.zombie_move_speed = 60;	//runners
-			level.zombie_ai_limit = 12 + 10*level.players_playing; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 12 + 10*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( level.zombie_ai_limit / 2 );
-			level.VALUE_HORDER_DELAY = int( 10 - level.players_playing * 2 ); 
+			level.VALUE_HORDE_DELAY = int( 10 - level.players_size * 2 ); 
 		}
 		else if(  level.round_number < 16 )
 		{
@@ -4806,22 +4821,22 @@ reimagined_expanded_round_start()
 			level.zombie_vars["zombie_spawn_delay"] = .25;
 			level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; // Soft limit at 45, hard limit at 100, network issues?
 
-			level.VALUE_HORDE_SIZE = 16 + 4*level.players_playing;
-			level.VALUE_HORDER_DELAY = 4; 
+			level.VALUE_HORDE_SIZE = 16 + 4*level.players_size;
+			level.VALUE_HORDE_DELAY = 4; 
 
 		} else if(  level.round_number < 24 )
 		{
 			level.zombie_move_speed = 110;
 			level.zombie_vars["zombie_spawn_delay"] = .08;
 
-			level.VALUE_HORDE_SIZE = 18 + 6*level.players_playing;
-			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing; 
+			level.VALUE_HORDE_SIZE = 18 + 6*level.players_size;
+			level.VALUE_HORDE_DELAY = 10 - 2*level.players_size; 
 
 		} else if( level.round_number < 30 )
 		{
 			level.zombie_move_speed = 130;
-			level.VALUE_HORDE_SIZE = 24 + 8*level.players_playing;
-			level.VALUE_HORDER_DELAY = 10 - 2*level.players_playing;
+			level.VALUE_HORDE_SIZE = 24 + 8*level.players_size;
+			level.VALUE_HORDE_DELAY = 10 - 2*level.players_size;
 
 		} else {
 			level.zombie_move_speed = 150;
@@ -4855,7 +4870,7 @@ reimagined_expanded_round_start()
 
 
 	if( IsDefined(level.zombie_ai_limit_override) )
-		level.zombie_ai_limit = level.zombie_ai_limit_override;	//Override
+		level.zombie_ai_limit = level.zombie_ai_limit_override;
 	
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
@@ -5500,7 +5515,7 @@ setApocalypseOptions()
 pre_round_think()
 {	
 	if( IsDefined(level.starting_round_override) )
-		level.starting_round = level.starting_round_override;	//Override
+		level.starting_round = level.starting_round_override;
 
 	if(level.starting_round > 1) 
 	{
@@ -5732,7 +5747,12 @@ ai_calculate_health( round_number )
 	}
 	*/
 
-		//cap zombies health, first round of capped == 46
+	//Player zombie health multiplier
+	if(level.tough_zombies && level.round_number >= level.THRESHOLD_ZOMBIE_PLAYER_BONUS_HEALTH_ROUND) {
+		health *= level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+	}
+
+	//cap zombies health, first round of capped == 46
 	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
 		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
@@ -8666,11 +8686,11 @@ nazizombies_upload_highscore()
 
 	// this has gotta be the dumbest way of doing this, but at 1:33am in the morning my brain is fried!
 	playersRank = 1;
-	if( level.players_playing == 1 )
+	if( level.players_size == 1 )
 		playersRank = 4;
-	else if( level.players_playing == 2 )
+	else if( level.players_size == 2 )
 		playersRank = 3;
-	else if( level.players_playing == 3 )
+	else if( level.players_size == 3 )
 		playersRank = 2;
 
 	map_name = GetDvar( #"mapname" );
@@ -8713,7 +8733,7 @@ nazizombies_upload_highscore()
 
 				leaderboard_number = getZombieLeaderboardNumber( map_name, "waves" );
 
-				players[i] UploadScore( leaderboard_number, int(rankNumber), level.round_number, player_survival_time, level.players_playing );
+				players[i] UploadScore( leaderboard_number, int(rankNumber), level.round_number, player_survival_time, level.players_size );
 				//players[i] UploadScore( leaderboard_number, int(rankNumber), level.round_number );
 
 				players[i] playerZombieStatSet( map_name, "highestwave", new_highest_wave );
@@ -8726,7 +8746,7 @@ nazizombies_upload_highscore()
 		{
 			leaderboard_number = getZombieLeaderboardNumber( map_name, "points" );
 
-			players[i] UploadScore( leaderboard_number, players[i].score_total, players[i].kills, level.players_playing );
+			players[i] UploadScore( leaderboard_number, players[i].score_total, players[i].kills, level.players_size );
 
 			players[i] playerZombieStatSet( map_name, "totalpoints", players[i].score_total );
 		}

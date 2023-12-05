@@ -800,6 +800,7 @@ powerup_drop(drop_point, player, zombie)
 	{
 		if( !IsDefined(zombie.hasDrop) )
 			return;
+		
 		type = "random";
 	}
 

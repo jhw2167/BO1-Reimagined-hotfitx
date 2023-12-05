@@ -32,7 +32,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 		case "death":
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
-			points = player_add_points_kill_bonus( mod, hit_location );
+			points = player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon() );
 			if( IsDefined(level.zombie_vars["zombie_powerup_insta_kill_on"]) && level.zombie_vars["zombie_powerup_insta_kill_on"] && mod == "MOD_UNKNOWN" )
 			{
 				points = points * 2;
@@ -82,15 +82,30 @@ player_add_points( event, mod, hit_location ,is_dog)
 		case "damage_ads":
 		case "damage":
 			//Reimagined-Expanded
+			/*
+			
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 10;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
+
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_MED = 5;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 10;
+
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
+	*/
 			if(!level.apocalypse) {
 				player_points = level.zombie_vars["zombie_score_damage_light"];
 			}
-			else if (level.round_number < 10) {
-				player_points = 10;
-			} else if (level.round_number < 20) {
-				player_points = 5;
-			} else {
-				player_points = 1;
+			else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW )
+			{
+				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW;
+			}
+			 else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED ) 
+			{
+				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_MED;
+			}
+			else
+			{
+				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
 			}
 
 			multiplier *= self weapon_points_multiplier( self getcurrentweapon() );
@@ -242,19 +257,8 @@ get_zombie_death_player_points()
 		points = level.zombie_vars["zombie_score_kill_4player"];
 	}
 	
-	//Reimagined-Expanded, zombies increase exponentially, points decrease to compensate
-	//Players get a few extra points in later rounds
-	if(level.apocalypse)
-	{
-		if (level.round_number < 10) {
-			player_points = 50;
-		} else if (level.round_number < 20) {
-			player_points = 80;
-		} else {
-			player_points = 100;
-		}
-	} 
-	
+	if( level.apocalypse)
+		points = level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS;
 	
 	return( points );
 }
@@ -321,28 +325,41 @@ play_killstreak_vo()
 
 }
 */
-player_add_points_kill_bonus( mod, hit_location )
+player_add_points_kill_bonus( mod, hit_location, weapon )
 {
 	if( mod == "MOD_MELEE" )
 	{
 		return level.zombie_vars["zombie_score_bonus_melee"];
 	}
 
-	/*if( mod == "MOD_BURNED" )
-	{
-		return level.zombie_vars["zombie_score_bonus_burn"];
-	}*/
-
 	score = 0;
 
-	switch( hit_location )
-	{
-		case "head":
-		case "helmet":
-		case "neck":
-			score = level.zombie_vars["zombie_score_bonus_head"];
-			break;
+	//Headshot bonus
+	if( WeaponClass(weapon) == "spread" ) {
+		//no bonus for shotgun
 	}
+	else if( mod == "MOD_RIFLE_BULLET" || mod == "MOD_PISTOL_BULLET"  || mod == "MOD_IMPACT" ) 
+	{
+		switch( hit_location )
+		{
+			case "head":
+			case "helmet":
+			case "neck":
+				score = level.zombie_vars["zombie_score_bonus_head"];
+				break;
+		}
+
+	} else {
+		//No bonus for shotguns, explosives, melee, wonder weapons
+	}
+	
+	//Reimagined-Expanded - Bonus points for killing zombies quickly
+	if( level.expensive_perks ) 
+	{
+		bonus = level.VALUE_ZOMBIE_QUICK_KILL_BONUS;
+		multiplier = Int( level.round_number / level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT );
+		score += bonus * multiplier;
+	}	
 
 	return score;
 }

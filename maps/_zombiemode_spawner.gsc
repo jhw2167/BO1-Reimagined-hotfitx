@@ -340,23 +340,12 @@ zombie_determine_drop()
 		//print total and rand
 		//iprintln(" rand: " + rand);
 
-		green_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN / total ) * 1000);
-		blue_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
-		red_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
+		green_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN / total ) * 1000);
+		blue_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
+		red_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
 
 		//Not Acpocalypse/extra drops
-		if(!level.extra_drops) 
-		{
-			green_rate = int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL / total ) * 1000);
-			//iprintln( "Green Rate: " + green_rate);
-
-			if( rand < green_rate ) {
-				self.hasDrop = "GREEN";
-				level.random_count++;
-				//iprintln("SUCESS: rand: " + rand + " < " + green_rate + " count " + level.random_count);
-			}
-				
-		} else 
+		if(level.extra_drops) 
 		{
 			//Apocalypse or extra drops
 			if( rand < green_rate )
@@ -365,6 +354,13 @@ zombie_determine_drop()
 				self.hasDrop = "BLUE";
 			else if( rand < green_rate + blue_rate + red_rate )
 				self.hasDrop = "RED";
+		} else {
+			green_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL / total ) * 1000);
+			
+			if( rand < green_rate ) {
+				self.hasDrop = "GREEN";
+				//iprintln("SUCESS: rand: " + rand + " < " + green_rate);
+			}		
 		}
 			
 		if( isDefined(self.hasDrop) ) 
@@ -373,10 +369,11 @@ zombie_determine_drop()
 			self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
 			self.zombie_drop_model setModel( "tag_origin" );
 			self.zombie_drop_model LinkTo( self, "tag_origin" );
-			PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
+
+			//This needs to be in client csc for Vulture aid Pro, not for all to see
+			//PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
 			//PlayFXOnTag( level._effect["powerup_on"], self, "J_SpineLower" );
 		}
-			
 }
 
 //Reimagined-Expanded

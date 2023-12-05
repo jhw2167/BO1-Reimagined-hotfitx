@@ -1620,17 +1620,68 @@ addProPerk( perk )
 }
 
 
-removeProPerk( perk )
+disableProPerk( perk, time ) 
 {
-	//Set player pro perk to false
-	self.PRO_PERKS[perk] = false;
+	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
+		iprintln("disableProPerk: self or self.PRO_PERKS is undefined");
+		return;
+	}
 
-	//Trigger notify pro perk + "_stop"
-	// AND remove regular perk
-	self notify( perk + "_stop" );
+	self removeProPerk( perk, "DISABLE" );
 
-	//Remove Pro Perk Shader
-	self perk_hud_destroy( perk );
+	wait( time );
+
+	self returnProPerk( perk );
+}
+
+returnProPerk( perk )
+{
+	len = "_upgrade".size;
+	base_perk = GetSubStr( perk, 0, perk.size - len );
+	self give_perk( base_perk );
+	self give_perk( perk );
+}
+
+removeProPerk( perk, removeOrDisableHud )
+{
+	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
+		iprintln("removeProPerk: self or self.PRO_PERKS is undefined");
+		return;
+	}
+
+	if( !IsDefined( removeOrDisableHud) )
+		removeOrDisableHud = "REMOVE";
+
+	//here
+	if( self hasProPerk( perk ) )
+	{
+		//Trigger notify pro perk + "_stop"
+		self notify( perk + "_stop" );
+
+		//Remove Pro Perk Shader
+		if( removeOrDisableHud == "REMOVE" )
+			self perk_hud_destroy( perk );
+		else if( removeOrDisableHud == "DISABLE" ) {
+			hud  = self.perk_hud[ perk ];
+			hud.alpha = 0.5;
+			hud FadeOverTime(.5);
+			self.perk_hud[ perk ] = hud;
+		}
+			
+		//Set player pro perk to false
+		self.PRO_PERKS[perk] = false;
+	}
+	//Unset base perk and reset stats by calling perk_think
+	len = "_upgrade".size;
+	base_perk = GetSubStr( perk, 0, perk.size - len );
+
+	if (self HasPerk( base_perk ))
+	{
+		self thread perk_think( base_perk );
+		wait(0.1);
+		self notify( base_perk + "_stop" );
+	}
+
 	self update_perk_hud();
 }
 
@@ -1753,21 +1804,18 @@ vending_trigger_think()
 			player player_flag_set( "player_has_red_flashing_overlay" );
 
 			level notify ("player_pain");
-			//self playloopsound("NULL");
-			//self thread playerSndHearbeatOneShots
-
+			
 			player waittill( "end_heartbeat_loop" );
-			//self stoploopsound (1);
 
 			wait (.2);
 			player thread maps\_gameskill::event_heart_beat( "none" , 0 );
-			player.preMaxHealth = 100;
-			player.preMaxHealth += 40;
+			player.preMaxHealth = 140;
 			//iprintln("player max health: " + player.preMaxHealth);
 			if(player.maxHealth < 140)
 			{
 				player SetMaxHealth( 140 );
 			}
+			//player SetMaxHealth( 100 );	//just use as trigger for now
 
 			wait( 1 );
 			player player_flag_clear("player_has_red_flashing_overlay");
@@ -1869,7 +1917,7 @@ vending_trigger_think()
 
 	case "specialty_deadshot_upgrade":
 	case "specialty_deadshot":
-		cost = 1500; // WW (02-03-11): Setting this low at first so more people buy it and try it (TEMP)
+		cost = 2000; // WW (02-03-11): Setting this low at first so more people buy it and try it (TEMP)
 		break;
 
 	case "specialty_additionalprimaryweapon_upgrade":
@@ -1911,9 +1959,9 @@ vending_trigger_think()
 
 	self thread check_player_has_perk(perk);
 
-	upgrade_perk_cost = 5000;
+	upgrade_perk_cost = level.VALUE_PERK_PUNCH_COST;
 	if(level.expensive_perks)
-		upgrade_perk_cost *= 2;
+		upgrade_perk_cost *= level.VALUE_PERK_PUNCH_EXPENSIVE_COST;
 
 	switch( perk )
 	{
@@ -2281,8 +2329,8 @@ give_perk( perk, bought )
 	else if(perk == "specialty_armorvest_upgrade")
 	{
 		//Perkapunch
-		self SetMaxHealth( 325 );
-		self.preMaxHealth = self.maxhealth; //Upgraded Jugg is permanent
+		self SetMaxHealth( level.VALUE_JUGG_PRO_MAX_HEALTH );
+		//self.preMaxHealth = self.maxhealth; //Upgraded Jugg is permanent
 		//self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health_upgrade"] );
 	}
 
@@ -2571,13 +2619,6 @@ perk_think( perk )
 	perk_str = perk + "_stop";
 	result = self waittill_any_return( "fake_death", "death", "player_downed", perk_str );
 
-	do_retain = true;
-
-	/*if( get_players().size == 1 && perk == "specialty_quickrevive")
-	{
-		do_retain = false;
-	}*/
-
 	//Reimagined-Expanded perkapunch
 	if( self hasProPerk( perk + "_upgrade" ) )
 	{
@@ -2591,14 +2632,6 @@ perk_think( perk )
 				break;
 			}
 		}
-	}
-
-
-	if(do_retain && IsDefined(self._retain_perks) && self._retain_perks)
-	{
-		wait_network_frame();
-		self update_perk_hud();
-		return;
 	}
 
 	//always notify the perk stop string so we know to end perk specific stuff
@@ -2629,6 +2662,10 @@ perk_think( perk )
 
 		case "specialty_rof":
 			self SetClientDvar("player_burstFireCoolDown", .2);
+			break;
+		
+		case "specialty_endurance":
+			self UnsetPerk("specialty_unlimitedsprint");
 			break;
 
 		case "specialty_additionalprimaryweapon":
@@ -2691,6 +2728,10 @@ perk_hud_create( perk )
 		}
 	}
 #/
+	//Protect against duplicate perks when pro perks reenabled
+	if( IsDefined( self.perk_hud[ perk + "_upgrade" ] ) ) {
+		return;
+	}
 
 	shader = "";
 	switch( perk )
@@ -2774,20 +2815,22 @@ perk_hud_create( perk )
 
 	if( IsSubStr(perk , "upgrade") )
 	{
-		shader = shader + "_pro";
-		//Destroy the old shader
-		oldPerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
-		//iprintln("oldPerk: " + oldPerk);
-		//self perk_hud_destroy( oldPerk  );
-		hud = self.perk_hud[oldPerk];
-		if(isdefined(hud))
-		{
-			hud SetShader( shader, 24, 24 );
-			self.perk_hud[oldPerk] = hud;
+		hud = self.perk_hud[ perk ];
+
+		if(isdefined(hud)) {	
+			//Reenable disabled pro perk
+			hud.alpha = 1;
+			self.perk_hud[ perk ] = hud;
+			return;
+		} else {
+			//Delete regular perk shader, install pro shader
+			shader = shader + "_pro";
+			oldPerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
+			self perk_hud_destroy( oldPerk  );
 		}
-		return;
 	}
 
+	
 	//iprintln("shader: " + shader);
 
 	hud = create_simple_hud( self );
@@ -2997,9 +3040,30 @@ perk_give_bottle_begin( perk )
 	//self SwitchToWeapon( weapon );
 	self SwitchToWeapon( "zombie_perk_bottle" );
 
+	//Reimagined-Expanded - bonus fx on upgraded perk
+	if( IsSubStr( perk, "_upgrade" ) ) {
+		self thread upgrade_perk_fx();
+	}
+
 	return gun;
 }
 
+upgrade_perk_fx()
+{
+	weap = self GetCurrentWeapon();
+
+	iprintln("tag flash: " + self GetTagOrigin( "tag_flash" ) );
+	iprintln("weapon origin: " + weap.origin );
+
+	model = Spawn( "script_model", self GetTagOrigin( "tag_flash" ) );
+	model setModel( "tag_origin" );
+	model LinkTo( self, "tag_flash" );
+
+	PlayFXOnTag( level._effect["powerup_on"], model, "tag_origin" );
+	self waittill( "weapon_change_complete");
+	
+	model delete();
+}
 
 perk_give_bottle_end( gun, perk )
 {
@@ -3387,7 +3451,6 @@ additional_weapon_indicator(perk, perk_str)
 			wait(1);
 			self send_message_to_csc("hud_anim_handler", "hud_mule_wep_out");
 		}
-		//HERE_
 
 		self waittill_any("weapon_change", "weapon_change_complete");
 	}
@@ -3531,7 +3594,10 @@ watch_stamina_upgrade(perk_str)
 	{
 
 		//wait till player sprints
-		self waittill("sprint");
+		self waittill("melee");
+		self waittill_notify_or_timeout("sprint", level.VALUE_STAMINA_PRO_SPRINT_WINDOW );
+		if( ! self IsSprinting() )
+			continue;
 		
 		//give player zombie blood
 		totaltime = level.TOTALTIME_STAMINA_PRO_GHOST;
