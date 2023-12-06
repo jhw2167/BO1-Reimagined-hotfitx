@@ -39,6 +39,10 @@ init()
 	level thread on_player_connect();
 }
 
+hasProPerk( perk ) {
+	return self.PRO_PERKS[ perk ];
+}
+
 
 /** DOUBLETAP PRO ZOMBIE PENETRATION DAMAGE **/
 
@@ -439,6 +443,10 @@ bonus_freeze_damage( zomb, player, radius, time )
 	//Get zombies in cone
 	zombies = freezegun_get_enemies_in_range();
 	new_move_speed="walk";
+
+		total_sheercold_time = level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME;
+		if( player hasProPerk(level.DBT_PRO) )
+			total_sheercold_time *= 2;
 	
 	//Slow zombies
 	for ( i = 0; i < zombies.size; i++ ) 
@@ -454,15 +462,19 @@ bonus_freeze_damage( zomb, player, radius, time )
 		}
 
 		zombies[i].marked_for_freeze = true;
-		zombies[i] thread unmark_frozen_zombie();
+		zombies[i] thread unmark_frozen_zombie( total_sheercold_time );
 	}
 		
 }
 
-//After 5 seconds, unmark zombies for freeze
-unmark_frozen_zombie()
+//After a few seconds, unmark zombies for freeze
+unmark_frozen_zombie( zombie_thaw_time )
 {
-	wait(5);
+	if( !IsDefined(self) || !IsDefined( zombie_thaw_time ) )
+		return;
+
+	wait( zombie_thaw_time );
+
 	if ( !IsDefined( self ) || !IsAlive( self ) )
 	{
 		// guy died on us

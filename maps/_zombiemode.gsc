@@ -346,10 +346,10 @@ reimagined_init_level()
 		level.players_size = GetPlayers().size;
 
 	//Overrides
-	/* /								*/
+	/* /								/
 	level.zombie_ai_limit_override=30;	///
-	//level.starting_round_override=15;	///
-	//level.drop_rate_override=1;		*/// Rate = Expected drops per round
+	level.starting_round_override=15;	///
+	level.drop_rate_override=1;		*/// Rate = Expected drops per round
 
 
 	//Zombie Values
@@ -388,9 +388,14 @@ reimagined_init_level()
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 	
-	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 50;	//25 points per zombie killed before it despawns
+	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 25;	//25 points per zombie killed before it despawns
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT = 5; //goes up every 5 rounds
-	
+	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START = 10;
+
+	level.VALUE_PLAYER_DOWNED_PENALTY = 25;	//Multiplied by num players - 1
+	level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL = 3; //POSTs every 2.5 seconds
+	level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME = 120;	//Player has 125 seconds to be revived
+	SetDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
 
 
 	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than, only "random" drops after this round
@@ -416,7 +421,7 @@ reimagined_init_level()
 
 	//Weapon Pap
 	level.VALUE_PAP_X2_COST = 10000;
-	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
+	level.VALUE_PAP_X2_EXPENSIVE_COST = 20000;
 	
 	level.VALUE_PERK_PUNCH_COST = 5000;
 	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
@@ -465,9 +470,10 @@ reimagined_init_level()
 	level.VALUE_DBT_UNITS = 5;
 	level.VALUE_DBT_PENN_DIST = 20;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
-	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 10;
+	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 6;
 
 	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
+	level.VALUE_QRV_PRO_REVIVE_ZOMBIEBLOOD_TIME = 10;
 
 	level.VALUE_JUGG_PRO_MAX_HEALTH = 325;
 
@@ -488,9 +494,10 @@ reimagined_init_level()
 	level.RANGE_SHEERCOLD_DIST = 120;
 	level.THRESHOLD_SHEERCOLD_DIST = 50;
 	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
+	level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME = 3;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2", "rottweil72_upgraded_zm");
-	level.THRESHOLD_HELLFIRE_TIME = 0.5;
+	level.THRESHOLD_HELLFIRE_TIME = 1.2;
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
 
@@ -668,9 +675,13 @@ watch_player_electric()
 		//Get Max clip size of weapon
 		clip_size = WeaponClipSize(weapon);
 
+		total_eletric_bullets = level.THRESHOLD_ELECTRIC_BULLETS;
+		if( self hasProPerk(level.DBT_PRO) )
+			total_eletric_bullets *= 2;
+
 		//Get 4 random numbers between 0 and clip_size
 		random_numbers = [];
-		for(i=0;i<level.THRESHOLD_ELECTRIC_BULLETS;i++) {
+		for(i=0;i<total_eletric_bullets;i++) {
 			random_numbers[i] = randomInt( clip_size );
 		}
 
@@ -713,7 +724,12 @@ watch_player_hellfire()
 		self endon("reload_start");
 
 		if( isDefined(self.buttonpressed_attack) )
-			self.buttonpressed_attack = false;		
+			self.buttonpressed_attack = false;
+
+		//Reduce level.THRESHOLD_HELLFIRE_TIME by half if player has pro DBT
+		total_hellfire_time = level.THRESHOLD_HELLFIRE_TIME;
+		if( self hasProPerk(level.DBT_PRO) )
+			total_hellfire_time /= 2;
 
 		while(1)
 		{
@@ -721,7 +737,7 @@ watch_player_hellfire()
 			while( (self AttackButtonPressed()) )
 			{
 				
-				if( time >= level.THRESHOLD_HELLFIRE_TIME )
+				if( time >= total_hellfire_time )
 				{
 					self.bullet_hellfire = true;
 				}
@@ -755,6 +771,11 @@ watch_player_sheercold()
 	watch_sheercold_trigger()
 	{
 		self endon("weapon_switch");
+
+		//Same thing as above with level.sheercold_active_time
+		total_sheercold_time = level.THRESHOLD_SHEERCOLD_ACTIVE_TIME;
+		if( self hasProPerk(level.DBT_PRO) )
+			total_sheercold_time *= 2;
 
 		while(1)
 		{
@@ -2442,6 +2463,10 @@ onPlayerDowned()
 	{
 		self waittill("player_downed");
 
+		//Reimagined-Expanded Down penalty
+		if(level.apocalypse && !flag( "solo_game" ) )
+			self thread laststand_points_penalty();
+
 		if(level.gamemode != "survival" && get_number_of_valid_players() > 0)
 		{
 			if(level.gamemode != "race" && level.gamemode != "gg" && level.gamemode != "snr")
@@ -2500,6 +2525,40 @@ onPlayerDowned()
 			}
 		}
 	}
+}
+
+Laststand_points_penalty()
+{
+	self endon ("player_revived");
+	self endon ("death");
+	self endon ("disconnect");
+
+	//While player not revived, all players lose points
+	if( !isdefined( self.bleedout_time ) ) {
+		iprintln("Player not bleeding out");
+		return;
+	}
+
+	while( self.bleedout_time > 0 )
+	{
+		players = get_players();
+
+		//Skip points penalty if someone has QRV_PRO and can reive player
+		skipPointsPenalty = false;
+		for ( i = 0; i < players.size; i++ ) {
+			if ( players[i] hasProPerk( level.QRV_PRO ) && players[i] maps\_laststand::can_revive( self ) ) {
+				skipPointsPenalty = true;
+				break;
+			}
+		}
+
+		for ( i = 0; i < players.size; i++ ) {
+			penalty = level.VALUE_PLAYER_DOWNED_PENALTY * (level.players_size - 1);
+			players[i] maps\_zombiemode_score::minus_to_player_score( penalty );
+		}	
+		wait ( level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL );
+	}
+
 }
 
 onPlayerDeath()
@@ -7704,7 +7763,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		//Shotgun Bonus Damage
 
-		if( WeaponClass(weapon) == "spread" ) 
+		if( WeaponClass(weapon) == "spread" && isSubStr(weapon, "upgraded") ) 
 		{
 			final_damage *= attacker.shotgun_attrition;
 			if( is_boss_zombie(self.animname) ) {
@@ -7804,7 +7863,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 hasProPerk( perk )
 {
-	return self maps\_zombiemode_perks::hasProPerk( perk );
+	return self.PRO_PERKS[ perk ];
 }
 
 is_boss_zombie( animname )

@@ -98,6 +98,7 @@ player_add_points( event, mod, hit_location ,is_dog, zombie)
 					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
 				}
 				
+				//No points for shooting zombie if it respawned
 				valid_bonus_points = IsDefined( zombie ) && ( zombie.animname == "zombie") && (!zombie.respawn_zombie);
 				if (!valid_bonus_points)
 					multiplier = 0;
@@ -353,8 +354,13 @@ player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 	}
 	
 	//Reimagined-Expanded - Bonus points for killing zombies quickly
-	valid_bonus_points = IsDefined( zombie ) && ( zombie.animname == "zombie") && (!zombie.respawn_zombie);
-	if( level.expensive_perks && valid_bonus_points ) 
+	valid_bonus_points = ( IsDefined( zombie ) 
+		&& ( zombie.animname == "zombie" )
+		&& ( level.expensive_perks )
+		&& (!zombie.respawn_zombie )
+		&& ( level.round_number >= level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START ) );
+
+	if( valid_bonus_points ) 
 	{
 		bonus = level.VALUE_ZOMBIE_QUICK_KILL_BONUS;
 		multiplier = Int( level.round_number / level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT );

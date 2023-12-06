@@ -167,6 +167,7 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 	self thread refire_player_downed();
 }
 
+
 refire_player_downed()
 {
 	self endon("player_revived");
@@ -371,7 +372,6 @@ laststand_give_pistol()
 
 
 }
-
 
 Laststand_Bleedout( delay )
 {
