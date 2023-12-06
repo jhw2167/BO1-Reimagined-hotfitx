@@ -1586,8 +1586,10 @@ hasProPerk( perk )
 
 addProPerk( perk )
 {
-	if (perk == "specialty_armorvest_upgrade")
+	if (perk == "specialty_armorvest_upgrade") {
+		giveArmorVestUpgrade();
 		self.PRO_PERKS[ level.JUG_PRO ] = true;
+	}
 	if (perk == "specialty_quickrevive_upgrade")
 		self.PRO_PERKS[ level.QRV_PRO ] = true;
 	if (perk == "specialty_fastreload_upgrade") {
@@ -1695,6 +1697,11 @@ removeProPerk( perk, removeOrDisableHud )
 	self update_perk_hud();
 }
 
+giveArmorVestUpgrade()
+{
+	//Nothing to give
+	self thread watch_armorvest_upgrade(level.JUG_PRO + "_stop");
+}
 
 giveAdditionalPrimaryWeaponUpgrade() 
 {
@@ -1832,7 +1839,6 @@ vending_trigger_think()
 			}
 			//player SetMaxHealth( 100 );	//just use as trigger for now
 			
-			//player thread disableProPerk( level.STM_PRO, 30 );
 			//player thread disableSpeed();
 
 			wait( 1 );
@@ -3607,6 +3613,23 @@ remove_stockpile_ammo()
 // QUICKREV PRO
 //=========================================================================================================
 
+
+//=========================================================================================================
+// JUGG PRO
+//=========================================================================================================
+
+watch_armorvest_upgrade(perk_str)
+{
+	oldHealth = self.preMaxHealth;
+	self.preMaxHealth =  level.VALUE_JUGG_PRO_MAX_HEALTH;
+	self endon("disconnect");
+
+	self waittill(perk_str);
+
+	self.preMaxHealth = oldHealth;
+	self.health = oldHealth;
+	self SetMaxHealth( oldHealth );
+}
 
 //Reimagined-Expanded -- Quick Revive pro thread running for each player
 // HANDLED IN ZOMBIEMODE

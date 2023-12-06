@@ -338,6 +338,8 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 
 bonus_fire_damage( zomb , player, radius, time)
 {
+	// \give ak47_ft_upgraded_zm_x2
+	// \give rottweil72_upgraded_zm
 
 	//Set zomb on fire
 	PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
@@ -422,6 +424,9 @@ triggerCustomFireDamage(attacker)
 /** FREEZE EFFECTS **/
 bonus_freeze_damage( zomb, player, radius, time ) 
 {
+
+		// \give galil_upgraded_zm_x2
+		// \give spectre_upgraded_zm_x2
 	
 	PlayFxOnTag( level._effect[ "freezegun_damage_torso" ], zomb, "J_SpineUpper" );
 	
@@ -727,12 +732,6 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 		source_enemy tesla_play_arc_fx( self );
 	}
 
-	/*while ( player.tesla_network_death_choke > level.zombie_vars["tesla_network_death_choke"] )
-	{
-		debug_print( "TESLA: Choking Tesla Damage. Dead enemies this network frame: " + player.tesla_network_death_choke );
-		wait( 0.05 );
-	}*/
-
 	if( !IsDefined( self ) || !IsAlive( self ) )
 	{
 		// guy died on us
@@ -788,6 +787,8 @@ tesla_play_death_fx( arc_num )
 	fx = "fx_electric_cherry_shock";
 
 	// \give knife_ballistic_upgraded_zm_x2
+	// \give aug_acog_mk_upgraded_zm_x2
+	// \give cz75_upgraded_zm_x2
 
 	if ( self.isdog )
 	{

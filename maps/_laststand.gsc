@@ -142,22 +142,8 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 		self VisionSetLastStand( "laststand", 1 );
 	}
 
-	/*
-	if(IsDefined(self._retain_perks))
-	{
-		self.health = 250;
-	}
-	else
-	{
-		self.health = 100;
-	}
-	*/
 
-
-	if( self hasProPerk( level.JUG_PRO ) ) {
-		//nothing, keep max health
-	}
-	else if(isDefined( self.preMaxHealth ))
+	if(isDefined( self.preMaxHealth ))
 		self.health = self.preMaxHealth;
 	else
 		self.health = 100;

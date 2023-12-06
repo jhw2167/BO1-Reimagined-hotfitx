@@ -346,9 +346,9 @@ reimagined_init_level()
 		level.players_size = GetPlayers().size;
 
 	//Overrides
-	/* /								/
-	level.zombie_ai_limit_override=3;	///
-	level.starting_round_override=30;	///
+	/* /								*/
+	level.zombie_ai_limit_override=30;	///
+	//level.starting_round_override=15;	///
 	//level.drop_rate_override=1;		*/// Rate = Expected drops per round
 
 
@@ -390,6 +390,7 @@ reimagined_init_level()
 	
 	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 50;	//25 points per zombie killed before it despawns
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT = 5; //goes up every 5 rounds
+	
 
 
 	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than, only "random" drops after this round
@@ -417,7 +418,7 @@ reimagined_init_level()
 	level.VALUE_PAP_X2_COST = 10000;
 	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
 	
-	level.VALUE_PERK_PUNCH_COST = 10000;
+	level.VALUE_PERK_PUNCH_COST = 5000;
 	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
 	
 
@@ -454,9 +455,9 @@ reimagined_init_level()
 	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 1.5; //After player melees, 1.5s to sprint and activate ghost
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //2 seconds
 
-	level.COOLDOWN_STAMINA_PRO_GHOST = 15; 	//20
+	level.COOLDOWN_STAMINA_PRO_GHOST = 5; 	//20
 
-	level.COOLDOWN_SPEED_PRO_RELOAD = 3.0;
+	level.COOLDOWN_SPEED_PRO_RELOAD = 2.0;
 
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
@@ -464,13 +465,13 @@ reimagined_init_level()
 	level.VALUE_DBT_UNITS = 5;
 	level.VALUE_DBT_PENN_DIST = 20;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
-	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 3;
+	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 10;
 
 	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
 
 	level.VALUE_JUGG_PRO_MAX_HEALTH = 325;
 
-	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 2;
+	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 4;
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
 
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE = 2;
@@ -480,7 +481,7 @@ reimagined_init_level()
 	level.ARRAY_SNIPER_WEAPONS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
-	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "spas_upgraded_zm_x2");
+	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "cz75_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 
 	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2", "ithaca_upgraded_zm_x2");
@@ -489,7 +490,7 @@ reimagined_init_level()
 	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2", "rottweil72_upgraded_zm");
-	level.THRESHOLD_HELLFIRE_TIME = 2.0;
+	level.THRESHOLD_HELLFIRE_TIME = 0.5;
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
 
@@ -572,16 +573,22 @@ reimagined_init_player()
 	//Items and drops
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 
-	//Misc
-	if(IsDefined(level.zombie_visionset)) {
-		//iprintln(" Apply visionset: " + level.zombie_visionset);
-		self VisionSetNaked(level.zombie_visionset, 1);
-	}
-		
+	//Misc	
+	self thread wait_set_player_visionset();
 
 	self.previous_zomb_attacked_by=0;
 
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
+}
+
+wait_set_player_visionset()
+{
+	flag_wait( "begin_spawning" );
+	if(IsDefined(level.zombie_visionset)) {
+		self VisionSetNaked( level.zombie_visionset, 0.5 );
+	} else {
+		self VisionSetNaked( "undefined", 0.5 );
+	}
 }
 
 //Reimagined-Expanded -- get zombies in provided range
@@ -646,6 +653,7 @@ watch_player_electric()
 		if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon) )
 		{
 			self watch_electric_trigger( weapon );
+			resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		}
 		self.bullet_electric = false;
 		wait(0.1);
@@ -655,7 +663,7 @@ watch_player_electric()
 	watch_electric_trigger( weapon )
 	{
 		self endon("weapon_switch");
-		self endon("reload");
+		self endon("reload_start");
 
 		//Get Max clip size of weapon
 		clip_size = WeaponClipSize(weapon);
@@ -690,6 +698,8 @@ watch_player_hellfire()
 		if( is_in_array( level.ARRAY_HELLFIRE_WEAPONS , weapon) )
 		{
 			self watch_hellfire_trigger();
+			self.bullet_hellfire = false;
+			resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		}
 		self.bullet_hellfire = false;
 		wait(0.1);
@@ -700,6 +710,7 @@ watch_player_hellfire()
 	{
 		//iprintln("watch_hellfire_trigger");
 		self endon("weapon_switch");
+		self endon("reload_start");
 
 		if( isDefined(self.buttonpressed_attack) )
 			self.buttonpressed_attack = false;		
@@ -733,6 +744,8 @@ watch_player_sheercold()
 		if( is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) )
 		{
 			self watch_sheercold_trigger();
+			self waittill("weapon_switch_complete");
+			self.bullet_sheercold = false;
 		}
 		wait(0.1);
 	}
@@ -3544,6 +3557,11 @@ last_stand_pistol_rank_init()
 		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "m1911_upgraded_zm";
+
+		level.pistol_values[ level.pistol_values.size ] = "python_upgraded_zm_x2";
+		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm_x2";
+		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm_x2";
+		
 		level.pistol_values[ level.pistol_values.size ] = "ray_gun_zm";
 		level.pistol_values[ level.pistol_values.size ] = "freezegun_zm";
 		level.pistol_values[ level.pistol_values.size ] = "ray_gun_upgraded_zm";
@@ -3561,6 +3579,11 @@ last_stand_pistol_rank_init()
 		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "m1911_upgraded_zm";
+
+		level.pistol_values[ level.pistol_values.size ] = "python_upgraded_zm_x2";
+		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm_x2";
+		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm_x2";
+		
 		level.pistol_values[ level.pistol_values.size ] = "ray_gun_zm";
 		level.pistol_values[ level.pistol_values.size ] = "freezegun_zm";
 		level.pistol_values[ level.pistol_values.size ] = "ray_gun_upgraded_zm";
