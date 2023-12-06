@@ -10,7 +10,7 @@ init()
 {
 	//These effects always included
 	level._effect["tesla_bolt"]				= loadfx( "maps/zombie/fx_zombie_tesla_bolt_secondary" );
-	//level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
+	level._effect["tesla_shock"]			= loadfx( "maps/zombie/fx_zombie_tesla_shock" );
 	level._effect["fx_electric_cherry_shock"] = loadfx( "electric_cherry/fx_electric_cherry_shock" );
 	level._effect["tesla_shock_secondary"]	= loadfx( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 	
@@ -360,6 +360,7 @@ bonus_fire_damage( zomb , player, radius, time)
 		wait(0.05);
 	}
 	
+	self thread delayed_bonus_fire_damage( player );
 	
 	//Build trigger where zombie dies to fire
 	trigger = spawn( "trigger_radius", origin, 1, radius, 70 );
@@ -391,6 +392,12 @@ bonus_fire_damage( zomb , player, radius, time)
 	}
 }
 
+delayed_bonus_fire_damage( player )
+{
+	wait(2);										
+	if( !is_true( self.in_water ) )
+		self DoDamage( self.maxHealth + 1000, self.origin, player );
+}
 
 
 

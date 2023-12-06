@@ -47,7 +47,7 @@ main()
 
 	//Override 
 	/* 									/
-	level.zombie_ai_limit_override=2;	///
+	level.zombie_ai_limit_override=5;	///
 	level.starting_round_override=20;	///
 	level.starting_points_override=500000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
@@ -3616,7 +3616,7 @@ last_stand_pistol_rank_init()
 		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "m1911_upgraded_zm";
-
+		//Reimagined-Expanded - new pistols
 		level.pistol_values[ level.pistol_values.size ] = "python_upgraded_zm_x2";
 		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm_x2";
 		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm_x2";
@@ -3638,7 +3638,7 @@ last_stand_pistol_rank_init()
 		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm";
 		level.pistol_values[ level.pistol_values.size ] = "m1911_upgraded_zm";
-
+		//Reimagined-Expanded - new pistols
 		level.pistol_values[ level.pistol_values.size ] = "python_upgraded_zm_x2";
 		level.pistol_values[ level.pistol_values.size ] = "cz75_upgraded_zm_x2";
 		level.pistol_values[ level.pistol_values.size ] = "cz75dw_upgraded_zm_x2";
@@ -7633,9 +7633,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			} else
 			{
 				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
-				wait(2);										//zomb, player, radius, time
-				if( !is_true( self.in_water ) )
-					return self.maxhealth + 1000; //hellfire should always kill if victim not in water
+														//zomb, player, radius, time
 			}
 			final_damage = int(final_damage * 2);
 		}
