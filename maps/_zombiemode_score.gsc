@@ -8,7 +8,7 @@ init()
 }
 
 //chris_p - added dogs to the scoring
-player_add_points( event, mod, hit_location ,is_dog)
+player_add_points( event, mod, hit_location ,is_dog, zombie)
 {
 	if( level.intermission )
 	{
@@ -32,7 +32,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 		case "death":
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
-			points = player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon() );
+			points = player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
 			if( IsDefined(level.zombie_vars["zombie_powerup_insta_kill_on"]) && level.zombie_vars["zombie_powerup_insta_kill_on"] && mod == "MOD_UNKNOWN" )
 			{
 				points = points * 2;
@@ -82,32 +82,31 @@ player_add_points( event, mod, hit_location ,is_dog)
 		case "damage_ads":
 		case "damage":
 			//Reimagined-Expanded
-			/*
-			
-	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 10;
-	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
 
-	level.VALUE_ZOMBIE_DAMAGE_POINTS_MED = 5;
-	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 10;
-
-	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
-	*/
-			if(!level.apocalypse) {
+			if(level.apocalypse) 
+			{
+				if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW )
+				{
+					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW;
+				}
+				else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED ) 
+				{
+					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_MED;
+				}
+				else
+				{
+					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
+				}
+				
+				valid_bonus_points = IsDefined( zombie ) && ( zombie.animname == "zombie") && (!zombie.respawn_zombie);
+				if (!valid_bonus_points)
+					multiplier = 0;
+			}
+			else //Regular zombies!
+			{
 				player_points = level.zombie_vars["zombie_score_damage_light"];
 			}
-			else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW )
-			{
-				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW;
-			}
-			 else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED ) 
-			{
-				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_MED;
-			}
-			else
-			{
-				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
-			}
-
+			
 			multiplier *= self weapon_points_multiplier( self getcurrentweapon() );
 			break;
 
@@ -325,7 +324,7 @@ play_killstreak_vo()
 
 }
 */
-player_add_points_kill_bonus( mod, hit_location, weapon )
+player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 {
 	if( mod == "MOD_MELEE" )
 	{
@@ -354,7 +353,8 @@ player_add_points_kill_bonus( mod, hit_location, weapon )
 	}
 	
 	//Reimagined-Expanded - Bonus points for killing zombies quickly
-	if( level.expensive_perks ) 
+	valid_bonus_points = IsDefined( zombie ) && ( zombie.animname == "zombie") && (!zombie.respawn_zombie);
+	if( level.expensive_perks && valid_bonus_points ) 
 	{
 		bonus = level.VALUE_ZOMBIE_QUICK_KILL_BONUS;
 		multiplier = Int( level.round_number / level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT );

@@ -3678,7 +3678,7 @@ zombie_death_points( origin, mod, hit_location, attacker, zombie )
 		event = "ballistic_knife_death";
 	}
 
-	attacker maps\_zombiemode_score::player_add_points( event, mod, hit_location );
+	attacker maps\_zombiemode_score::player_add_points( event, mod, hit_location, false, zombie );
 }
 
 get_number_variants(aliasPrefix)
