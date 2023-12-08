@@ -3803,9 +3803,9 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 
 	} else {
 
-		//self playlocalsound( "MP_hit_alert" );
-		//self playlocalsound( "MP_hit_indication" );
-		//self playlocalsound( "hitmarker" );
+		self playlocalsound( "MP_hit_alert" );
+		self playlocalsound( "MP_hit_indication" );
+		self playlocalsound( "hitmarker" );
 
 		//self playlocalsound( "prj_bullet_impact_small_player" );
 		

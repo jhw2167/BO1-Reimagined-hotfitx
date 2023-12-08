@@ -439,7 +439,7 @@ reimagined_init_level()
 	SetDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
 
 
-	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 10; //equal or greater than, only "random" drops after this round
+	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 7; //equal or greater than, only "random" drops after this round
 
 	//These are expected values * 10, so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
@@ -5983,9 +5983,9 @@ round_wait()
 			level.sound_num = 0;
 
 		//iprintln("Siren sound" + level.sound_num);
-	   	//thread play_sound_2d( "amb_alarm_radar_station" );
-		//thread play_sound_2d( "amb_radar_station_alarm" );
-		thread play_sound_2d( "evt_nomans_warning" );
+	   	thread play_sound_2d( "amb_alarm_radar_station" );
+		thread play_sound_2d( "zmb_defcon_alarm" );
+		thread play_sound_2d( "nomans_warning" );
 
 		level thread reimagined_expanded_apocalypse_rounds();
 	}

@@ -208,12 +208,13 @@ dog_round_spawning()
 //Reimagined-Expanded, dogs spawn quickly
 waiting_for_next_dog_spawn( count, max )
 {
-	default_wait = 3;
+	default_wait = 5;
 
 	default_wait = default_wait - ( count / max );
 
-	if( default_wait <= 0 )
-		return;
+	if( default_wait < 1 )
+		default_wait = 1;
+
 	wait( default_wait );
 }
 
@@ -667,7 +668,7 @@ dog_death()
 {
 	self waittill( "death" );
 
-	iprintln("Has drop: " + self.hasDrop );
+	//iprintln("Has drop: " + self.hasDrop );
 	if( IsDefined( self.hasDrop ) )
 	{
 		level.last_dog_origin = self.origin;
