@@ -46,9 +46,9 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									/
+	/* 									*/
 	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=4;	///
+	level.starting_round_override=3;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.server_cheats_override=true;	///
@@ -635,7 +635,7 @@ wait_set_player_visionset()
 	if(IsDefined(level.zombie_visionset)) {
 		self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
-		self VisionSetNaked( "undefined", 0.5 );
+		self VisionSetNaked( "zombie_neutral", 0.5 );
 	}
 }
 
