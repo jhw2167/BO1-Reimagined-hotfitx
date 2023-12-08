@@ -3784,34 +3784,31 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 	level.sound_num++;
 	level.sound_num = level.sound_num % 5;
 	//iprintln("sound_num: " + level.sound_num);
-
 	if( hitWeakpoint ) 
 	{
-		//play the sound 10 times
+		//play the sound 2 times
+		self playlocalsound( "MP_hit_alert" );
 		for(i=0;i<2;i++) {
-			self playlocalsound( "prj_bullet_impact_headshot" ); //still mettalic sounding but better
+			//self playlocalsound( "prj_bullet_impact_headshot" ); //still mettalic sounding but better
 			wait(0.01);
 		}
+		self playlocalsound( "prj_bullet_impact_headshot_helmet_nodie" );	//Working from base base game
 		
-		
-		//self thread play_sound_2D( "prj_bullet_impact_headshot_2d" );
-		//self playlocalsound( "prj_bullet_impact_headshot_helmet_nodie" );	//Working from base base game
-		//self playlocalsound( "bullet_impact_headshot_helmet_nodie" );		//BAD one!
 		self.hud_damagefeedback_death.alpha = 1;
 		self.hud_damagefeedback_death fadeOverTime( 1 );
 		self.hud_damagefeedback_death.alpha = 0;
 
 	} else {
 
+		//self playlocalsound( "MP_hit_indication" );
 		self playlocalsound( "MP_hit_alert" );
-		self playlocalsound( "MP_hit_indication" );
-		self playlocalsound( "hitmarker" );
+		//self playlocalsound( "hitmarker" );
 
 		//self playlocalsound( "prj_bullet_impact_small_player" );
 		
 		for(i=0;i<2;i++) {
-			self playlocalsound( "prj_bullet_impact_large_player" );	//sounds tiny, but works
-			self playlocalsound( "prj_bullet_impact_small_player" );	//sounds tiny, but works
+			//self playlocalsound( "prj_bullet_impact_large_player" );	//sounds tiny, but works
+			//self playlocalsound( "prj_bullet_impact_small_player" );	//sounds tiny, but works
 			wait(0.01);
 		}
 			

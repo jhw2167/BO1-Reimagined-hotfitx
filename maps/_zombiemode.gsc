@@ -46,7 +46,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									*/
+	/* 									/
 	level.zombie_ai_limit_override=30;	///
 	level.starting_round_override=3;	///
 	level.starting_points_override=50000;	///
@@ -5984,8 +5984,8 @@ round_wait()
 
 		//iprintln("Siren sound" + level.sound_num);
 	   	thread play_sound_2d( "amb_alarm_radar_station" );
-		thread play_sound_2d( "zmb_defcon_alarm" );
-		thread play_sound_2d( "nomans_warning" );
+		//thread play_sound_2d( "zmb_defcon_alarm" );
+		//thread play_sound_2d( "nomans_warning" );
 
 		level thread reimagined_expanded_apocalypse_rounds();
 	}
@@ -6013,7 +6013,7 @@ round_wait()
 		if( level.round_number % level.VALUE_APOCALYPSE_WAIT_ROUNDS == 0 )
 			return;	//Intermission round, no bonus every 5 rounds
 
-		wait( 2 );
+		wait( 4 );
 		players = get_players();
 		for(i=0;i<players.size;i++) {
 			bonus = level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ];
@@ -7263,17 +7263,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "rpk_zm":
 			final_damage = 750;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.75;
 			break;
 		case "hk21_zm":
 			final_damage = 710;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.75;
 			break;
 		case "stoner63_zm":
-			final_damage = 800;
+			final_damage = 900;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.5;
 			break;
 		case "psg1_zm":
 			final_damage = 3600;
