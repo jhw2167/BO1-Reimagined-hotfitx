@@ -210,6 +210,7 @@ zombie_spawn_init( animname_set )
 	self thread zombie_gib_on_damage();
 	self thread zombie_damage_failsafe();	
 	
+	self.respawn_zombie = false;
 	if(self.animname == "zombie" ) 
 	{
 		//Check respawn queue
@@ -222,9 +223,7 @@ zombie_spawn_init( animname_set )
 			
 		} else {
 
-			self.respawn_zombie = false;
 			self.zombie_type = "normal";
-
 			if(level.zombie_types)
 			{
 				//Others
@@ -3678,7 +3677,7 @@ zombie_death_points( origin, mod, hit_location, attacker, zombie )
 		event = "ballistic_knife_death";
 	}
 
-	attacker maps\_zombiemode_score::player_add_points( event, mod, hit_location, false, zombie );
+	attacker maps\_zombiemode_score::player_add_points( event, mod, hit_location, zombie );
 }
 
 get_number_variants(aliasPrefix)
@@ -3952,7 +3951,7 @@ zombie_damage( mod, hit_location, hit_origin, player, amount )
 	{
 		if( self zombie_give_flame_damage_points() && !is_true( self.no_damage_points ) )
 		{
-			player maps\_zombiemode_score::player_add_points( "damage", mod, hit_location, self.isdog );
+			player maps\_zombiemode_score::player_add_points( "damage", mod, hit_location, self );
 		}
 	}
 	else if( self maps\_zombiemode_weap_tesla::is_tesla_damage( mod ) )
@@ -3981,7 +3980,7 @@ zombie_damage( mod, hit_location, hit_origin, player, amount )
 
 			if ( !is_true( self.no_damage_points ) )
 			{
-				player maps\_zombiemode_score::player_add_points( damage_type, mod, hit_location, self.isdog );
+				player maps\_zombiemode_score::player_add_points( damage_type, mod, hit_location, self );
 			}
 		}
 	}
@@ -4090,7 +4089,7 @@ zombie_damage_ads( mod, hit_location, hit_origin, player, amount )
 	{
 		if( self zombie_give_flame_damage_points() && !is_true( self.no_damage_points ) )
 		{
-			player maps\_zombiemode_score::player_add_points( "damage_ads", mod, hit_location );
+			player maps\_zombiemode_score::player_add_points( "damage_ads", mod, hit_location, self );
 		}
 	}
 	else if( self maps\_zombiemode_weap_tesla::is_tesla_damage( mod ) )
@@ -4119,7 +4118,7 @@ zombie_damage_ads( mod, hit_location, hit_origin, player, amount )
 
 			if ( !is_true( self.no_damage_points ) )
 			{
-				player maps\_zombiemode_score::player_add_points( damage_type, mod, hit_location );
+				player maps\_zombiemode_score::player_add_points( damage_type, mod, hit_location, self );
 			}
 		}
 	}
@@ -5323,8 +5322,8 @@ zombie_disintegrate( player )
 	self DoDamage( self.health + 666, player.origin, player );
 
 	if ( self.health <= 0 )
-	{
-		player maps\_zombiemode_score::player_add_points( "death", "", "", self.isdog );
+	{												//( event, mod, hit_location, zombie)
+		player maps\_zombiemode_score::player_add_points( "death", "", "", self );
 
 		if( self.has_legs )
 		{

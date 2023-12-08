@@ -8,7 +8,7 @@ init()
 }
 
 //chris_p - added dogs to the scoring
-player_add_points( event, mod, hit_location ,is_dog, zombie)
+player_add_points( event, mod, hit_location, zombie)
 {
 	if( level.intermission )
 	{
@@ -83,6 +83,11 @@ player_add_points( event, mod, hit_location ,is_dog, zombie)
 		case "damage":
 			//Reimagined-Expanded
 
+			//put each variable in a seperate line for easier debugging
+			//iprintln("defined: " + IsDefined( zombie ));
+			//iprintln("animname: " + zombie.animname);
+			//iprintln("respawn: " + zombie.respawn_zombie);		
+
 			if(level.apocalypse) 
 			{
 				if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW )
@@ -97,11 +102,14 @@ player_add_points( event, mod, hit_location ,is_dog, zombie)
 				{
 					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
 				}
-				
+
 				//No points for shooting zombie if it respawned
-				valid_bonus_points = IsDefined( zombie ) && ( zombie.animname == "zombie") && (!zombie.respawn_zombie);
-				if (!valid_bonus_points)
-					multiplier = 0;
+				if( IsDefined( zombie ) && ( zombie.animname == "zombie") )
+				{
+					if ( zombie.respawn_zombie )
+						multiplier = 0;
+				}				
+		
 			}
 			else //Regular zombies!
 			{

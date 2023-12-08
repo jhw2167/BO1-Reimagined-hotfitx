@@ -476,9 +476,9 @@ monkey_zombie_spawn( pack )
 //-----------------------------------------------------------------
 monkey_round_spawning()
 {
-	level endon( "intermission" );
-	level endon( "end_of_round" );
-	level endon( "restart_round" );
+	//level endon( "intermission" );
+	//level endon( "end_of_round" );
+	//level endon( "restart_round" );
 
 /#
 	level endon( "kill_round" );
@@ -491,7 +491,7 @@ monkey_round_spawning()
 
 	if ( level.intermission )
 	{
-		return;
+		//wreturn;
 	}
 
 	level.monkey_intermission = true;

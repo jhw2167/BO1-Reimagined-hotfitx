@@ -38,12 +38,34 @@ init()
 	}
 }
 
+	//Reimagined-Expanded increase door cost for apocalypse mode
+	reimagined_expanded_adjust_blockers()
+	{
+		zombie_debris = GetEntArray( "zombie_debris", "targetname" );
+		zombie_doors = GetEntArray( "zombie_door", "targetname" );
+
+		for( i = 0; i < zombie_doors.size; i++ )
+		{
+			if( IsDefined( zombie_doors[i].zombie_cost ) )
+				zombie_doors[i].zombie_cost += 500;	//flat 500 increase
+		}
+
+		for( i = 0; i < zombie_debris.size; i++ )
+		{
+			if( IsDefined( zombie_doors[i].zombie_cost ) )
+				zombie_debris[i].zombie_cost += 500;	//flat 500 increase
+		}
+
+	}
+
 
 //
 //	BLOCKERS
 //
 init_blockers()
 {
+	reimagined_expanded_adjust_blockers();
+
 	// EXTERIOR BLOCKERS ----------------------------------------------------------------- //
 	level.exterior_goals = getstructarray( "exterior_goal", "targetname" );
 

@@ -45,11 +45,11 @@ main()
 	level.starting_round=GetDvarInt("zombie_round_start");
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
-	//Override 
-	/* 									/
-	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=20;	///
-	level.starting_points_override=500000;	///
+	//Overrides
+	/* 									*/
+	level.zombie_ai_limit_override=30;	///
+	level.starting_round_override=4;	///
+	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.server_cheats_override=true;	///
 	level.apocalypse_override=true;		//*/
@@ -368,6 +368,47 @@ reimagined_init_level()
 	level.SUPER_SPRINTER_SPEED = 100;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
+
+	//Apocalypse Auto round tick forward values
+	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_EARLY = 60;	//Seconds between zombies thresholds
+	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED = 90;	//Seconds between zombies thresholds rounds
+	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_LATE = 150;	//Seconds between zombies thresholds rounds
+	
+	level.THRESHOLD_MAX_APOCALYSE_ROUND = 30;	//After this round, behave the same
+	level.VALUE_APOCALYPSE_WAIT_ROUNDS = 5;			//Every 5 rounds, get a wait
+	level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS = [];
+	level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS = [];
+	level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS = [];
+
+	for(i=0;i <= level.THRESHOLD_MAX_APOCALYSE_ROUND; i++) 
+	{
+		level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10000000; //No threshold, theoretical max
+		if( i < 5 ) {
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 60;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 250;
+		}
+		else if( i < 10 ) {
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 150;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 500;
+		}
+		else if( i < 15 ) {
+			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10;
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_EARLY;
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1500;
+		}
+		else if( i < 20 ) {
+			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 15;
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED;
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1500;
+		}
+		else {
+			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 20;
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_LATE;
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
+		}
+			
+	}
+		
 
 	level.VALUE_HORDE_SIZE = 100; 			/// none in early rounds
 	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
@@ -4652,72 +4693,25 @@ ai_calculate_amount()
 	}
 
 	max = int(max * player_multiplier);
-
-	if( !isDefined( level.max_zombie_func ) )
-	{
-		level.max_zombie_func = ::default_max_zombie_func;
-	}
-
-	if ( !(IsDefined( level.kill_counter_hud ) && level.zombie_total > 0) )
-	{
-		level.zombie_total = max;
-	}
-
-	if ( IsDefined( level.zombie_total_set_func ) )
-	{
-		level thread [[ level.zombie_total_set_func ]]();
-	}
+	level.zombie_round_total = max;
 
 	//Reimagined-Expanded: More zombies in Apocalypse mode!
 	if(level.tough_zombies && level.round_number > 5) {
-		level.zombie_total = int(level.zombie_total * 1.2);
-	}
-
-	level.zombie_round_total=level.zombie_total;
-
-	/*max = level.zombie_vars["zombie_max_ai"];
-
-	multiplier = level.round_number / 5;
-	if( multiplier < 1 )
-	{
-		multiplier = 1;
-	}
-
-	// After round 10, exponentially have more AI attack the player
-	if( level.round_number >= 10 )
-	{
-		multiplier *= level.round_number * 0.15;
-	}
-
-	player_num = get_players().size;
-
-	if( player_num == 1 )
-	{
-		max += int( ( 0.5 * level.zombie_vars["zombie_ai_per_player"] ) * multiplier );
-	}
-	else
-	{
-		max += int( ( ( player_num - 1 ) * level.zombie_vars["zombie_ai_per_player"] ) * multiplier );
-	}
-
-	//max += int( ( ( player_num / 2 ) * level.zombie_vars["zombie_ai_per_player"] ) * multiplier );
+		level.zombie_round_total = int( level.zombie_round_total  * 1.2);
+	} 
 
 	if( !isDefined( level.max_zombie_func ) )
 	{
 		level.max_zombie_func = ::default_max_zombie_func;
 	}
 
-	// Now set the total for the new round, except when it's already been set by the
-	//	kill counter.
-	if ( !(IsDefined( level.kill_counter_hud ) && level.zombie_total > 0) )
-	{
-		level.zombie_total = [[ level.max_zombie_func ]]( max );
-	}
+	level.zombie_total += level.zombie_round_total; //Reimagined-Expanded: Add zombies to the total in apocalypse mode
 
 	if ( IsDefined( level.zombie_total_set_func ) )
 	{
 		level thread [[ level.zombie_total_set_func ]]();
-	}*/
+	}
+	
 }
 
 //
@@ -5044,6 +5038,9 @@ round_start()
 	{
 		level.round_spawn_func = ::round_spawning;
 	}
+	level.round_spawn_wrapper_func = ::round_spawn_wrapper_func;
+	level.zombie_spawn_func = level.round_spawn_func;
+	level.base_zombie_spawn_func = ::round_spawning;
 /#
 	if (GetDvarInt( #"zombie_rise_test") )
 	{
@@ -5678,7 +5675,7 @@ round_think()
 		bbPrint( "zombie_rounds: round %d player_count %d", level.round_number, players.size );
 
 		level.round_start_time = GetTime();
-		level thread [[level.round_spawn_func]]();
+		level thread [[level.round_spawn_wrapper_func]]();
 
 		level notify( "start_of_round" );
 
@@ -5718,42 +5715,24 @@ round_think()
 		//		round_text( &"ZOMBIE_ROUND_END" );
 		level chalk_round_over();
 
-		// here's the difficulty increase over time area
-
-		//Reimagined-Expanded, handled in round_start function
-		/*
-		timer = level.zombie_vars["zombie_spawn_delay"];
-		if ( timer > 0.08 )
-		{
-			level.zombie_vars["zombie_spawn_delay"] = timer * 0.95;
-		}
-		else if ( timer < 0.08 )
-		{
-			level.zombie_vars["zombie_spawn_delay"] = 0.08;
-		}
-		*/
-
-		//
-		// Increase the zombie move speed
-		//level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
-
-// 		iPrintlnBold( "End of Round " + level.round_number );
-// 		for ( i=0; i<level.team_pool.size; i++ )
-// 		{
-// 			iPrintlnBold( "Team Pool "+(i+1)+" score: ", level.team_pool[i].score_total );
-// 		}
-//
-// 		players = get_players();
-// 		for ( p=0; p<players.size; p++ )
-// 		{
-// 			iPrintlnBold( "Total Player "+(p+1)+" score : "+ players[p].score_total );
-// 		}
-
 		level.round_number++;
 
 		level notify( "between_round_over" );
 	}
 }
+
+round_spawn_wrapper_func()
+{
+	
+	self thread [[level.round_spawn_func]]();
+
+	//If its a special round, call zombie spawning function
+	if( level.dog_intermission || flag("thief_round") || flag("monkey_round") || flag("enter_nml") || flag("dog_round") ) {
+		self thread [[level.zombie_spawn_func]]();
+	}
+	
+}
+
 
 award_grenades_for_survivors()
 {
@@ -5832,24 +5811,8 @@ ai_calculate_health( round_number )
 		if(i == 15)	
 			rTenfactor=1;
 		health += base * ( Int( i / logFactor ) + rTenfactor);
-		//iprintln(health);		
+		//iprintln(health);	
 	}
-
-	//Reimagined-Expanded - Reduce extreme scaling for non apocalypse players
-	
-	/*
-	if(!level.tough_zombies && round_number > level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND)
-	{
-		round_diff = round_number - level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR_START_ROUND;
-		health_scalar = 1 - (level.VALUE_NORMAL_ZOMBIE_REDUCE_HEALTH_SCALAR * round_diff);
-		
-		if(health_scalar > 0.4)
-			health_scalar = 0.4;
-
-		health = health * health_scalar;
-		
-	}
-	*/
 
 	//Player zombie health multiplier
 	if(level.tough_zombies && level.round_number >= level.THRESHOLD_ZOMBIE_PLAYER_BONUS_HEALTH_ROUND ) {
@@ -5860,23 +5823,6 @@ ai_calculate_health( round_number )
 	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
 		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
-
-		//Vanilla scaling is too weak for increased weapon damage
-		/*
-		level.zombie_health = level.zombie_vars["zombie_health_start"];
-		for ( i=2; i<=round_number; i++ )
-		{
-			// After round 10, get exponentially harder
-			if( i >= 10 )
-			{
-				level.zombie_health += Int( level.zombie_health * level.zombie_vars["zombie_health_increase_multiplier"] );
-			}
-			else
-			{
-				level.zombie_health = Int( level.zombie_health + level.zombie_vars["zombie_health_increase"] );
-			}
-		} 
-		*/
 	
 	iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
@@ -6022,33 +5968,108 @@ round_wait()
 
 	wait( 1 );
 
-	if( flag("dog_round" ) )
-	{
-		flag_wait("dog_round_spawning");
-		while( level.dog_intermission )
-		{
-			wait(.05);
+	//Reimagined-Expanded, apocalypse mode keeps rounds moving
+	if( level.apocalypse ) {
+	
+		//Moon Ramping Up zombies sound to play on next round start
+		//For all players, play sound at position: playsoundatposition(sound, self.origin);
+		players = get_players();
+		for(i=0;i<players.size;i++) {
+			playsoundatposition("amb_alarm_radar_station", players[i].origin);
 		}
+		
+		if( !IsDefined( level.sound_num ) )
+			level.sound_num = 0;
+
+		//iprintln("Siren sound" + level.sound_num);
+	   	//thread play_sound_2d( "amb_alarm_radar_station" );
+		//thread play_sound_2d( "amb_radar_station_alarm" );
+		thread play_sound_2d( "evt_nomans_warning" );
+
+		level thread reimagined_expanded_apocalypse_rounds();
 	}
-	else
+
+	//Reimagined-Epanded
+	//We don't care about dog rounds, dogs and zombies/mokeys etc come at once
+	while( get_enemy_count() > 0 || level.zombie_total > 0 || level.intermission )
 	{
-		while( get_enemy_count() > 0 || level.zombie_total > 0 || level.intermission )
+		if( flag( "end_round_wait" ) )
 		{
-			if( flag( "end_round_wait" ) )
-			{
-				return;
-			}
+			return;
+		}
 
-			while(flag("round_restarting"))
-			{
-				wait .05;
-			}
+		while(flag("round_restarting"))
+		{
+			wait .05;
+		}
 
-			wait( .05 );
+		wait( .05 );
+	}
+
+	//Reimagined-Expanded, apocalypse mode bonus
+	if( level.apocalypse && level.round_number <= level.THRESHOLD_MAX_APOCALYSE_ROUND ) 
+	{
+		if( level.round_number % level.VALUE_APOCALYPSE_WAIT_ROUNDS == 0 )
+			return;	//Intermission round, no bonus every 5 rounds
+
+		wait( 2 );
+		players = get_players();
+		for(i=0;i<players.size;i++) {
+			players[i] maps\_zombiemode_score::add_to_player_score( level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ] );
 		}
 	}
 }
 
+/*
+	Reimagined-Expanded apocalypse round formula, this code is called form a thread in round_wait function
+	- Before round 10, players have minimum alloted time to complete round, or it advances anyways
+	- After round 10, the round advances 30, 60, 150 (etc) seconds after nth zombie spawns (10th, 15th, 20th, etc)
+	- every 5 rounds, there is a true typical wait where the last zombie must die
+*/
+reimagined_expanded_apocalypse_rounds()
+{
+	self endon("end_of_round");
+
+	round = level.round_number;
+	wait_time = level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[ level.THRESHOLD_MAX_APOCALYSE_ROUND ];
+	if(round < level.THRESHOLD_MAX_APOCALYSE_ROUND)
+		wait_time = level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[ round ];
+		
+	zombs_threshold = undefined;
+
+	if( round <= level.THRESHOLD_MAX_APOCALYSE_ROUND ) 
+	{	
+		if( round % level.VALUE_APOCALYPSE_WAIT_ROUNDS == 0 )
+			zombs_threshold = 0;
+		else 
+			zombs_threshold = level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ round ];
+	}
+	else {
+		zombs_threshold = round; //Whenever there are less zombies than the round number, end the round
+	}
+
+	remaining_zombies = level.zombie_total + get_enemy_count();
+	while( remaining_zombies > zombs_threshold )
+	{
+		remaining_zombies = level.zombie_total + get_enemy_count();
+		wait( 0.5 );
+	}
+	
+
+	wait( wait_time );
+
+	self thread clear_flag("end_round_wait", 5);
+	flag_set("end_round_wait");
+}
+// */
+
+//Reimagined-Expanded flag clearing utility
+clear_flag(flag, wait_time) 
+{
+	if( IsDefined(wait_time) )
+		wait(wait_time);
+	flag_clear(flag);
+}
 
 is_friendly_fire_on()
 {
