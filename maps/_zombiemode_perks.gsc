@@ -3099,7 +3099,7 @@ upgrade_perk_fx()
 	model LinkTo( self, "tag_origin" );
 	//model LinkTo( self, "tag_flash" );
 
-	PlayFXOnTag( level._effect["powerup_on"], model, "tag_origin" );
+	PlayFXOnTag( level._effect["powerup_on_solo"], model, "tag_origin" );
 	self waittill( "weapon_change_complete");
 	
 	model delete();

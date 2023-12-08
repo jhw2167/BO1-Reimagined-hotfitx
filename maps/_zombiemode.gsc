@@ -46,7 +46,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									*/
+	/* 									/
 	level.zombie_ai_limit_override=30;	///
 	level.starting_round_override=4;	///
 	level.starting_points_override=50000;	///
@@ -1384,6 +1384,7 @@ init_levelvars()
 	level.pro_tips_start_time		= 0;
 	level.intermission				= false;
 	level.dog_intermission			= false;
+	level.monkey_intermission	= false;
 	level.zombie_total				= 0;
 	level.total_zombies_killed		= 0;
 	level.no_laststandmissionfail	= true;
@@ -5727,7 +5728,7 @@ round_spawn_wrapper_func()
 	self thread [[level.round_spawn_func]]();
 
 	//If its a special round, call zombie spawning function
-	if( level.dog_intermission || flag("thief_round") || flag("monkey_round") || flag("enter_nml") || flag("dog_round") ) {
+	if( level.dog_intermission || level.monkey_intermission || flag("thief_round") || flag("monkey_round") || flag("enter_nml") || flag("dog_round") ) {
 		self thread [[level.zombie_spawn_func]]();
 	}
 	
@@ -6015,7 +6016,10 @@ round_wait()
 		wait( 2 );
 		players = get_players();
 		for(i=0;i<players.size;i++) {
-			players[i] maps\_zombiemode_score::add_to_player_score( level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ] );
+			bonus = level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ];
+			if( level.players_size == 1)
+				bonus *= 2;
+			players[i] maps\_zombiemode_score::add_to_player_score( bonus );
 		}
 	}
 }
