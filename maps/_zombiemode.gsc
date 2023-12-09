@@ -48,7 +48,7 @@ main()
 	//Overrides
 	/* 									/
 	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=3;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.server_cheats_override=true;	///
@@ -431,7 +431,7 @@ reimagined_init_level()
 	
 	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 25;	//25 points per zombie killed before it despawns
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT = 5; //goes up every 5 rounds
-	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START = 10;
+	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START = 5;
 
 	level.VALUE_PLAYER_DOWNED_PENALTY = 25;	//Multiplied by num players - 1
 	level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL = 3; //POSTs every 2.5 seconds
@@ -548,11 +548,19 @@ reimagined_init_level()
 	level.VALUE_EXPLOSIVE_BASE_RANGE = 250;
 	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
 
+	/*
+		include_weapon( "zombie_doublebarrel", false, true );
+		include_weapon( "zombie_doublebarrel_upgraded", false );
+		include_weapon( "zombie_shotgun", false, true );
+		include_weapon( "zombie_shotgun_upgraded", false );
+		*/
+
 	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
 	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x max 4.5x damage
 	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
+									 "zombie_doublebarrel", "zombie_doublebarrel_upgraded", "zombie_shotgun", "zombie_shotgun_upgraded",
 									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
-									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"
+									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"						
 									 );
 
 	//MISCELLANEOUS EFFECTS
@@ -632,6 +640,8 @@ reimagined_init_player()
 wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
+	//iprintln( "wait_set_player_visionset");
+	//iprintln( level.zombie_visionset );
 	if(IsDefined(level.zombie_visionset)) {
 		self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
@@ -5801,10 +5811,10 @@ ai_calculate_health( round_number )
 
 	//HERE_
 	//Reimagined-Expanded - exponential health scaling
-	base = 1000;
-	rTenfactor = 0.40;
+	base = 800;
+	rTenfactor = 0.30;
 	startHealth = 150;
-	logFactor = 6;
+	logFactor = 4.5;
 	
 	health = startHealth;
 	for ( i=2; i<=round_number; i++ )
@@ -6012,8 +6022,13 @@ round_wait()
 	{
 		if( level.round_number % level.VALUE_APOCALYPSE_WAIT_ROUNDS == 0 )
 			return;	//Intermission round, no bonus every 5 rounds
+		level thread reimagined_expanded_apocalypse_bonus();
+	}
+}
 
-		wait( 4 );
+reimagined_expanded_apocalypse_bonus()
+{
+	wait( 5 );
 		players = get_players();
 		for(i=0;i<players.size;i++) {
 			bonus = level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ];
@@ -6021,7 +6036,6 @@ round_wait()
 				bonus *= 2;
 			players[i] maps\_zombiemode_score::add_to_player_score( bonus );
 		}
-	}
 }
 
 /*
@@ -7060,7 +7074,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) 
 		{
 			damage = int(self.maxhealth / level.round_number) + 100;
-			final_damage = int(self.maxhealth / 4) + 10;
+			factor = 4;
+			if( level.round_number < 10 )
+				factor = 2;
+			else if( level.round_number < 15 )
+				factor = 5;
+
+			final_damage = int(self.maxhealth / factor ) + 10;
 			if(damage < final_damage)
 				return final_damage;
 			else
@@ -7167,10 +7187,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			// boss zombie types do not get damage scaling
 			if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
 			{
-				final_damage = int(self.maxhealth / 6) + 1;
+				if( level.round_number < 10 )
+					final_damage = int(self.maxhealth / 2) + 1;
+				else
+					final_damage = int(self.maxhealth / 3) + 1;
 
 				if(attacker hasProPerk(level.PHD_PRO))
-					final_damage *= 2;
+					final_damage *= 3;
 			}
 		}
 	}
@@ -7467,15 +7490,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 12500 * ( damage / 300);
 			break;
 		case "ithaca_zm":
+		case "zombie_doublebarrel":
 			final_damage = 3000 * ( damage / 160);
 			break;
 		case "ithaca_upgraded_zm":
+		case "zombie_doublebarrel_upgraded":
 			final_damage = 10000 * ( damage / 300);
 			break;
 		case "spas_zm":
+		case "zombie_shotgun":
 			final_damage = 2600 * ( damage / 160);
 			break;
 		case "spas_upgraded_zm":
+		case "zombie_shotgun_upgraded":
 			final_damage = 18000 * ( damage / 300);
 			break;
 		case "hs10_zm":
@@ -7783,24 +7810,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 			
 		}
-
-		//Shotgun Bonus Damage
-
-		if( WeaponClass(weapon) == "spread" && isSubStr(weapon, "upgraded") ) 
-		{
-			final_damage *= attacker.shotgun_attrition;
-			if( is_boss_zombie(self.animname) ) {
-				return int(final_damage / 10);
-			}
-
-			if( final_damage >= self.health ) {
-				return int( final_damage );
-			}
-
-			if( final_damage > int(self.maxhealth / 4) && (self.health > self.max_health / 2) ) {
-				self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME, false );
-			}
-		}
 		
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
@@ -7831,6 +7840,28 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		} else {
 			//iprintln("Marked: " + dbt_marked);
 			self.dbtap_marked = -1;
+		}
+
+		//Shotgun Bonus Damage
+		if( WeaponClass(weapon) == "spread" ) 
+		{
+			final_damage *= attacker.shotgun_attrition;
+			if( is_boss_zombie(self.animname) ) {
+				return int(final_damage / 5);
+			}
+
+			//Zombie knockdown
+			if( isSubStr(weapon, "upgraded")  )
+			{
+				if( final_damage >= self.health ) {
+				return int( final_damage );
+			}
+
+				if( final_damage > int(self.maxhealth / 4) && (self.health > self.max_health / 2) ) {
+					self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME, false );
+				}
+			}
+			
 		}
 	
 	} //End "bullet dmg only" wrapping if statment
