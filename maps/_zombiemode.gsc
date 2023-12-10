@@ -384,7 +384,7 @@ reimagined_init_level()
 	{
 		level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10000000; //No threshold, theoretical max
 		if( i < 5 ) {
-			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 60;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 90;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 250;
 		}
 		else if( i < 10 ) {
@@ -425,7 +425,9 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
 	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
 
-	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=20;
+	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
+	if( isDefined( level.players_size) )
+		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=32 - level.players_size;
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 	
@@ -461,11 +463,13 @@ reimagined_init_level()
 	level.VALUE_THIEF_HEALTH_SCALAR = 25;	//this many times avg zombie max health of this round
 
 	//Weapon Pap
+	level.VALUE_PAP_COST = 5000;
+	level.VALUE_PAP_EXPENSIVE_COST = 10000;
 	level.VALUE_PAP_X2_COST = 10000;
-	level.VALUE_PAP_X2_EXPENSIVE_COST = 20000;
+	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
 	
-	level.VALUE_PERK_PUNCH_COST = 5000;
-	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
+	level.VALUE_PERK_PUNCH_COST = 10000;
+	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 20000;
 	
 
 	//Perk Effects
@@ -854,6 +858,8 @@ watch_player_sheercold()
 
 watch_player_shotgun_attrition()
 {
+	level waittill( "begin_spawning" );
+
 	while(1)
 	{
 		//Get all players weapons and check if they are a shotgun
@@ -874,6 +880,12 @@ watch_player_shotgun_attrition()
 		
 		//wait til round over
 		level waittill( "start_of_round" );
+
+		//If player using PaP, then wait 5 seconds
+		while( flag( "pack_machine_in_use" ) ) {
+			iprintln("waiting for pack machine");
+			wait(1);
+		}
 	}
 }
 
@@ -4909,14 +4921,14 @@ reimagined_expanded_round_start()
 		if( level.round_number < 4 )
 		{
 			level.zombie_move_speed = 40;
-			level.zombie_vars["zombie_spawn_delay"] = 1;
+			level.zombie_vars["zombie_spawn_delay"] = 0.25;
 
 			//MAX ZOMBIES
-			level.zombie_ai_limit = 8 + 6*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
 			level.zombie_move_speed = 60;	//runners
-			level.zombie_ai_limit = 12 + 10*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( level.zombie_ai_limit / 2 );
 			level.VALUE_HORDE_DELAY = int( 10 - level.players_size * 2 ); 
@@ -4924,14 +4936,22 @@ reimagined_expanded_round_start()
 		else if(  level.round_number < 16 )
 		{
 			level.zombie_move_speed = 85;	//sprinters
-			level.zombie_vars["zombie_spawn_delay"] = .25;
-			level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; // Soft limit at 45, hard limit at 100, network issues?
+			if( level.players_size == 1) {
+				level.zombie_vars["zombie_spawn_delay"] = .5;
+				level.zombie_ai_limit = 24; // Soft limit at 45, hard limit at 100, network issues?
+			} else {
+				level.zombie_vars["zombie_spawn_delay"] = 1;
+				level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; // Soft limit at 45, hard limit at 100, network issues?
+			}
 
 			level.VALUE_HORDE_SIZE = 16 + 4*level.players_size;
-			level.VALUE_HORDE_DELAY = 4; 
+			level.VALUE_HORDE_DELAY = 20 - 4*level.players_size;; 
 
 		} else if(  level.round_number < 24 )
 		{
+			if( level.players_size == 1) {
+				level.zombie_ai_limit = 32; 
+			}
 			level.zombie_move_speed = 110;
 			level.zombie_vars["zombie_spawn_delay"] = .08;
 
@@ -4940,6 +4960,10 @@ reimagined_expanded_round_start()
 
 		} else if( level.round_number < 30 )
 		{
+			if( level.players_size == 1) {
+				level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; 
+			}
+
 			level.zombie_move_speed = 130;
 			level.VALUE_HORDE_SIZE = 24 + 8*level.players_size;
 			level.VALUE_HORDE_DELAY = 10 - 2*level.players_size;
