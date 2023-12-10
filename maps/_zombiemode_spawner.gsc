@@ -211,6 +211,7 @@ zombie_spawn_init( animname_set )
 	self thread zombie_damage_failsafe();	
 	
 	self.respawn_zombie = false;
+	iprintln("zombie_spawn_init: " + self.animname);
 	if(self.animname == "zombie" ) 
 	{
 		//Check respawn queue
@@ -246,7 +247,7 @@ zombie_spawn_init( animname_set )
 		if(level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND
 		&& !self.respawn_zombie
 		)
-			self zombie_determine_drop();
+			self thread zombie_determine_drop();
 	}
 	
 
@@ -565,6 +566,10 @@ set_zombie_run_cycle( new_move_speed )
 	death_anims = level._zombie_deaths[self.animname];
 
 	self.deathanim = random(death_anims);
+
+	if( self.animname != "zombie" ) {
+		iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
+	}
 
 // var = 0;
 

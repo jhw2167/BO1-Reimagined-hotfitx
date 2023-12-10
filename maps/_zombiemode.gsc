@@ -46,11 +46,13 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									/
-	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=20;	///
+	/* 									*/
+	level.zombie_ai_limit_override=10;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
+	level.zombie_timeout_override=1000;	///
+	level.spawn_delay_override=1;			///
 	level.server_cheats_override=true;	///
 	level.apocalypse_override=true;		//*/
 
@@ -428,6 +430,9 @@ reimagined_init_level()
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
 	if( isDefined( level.players_size) )
 		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=32 - level.players_size;
+	else if ( isDefined( level.zombie_timeout_override ) )
+		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = level.zombie_timeout_override;
+
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 	
@@ -469,7 +474,7 @@ reimagined_init_level()
 	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
 	
 	level.VALUE_PERK_PUNCH_COST = 10000;
-	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 20000;
+	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
 	
 
 	//Perk Effects
@@ -571,12 +576,20 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
 
-
 	//Real Time Variables
 	level.respawn_queue = [];
 	level.respawn_queue_locked = false;
 	level.respawn_queue_num = 0;
 	level.respawn_queue_unlocks_num = 0;
+
+
+	//Maps
+
+	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
+	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 1000;		//1-1000
+	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX = 5;
+
+	
 
 }
 
@@ -645,11 +658,11 @@ wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
 	//iprintln( "wait_set_player_visionset");
-	//iprintln( level.zombie_visionset );
+	iprintln( level.zombie_visionset );
 	if(IsDefined(level.zombie_visionset)) {
 		self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
-		self VisionSetNaked( "zombie_neutral", 0.5 );
+		//self VisionSetNaked( "zombie_neutral", 0.5 );
 	}
 }
 
@@ -2528,7 +2541,7 @@ onPlayerDowned()
 		self waittill("player_downed");
 
 		//Reimagined-Expanded Down penalty
-		if(level.apocalypse && !flag( "solo_game" ) )
+		//if(level.apocalypse && !flag( "solo_game" ) )
 			self thread laststand_points_penalty();
 
 		if(level.gamemode != "survival" && get_number_of_valid_players() > 0)
@@ -2597,12 +2610,14 @@ Laststand_points_penalty()
 	self endon ("death");
 	self endon ("disconnect");
 
+	iprintln("waiting for revive");
 	//While player not revived, all players lose points
 	if( !isdefined( self.bleedout_time ) ) {
 		iprintln("Player not bleeding out");
 		return;
 	}
 
+	count = 0;
 	while( self.bleedout_time > 0 )
 	{
 		players = get_players();
@@ -2617,9 +2632,12 @@ Laststand_points_penalty()
 		}
 
 		for ( i = 0; i < players.size; i++ ) {
-			penalty = level.VALUE_PLAYER_DOWNED_PENALTY * (level.players_size - 1);
-			players[i] maps\_zombiemode_score::minus_to_player_score( penalty );
+			penalty = level.VALUE_PLAYER_DOWNED_PENALTY * ( level.players_size );
+			if( players[i].score > penalty )
+				players[i] maps\_zombiemode_score::minus_to_player_score( penalty );
 		}	
+		count++;
+		iprintln("waiting for revive" + count);
 		wait ( level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL );
 	}
 
@@ -4459,11 +4477,7 @@ round_spawning()
 	level endon( "kill_round" );
 #/
 
-	if( level.intermission )
-	{
-		return;
-	}
-
+	
 	if( level.enemy_spawns.size < 1 )
 	{
 		ASSERTMSG( "No active spawners in the map.  Check to see if the zone is active and if it's pointing to spawners." );
@@ -4477,6 +4491,7 @@ round_spawning()
 	}
 #/
 
+	iprintln( "Round " + level.round_number + " starting" );
 	ai_calculate_health( level.round_number );
 
 	count = 0;
@@ -4490,9 +4505,8 @@ round_spawning()
 
 	ai_calculate_amount();
 
-	if ( level.round_number < 10 )
-	{
-		level thread zombie_speed_up();
+	if ( level.round_number < 10 ) {
+		level thread [[ level.zombie_speed_up_func ]]();
 	}
 
 	mixed_spawns = 0;	// Number of mixed spawns this round.  Currently means number of dogs in a mixed round
@@ -4772,7 +4786,7 @@ zombie_speed_up()
 	zombies = GetAiSpeciesArray( "axis", "all" );
 	while( zombies.size > 0 )
 	{
-		if( zombies.size == 1 && zombies[0].has_legs == true )
+		if( zombies.size == 1 && zombies[0].has_legs == true && zombies[0].animname == "zombie" )
 		{
 			if ( isdefined( level.zombie_speed_up ) )
 			{
@@ -4999,6 +5013,9 @@ reimagined_expanded_round_start()
 		}
 
 
+	if(level.spawn_delay_override)
+		level.zombie_vars["zombie_spawn_delay"] = level.spawn_delay_override;
+
 	if( IsDefined(level.zombie_ai_limit_override) )
 		level.zombie_ai_limit = level.zombie_ai_limit_override;
 	
@@ -5076,6 +5093,12 @@ round_start()
 	level.round_spawn_wrapper_func = ::round_spawn_wrapper_func;
 	level.zombie_spawn_func = level.round_spawn_func;
 	level.base_zombie_spawn_func = ::round_spawning;
+
+
+	if( !isDefined(level.zombie_speed_up_func) ) {
+		level.zombie_speed_up_func = ::zombie_speed_up;
+	}
+
 /#
 	if (GetDvarInt( #"zombie_rise_test") )
 	{
@@ -5759,13 +5782,21 @@ round_think()
 round_spawn_wrapper_func()
 {
 	
-	self thread [[level.round_spawn_func]]();
+	level thread [[level.round_spawn_func]]();
 
-	//If its a special round, call zombie spawning function
-	if( level.dog_intermission || level.monkey_intermission || flag("thief_round") || flag("monkey_round") || flag("enter_nml") || flag("dog_round") ) {
-		self thread [[level.zombie_spawn_func]]();
-	}
+	//If its a special round, call zombie spawning function too in apocalypse mode
 	
+	if( 
+	   level.dog_intermission 
+	|| level.monkey_intermission 
+	|| flag("thief_round") 
+	|| flag("monkey_round") 
+	|| flag("dog_round")
+	|| flag("enter_nml") 
+	) {
+		level thread [[level.zombie_spawn_func]]();
+	}
+		
 }
 
 
@@ -6048,6 +6079,7 @@ round_wait()
 			return;	//Intermission round, no bonus every 5 rounds
 		level thread reimagined_expanded_apocalypse_bonus();
 	}
+
 }
 
 reimagined_expanded_apocalypse_bonus()
@@ -7542,6 +7574,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			//iprintln("default case for damage weapons");
 			break;
 			
+		}
+
+		//Buff for early game weapons, they need it
+		if( !isSubStr(weapon, "_upgraded") ) {
+			final_damage *= 1.25;
 		}
 		
 		// Death Machine - kills in 4 body shots or 2 headshots

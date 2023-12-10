@@ -261,11 +261,12 @@ temple_round_spawning()
 	mixed_spawns = 0;	// Number of mixed spawns this round.  Currently means number of dogs in a mixed round
 
 	_update_napalm_variables();
-	_update_monkey_variables();
 	_update_sonic_variables();
 	level.special_zombie_spawned_this_round = false;
 
 	old_spawn = undefined;
+	count = 0;
+	special_zombie_count = 0;
 	while( 1 )
 	{
 		while( level.zombie_total <= 0 )
@@ -309,15 +310,23 @@ temple_round_spawning()
 		}
 		old_spawn = spawn_point;
 
-		ai = _try_spawn_napalm(spawn_point);
-				
-		if ( !IsDefined(ai) )
-		{
-			ai = _try_spawn_monkey();
-		}
+		ai = undefined;
+		rand = RandomInt(1000);
+		napalm_rate = level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE * 0.5;
+		sonic_rate = level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE;
+
 		
-		if ( !IsDefined(ai) )
-		{
+		if(level.zombie_total <= 5 
+		|| level.round_number < level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND 
+		|| special_zombie_count > level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX )
+			rand = 1000;
+
+		if( rand < napalm_rate ) {
+			iprintlnbold( "to spawn napalm" );
+			//ai = _try_spawn_napalm(spawn_point);
+		}
+		if( rand < sonic_rate && !IsDefined(ai)  ) {
+			iprintlnbold( "to spawn sonic" );
 			ai = _try_spawn_sonic(spawn_point);
 		}
 		
@@ -325,13 +334,21 @@ temple_round_spawning()
 		{
 			//ai = spawn_zombie( spawn_point ); 
 			ai = _try_spawn_zombie(spawn_point);
+		} else {
+			level.zombie_total++;
+			//special_zombie_count++;
 		}
 
 		if( IsDefined( ai ) )
 		{
 			level.zombie_total--;
 			ai thread round_spawn_failsafe();
-			//count++; 
+			count++; 
+		}
+
+				//Reimagined-Expanded: Mix up zombie spawning times into hordes
+		if( count % level.VALUE_HORDE_SIZE == 0 && count > 0 && level.zombie_total > 0 ) {
+			wait( level.VALUE_HORDE_DELAY );
 		}
 
 		wait( level.zombie_vars["zombie_spawn_delay"] ); 
@@ -381,7 +398,7 @@ zombie_speed_up_temple()
 	{
 		if( zombies.size == 1 && is_true(zombies[0].has_legs) )
 		{
-			if ( !zombies[0] maps\zombie_temple_traps::zombie_on_mud() )
+			if ( !zombies[0] maps\zombie_temple_traps::zombie_on_mud() && zombies[0].animname == "zombie" )
 			{
 				var = randomintrange(1, 4);
 				zombies[0] set_run_anim( "sprint" + var );                       
@@ -441,7 +458,7 @@ enemies_still_alive()
 
 _update_napalm_variables()
 {
-	level.zombiesLeftBeforeNapalmSpawn = RandomIntRange(int(level.zombie_total*0.25), int(level.zombie_total*0.75));
+	level.zombiesLeftBeforeNapalmSpawn = RandomIntRange(int(level.zombie_round_total*0.25), int(level.zombie_round_total*0.75));
 }
 
 _try_spawn_napalm(spawn_point)
@@ -451,7 +468,7 @@ _try_spawn_napalm(spawn_point)
 		return undefined;
 	}
 	
-	if(isDefined(level.napalmZombieCount) && level.napalmZombieCount>0)
+	if(isDefined(level.napalmZombieCount) && level.napalmZombieCount>2)
 	{
 		return undefined;
 	}
@@ -466,7 +483,7 @@ _try_spawn_napalm(spawn_point)
 	//{
 	//	return undefined;
 	//}
-
+	iprintln( "other: " );
 	ai = undefined;
 	if ( _can_spawn_napalm() )
 	{
@@ -508,9 +525,11 @@ _try_spawn_napalm(spawn_point)
 
 			if(level.gamemode != "snr" && level.gamemode != "race" && level.gamemode != "gg")
 			{
-				level.special_zombie_spawned_this_round = true;
+				//level.special_zombie_spawned_this_round = true;
 			}
+			iprintln( "spawn for napalm succeeded: " );
 		}
+		iprintln( "spawn for napalm zomb failed: " );
 	}
 
 	return ai;
@@ -600,6 +619,7 @@ _can_spawn_napalm()
 	spawnPoint = _get_special_spawn_point();
 	if ( !IsDefined(spawnPoint) )
 	{
+		iprintln( "no spawn point" );
 		return false;
 	}
 	
@@ -609,7 +629,8 @@ _can_spawn_napalm()
 	}
 
 	// wait until at least mid round to spawn the napalm zombie, if it's an appropriate napalm round
-	return level.zombie_total < level.zombiesLeftBeforeNapalmSpawn;
+	//return level.zombie_total < level.zombiesLeftBeforeNapalmSpawn;
+	return true;
 
 }
 
@@ -618,7 +639,7 @@ _can_spawn_napalm()
 _update_monkey_variables()
 {
 	level.monkeysSpawnedThisRound = 0;
-	level.zombiesLeftBeforeMonkeySpawn = RandomIntRange(int(level.zombie_total*0.75), level.zombie_total);
+	level.zombiesLeftBeforeMonkeySpawn = RandomIntRange(int(level.zombie_round_total*0.75), level.zombie_round_total);
 
 	// do we want these a bit easier/harder?
 	level.monkey_zombie_health = level.zombie_health;
@@ -658,7 +679,7 @@ _can_spawn_monkey()
 
 _update_sonic_variables()
 {
-	level.zombiesLeftBeforeSonicSpawn = RandomIntRange(int(level.zombie_total*0.25), int(level.zombie_total*0.75));
+	level.zombiesLeftBeforeSonicSpawn = RandomIntRange(int(level.zombie_round_total*0.25), int(level.zombie_round_total*0.75));
 }
 
 _try_spawn_sonic(spawn_point)
@@ -687,6 +708,7 @@ _try_spawn_sonic(spawn_point)
 	ai = undefined;
 	if ( _can_spawn_sonic() )
 	{
+		iprintln("can spawn sonic");
 		spawner = level.sonic_zombie_spawners[0];
 		//spawnOrigin = _get_non_visible_spawn_point();
 		spawnpoint = _get_special_spawn_point();
@@ -711,7 +733,7 @@ _try_spawn_sonic(spawn_point)
 		}
 		
 		ai = spawn_zombie( spawner );
-		
+		iprintln("Attempted to spawn sonic: " + ai.animname);
 		//Set up spawner so it can be used by next spawn
 		spawner.script_string = undefined;
 		spawner.count = 100; 
@@ -720,11 +742,19 @@ _try_spawn_sonic(spawn_point)
 		if ( !spawn_failed(ai) )
 		{
 			// teleport the zombie to our spawner
-			ai ForceTeleport(spawnOrigin, spawn_point.angles);
+			level waittill_notify_or_timeout("sonic_zombie_setup", 2);
+			if( flag("sonic_zombie_setup") ) {
+				ai ForceTeleport(spawnOrigin, spawn_point.angles);
+				flag_clear("sonic_zombie_setup");
+			}
+			else {
+				//ai Delete();
+				//ai = undefined;
+			}
 			
 			if(level.gamemode != "snr" && level.gamemode != "race" && level.gamemode != "gg")
 			{
-				level.special_zombie_spawned_this_round = true;
+				//level.special_zombie_spawned_this_round = true;
 			}
 		}
 	}
@@ -743,14 +773,11 @@ _can_spawn_sonic()
 	{
 		return true;
 	}
-
-	if ( level.nextSonicSpawnRound > level.round_number )
-	{
-		return false;
-	}
 	
 	// wait until at least mid round to spawn the sonic zombie, if it's an appropriate sonic round
-	return level.zombie_total < level.zombiesLeftBeforeSonicSpawn;
+	iprintln("zombies left: " + level.zombie_total +  "<" + level.zombiesLeftBeforeSonicSpawn);
+	//return level.zombie_total < level.zombiesLeftBeforeSonicSpawn;
+	return true;
 
 }
 

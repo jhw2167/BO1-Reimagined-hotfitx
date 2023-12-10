@@ -112,8 +112,9 @@ main()
 	level.create_spawner_list_func	= ::temple_create_spawner_list;
 	level.round_prestart_func       = ::temple_round_prestart;
 	level.round_spawn_func 			= ::temple_round_spawning;
-	level.round_wait_func           = ::temple_round_wait;
+	level.round_wait_func           = maps\_zombiemode::round_wait;
 	level.poi_positioning_func		= ::temple_poi_positioning_func;
+	level.zombie_speed_up_func		= ::zombie_speed_up_temple;
 
 	level.powerup_fx_func			= ::temple_powerup_fx_func;
 
