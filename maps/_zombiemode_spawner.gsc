@@ -143,6 +143,7 @@ add_cusom_zombie_spawn_logic(func)
 // set up zombie walk cycles
 zombie_spawn_init( animname_set )
 {
+
 	if( !isDefined( animname_set ) )
 	{
 		animname_set = false;
@@ -211,7 +212,6 @@ zombie_spawn_init( animname_set )
 	self thread zombie_damage_failsafe();	
 	
 	self.respawn_zombie = false;
-	iprintln("zombie_spawn_init: " + self.animname);
 	if(self.animname == "zombie" ) 
 	{
 		//Check respawn queue
@@ -246,10 +246,10 @@ zombie_spawn_init( animname_set )
 		//Reimagined-Expanded, zombie drops
 		if(level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND
 		&& !self.respawn_zombie
+		&& is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
 		)
 			self thread zombie_determine_drop();
 	}
-	
 
 	if(IsDefined(level._zombie_custom_spawn_logic))
 	{
@@ -300,6 +300,7 @@ zombie_spawn_init( animname_set )
 	self.tesla_head_gib_func = ::zombie_tesla_head_gib;
 
 	self setTeamForEntity( "axis" );
+	
 
 	if ( isDefined(level.achievement_monitor_func) )
 	{
@@ -312,7 +313,7 @@ zombie_spawn_init( animname_set )
 	}
 
 	//Reimagined-Expanded, zombie on death functions
-	zombie_on_death();
+	self thread zombie_on_death();
 
 	self.zombie_init_done = true;
 	self notify( "zombie_init_done" );

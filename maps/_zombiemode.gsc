@@ -46,7 +46,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									*/
+	/* 									/
 	level.zombie_ai_limit_override=10;	///
 	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
@@ -440,6 +440,9 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT = 5; //goes up every 5 rounds
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START = 5;
 
+	level.VALUE_SLOW_ZOMBIE_ATTACK_ANIM_TIME = 1;
+	level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX = 10;
+
 	level.VALUE_PLAYER_DOWNED_PENALTY = 25;	//Multiplied by num players - 1
 	level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL = 3; //POSTs every 2.5 seconds
 	level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME = 120;	//Player has 125 seconds to be revived
@@ -586,10 +589,8 @@ reimagined_init_level()
 	//Maps
 
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
-	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 1000;		//1-1000
+	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 48;		//1-1000
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX = 5;
-
-	
 
 }
 
@@ -896,7 +897,6 @@ watch_player_shotgun_attrition()
 
 		//If player using PaP, then wait 5 seconds
 		while( flag( "pack_machine_in_use" ) ) {
-			iprintln("waiting for pack machine");
 			wait(1);
 		}
 	}
@@ -2541,7 +2541,7 @@ onPlayerDowned()
 		self waittill("player_downed");
 
 		//Reimagined-Expanded Down penalty
-		//if(level.apocalypse && !flag( "solo_game" ) )
+		if(level.apocalypse && !flag( "solo_game" ) )
 			self thread laststand_points_penalty();
 
 		if(level.gamemode != "survival" && get_number_of_valid_players() > 0)
@@ -2610,7 +2610,6 @@ Laststand_points_penalty()
 	self endon ("death");
 	self endon ("disconnect");
 
-	iprintln("waiting for revive");
 	//While player not revived, all players lose points
 	if( !isdefined( self.bleedout_time ) ) {
 		iprintln("Player not bleeding out");
@@ -2632,12 +2631,10 @@ Laststand_points_penalty()
 		}
 
 		for ( i = 0; i < players.size; i++ ) {
-			penalty = level.VALUE_PLAYER_DOWNED_PENALTY * ( level.players_size );
+			penalty = level.VALUE_PLAYER_DOWNED_PENALTY * ( level.players_size - 1 );
 			if( players[i].score > penalty )
 				players[i] maps\_zombiemode_score::minus_to_player_score( penalty );
 		}	
-		count++;
-		iprintln("waiting for revive" + count);
 		wait ( level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL );
 	}
 
@@ -6633,6 +6630,11 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 				if( hash == self.previous_zomb_attacked_by )
 					iDamage = int(iDamage * 0.5);
 				self.previous_zomb_attacked_by = hash;
+
+				//Slow consequtive zombie attack by slowing animation
+				if( level.round_number < level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX ) {
+					eAttacker thread slow_zombie_attack_anim();
+				}
 			}
 			self.stats["damage_taken"] += iDamage;
 		}
@@ -6861,6 +6863,17 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		return finalDamage;
 	}
 }
+
+	slow_zombie_attack_anim()
+	{
+		self endon("death");
+
+		self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
+
+		wait( level.VALUE_SLOW_ZOMBIE_ATTACK_ANIM_TIME );
+
+		self maps\_zombiemode_spawner::set_zombie_run_cycle(self.zombie_move_speed_original);
+	}
 
 
 check_player_damage_callbacks( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )

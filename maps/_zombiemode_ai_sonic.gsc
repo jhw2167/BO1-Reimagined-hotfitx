@@ -293,10 +293,8 @@ _entity_in_zone(zone)
 
 sonic_zombie_spawn( animname_set )
 {
-	zombie_spawn_init( animname_set );
-
-
 	self.animname = "sonic_zombie";
+	zombie_spawn_init( animname_set );
 
 	if(isdefined(level._CF_ACTOR_IS_SONIC_ZOMBIE))
 	{

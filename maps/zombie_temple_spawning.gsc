@@ -322,11 +322,9 @@ temple_round_spawning()
 			rand = 1000;
 
 		if( rand < napalm_rate ) {
-			iprintlnbold( "to spawn napalm" );
-			//ai = _try_spawn_napalm(spawn_point);
+			ai = _try_spawn_napalm(spawn_point);
 		}
 		if( rand < sonic_rate && !IsDefined(ai)  ) {
-			iprintlnbold( "to spawn sonic" );
 			ai = _try_spawn_sonic(spawn_point);
 		}
 		
@@ -336,7 +334,7 @@ temple_round_spawning()
 			ai = _try_spawn_zombie(spawn_point);
 		} else {
 			level.zombie_total++;
-			//special_zombie_count++;
+			special_zombie_count++;
 		}
 
 		if( IsDefined( ai ) )
@@ -483,7 +481,6 @@ _try_spawn_napalm(spawn_point)
 	//{
 	//	return undefined;
 	//}
-	iprintln( "other: " );
 	ai = undefined;
 	if ( _can_spawn_napalm() )
 	{
@@ -527,9 +524,7 @@ _try_spawn_napalm(spawn_point)
 			{
 				//level.special_zombie_spawned_this_round = true;
 			}
-			iprintln( "spawn for napalm succeeded: " );
 		}
-		iprintln( "spawn for napalm zomb failed: " );
 	}
 
 	return ai;
@@ -599,7 +594,8 @@ _get_special_spawn_point()
 
 _can_spawn_napalm()
 {
-	forceSpawn = flag("zombie_napalm_force_spawn");
+	//forceSpawn = flag("zombie_napalm_force_spawn");
+	forceSpawn = true;
 
 	if( level.gamemode == "snr" || level.gamemode == "race" || level.gamemode == "gg" )
 	{
@@ -619,7 +615,6 @@ _can_spawn_napalm()
 	spawnPoint = _get_special_spawn_point();
 	if ( !IsDefined(spawnPoint) )
 	{
-		iprintln( "no spawn point" );
 		return false;
 	}
 	
@@ -708,7 +703,6 @@ _try_spawn_sonic(spawn_point)
 	ai = undefined;
 	if ( _can_spawn_sonic() )
 	{
-		iprintln("can spawn sonic");
 		spawner = level.sonic_zombie_spawners[0];
 		//spawnOrigin = _get_non_visible_spawn_point();
 		spawnpoint = _get_special_spawn_point();
@@ -733,7 +727,6 @@ _try_spawn_sonic(spawn_point)
 		}
 		
 		ai = spawn_zombie( spawner );
-		iprintln("Attempted to spawn sonic: " + ai.animname);
 		//Set up spawner so it can be used by next spawn
 		spawner.script_string = undefined;
 		spawner.count = 100; 
@@ -775,10 +768,7 @@ _can_spawn_sonic()
 	}
 	
 	// wait until at least mid round to spawn the sonic zombie, if it's an appropriate sonic round
-	iprintln("zombies left: " + level.zombie_total +  "<" + level.zombiesLeftBeforeSonicSpawn);
-	//return level.zombie_total < level.zombiesLeftBeforeSonicSpawn;
-	return true;
-
+	return level.zombie_total < level.zombiesLeftBeforeSonicSpawn;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -293,9 +293,9 @@ napalm_zombie_impact_fx()
 
 napalm_zombie_spawn( animname_set )
 {
+	self.animname = "napalm_zombie";
 	zombie_spawn_init( animname_set );
 
-	self.animname = "napalm_zombie";
 	self thread napalm_zombie_client_flag();
 	self.napalm_zombie_glowing = false;
 
