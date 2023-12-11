@@ -64,7 +64,8 @@ init()
 //
 init_blockers()
 {
-	reimagined_expanded_adjust_blockers();
+	if( level.apocalypse )
+		reimagined_expanded_adjust_blockers();
 
 	// EXTERIOR BLOCKERS ----------------------------------------------------------------- //
 	level.exterior_goals = getstructarray( "exterior_goal", "targetname" );

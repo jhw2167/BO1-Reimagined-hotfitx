@@ -8,11 +8,11 @@ main()
 	level thread clientscripts\_zombiemode_ffotd::main_start();
 	level.zombiemode = true;
 	level.swimmingFeature = false;
-	//clientscripts\_load::main();
-	//clientscripts\_footsteps::SetAIFootstepPrepend( "fly_step_zombie_" );
-	//level thread clientscripts\_audio::audio_init( 0 );
-	//init_client_flags();
-	//init_client_flag_callback_funcs();
+	clientscripts\_load::main();
+	clientscripts\_footsteps::SetAIFootstepPrepend( "fly_step_zombie_" );
+	level thread clientscripts\_audio::audio_init( 0 );
+	init_client_flags();
+	init_client_flag_callback_funcs();
 	//init_blocker_fx();
 	//init_riser_fx();
 	level._effect[ "zmb_new_gibtrail_fx" ] = LoadFX( "custom/zm_dog_v2/fx_zmb_blood_trail_mature" );	

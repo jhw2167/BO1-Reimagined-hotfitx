@@ -47,12 +47,12 @@ main()
 
 	//Overrides
 	/* 									/
-	level.zombie_ai_limit_override=24;	///
-	level.starting_round_override=15;	///
+	level.zombie_ai_limit_override=30;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
-	//level.spawn_delay_override=10;			///
+	level.spawn_delay_override=1;			///
 	level.server_cheats_override=true;	///
 	level.apocalypse_override=true;		//*/
 
@@ -348,10 +348,11 @@ reimagined_init_level()
 		level.players_size = GetPlayers().size;
 
 	//Overrides
-	/* /								/
+	/* /								*/
 	level.zombie_ai_limit_override=30;	///
 	level.starting_round_override=15;	///
-	level.drop_rate_override=1;		*/// Rate = Expected drops per round
+	level.drop_rate_override=1;		/// Rate = Expected drops per round
+									// */
 
 
 	//Zombie Values
@@ -560,13 +561,6 @@ reimagined_init_level()
 	level.VALUE_EXPLOSIVE_BASE_RANGE = 250;
 	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
 
-	/*
-		include_weapon( "zombie_doublebarrel", false, true );
-		include_weapon( "zombie_doublebarrel_upgraded", false );
-		include_weapon( "zombie_shotgun", false, true );
-		include_weapon( "zombie_shotgun_upgraded", false );
-		*/
-
 	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
 	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x max 4.5x damage
 	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
@@ -588,6 +582,7 @@ reimagined_init_level()
 
 	//Maps
 
+	//Temple
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 33;		//1-1000, 3.2% chance per zombie
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX = 5;
@@ -5896,16 +5891,17 @@ ai_calculate_health( round_number )
 	//HERE_
 	//Reimagined-Expanded - exponential health scaling
 	base = 800;
-	rTenfactor = 0.30;
+	rTenfactor = 0.20;		//actually a round 13 factor now
 	startHealth = 150;
-	logFactor = 4.5;
+	logFactor = 4;
+	exp_scale_rounds = 15;
 	
 	health = startHealth;
 	for ( i=2; i<=round_number; i++ )
 	{	
-		if(i == 15)	
+		if(i == exp_scale_rounds)	
 			rTenfactor=1;
-		health += base * ( Int( i / logFactor ) + rTenfactor);
+		health += ( base * rTenfactor * ( i/logFactor ) );
 		//iprintln(health);	
 	}
 
@@ -5919,7 +5915,8 @@ ai_calculate_health( round_number )
 		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
 	
-	iprintln("Current health:  " + health);
+	//PRINT
+	//iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
 }
 
