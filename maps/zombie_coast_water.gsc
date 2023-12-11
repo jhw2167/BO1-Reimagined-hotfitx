@@ -401,17 +401,27 @@ water_watch_player_frost_state()
 				// turn on frost
 //				PrintLn("S: scf pwf : " + self GetEntityNumber() + " " + self.team + " " + self.sessionteam + " " + self.sessionstate);
 				//Reimagined-Expanded, delay frost a bit
-				wait(5);
-				if( IsDefined( self._in_coast_water ) && self._in_coast_water > 0 ) {
-					self SetClientFlag( level._CF_PLAYER_WATER_FROST );
-					frost = 1;
-				}
+				
+				if( frost == 0)
+					self thread wait_to_set_client_frost();
+				frost = 1;
 
 //				IPrintLn( self GetEntityNumber() + " FROST SET %%%" );
 			}
 		}
 		self wait_to_update_frost_state();
 	}
+}
+
+wait_to_set_client_frost()
+{
+	wait(5);
+	self endon("disconnect");
+	self endon( "frost_reset_off" );
+
+	if( IsDefined( self._in_coast_water ) && self._in_coast_water > 0 )
+		self SetClientFlag( level._CF_PLAYER_WATER_FROST );
+
 }
 
 wait_to_update_frost_state()
@@ -660,9 +670,10 @@ water_watch_freeze()
 			}
 			else
 			{
+				//Reimagined-Expanded, only freeze if the player is in water consistently
 				if ( time_in_water > 0 )
 				{
-					time_in_water -= diff;
+					time_in_water = -1;
 					if ( time_in_water < 0 )
 					{
 						self StopLoopSound(2);

@@ -293,8 +293,9 @@ napalm_zombie_impact_fx()
 
 napalm_zombie_spawn( animname_set )
 {
-	self.animname = "napalm_zombie";
+	
 	zombie_spawn_init( animname_set );
+	self.animname = "napalm_zombie";
 
 	self thread napalm_zombie_client_flag();
 	self.napalm_zombie_glowing = false;
@@ -379,12 +380,28 @@ napalm_zombie_spawn( animname_set )
 	self animscripted("napalm_spawn", anim_org, angles, spawn_anim, "normal");
 	wait( time );
 
+	//Reimagined-Expanded, set fire effect, don't know where it went:
+	self thread napalm_zombie_loop_fire();
+
+	
 	self.rising = false;
 	//self stop_magic_bullet_shield();
 	self.a.disablepain = true;
 	self BloodImpact( "hero" );
 
 	self PlaySound( level.zmb_vox["napalm_zombie"]["ambient"] );
+}
+
+napalm_zombie_loop_fire()
+{	
+	while(Isdefined(self) && IsAlive(self))
+	{
+		if(isdefined(self) && isdefined(self.origin)) {
+			PlayFxOnTag( level._effect["custom_med_fire"], self, "J_SpineLower" );
+		}
+		wait 4;
+	}
+	
 }
 
 napalm_zombie_client_flag()
@@ -475,7 +492,7 @@ _zombie_ExplodeNearPlayers()
 	}
 
 	//Dont explode right away
-	self.canExplodeTime = gettime() + 2000;
+	self.canExplodeTime = gettime() + 6000;
 	//If changed update napalmPlayerWarningRadiusSqr in _zombiemode_ai_napalm.csc
 	napalmExplodeRadiusSqr = level.napalmExplodeRadius*level.napalmExplodeRadius;
 	napalmPlayerWarningRadius = level.napalmExplodeDamageRadius;

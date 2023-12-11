@@ -569,7 +569,7 @@ set_zombie_run_cycle( new_move_speed )
 	self.deathanim = random(death_anims);
 
 	if( self.animname != "zombie" ) {
-		iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
+		//iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
 	}
 
 // var = 0;

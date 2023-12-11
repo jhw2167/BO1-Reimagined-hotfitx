@@ -316,15 +316,17 @@ temple_round_spawning()
 		sonic_rate = level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE;
 
 		
+		
 		if(level.zombie_total <= 5 
 		|| level.round_number < level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND 
 		|| special_zombie_count > level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX )
-			rand = 1000;
+			rand = 1000; //No more spawning
 
 		if( rand < napalm_rate ) {
 			ai = _try_spawn_napalm(spawn_point);
 		}
 		if( rand < sonic_rate && !IsDefined(ai)  ) {
+			iprintln("trying to spawn sonic");
 			ai = _try_spawn_sonic(spawn_point);
 		}
 		
@@ -344,12 +346,9 @@ temple_round_spawning()
 			count++; 
 		}
 
-				//Reimagined-Expanded: Mix up zombie spawning times into hordes
-		if( count % level.VALUE_HORDE_SIZE == 0 && count > 0 && level.zombie_total > 0 ) {
-			wait( level.VALUE_HORDE_DELAY );
-		}
+		//Reimagined-Expanded: Mix up zombie spawning times into hordes
+		maps\_zombiemode::determine_horde_wait( count );
 
-		wait( level.zombie_vars["zombie_spawn_delay"] ); 
 		wait_network_frame();
 	}
 }
@@ -594,8 +593,7 @@ _get_special_spawn_point()
 
 _can_spawn_napalm()
 {
-	//forceSpawn = flag("zombie_napalm_force_spawn");
-	forceSpawn = true;
+	forceSpawn = flag("zombie_napalm_force_spawn");
 
 	if( level.gamemode == "snr" || level.gamemode == "race" || level.gamemode == "gg" )
 	{
@@ -735,15 +733,7 @@ _try_spawn_sonic(spawn_point)
 		if ( !spawn_failed(ai) )
 		{
 			// teleport the zombie to our spawner
-			level waittill_notify_or_timeout("sonic_zombie_setup", 2);
-			if( flag("sonic_zombie_setup") ) {
-				ai ForceTeleport(spawnOrigin, spawn_point.angles);
-				flag_clear("sonic_zombie_setup");
-			}
-			else {
-				//ai Delete();
-				//ai = undefined;
-			}
+			ai ForceTeleport(spawnOrigin, spawn_point.angles);			
 			
 			if(level.gamemode != "snr" && level.gamemode != "race" && level.gamemode != "gg")
 			{

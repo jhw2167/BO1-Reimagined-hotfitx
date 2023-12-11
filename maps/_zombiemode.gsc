@@ -47,12 +47,12 @@ main()
 
 	//Overrides
 	/* 									/
-	level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=5;	///
+	level.zombie_ai_limit_override=24;	///
+	level.starting_round_override=15;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
-	level.spawn_delay_override=1;			///
+	//level.spawn_delay_override=10;			///
 	level.server_cheats_override=true;	///
 	level.apocalypse_override=true;		//*/
 
@@ -589,7 +589,7 @@ reimagined_init_level()
 	//Maps
 
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
-	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 48;		//1-1000
+	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 33;		//1-1000, 3.2% chance per zombie
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX = 5;
 
 }
@@ -4627,25 +4627,41 @@ round_spawning()
 		}
 
 		//Reimagined-Expanded: Mix up zombie spawning times into hordes
-		if( count > 0 
-		&& ( count % level.VALUE_HORDE_SIZE ) == 0 
-		&& level.zombie_total >= 5 
-		&& ( IsDefined(level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ] )
-			  && level.zombie_total >= level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ] )
-		|| ( !IsDefined(level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ] )
-			  && level.zombie_total >= level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.THRESHOLD_MAX_APOCALYSE_ROUND ] )
-		)
-		{
-			iprintln( "Waiting Horde" + level.VALUE_HORDE_DELAY );
-			wait( level.VALUE_HORDE_DELAY );
-		}
+		determine_horde_wait( count );
 		
-		iprintln( "Waiting Spawn: " );
-		iprintln( "Delay: " + level.VALUE_ZOMBIE_SPAWN_DELAY );
-		iprintln( "count " + count );
-		wait( level.VALUE_ZOMBIE_SPAWN_DELAY );
+		
 		wait_network_frame();
 	}
+}
+
+determine_horde_wait( count )
+{
+	horde_threshold = level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ];
+	if( !IsDefined( horde_threshold ) ) {
+		horde_threshold = level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.THRESHOLD_MAX_APOCALYSE_ROUND ];
+	}
+
+		
+	if(      count > 0 
+		&& ( count % level.VALUE_HORDE_SIZE ) == 0  //
+		&& level.zombie_total >= 5 					//No horde wait if only 5 zombies left
+		&& level.zombie_total >= horde_threshold			//No horde wait if they need to kill zombs quickly
+		)
+		{
+			wait( level.VALUE_HORDE_DELAY );
+		}
+
+		//If less than 3/4 of horde, small delay
+		delay = 0.5 - 0.1 * level.players_size;
+		
+		if( level.zombie_total > ( level.VALUE_HORDE_SIZE * 0.25 ) )
+			delay *= 2;
+		else if( level.zombie_total > ( level.VALUE_HORDE_SIZE * 0.50 ) )
+			delay *= 4;
+		else if( level.zombie_total > ( level.VALUE_HORDE_SIZE * 0.75 ) )
+			delay = level.VALUE_ZOMBIE_SPAWN_DELAY;	
+
+		wait( delay );
 }
 
 ai_calculate_amount()
@@ -4954,7 +4970,7 @@ reimagined_expanded_round_start()
 			level.VALUE_HORDE_SIZE = int( 10 + level.players_size * 2 );
 			level.VALUE_HORDE_DELAY = int( 10 - level.players_size * 2 ); 
 
-			level.VALUE_ZOMBIE_SPAWN_DELAY = 8 - (level.players_size * 2);
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 8 - (level.players_size * 3.5);
 		}
 		else if(  level.round_number < 16 )
 		{
@@ -5027,7 +5043,6 @@ reimagined_expanded_round_start()
 
 	if(level.spawn_delay_override)
 		level.VALUE_ZOMBIE_SPAWN_DELAY = level.spawn_delay_override;
-	level.VALUE_ZOMBIE_SPAWN_DELAY = 5;
 		
 
 	if( IsDefined(level.zombie_ai_limit_override) )

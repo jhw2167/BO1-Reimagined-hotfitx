@@ -2095,11 +2095,9 @@ scream_a_watcher( animname )
 {
 	self endon( "death" );
 
-	//rand = RandomInt( 100 );
-	//if( rand > level.director_zombie_scream_a_chance )
-	//{
-	//	return;
-	//}
+	rand = RandomInt( 100 );
+	if( rand > level.director_zombie_scream_a_chance )
+		return;
 
 	self waittillmatch( animname, "scream_a" );
 
