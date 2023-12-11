@@ -422,7 +422,7 @@ reimagined_init_level()
 	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_MED = 5;
-	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 10;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 15;
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
 	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
@@ -659,7 +659,7 @@ wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
 	//iprintln( "wait_set_player_visionset");
-	iprintln( level.zombie_visionset );
+	//iprintln( level.zombie_visionset );
 	if(IsDefined(level.zombie_visionset)) {
 		self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
@@ -4488,10 +4488,8 @@ round_spawning()
 	}
 #/
 
-	iprintln( "Round " + level.round_number + " starting" );
+	//iprintln( "Round " + level.round_number + " starting" );
 	ai_calculate_health( level.round_number );
-
-	count = 0;
 
 	//CODER MOD: TOMMY K
 	players = get_players();
@@ -4512,6 +4510,7 @@ round_spawning()
 	//max = 1;
 	old_spawn = undefined;
 //	while( level.zombie_total > 0 )
+	count = 0;
 	while( 1 )
 	{
 
@@ -4547,7 +4546,7 @@ round_spawning()
 		}
 		old_spawn = spawn_point;
 
-	//iPrintLn(spawn_point.targetname + " " + level.zombie_vars["zombie_spawn_delay"]);
+	//iPrintLn(spawn_point.targetname + " " + level.VALUE_ZOMBIE_SPAWN_DELAY);
 
 		// MM Mix in dog spawns...
 		spawn_dog = false;
@@ -4599,7 +4598,7 @@ round_spawning()
 						{
 							level thread maps\_zombiemode_ai_dogs::special_dog_spawn( undefined, 1 );
 							level.zombie_total--;
-							wait( level.zombie_vars["zombie_spawn_delay"] );
+							wait( level.VALUE_ZOMBIE_SPAWN_DELAY );
 							wait_network_frame();
 							break;
 						}
@@ -4609,7 +4608,7 @@ round_spawning()
 					{
 						level thread maps\_zombiemode_ai_dogs::special_dog_spawn( undefined, 1 );
 						level.zombie_total--;
-						wait( level.zombie_vars["zombie_spawn_delay"] );
+						wait( level.VALUE_ZOMBIE_SPAWN_DELAY );
 						wait_network_frame();
 						break;
 					}
@@ -4628,12 +4627,23 @@ round_spawning()
 		}
 
 		//Reimagined-Expanded: Mix up zombie spawning times into hordes
-		if( count % level.VALUE_HORDE_SIZE == 0 && count > 0 && level.zombie_total > 0 )
+		if( count > 0 
+		&& ( count % level.VALUE_HORDE_SIZE ) == 0 
+		&& level.zombie_total >= 5 
+		&& ( IsDefined(level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ] )
+			  && level.zombie_total >= level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ] )
+		|| ( !IsDefined(level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.round_number ] )
+			  && level.zombie_total >= level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ level.THRESHOLD_MAX_APOCALYSE_ROUND ] )
+		)
 		{
+			iprintln( "Waiting Horde" + level.VALUE_HORDE_DELAY );
 			wait( level.VALUE_HORDE_DELAY );
 		}
 		
-		wait( level.zombie_vars["zombie_spawn_delay"] );
+		iprintln( "Waiting Spawn: " );
+		iprintln( "Delay: " + level.VALUE_ZOMBIE_SPAWN_DELAY );
+		iprintln( "count " + count );
+		wait( level.VALUE_ZOMBIE_SPAWN_DELAY );
 		wait_network_frame();
 	}
 }
@@ -4931,27 +4941,29 @@ reimagined_expanded_round_start()
 	{
 		if( level.round_number < 4 )
 		{
-			level.zombie_move_speed = 40;
-			level.zombie_vars["zombie_spawn_delay"] = 0.25;
+			level.zombie_move_speed = 30;
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 4 - level.players_size * 0.75;
 
 			//MAX ZOMBIES
 			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
-			level.zombie_move_speed = 60;	//runners
+			level.zombie_move_speed = 50;	//runners
 			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
-			level.VALUE_HORDE_SIZE = int( level.zombie_ai_limit / 2 );
+			level.VALUE_HORDE_SIZE = int( 10 + level.players_size * 2 );
 			level.VALUE_HORDE_DELAY = int( 10 - level.players_size * 2 ); 
+
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 8 - (level.players_size * 2);
 		}
 		else if(  level.round_number < 16 )
 		{
-			level.zombie_move_speed = 85;	//sprinters
+			level.zombie_move_speed = 75;	//sprinters
 			if( level.players_size == 1) {
-				level.zombie_vars["zombie_spawn_delay"] = .5;
+				level.VALUE_ZOMBIE_SPAWN_DELAY = 2.5;
 				level.zombie_ai_limit = 24; // Soft limit at 45, hard limit at 100, network issues?
 			} else {
-				level.zombie_vars["zombie_spawn_delay"] = 1;
+				level.VALUE_ZOMBIE_SPAWN_DELAY = 1.5;
 				level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; // Soft limit at 45, hard limit at 100, network issues?
 			}
 
@@ -4960,14 +4972,16 @@ reimagined_expanded_round_start()
 
 		} else if(  level.round_number < 24 )
 		{
+			level.zombie_move_speed = 110;
+			level.VALUE_ZOMBIE_SPAWN_DELAY = .5;
+
 			if( level.players_size == 1) {
 				level.zombie_ai_limit = 32; 
+				level.VALUE_ZOMBIE_SPAWN_DELAY = 1;
 			}
-			level.zombie_move_speed = 110;
-			level.zombie_vars["zombie_spawn_delay"] = .08;
-
+			
 			level.VALUE_HORDE_SIZE = 18 + 6*level.players_size;
-			level.VALUE_HORDE_DELAY = 10 - 2*level.players_size; 
+			level.VALUE_HORDE_DELAY = 40 - 6*level.players_size; 
 
 		} else if( level.round_number < 30 )
 		{
@@ -4977,7 +4991,7 @@ reimagined_expanded_round_start()
 
 			level.zombie_move_speed = 130;
 			level.VALUE_HORDE_SIZE = 24 + 8*level.players_size;
-			level.VALUE_HORDE_DELAY = 10 - 2*level.players_size;
+			level.VALUE_HORDE_DELAY = 40 - 6*level.players_size; 
 
 		} else {
 			level.zombie_move_speed = 150;
@@ -4986,11 +5000,12 @@ reimagined_expanded_round_start()
 	} else	//(More) Regular zombies!
 	{	
 		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
-		level.zombie_vars["zombie_spawn_delay"] = 1;
+		level.VALUE_ZOMBIE_SPAWN_DELAY = 2;
 
 		if(level.round_number < 5)
 		{
 			level.zombie_move_speed *= 2;
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 1;
 		}
 
 		//Cap zombie move speed by super sprinter speed
@@ -5011,7 +5026,9 @@ reimagined_expanded_round_start()
 
 
 	if(level.spawn_delay_override)
-		level.zombie_vars["zombie_spawn_delay"] = level.spawn_delay_override;
+		level.VALUE_ZOMBIE_SPAWN_DELAY = level.spawn_delay_override;
+	level.VALUE_ZOMBIE_SPAWN_DELAY = 5;
+		
 
 	if( IsDefined(level.zombie_ai_limit_override) )
 		level.zombie_ai_limit = level.zombie_ai_limit_override;

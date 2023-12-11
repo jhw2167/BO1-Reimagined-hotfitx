@@ -5,8 +5,8 @@
 init()
 {
 	level.water = getentarray( "waterdamage", "targetname" );
-	level.water_zombie_damage_max = 650;
-	level.water_zombie_time = 5;
+	level.water_zombie_damage_max = 1000;
+	level.water_zombie_time = 20;
 	level.water_zombie_damage = level.water_zombie_damage_max / level.water_zombie_time;
 
 	level.water_zombie_percent_max = 0.5;
@@ -400,8 +400,12 @@ water_watch_player_frost_state()
 
 				// turn on frost
 //				PrintLn("S: scf pwf : " + self GetEntityNumber() + " " + self.team + " " + self.sessionteam + " " + self.sessionstate);
-				self SetClientFlag( level._CF_PLAYER_WATER_FROST );
-				frost = 1;
+				//Reimagined-Expanded, delay frost a bit
+				wait(5);
+				if( IsDefined( self._in_coast_water ) && self._in_coast_water > 0 ) {
+					self SetClientFlag( level._CF_PLAYER_WATER_FROST );
+					frost = 1;
+				}
 
 //				IPrintLn( self GetEntityNumber() + " FROST SET %%%" );
 			}

@@ -87,7 +87,7 @@ init()
 	}
 	if( !isDefined( level.director_zombie_scream_a_chance ) )
 	{
-		level.director_zombie_scream_a_chance = 100;
+		level.director_zombie_scream_a_chance = 33;
 	}
 	if( !isDefined( level.director_zombie_scream_a_radius ) )
 	{
