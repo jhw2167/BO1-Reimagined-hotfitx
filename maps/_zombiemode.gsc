@@ -5055,8 +5055,11 @@ reimagined_expanded_round_start()
 
 		//MAX ZOMBIES
 		level.zombie_ai_limit = 24;
-		if( level.round_number > 24 )
+		if( level.round_number > 24 ) {
 			level.zombie_ai_limit = 32; 
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 1;
+		}
+			
 		
 	}
 

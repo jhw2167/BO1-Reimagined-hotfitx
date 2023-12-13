@@ -257,6 +257,11 @@ init_astro_zombie_fx()
 //-----------------------------------------------------------------
 astro_zombie_spawn()
 {
+	//Reimagined-Expanded - no astro zombies if no bosses
+	if(level.no_bosses) {
+		level.num_astro_zombies++;
+		return;
+	}
 	self.script_moveoverride = true;
 
 	if( !isDefined( level.num_astro_zombies ) )
