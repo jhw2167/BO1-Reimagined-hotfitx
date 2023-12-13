@@ -46,15 +46,15 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									*/
+	/* 									/
 	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=5;	///
+	level.starting_round_override=30;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=1;			///
 	level.server_cheats_override=true;	///
-	//level.apocalypse_override=true;		//*/
+	level.apocalypse_override=true;		//*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -371,6 +371,8 @@ reimagined_init_level()
 	level.SUPER_SPRINTER_SPEED = 100;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
+
+	level.THRESHOLD_NOVA_CRAWLER_MAX_PORTION = 0.20;	//20% of zombies can be nova crawlers
 
 	//Apocalypse Auto round tick forward values
 	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_EARLY = 60;	//Seconds between zombies thresholds

@@ -25,6 +25,19 @@ wait_for_leap()
 #using_animtree( "generic_human" );
 quad_prespawn()
 {
+	//Get all zombies
+	zombies = GetAIArray( "axis" );
+	quad_zombies = 0;
+	for ( i = 0; i < zombies.size; i++ ) {
+		if ( zombies[i].animname == "quad_zombie" )
+			quad_zombies++;
+	}
+	
+	if( (quad_zombies / zombies.size) > level.THRESHOLD_NOVA_CRAWLER_MAX_PORTION ) {
+		return;
+	}
+		
+
 	self.animname = "quad_zombie";
 
 	self.custom_idle_setup = maps\_zombiemode_ai_quad::quad_zombie_idle_setup;

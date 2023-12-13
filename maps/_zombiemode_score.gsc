@@ -32,29 +32,21 @@ player_add_points( event, mod, hit_location, zombie)
 		case "death":
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
-			points = player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
-			if( IsDefined(level.zombie_vars["zombie_powerup_insta_kill_on"]) && level.zombie_vars["zombie_powerup_insta_kill_on"] && mod == "MOD_UNKNOWN" ) {
-				points = points * 2;
-			}
+
+			//Headshots and melee bonus
+			player_points += player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
 
 			//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
 			if( level.apocalypse ) 
 			{
-				iprintln(" points 1: " + points);
-				points *= weapon_points_multiplier( self getcurrentweapon(), mod );
-				iprintln(" points 2: " + points);
-				points += quick_kill_bonus_points( zombie );
-				iprintln(" points 3: " + points);
-			}
-				
-			// Give bonus points
-			player_points	= player_points + points;
+				//No points for WondwerWeapons, double for pistols
+				player_points *= weapon_points_multiplier( self getcurrentweapon(), mod );
 
-			// Don't give points if there's no team points involved.
-			if ( team_points > 0 )
-			{
-				team_points		= team_points + points;
+				//Bonus points for killing zombies quickly - not doubled, not valid on WW
+				if( player_points > 0 )
+					player_points += quick_kill_bonus_points( zombie );
 			}
+
 
 			if(IsDefined(self.kill_tracker))
 			{
@@ -195,6 +187,10 @@ weapon_points_multiplier( weapon, mod )
 	if(mod == undefined) {
 		mod = "MOD_UNKNOWN";
 	}
+
+	//if mod is melee, return 1
+	if( mod == "MOD_MELEE" )
+		return 1;
 
 	switch( weapon ) {
 		case "cz75_zm":
