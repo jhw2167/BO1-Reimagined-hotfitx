@@ -86,7 +86,9 @@ init()
 	flag_clear( "last_thief_down" );
 	flag_init( "death_in_pre_game" ); // ww: flag for pre game death
 
-	level thread thief_round_tracker();
+	//Reimagined-Expanded, don't check for theif rounds if we don't want him
+	if( !level.no_bosses )
+		level thread thief_round_tracker();
 
 	level thread thief_init_portals();
 
@@ -451,6 +453,7 @@ thief_round_tracker()
 	while ( 1 )
 	{
 		level waittill( "between_round_over" );
+
 
 		if ( level.round_number >= level.next_thief_round )
 		{

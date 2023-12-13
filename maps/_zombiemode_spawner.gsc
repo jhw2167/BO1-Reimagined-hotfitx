@@ -617,6 +617,11 @@ set_zombie_run_cycle( new_move_speed )
 		break;
 	}
 
+	if( !IsDefined(self.zombie_speed_up) ) {
+		self.moveplaybackrate = 1;
+		self.animplaybackrate = 1;
+	}
+
 //	self thread print3d_ent( self.zombie_move_speed+var, (1,1,1), 2.0, (0,0,72), "", true );
 }
 
@@ -630,7 +635,7 @@ set_run_speed()
 	}
 	
 
-
+	//iprintln( "zombie_spawn_init -> rand = " + rand );
 //	self thread print_run_speed( rand );
 	if( rand <= 35 && level.gamemode == "survival" )
 	{

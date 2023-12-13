@@ -103,7 +103,8 @@ init()
 	flag_init( "perk_bought" );
 	flag_init( "monkey_free_perk" );
 
-	level thread monkey_round_tracker();
+	if( !level.no_bosses )
+		level thread monkey_round_tracker();
 
 	level.perk_lost_func = ::monkey_perk_lost;
 	level.perk_bought_func = ::monkey_perk_bought;

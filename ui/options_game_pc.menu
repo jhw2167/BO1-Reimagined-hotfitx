@@ -66,7 +66,7 @@
 
 			setDvar reimagined_cheat 0;
 
-			setDvar zombie_alt_bosses 0;
+			setDvar zombie_alt_bosses 1;
 
 			setDvar zombie_bo2_perks 1;
 			
@@ -351,7 +351,7 @@
 
 		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "5" 5 "10" 10 "0" 0  }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		
-		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_EXP_PERKS", zombie_exp_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
+		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_ALT_BOSSES", zombie_alt_bosses, { "@REIMAGINED_ALT_BOSSES_NORMAL" 1 "@REIMAGINED_ALT_BOSSES_NONE" 0 "@REIMAGINED_ALT_BOSSES_HARDER" 2 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		
 		CHOICE_DVARFLOATLIST_VIS(4, "@REIMAGINED_ZOMBIE_CHEAT", reimagined_cheat, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 
@@ -365,7 +365,7 @@
 		
 		//CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_BO2_PERKS", zombie_bo2_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_options"))
 
-		//CHOICE_DVARFLOATLIST_VIS(1, "@REIMAGINED_ALT_BOSSES", zombie_alt_bosses, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_options"))
+		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_EXP_PERKS", zombie_exp_perks, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_options"))
 		
 		//CHOICE_DVARFLOATLIST_VIS(5, "@REIMAGINED_EXTRA_DROPS", zombie_extra_drops, { "@MENU_YES_CAPS" 1 "@MENU_NO_CAPS" 0 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_options"))
 		

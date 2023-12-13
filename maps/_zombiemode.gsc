@@ -46,15 +46,15 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									/
+	/* 									*/
 	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=20;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=1;			///
 	level.server_cheats_override=true;	///
-	level.apocalypse_override=true;		//*/
+	//level.apocalypse_override=true;		//*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -276,7 +276,7 @@ post_all_players_connected()
 		level thread round_start();
 	}
 	level thread players_playing();
-	if ( IsDefined( level.crawlers_enabled ) && level.crawlers_enabled == 1 )
+	if ( IsDefined( level.crawlers_enabled ) && level.crawlers_enabled == 1 && !level.no_bosses )
 	{
 		level thread crawler_round_tracker();
 	}
@@ -348,7 +348,7 @@ reimagined_init_level()
 		level.players_size = GetPlayers().size;
 
 	//Overrides
-	/* /								*/
+	/* /								/
 	level.zombie_ai_limit_override=30;	///
 	level.starting_round_override=15;	///
 	level.drop_rate_override=1;		/// Rate = Expected drops per round
@@ -377,11 +377,13 @@ reimagined_init_level()
 	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED = 90;	//Seconds between zombies thresholds rounds
 	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_LATE = 150;	//Seconds between zombies thresholds rounds
 	
-	level.THRESHOLD_MAX_APOCALYSE_ROUND = 30;	//After this round, behave the same
+	level.THRESHOLD_MAX_APOCALYSE_ROUND = 35;	//After this round, behave the same
 	level.VALUE_APOCALYPSE_WAIT_ROUNDS = 5;			//Every 5 rounds, get a wait
 	level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS = [];
 	level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS = [];
 	level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS = [];
+
+	level.ARRAY_QUICK_KILL_BONUS_POINTS = [];
 
 	for(i=0;i <= level.THRESHOLD_MAX_APOCALYSE_ROUND; i++) 
 	{
@@ -389,25 +391,48 @@ reimagined_init_level()
 		if( i < 5 ) {
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 90;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 250;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 0;
 		}
 		else if( i < 10 ) {
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 150;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 500;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 25;
 		}
 		else if( i < 15 ) {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10;
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_EARLY;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1500;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 25;
 		}
 		else if( i < 20 ) {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 15;
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1500;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 50;
+		} 
+		else if( i < 25 ) {
+			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED;
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1500;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 50;
 		}
-		else {
-			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 20;
+		else if( i < 30 ) {
+			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_LATE;
+			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1500;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
+		} else {
+			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_LATE;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
+
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
 		}
 			
 	}
@@ -511,10 +536,10 @@ reimagined_init_level()
 		level.WWN_PRO
 	);
 
-	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 1.5; //After player melees, 1.5s to sprint and activate ghost
-	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //2 seconds
+	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 1.5s to sprint and activate ghost
+	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //3 seconds
 
-	level.COOLDOWN_STAMINA_PRO_GHOST = 5; 	//20
+	level.COOLDOWN_STAMINA_PRO_GHOST = 8; 	//20
 
 	level.COOLDOWN_SPEED_PRO_RELOAD = 2.0;
 
@@ -586,6 +611,10 @@ reimagined_init_level()
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 33;		//1-1000, 3.2% chance per zombie
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX = 5;
+
+	if( level.no_bosses ) {
+		level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 100000; //No special zombies
+	}
 
 }
 
@@ -4952,14 +4981,14 @@ reimagined_expanded_round_start()
 	{
 		if( level.round_number < 4 )
 		{
-			level.zombie_move_speed = 30;
+			level.zombie_move_speed = 50;
 			level.VALUE_ZOMBIE_SPAWN_DELAY = 4 - level.players_size * 0.75;
 
 			//MAX ZOMBIES
 			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
-			level.zombie_move_speed = 50;	//runners
+			level.zombie_move_speed = 80;	//runners
 			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( 10 + level.players_size * 2 );
@@ -4969,7 +4998,8 @@ reimagined_expanded_round_start()
 		}
 		else if(  level.round_number < 16 )
 		{
-			level.zombie_move_speed = 75;	//sprinters
+			level.zombie_move_speed = 90;	//sprinters
+
 			if( level.players_size == 1) {
 				level.VALUE_ZOMBIE_SPAWN_DELAY = 2.5;
 				level.zombie_ai_limit = 24; // Soft limit at 45, hard limit at 100, network issues?
@@ -4991,8 +5021,8 @@ reimagined_expanded_round_start()
 				level.VALUE_ZOMBIE_SPAWN_DELAY = 1;
 			}
 			
-			level.VALUE_HORDE_SIZE = 18 + 6*level.players_size;
-			level.VALUE_HORDE_DELAY = 40 - 6*level.players_size; 
+			level.VALUE_HORDE_SIZE = 24 + 6*level.players_size;
+			level.VALUE_HORDE_DELAY = 32 - 6*level.players_size; 
 
 		} else if( level.round_number < 30 )
 		{
@@ -5001,8 +5031,8 @@ reimagined_expanded_round_start()
 			}
 
 			level.zombie_move_speed = 130;
-			level.VALUE_HORDE_SIZE = 24 + 8*level.players_size;
-			level.VALUE_HORDE_DELAY = 40 - 6*level.players_size; 
+			level.VALUE_HORDE_SIZE = 36 + 8*level.players_size;
+			level.VALUE_HORDE_DELAY = 16 - 2*level.players_size; 
 
 		} else {
 			level.zombie_move_speed = 150;
@@ -5635,6 +5665,7 @@ setApocalypseOptions()
 	{
 		level.apocalypse = false;
 		level.alt_bosses = false;
+		level.no_bosses = false;
 		level.expensive_perks = false;
 		level.tough_zombies = false;
 		level.types = false;
@@ -5647,8 +5678,6 @@ setApocalypseOptions()
 
 	if(level.apocalypse > 0 || IsDefined(level.apocalypse_override) )
 		level.apocalypse = true;
-	if(level.alt_bosses > 0 || level.apocalypse)
-		level.alt_bosses = true;
 	if(level.expensive_perks > 0 || level.apocalypse)
 		level.expensive_perks = true;
 	if(level.tough_zombies > 0 || level.apocalypse)
@@ -5659,6 +5688,14 @@ setApocalypseOptions()
 		level.bo2_perks = true;
 	if(level.extra_drops > 0 || level.apocalypse)
 		level.extra_drops = true;
+	if(level.alt_bosses == 2 || level.apocalypse)
+		level.alt_bosses = true;
+
+	if(level.alt_bosses == 0 ) //Should force off if apocalypse
+		level.no_bosses = true;
+	else
+		level.no_bosses = false;
+
 
 	//Not Implemented - coerce to false
 	level.extra_drops = false;
@@ -5677,18 +5714,6 @@ setApocalypseOptions()
 
 	if(IsDefined(level.server_cheats_override))
 		level.server_cheats = true;
-
-	/*
-	wait(10);
-	iprintln("Apocalypse is: "+ level.apocalypse);
-	iprintln("Alt Bosses is: "+ level.alt_bosses);
-	iprintln("Expensive Perks is: "+ level.expensive_perks);
-	iprintln("Tough Zombies is: "+ level.tough_zombies);
-	iprintln("Zombie Types is: "+ level.types);
-	iprintln("No Perks is: "+ level.total_perks);
-	iprintln("BO2 Perks is: "+ level.bo2_perks);
-	iprintln("Extra Drops is: "+ level.extra_drops);
-	*/
 }
 
 //Reimagined-Expanded
@@ -5710,6 +5735,18 @@ pre_round_think()
 
 	if( IsDefined(level.starting_points_override) )
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
+
+	/*					*/
+	iprintln("Apocalypse is: "+ level.apocalypse);
+	iprintln("Alt Bosses is: "+ level.alt_bosses);
+	iprintln("Expensive Perks is: "+ level.expensive_perks);
+	iprintln("Tough Zombies is: "+ level.tough_zombies);
+	iprintln("Zombie Types is: "+ level.types);
+	iprintln("No Perks is: "+ level.total_perks);
+	iprintln("BO2 Perks is: "+ level.bo2_perks);
+	iprintln("Extra Drops is: "+ level.extra_drops);
+	iprintln("No Bosses is: "+ level.no_bosses);
+	// */
 }
 
 
@@ -7196,33 +7233,45 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			final_damage = int(self.maxhealth / 3) + 10;
 			if( level.round_number < 12)
-				return int( self.maxhealth ) + 100;
+				final_damage = int( self.maxhealth ) + 100;
 			else
-				return final_damage;
+				final_damage = final_damage;
 		}
 
-		if( weapon == "knife_ballistic_zm" )
+		base_knife_damage = final_damage;
+
+
+		if( isSubStr(weapon, "ballistic") )
 		{
-			if( is_boss_zombie(self.animname) )
-				return 2000;
-			else
-				return int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.1);
-		} else if ( weapon == "knife_ballistic_upgraded_zm" )
-		{
-			if( is_boss_zombie(self.animname) )
-				return 4000;
-			else
-				return int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.2);
-		} else if ( weapon == "knife_ballistic_upgraded_zm_x2" )
-		{
-			if( is_boss_zombie(self.animname) )
-				return 8000;
-			else
-				return int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6);
+			
+			if( weapon == "knife_ballistic_zm" )
+			{
+				if( is_boss_zombie(self.animname) )
+					final_damage = 2000;
+				else
+					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.1);
+			} else if ( weapon == "knife_ballistic_upgraded_zm" )
+			{
+				if( is_boss_zombie(self.animname) )
+					final_damage = 4000;
+				else
+					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.3);
+			} else if ( weapon == "knife_ballistic_upgraded_zm_x2" )
+			{
+				if( is_boss_zombie(self.animname) )
+					final_damage = 8000;
+				else
+					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6);
+			}
+
+			final_damage += base_knife_damage;
+		}
+		
+		if( attacker hasProPerk( level.STM_PRO ) ) {
+			final_damage *= 2;
 		}
 
-		
-		
+		return final_damage;
 	}
 
 	//ORIGIN_
@@ -7618,10 +7667,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 		}
 
-		//Buff for early game weapons, they need it
+		//Reimagined-Expanded - Buff for early game weapons, they need it
+		//Disabling after nerf to health
+
+		/*
 		if( !isSubStr(weapon, "_upgraded") ) {
 			final_damage *= 1.25;
 		}
+		*/
 		
 		// Death Machine - kills in 4 body shots or 2 headshots
 		if(weapon == "minigun_zm")

@@ -67,6 +67,10 @@ init()
 //	Specify an override func if needed.
 enable_dog_rounds()
 {
+	if( level.no_bosses ) {
+		level.dog_rounds_enabled = false;
+		return;
+	}
 	level.dog_rounds_enabled = true;
 
 	if( !isdefined( level.dog_round_track_override ) )

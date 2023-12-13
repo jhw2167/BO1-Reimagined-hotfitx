@@ -3656,10 +3656,6 @@ watch_stamina_upgrade(perk_str)
 		//wait till player sprints
 		waittill_return = self waittill_any_return("melee", "damage");
 
-		//Only if player has 60 health or less we activate the perk
-		if( waittill_return == "damage" && self.health > 60 )
-			continue;
-
 		self waittill_notify_or_timeout("sprint", level.VALUE_STAMINA_PRO_SPRINT_WINDOW );
 		if( ! self IsSprinting() )
 			continue;

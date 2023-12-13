@@ -103,10 +103,15 @@ main()
 	// Special zombie types, director.
 	level.custom_ai_type = [];
 	//level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_dogs::init );
-	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_director::init );
+
+	//Reimagined-Expanded, no George if no_bosses is true
+	if( !level.no_bosses ) {
+		level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_director::init );
+		maps\zombie_coast_ai_director::init();
+	}
+		
 	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_faller::faller_init );
 
-	maps\zombie_coast_ai_director::init();
 	maps\zombie_coast_lighthouse::init(); // WW (02-02-11): Moving the light house scripts in to their own file
 	maps\zombie_coast_water::init();
 	maps\zombie_coast_eggs::init();
@@ -176,7 +181,9 @@ main()
 
 	//VisionSetNaked( "zombie_coast_2", 6 );
 
-	level thread maps\zombie_coast_ai_director::coast_director_start();
+	if( !level.no_bosses ) {
+		level thread maps\zombie_coast_ai_director::coast_director_start();
+	}
 
 	// WW (02/17/11) - Introscreen fade
 	level thread coast_fade_in_notify();
@@ -203,7 +210,8 @@ main()
 	// TODO: Get it working then hand off to Laufer so he can transfer it to csc
 	level thread coast_power_on_lighthouse_react();
 
-	level thread coast_spawn_init_delay();
+	//Reimagined-Expanded, don't need this, messes with zombie spawning with no bosses
+	//level thread coast_spawn_init_delay();
 
 	level thread maps\zombie_coast_fx:: manage_blizzard();
 

@@ -326,7 +326,6 @@ temple_round_spawning()
 			ai = _try_spawn_napalm(spawn_point);
 		}
 		if( rand < sonic_rate && !IsDefined(ai)  ) {
-			iprintln("trying to spawn sonic");
 			ai = _try_spawn_sonic(spawn_point);
 		}
 		

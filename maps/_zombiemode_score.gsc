@@ -33,15 +33,22 @@ player_add_points( event, mod, hit_location, zombie)
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
 			points = player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
-			if( IsDefined(level.zombie_vars["zombie_powerup_insta_kill_on"]) && level.zombie_vars["zombie_powerup_insta_kill_on"] && mod == "MOD_UNKNOWN" )
-			{
+			if( IsDefined(level.zombie_vars["zombie_powerup_insta_kill_on"]) && level.zombie_vars["zombie_powerup_insta_kill_on"] && mod == "MOD_UNKNOWN" ) {
 				points = points * 2;
 			}
 
+			//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
+			if( level.apocalypse ) 
+			{
+				iprintln(" points 1: " + points);
+				points *= weapon_points_multiplier( self getcurrentweapon(), mod );
+				iprintln(" points 2: " + points);
+				points += quick_kill_bonus_points( zombie );
+				iprintln(" points 3: " + points);
+			}
+				
 			// Give bonus points
 			player_points	= player_points + points;
-
-			player_points	= player_points * weapon_points_multiplier( self getcurrentweapon(), mod );
 
 			// Don't give points if there's no team points involved.
 			if ( team_points > 0 )
@@ -333,6 +340,24 @@ play_killstreak_vo()
 
 }
 */
+
+
+quick_kill_bonus_points( zombie )
+{
+	//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
+	valid_bonus_points = ( IsDefined( zombie ) 
+		&& ( zombie.animname == "zombie" )
+		&& ( level.expensive_perks )
+		&& (!zombie.respawn_zombie ) );
+
+	if( valid_bonus_points ) {
+		bonus = level.ARRAY_QUICK_KILL_BONUS_POINTS[level.round_number];
+		if( IsDefined( bonus ) )
+			return bonus;
+	}	
+	return 0;
+}
+
 player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 {
 	if( mod == "MOD_MELEE" )
@@ -361,20 +386,6 @@ player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 		//No bonus for shotguns, explosives, melee, wonder weapons
 	}
 	
-	//Reimagined-Expanded - Bonus points for killing zombies quickly
-	valid_bonus_points = ( IsDefined( zombie ) 
-		&& ( zombie.animname == "zombie" )
-		&& ( level.expensive_perks )
-		&& (!zombie.respawn_zombie )
-		&& ( level.round_number >= level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START ) );
-
-	if( valid_bonus_points ) 
-	{
-		bonus = level.VALUE_ZOMBIE_QUICK_KILL_BONUS;
-		multiplier = Int( level.round_number / level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT );
-		score += bonus * multiplier;
-	}	
-
 	return score;
 }
 
