@@ -549,7 +549,7 @@ reimagined_init_level()
 	level.TOTALTIME_PHD_PRO_COLLISIONS = 2; //2 seconds
 	level.VALUE_PHD_PRO_COLLISIONS_RANGE = 200; //Turn off collisions within 200 units
 	level.VALUE_PHD_PRO_DAMAGE = 50000; //Damage to zombies
-	level.VALUE_PHD_PRO_RADIUS_SCALE = 2; //times larger than original radius
+	level.VALUE_PHD_PRO_RADIUS_SCALE = 1.5; //times larger than original radius
 
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 4;
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
