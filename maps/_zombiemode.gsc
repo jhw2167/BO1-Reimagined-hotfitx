@@ -47,14 +47,15 @@ main()
 
 	//Overrides
 	/* 									/
-	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=30;	///
+	level.zombie_ai_limit_override=5;	///
+	level.starting_round_override=25;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=1;			///
 	level.server_cheats_override=true;	///
-	level.apocalypse_override=true;		//*/
+	//level.apocalypse_override=true;		///
+	level.override_give_all_perks=true;	///*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -108,7 +109,7 @@ main()
 
 	//Reimagined-Expanded -- Set Up Options and GameType
 	setApocalypseOptions();
-
+	level reimagined_init_level();
 
 	register_offhand_weapons_for_level_defaults();
 
@@ -255,7 +256,7 @@ post_all_players_connected()
 	level thread end_game();
 
 	//Reimagined-Expanded -- Set Up Players bonus player perk fx
-	level reimagined_init_level();
+	level reimagined_init_player_depedent_values();
 	players = GetPlayers();
 	for(i=0;i<players.size;i++) 
 	{
@@ -339,20 +340,23 @@ init_hitmarkers()
 	self.hud_damagefeedback_death SetShader( "specialty_bo4hitmarker_red__", 24, 24 );
 }
 
+reimagined_init_player_depedent_values()
+{
+	if( !isDefined(level.players_size) )
+		level.players_size = GetPlayers().size;
+
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+
+	if( isDefined( level.players_size) )
+		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
+	else if ( isDefined( level.zombie_timeout_override ) )
+		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = level.zombie_timeout_override;
+}
+
 
 reimagined_init_level()
 {
 	//init-level
-
-	if( !isDefined(level.players_size) )
-		level.players_size = GetPlayers().size;
-
-	//Overrides
-	/* /								/
-	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=15;	///
-	level.drop_rate_override=1;		/// Rate = Expected drops per round
-									// */
 
 
 	//Zombie Values
@@ -363,11 +367,12 @@ reimagined_init_level()
 
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 0 ] = 1.00;
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 1 ] = 1.00;
-	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 2 ] = 1.10;
-	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.20;
-	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 1.25;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 2 ] = 1.20;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.35;
+	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 1.50;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
+
 	level.SUPER_SPRINTER_SPEED = 100;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
@@ -456,10 +461,6 @@ reimagined_init_level()
 	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
 
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
-	if( isDefined( level.players_size) )
-		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=32 - level.players_size;
-	else if ( isDefined( level.zombie_timeout_override ) )
-		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = level.zombie_timeout_override;
 
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
@@ -496,7 +497,7 @@ reimagined_init_level()
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
-	level.VALUE_THIEF_HEALTH_SCALAR = 25;	//this many times avg zombie max health of this round
+	level.VALUE_THIEF_HEALTH_SCALAR = 30;	//this many times avg zombie max health of this round
 
 	//Weapon Pap
 	level.VALUE_PAP_COST = 5000;
@@ -525,38 +526,30 @@ reimagined_init_level()
 	 // "specialty_bulletaccuracy", 			//babyjugg
 
 	level.ARRAY_VALID_PRO_PERKS = array(
-		level.JUG_PRO,
 		level.QRV_PRO,
+		level.JUG_PRO,
 		level.SPD_PRO,
 		level.DBT_PRO,
 		level.STM_PRO,
 		level.PHD_PRO,
 		level.DST_PRO,
-		level.MUL_PRO,
-		level.ECH_PRO,
-		level.VLT_PRO,
-		level.WWN_PRO
+		level.MUL_PRO
+		//level.ECH_PRO,
+		//level.VLT_PRO,
+		//level.WWN_PRO
 	);
 
-	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 1.5s to sprint and activate ghost
+	//Stamine
+	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 2s to sprint and activate ghost
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //3 seconds
+	level.COOLDOWN_STAMINA_PRO_GHOST = 8; 	//8s
+	level.VALUE_STAMINA_PRO_GHOST_RANGE = 800; //After player melees, 2s to sprint and activate ghost
 
-	level.COOLDOWN_STAMINA_PRO_GHOST = 8; 	//20
-
-	level.COOLDOWN_SPEED_PRO_RELOAD = 2.0;
-
-	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
-	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
-
-	level.VALUE_DBT_UNITS = 5;
-	level.VALUE_DBT_PENN_DIST = 20;
-	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
-	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 6;
-
-	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
-	level.VALUE_QRV_PRO_REVIVE_ZOMBIEBLOOD_TIME = 10;
-
-	level.VALUE_JUGG_PRO_MAX_HEALTH = 325;
+	//PHD
+	level.TOTALTIME_PHD_PRO_COLLISIONS = 2; //2 seconds
+	level.VALUE_PHD_PRO_COLLISIONS_RANGE = 200; //Turn off collisions within 200 units
+	level.VALUE_PHD_PRO_DAMAGE = 50000; //Damage to zombies
+	level.VALUE_PHD_PRO_RADIUS_SCALE = 2; //times larger than original radius
 
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 4;
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
@@ -564,6 +557,23 @@ reimagined_init_level()
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE = 2;
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE = 2;
 
+
+	//Speed
+	level.COOLDOWN_SPEED_PRO_RELOAD = 2.0;
+	//Deadshot
+	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
+	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
+	//Double Tap
+	level.VALUE_DBT_UNITS = 5;
+	level.VALUE_DBT_PENN_DIST = 20;
+	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
+	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 6;
+	//Quick Revive
+	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
+	level.VALUE_QRV_PRO_REVIVE_ZOMBIEBLOOD_TIME = 10;
+	//Jugg
+	level.VALUE_JUGG_PRO_MAX_HEALTH = 325;
+	
 	//Bullet Effects
 	level.ARRAY_SNIPER_WEAPONS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
 	level.VALUE_SNIPER_PENN_BONUS = 2;
@@ -605,7 +615,6 @@ reimagined_init_level()
 	level.respawn_queue_locked = false;
 	level.respawn_queue_num = 0;
 	level.respawn_queue_unlocks_num = 0;
-
 
 	//Maps
 
@@ -691,12 +700,17 @@ wait_set_player_visionset()
 	} else {
 		//self VisionSetNaked( "zombie_neutral", 0.5 );
 	}
+
+	//Overide give perks
+	if( is_true(level.override_give_all_perks) ) {
+		self give_pro_perks( true );
+	}
 }
 
 //Reimagined-Expanded -- get zombies in provided range
-checkDist(a, b, distance)
+checkDist( a, b, distance)
 {
-	if( DistanceSquared( a.origin, b.origin ) < distance * distance )
+	if( DistanceSquared( a, b ) < distance * distance )
 		return true;
 	else
 		return false;
@@ -711,7 +725,7 @@ getZombiesInRange( range, type )
 	zombies_in_range = [];
 	for(i=0;i<zombies.size;i++)
 	{
-		if( checkDist( self, zombies[i], range ) )
+		if( checkDist( self.origin, zombies[i].origin, range ) )
 			zombies_in_range[zombies_in_range.size] = zombies[i];
 	}
 	return zombies_in_range;
@@ -720,7 +734,6 @@ getZombiesInRange( range, type )
 
 setZombiePlayerCollisionOff( player, totalTime, dist, endon_str )
 {
-	level endon(endon_str);
 
 	condition = true;
 	time = 0;
@@ -4109,13 +4122,18 @@ spectators_respawn()
 	}
 }
 
-give_pro_perks()
+give_pro_perks( overrideToGiveAll )
 {
+	if( is_true( overrideToGiveAll ) )
+		level.max_perks = 20;
+	else
+		overrideToGiveAll = false;
+
 	//Create array of all pro perks player has
 	pro_perks = [];
 	for(i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++)
 	{
-		if(self hasProPerk( level.ARRAY_VALID_PRO_PERKS[i]) )
+		if(self hasProPerk( level.ARRAY_VALID_PRO_PERKS[i]) || overrideToGiveAll)
 			pro_perks[pro_perks.size] = level.ARRAY_VALID_PRO_PERKS[i];
 		
 	}
@@ -4127,6 +4145,7 @@ give_pro_perks()
 	
 	for(i = 0; i < pro_perks.size; i++) {
 		self maps\_zombiemode_perks::returnProPerk( pro_perks[i] );
+		wait(0.5);
 	}
 }
 
@@ -5669,7 +5688,7 @@ setApocalypseOptions()
 	if( level.user_options == 0)
 	{
 		level.apocalypse = false;
-		level.alt_bosses = false;
+		level.alt_bosses = 1;
 		level.no_bosses = false;
 		level.expensive_perks = false;
 		level.tough_zombies = false;
@@ -5741,7 +5760,7 @@ pre_round_think()
 	if( IsDefined(level.starting_points_override) )
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 
-	/*					*/
+	/*					/
 	iprintln("Apocalypse is: "+ level.apocalypse);
 	iprintln("Alt Bosses is: "+ level.alt_bosses);
 	iprintln("Expensive Perks is: "+ level.expensive_perks);
@@ -7339,14 +7358,24 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			// boss zombie types do not get damage scaling
 			if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
 			{
+
+				if( is_true( attacker.divetonuke_damage ) ) {
+					return damage;
+				}
+
 				if( level.round_number < 10 )
 					final_damage = int(self.maxhealth / 2) + 1;
 				else
-					final_damage = int(self.maxhealth / 3) + 1;
+					final_damage = int(self.maxhealth / 4) + 1;
 
 				if(attacker hasProPerk(level.PHD_PRO))
 					final_damage *= 3;
+			} 
+			else if( is_true( attacker.divetonuke_damage ) )
+			{
+				return damage / 10; //boss zombie balancing
 			}
+
 		}
 	}
 
@@ -7643,6 +7672,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "ithaca_zm":
 		case "zombie_doublebarrel":
+		case "zombie_doublebarrel_sawed":
 			final_damage = 3000 * ( damage / 160);
 			break;
 		case "ithaca_upgraded_zm":

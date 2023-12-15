@@ -577,9 +577,10 @@ vending_weapon_upgrade()
 		plr = "zmb_vox_plr_" + index + "_";
 		current_weapon = player getCurrentWeapon();
 
-		if ( current_weapon == "microwavegun_zm" )
-		{
+		if ( current_weapon == "microwavegun_zm" ) {
 			current_weapon = "microwavegundw_zm";
+		} else if ( current_weapon == "zombie_doublebarrel_sawed" ) {
+			current_weapon = "zombie_doublebarrel";		//No sawed upgraded exists
 		}
 
 		if( !player maps\_zombiemode_weapons::can_buy_weapon() ||
@@ -1352,10 +1353,25 @@ divetonuke_explode( attacker, origin )
 	if( attacker hasProPerk(level.PHD_PRO) ) //if player has specialty_flakjacket_upgraded,
 	{
 		//Increase radius and damage significantly
-		radius *= 3;
-		min_damage *= 3;
-		max_damage *= 3;
+		radius *= level.VALUE_PHD_PRO_RADIUS_SCALE;
+		min_damage = level.VALUE_PHD_PRO_DAMAGE / 2;
+		max_damage = level.VALUE_PHD_PRO_DAMAGE;
+
 		PlayFx( level._effect["custom_large_explosion"], origin );
+		//Also apply hellfire to closest zombies, form _zombiemode_weaponeffects
+		//Get all zombies in radius
+		zombies = GetAiSpeciesArray( "axis", "all" );
+		for( i = 0; i < zombies.size; i++ ) 
+		{
+			if( maps\_zombiemode::is_boss_zombie( zombies[i].animname ) )
+				continue;
+
+			if( checkDist( self.origin, zombies[i].origin, level.VALUE_PHD_PRO_COLLISIONS_RANGE ) ) {
+				zombies[i] thread maps\_zombiemode_weapon_effects::bonus_fire_damage(
+					 zombies[i] , attacker, 0 , 2 );
+			}
+		}
+		
 	} else {
 		//iprintln("divetonuke_explode");
 		PlayFx( level._effect["divetonuke_groundhit"], origin );
@@ -1590,24 +1606,26 @@ hasProPerk( perk )
 addProPerk( perk )
 {
 	if (perk == "specialty_armorvest_upgrade") {
-		giveArmorVestUpgrade();
+		self giveArmorVestUpgrade();
 		self.PRO_PERKS[ level.JUG_PRO ] = true;
 	}
 	if (perk == "specialty_quickrevive_upgrade")
 		self.PRO_PERKS[ level.QRV_PRO ] = true;
 	if (perk == "specialty_fastreload_upgrade") {
 		self.PRO_PERKS[ level.SPD_PRO ] = true;
-		giveFastreloadUpgrade();
+		self giveFastreloadUpgrade();
 	}
 		
 	if (perk == "specialty_rof_upgrade")
 		self.PRO_PERKS[ level.DBT_PRO ] = true;
 	if (perk == "specialty_endurance_upgrade") {
 		self.PRO_PERKS[ level.STM_PRO ] = true;
-		giveStaminaUpgrade();
+		self giveStaminaUpgrade();
 	}
-	if (perk == "specialty_flakjacket_upgrade")
+	if (perk == "specialty_flakjacket_upgrade") {
 		self.PRO_PERKS[ level.PHD_PRO ] = true;
+		self givePhdUpgrade();
+	}
 	if (perk == "specialty_deadshot_upgrade")
 		self.PRO_PERKS[ level.DST_PRO ] = true;
 	if (perk == "specialty_additionalprimaryweapon_upgrade") {
@@ -1700,6 +1718,12 @@ removeProPerk( perk, removeOrDisableHud )
 	self update_perk_hud();
 }
 
+
+/*  #########################################
+			GIVE UPGRADED PERKS
+	##########################################
+*/
+
 giveArmorVestUpgrade()
 {
 	//Nothing to give
@@ -1724,6 +1748,11 @@ giveFastreloadUpgrade()
 	//self SetClientDvar("ui_show_stamina_ghost_indicator", "1");
 	self thread watch_fastreload_upgrade(level.SPD_PRO + "_stop");
 }
+
+givePhdUpgrade() {
+	self thread watch_phd_upgrade(level.PHD_PRO + "_stop");
+}
+
 
 player_print_msg(msg) {
 	flag_wait( "all_players_connected" );
@@ -3619,6 +3648,10 @@ remove_stockpile_ammo()
 //=========================================================================================================
 
 
+//Reimagined-Expanded -- Quick Revive pro thread running for each player
+// HANDLED IN ZOMBIEMODE
+
+
 //=========================================================================================================
 // JUGG PRO
 //=========================================================================================================
@@ -3636,8 +3669,6 @@ watch_armorvest_upgrade(perk_str)
 	self SetMaxHealth( oldHealth );
 }
 
-//Reimagined-Expanded -- Quick Revive pro thread running for each player
-// HANDLED IN ZOMBIEMODE
 
 //=========================================================================================================
 // STAMINA PRO
@@ -3678,7 +3709,8 @@ watch_stamina_upgrade(perk_str)
 		
 		//attacker thread maps\sb_bo2_zombie_blood_powerup::zombie_blood_powerup( attacker, 2);
 		//make nearby zombies immune to player collision
-		self thread managePlayerZombieCollisions( totaltime , 800 ); //total time, dist
+		self thread managePlayerZombieCollisions( totaltime ,
+		 level.VALUE_STAMINA_PRO_GHOST_RANGE ); //total time, dist
 
 		wait( totaltime - 0.5 );
 		self.ignoreme = false;
@@ -3694,21 +3726,19 @@ watch_stamina_upgrade(perk_str)
 
 	checkDist(a, b, distance )
 	{
-		maps\_zombiemode::checkDist( a, b, distance );
+		return maps\_zombiemode::checkDist( a, b, distance );
 	}
 
 	managePlayerZombieCollisions( totaltime, dist )
 	{
 		//Get all zombies near player
 		zombies = maps\_zombiemode::getZombiesInRange( dist );
-		
-		endon_str = "stamina_ghost_end_" + self.entity_num;
+
 		for(i=0;i<zombies.size;i++) {
-			zombies[i] thread maps\_zombiemode::setZombiePlayerCollisionOff( self, totaltime-0.1, 80, endon_str);
+			zombies[i] thread maps\_zombiemode::setZombiePlayerCollisionOff( self, totaltime-0.1, 80 );
 		}
 
 		wait( totaltime );
-		level notify( endon_str );
 		
 		for(i=0;i<zombies.size;i++) {
 			zombies[i] SetPlayerCollision( 1 );
@@ -3792,10 +3822,6 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 	{
 		//play the sound 2 times
 		self playlocalsound( "MP_hit_alert" );
-		for(i=0;i<2;i++) {
-			//self playlocalsound( "prj_bullet_impact_headshot" ); //still mettalic sounding but better
-			wait(0.01);
-		}
 		self playlocalsound( "prj_bullet_impact_headshot_helmet_nodie" );	//Working from base base game
 		
 		self.hud_damagefeedback_death.alpha = 1;
@@ -3808,34 +3834,44 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 		self playlocalsound( "MP_hit_alert" );
 		//self playlocalsound( "hitmarker" );
 
-		//self playlocalsound( "prj_bullet_impact_small_player" );
-		
-		for(i=0;i<2;i++) {
-			//self playlocalsound( "prj_bullet_impact_large_player" );	//sounds tiny, but works
-			//self playlocalsound( "prj_bullet_impact_small_player" );	//sounds tiny, but works
-			wait(0.01);
-		}
-			
-	
-
-	/*
-		if( level.sound_num < 1)
-				self playlocalsound( "prj_bulletspray_impact_large_player" );
-		else if( level.sound_num < 2)
-			self playlocalsound( "prj_bulletspray_impact_small_player" );
-		else if( level.sound_num < 3)
-			self playlocalsound( "prj_bolt_impact_player" );
-		else if( level.sound_num < 4)
-			self playlocalsound( "prj_crack" );
-		else
-			self playlocalsound( "prj_bullet_impact_player" );
-	*/
-	
-
-
 		self.hud_damagefeedback.alpha = 1;
 		self.hud_damagefeedback fadeOverTime( 1 );
 		self.hud_damagefeedback.alpha = 0;
+	}
+
+}
+
+
+
+//=========================================================================================================
+// PHD PRO
+//=========================================================================================================
+
+watch_phd_upgrade(perk_str)
+{
+	self endon("disconnect");
+	self endon(perk_str);
+
+	while(1)
+	{
+		self waittill("sprint");
+		while( self IsSprinting() ) {
+			wait_network_frame();
+		}
+
+		if( IsDefined( self.divetoprone ) && self.divetoprone == 1) 
+		{
+			self thread managePlayerZombieCollisions( level.TOTALTIME_PHD_PRO_COLLISIONS ,
+			 level.VALUE_PHD_PRO_COLLISIONS_RANGE ); //total time, dist
+
+			 //while( self.divetoprone == 1 ) { wait_network_frame();}
+			 wait( 0.75 );
+
+			 if ( IsDefined( level.zombiemode_divetonuke_perk_func ) )
+				[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin );
+		}
+
+		wait(0.1);
 	}
 
 }

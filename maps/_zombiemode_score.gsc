@@ -120,7 +120,7 @@ player_add_points( event, mod, hit_location, zombie)
 
 		case "rebuild_board":
 		case "carpenter_powerup":
-			player_points	= mod* (Int(level.round_number/10)+1);
+			player_points	= mod* (Int(level.round_number/5)+1);
 			break;
 
 		case "bonus_points_powerup":
@@ -128,7 +128,7 @@ player_add_points( event, mod, hit_location, zombie)
 			break;
 
 		case "nuke_powerup":
-			player_points	= mod* (Int(level.round_number/10)+1);
+			player_points	= mod* (Int(level.round_number/5)+1);
 			team_points		= mod;
 			break;
 

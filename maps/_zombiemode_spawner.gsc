@@ -402,18 +402,15 @@ zombie_watch_despawn_no_damage()
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 		players = GetPlayers();
 		for(i=0; i < players.size ; i++) {
-			if (checkDist(self, players[i], level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS ))
+			if ( checkDist(self.origin, players[i].origin, level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS ))
 				return;
 		}
 		self.zombie_despawn=true;
 	}
 
-	checkDist(a, b, distance)
+	checkDist(a, b, distance )
 	{
-		if( DistanceSquared( a.origin, b.origin ) < distance * distance )
-			return true;
-		else
-			return false;
+		return maps\_zombiemode::checkDist( a, b, distance );
 	}
 
 

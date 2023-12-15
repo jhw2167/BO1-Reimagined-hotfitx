@@ -28,15 +28,13 @@ init()
 	set_zombie_var( "tesla_max_arcs",			5 );
 	set_zombie_var( "tesla_max_enemies_killed", 10 );
 	set_zombie_var( "tesla_max_enemies_killed_upgraded", 15 );
-	//set_zombie_var( "tesla_radius_start",		10000 );		//Reimagined-Expanded up from 300
-	//set_zombie_var( "tesla_radius_decay",		20 );
+	set_zombie_var( "tesla_radius_start",		10000 );		//Reimagined-Expanded up from 300
+	set_zombie_var( "tesla_radius_decay",		20 );
 	set_zombie_var( "tesla_head_gib_chance",	50 );
 	set_zombie_var( "tesla_arc_travel_time",	0.5, true );
 	set_zombie_var( "tesla_kills_for_powerup",	15 );
 	set_zombie_var( "tesla_min_fx_distance",	128 );
 	set_zombie_var( "tesla_network_death_choke",4 );
-
-	level thread on_player_connect();
 }
 
 hasProPerk( perk ) {
@@ -140,7 +138,7 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 			//Add to zomb position
 			test_pos = zomb.origin + scaled_vector;
 			//Check if there is a zombie within that range
-			if( checkPointDist(zombies[i].origin, test_pos, level.VALUE_DBT_PENN_DIST ) ) {
+			if( checkDist( zombies[i].origin, test_pos, level.VALUE_DBT_PENN_DIST ) ) {
 				break;
 			}
 			j+=level.VALUE_DBT_UNITS;
@@ -194,21 +192,9 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 /** EXPLOSIVE EFFECTS **/
 
 
-checkPointDist(a, b, distance)
+checkDist(a, b, distance )
 {
-	if( DistanceSquared( a, b ) < distance * distance )
-		return true;
-	else
-		return false;
-}
-
-
-checkDist(a, b, distance)
-{
-	if( DistanceSquared( a.origin, b.origin ) < distance * distance )
-		return true;
-	else
-		return false;
+	return maps\_zombiemode::checkDist( a, b, distance );
 }
 
 
@@ -344,6 +330,13 @@ bonus_fire_damage( zomb , player, radius, time)
 {
 	// \give ak47_ft_upgraded_zm_x2
 	// \give rottweil72_upgraded_zm
+	if( !isDefined( radius ) )
+		radius = 0;
+
+	if( !isDefined( self ) || !IsAlive( self ) || is_true( self.in_water )) {
+		//Dead or in water
+		return;
+	}
 
 	//Set zomb on fire
 	PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
@@ -351,21 +344,19 @@ bonus_fire_damage( zomb , player, radius, time)
 	self playsound("evt_zombie_ignite");
 	
 	//Wait for guy to die
-	origin = zomb.origin;
-	for(;;) {
-		if( !IsDefined( self ) || !IsAlive( self ) ) {
-		break;
-		}
-		origin = zomb.origin;
-		wait(0.05);
+	self thread delayed_bonus_fire_damage( player );
+
+	origin = self.origin;
+	while( !IsDefined( self ) || !IsAlive( self ) ) {	
+		origin = self.origin;
+		wait(0.1);
 	}
 	
-	self thread delayed_bonus_fire_damage( player );
 	
 	//Build trigger where zombie dies to fire
 	trigger = spawn( "trigger_radius", origin, 1, radius, 70 );
 	
-	if(!isDefined(trigger))
+	if(!isDefined(trigger) || radius == 0)
 	{
 		return;
 	}
@@ -394,9 +385,11 @@ bonus_fire_damage( zomb , player, radius, time)
 
 delayed_bonus_fire_damage( player )
 {
-	wait(2);										
-	if( !is_true( self.in_water ) )
+	wait(2);
+	
+	if( !is_true( self.in_water ) ) {
 		self DoDamage( self.maxHealth + 1000, self.origin, player );
+	}
 }
 
 
@@ -586,18 +579,11 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 {
 	player endon( "disconnect" );
 	
-	player.tesla_enemies = undefined;
-	player.tesla_enemies_hit = 1;
-	player.tesla_powerup_dropped = false;
-	player.tesla_arc_count = 0;
 	arc_num = 1;
 
-
-	tesla_flag_hit( source_enemy, true );
 	wait_network_frame();
 	
 	enemies = tesla_get_enemies_in_area( source_enemy.origin, distance, player );
-	tesla_flag_hit( enemies, true );
 
 	//iprintln("Enemies size: " + enemies.size);
 	source_enemy thread tesla_do_damage( source_enemy, 0, player, 1);
@@ -619,21 +605,10 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 
 tesla_get_enemies_in_area( origin, distance, player )
 {
-	/#
-		level thread tesla_debug_arc( origin, distance );
-	#/
-
 	distance_squared = distance * distance;
 	enemies = [];
-
-	//Reimagined-Expanded always get the array please
-	//if ( !IsDefined( player.tesla_enemies ) )
 	
-	player.tesla_enemies = GetAiSpeciesArray( "axis", "all" );
 	zombies = get_array_of_closest( origin, player.tesla_enemies );
-
-	// 
-	//iprintln("Zombies size: " + zombies.size);
 
 	if ( IsDefined( zombies ) )
 	{
@@ -677,22 +652,6 @@ tesla_get_enemies_in_area( origin, distance, player )
 	}
 
 	return enemies;
-}
-
-
-tesla_flag_hit( enemy, hit )
-{
-	if( IsArray( enemy ) )
-	{
-		for( i = 0; i < enemy.size; i++ )
-		{
-			enemy[i].zombie_tesla_hit = hit;
-		}
-	}
-	else
-	{
-		enemy.zombie_tesla_hit = hit;
-	}
 }
 
 
@@ -871,141 +830,4 @@ tesla_play_arc_fx( target )
 	fxOrg MoveTo( target_origin, level.zombie_vars["tesla_arc_travel_time"] );
 	fxOrg waittill( "movedone" );
 	fxOrg delete();
-}
-
-
-tesla_debug_arc( origin, distance )
-{
-/#
-	if ( GetDvarInt( #"zombie_debug" ) != 3 )
-	{
-		return;
-	}
-
-	start = GetTime();
-
-	while( GetTime() < start + 3000 )
-	{
-		drawcylinder( origin, distance, 1 );
-		wait( 0.05 );
-	}
-#/
-}
-
-
-is_tesla_damage( mod )
-{
-	//iprintln("Is weapon tesla: ");
-	//return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm") ) && ( mod == "MOD_PROJECTILE" || mod == "MOD_PROJECTILE_SPLASH" ) );
-	return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm" || self.damageweapon == "knife_ballistic_upgraded_zm_x2")  )  );
-}
-
-enemy_killed_by_tesla()
-{
-	return ( IsDefined( self.tesla_death ) && self.tesla_death == true );
-
-}
-
-
-on_player_connect()
-{
-	for( ;; )
-	{
-		level waittill( "connecting", player );
-		player thread tesla_sound_thread();
-		//player thread tesla_pvp_thread();
-		player thread tesla_network_choke();
-	}
-}
-
-
-tesla_sound_thread()
-{
-	self endon( "disconnect" );
-	self waittill( "spawned_player" );
-
-	for( ;; )
-	{
-		result = self waittill_any_return( "grenade_fire", "death", "player_downed", "weapon_change", "grenade_pullback" );
-
-		if ( !IsDefined( result ) )
-		{
-			continue;
-		}
-
-		if( ( result == "weapon_change" || result == "grenade_fire" ) && (self GetCurrentWeapon() == "tesla_gun_zm" || self GetCurrentWeapon() == "tesla_gun_upgraded_zm" || self GetCurrentWeapon() == "tesla_gun_powerup_zm" || self GetCurrentWeapon() == "tesla_gun_powerup_upgraded_zm") )
-		{
-			self PlayLoopSound( "wpn_tesla_idle", 0.25 );
-			//self thread tesla_engine_sweets();
-		}
-		else
-		{
-			self notify ("weap_away");
-			self StopLoopSound(0.25);
-		}
-	}
-}
-
-tesla_engine_sweets()
-{
-	self endon( "disconnect" );
-	self endon ("weap_away");
-
-	while(1)
-	{
-		wait(randomintrange(7,15));
-		self play_tesla_sound ("wpn_tesla_sweeps_idle");
-	}
-}
-
-
-
-play_tesla_sound(emotion)
-{
-	self endon( "disconnect" );
-
-	if(!IsDefined (level.one_emo_at_a_time))
-	{
-		level.one_emo_at_a_time = 0;
-		level.var_counter = 0;
-	}
-	if(level.one_emo_at_a_time == 0)
-	{
-		level.var_counter ++;
-		level.one_emo_at_a_time = 1;
-		org = spawn("script_origin", self.origin);
-		org LinkTo(self);
-		org playsound (emotion, "sound_complete"+ "_"+level.var_counter);
-		org waittill("sound_complete"+ "_"+level.var_counter);
-		org delete();
-		level.one_emo_at_a_time = 0;
-	}
-}
-
-tesla_killstreak_sound()
-{
-	self endon( "disconnect" );
-
-	//TUEY Play some dialog if you kick ass with the Tesla gun
-
-	self maps\_zombiemode_audio::create_and_play_dialog( "kill", "tesla" );
-	wait(3.5);
-	level clientNotify ("TGH");
-}
-
-
-tesla_network_choke()
-{
-	self endon( "disconnect" );
-	self endon( "death" );
-	self waittill( "spawned_player" );
-
-	self.tesla_network_death_choke = 0;
-
-	for ( ;; )
-	{
-		wait_network_frame();
-		wait_network_frame();
-		self.tesla_network_death_choke = 0;
-	}
 }
