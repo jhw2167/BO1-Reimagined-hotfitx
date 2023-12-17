@@ -212,6 +212,8 @@ zombie_spawn_init( animname_set )
 	self thread zombie_damage_failsafe();	
 	
 	self.respawn_zombie = false;
+	self.marked_for_freeze=false;
+	self.marked_for_tesla=false;
 	if(self.animname == "zombie" ) 
 	{
 		//Check respawn queue

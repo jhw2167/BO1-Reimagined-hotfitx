@@ -46,9 +46,9 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									*/
+	/* 									/
 	level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=15;	///
+	level.starting_round_override=40;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -7905,7 +7905,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//	case "famas_upgraded_zm_x2":
 		//  "Balistic"
 		 
-		if(attacker.bullet_electric) 
+		if(attacker.bullet_electric && !self.marked_for_tesla) 
 		{
 			if(is_boss_zombie(self.animname)) { 
 			//nothing
@@ -7914,7 +7914,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				attacker.bullet_electric=false;
 				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 3);
 																		//zomb, player, arc range, num arcs
-				wait(1);
 			}
 
 			final_damage = int(final_damage * 2);
@@ -7926,6 +7925,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "ak74u_upgraded_zm_x2":	//currently not in game
 			case "aug_acog_mk_upgraded_zm_x2":
 			case "famas_upgraded_zm_x2":
+			case "cz75_upgraded_zm":
 			//Handled Above
 			break;
 			
