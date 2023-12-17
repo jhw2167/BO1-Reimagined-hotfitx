@@ -464,7 +464,7 @@ thief_round_tracker()
 			thief_round_start();
 
 			level.round_spawn_func = ::thief_round_spawning;
-			level.round_wait_func = ::thief_round_wait;
+			//level.round_wait_func = ::thief_round_wait;
 
 			if(!IsDefined(level.prev_thief_round_amount))
 			{

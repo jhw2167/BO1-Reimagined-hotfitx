@@ -46,14 +46,15 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									/
-	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=25;	///
+	/* 									*/
+	level.zombie_ai_limit_override=10;	///
+	level.starting_round_override=15;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=1;			///
 	level.server_cheats_override=true;	///
+	//level.calculate_amount_override=10;	///
 	//level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -1605,6 +1606,8 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
+
+	SetDvar( "zm_mod_version", "1.0.2" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -4810,6 +4813,10 @@ ai_calculate_amount()
 		level.max_zombie_func = ::default_max_zombie_func;
 	}
 
+	if( IsDefined(level.calculate_amount_override) ) {
+		level.zombie_round_total = level.calculate_amount_override;
+	}
+
 	level.zombie_total += level.zombie_round_total; //Reimagined-Expanded: Add zombies to the total in apocalypse mode
 
 	if ( IsDefined( level.zombie_total_set_func ) )
@@ -5870,15 +5877,9 @@ round_spawn_wrapper_func()
 	level thread [[level.round_spawn_func]]();
 
 	//If its a special round, call zombie spawning function too in apocalypse mode
-	
-	if( 
-	   level.dog_intermission 
-	|| level.monkey_intermission 
-	|| flag("thief_round") 
-	|| flag("monkey_round") 
-	|| flag("dog_round")
-	|| flag("enter_nml") 
-	) {
+	specialround = level.dog_intermission || level.monkey_intermission || level.thief_intermission || flag("thief_round") || flag("monkey_round") || flag("dog_round"); // || flag("enter_nml");
+	if( level.apocalypse && specialround )
+	{
 		level thread [[level.zombie_spawn_func]]();
 	}
 		

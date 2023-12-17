@@ -4779,12 +4779,27 @@ zombie_follow_enemy()
 // When a Zombie spawns, set his eyes to glowing.
 zombie_eye_glow()
 {
+	if( self.animname == "zombie") {
+		network_safe_play_fx_on_tag( "zombie_fx", 2, level._effect["eye_glow"], self.fx_dog_eye, "tag_origin" );
+	}
+		
 	if(!IsDefined(self))
 	{
 		return;
 	}
 	if ( !isdefined( self.no_eye_glow ) || !self.no_eye_glow )
 	{
+		if( self.animname == "zombie") 
+		{
+			self.fx_eye_glow = Spawn( "script_model", self GetTagOrigin( "J_EyeBall_LE" ) );
+			assert( IsDefined( self.fx_eye_glow ) );
+
+			self.fx_eye_glow.angles = self GetTagAngles( "J_EyeBall_LE" );
+			self.fx_eye_glow SetModel( "tag_origin" );
+			self.fx_eye_glow LinkTo( self, "J_EyeBall_LE" );
+			network_safe_play_fx_on_tag( "zombie_fx", 2, level._effect["eye_glow"], self.fx_eye_glow, "tag_origin" );
+		}
+
 		self haseyes(1);
 	}
 }
@@ -4798,6 +4813,8 @@ zombie_eye_glow_stop()
 	}
 	if ( !isdefined( self.no_eye_glow ) || !self.no_eye_glow )
 	{
+		if( isDefined( self.fx_eye_glow ) )
+			self.fx_eye_glow delete();
 		self haseyes(0);
 	}
 }
