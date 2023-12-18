@@ -46,7 +46,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									*/
+	/* 									/
 	level.zombie_ai_limit_override=30;	///
 	level.starting_round_override=50;	///
 	level.starting_points_override=50000;	///
@@ -1607,7 +1607,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.3.0" );
+	SetDvar( "zm_mod_version", "1.0.1" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
