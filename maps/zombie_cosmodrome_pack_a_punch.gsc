@@ -157,7 +157,7 @@ pack_print( str )
 	/#
 	if ( is_true( level.pack_debug ) )
 	{
-		iprintln( str );
+		//iprintln( str );
 	}
 	#/
 }

@@ -3146,7 +3146,7 @@ monkey_print( str )
 /#
 	if ( is_true( level.debug_monkey ) )
 	{
-		iprintln( str + "\n" );
+		//iprintln( str + "\n" );
 	}
 #/
 }

@@ -768,7 +768,7 @@ tesla_play_death_fx( arc_num )
 		tag = "J_Spine1";
 	}
 
-
+	//iprintln("Play texla death fx");
 	PlayFxOnTag( level._effect[fx], self, tag );
 
 	
