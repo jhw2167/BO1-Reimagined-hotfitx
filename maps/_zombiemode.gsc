@@ -46,17 +46,17 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides
-	/* 									/
+	/* 									*/
 	level.zombie_ai_limit_override=30;	///
-	level.starting_round_override=50;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
-	level.spawn_delay_override=1;			///
+	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=10;	///
+	level.calculate_amount_override=12;	///
 	level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -374,7 +374,7 @@ reimagined_init_level()
 
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 
-	level.SUPER_SPRINTER_SPEED = 100;
+	level.SUPER_SPRINTER_SPEED = 70;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
 
@@ -471,7 +471,7 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_START = 5;
 
 	level.VALUE_SLOW_ZOMBIE_ATTACK_ANIM_TIME = 1;
-	level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX = 10;
+	level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX = 0;
 
 	level.VALUE_PLAYER_DOWNED_PENALTY = 25;	//Multiplied by num players - 1
 	level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL = 3; //POSTs every 2.5 seconds
@@ -494,6 +494,8 @@ reimagined_init_level()
 			level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = level.drop_rate_override*10;
 			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
 		}
+
+	level.THRESHOLD_MAX_DROPS = 4;	//Max Drops allowed per round. Protects against bugs
 
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
@@ -1569,7 +1571,7 @@ init_levelvars()
 
 	//Reimagined Apocalypse
 	if(level.apocalypse) {
-		level.zombie_vars["zombie_score_bonus_melee"] = 20;
+		level.zombie_vars["zombie_score_bonus_melee"] = 25;
 		//level.zombie_vars["zombie_score_bonus_head"] = 50;
 	}
 	
@@ -1607,7 +1609,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.0.1" );
+	SetDvar( "zm_mod_version", "1.1.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -5085,11 +5087,13 @@ reimagined_expanded_round_start()
 		level.zombie_ai_limit = 24;
 		if( level.round_number > 24 ) {
 			level.zombie_ai_limit = 32; 
-			level.VALUE_ZOMBIE_SPAWN_DELAY = 1;
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 1.5;
 		}
 			
 		
 	}
+
+	level.total_drops_round = 0;
 
 	//Increase max perks every 5 rounds after 15
 		if( level.round_number > 14 && level.round_number % 5 == 0 ){
@@ -5767,7 +5771,7 @@ pre_round_think()
 	if( IsDefined(level.starting_points_override) )
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 
-	/*					/
+	/*					*/
 	//iprintln("Apocalypse is: "+ level.apocalypse);
 	//iprintln("Alt Bosses is: "+ level.alt_bosses);
 	//iprintln("Expensive Perks is: "+ level.expensive_perks);
@@ -5837,19 +5841,6 @@ round_think()
 		if(flag("insta_kill_round"))
 		{
 			flag_clear("insta_kill_round");
-		}
-
-		if(level.gamemode != "survival")
-		{
-			for(i=0;i<players.size;i++)
-			{
-				if(players[i] maps\_zombiemode_grief::get_number_of_valid_enemy_players() == 0 && players.size > 1)
-				{
-					level.vs_winning_team = players[i].vsteam;
-					level notify("end_game");
-					return;
-				}
-			}
 		}
 
 		level thread maps\_zombiemode_audio::change_zombie_music( "round_end" );
@@ -6722,10 +6713,13 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 					iDamage = int(iDamage * 0.5);
 				self.previous_zomb_attacked_by = hash;
 
+				//Reimagined-Expaded, maybe we'lll use later, not necessary right now
 				//Slow consequtive zombie attack by slowing animation
+				
 				if( level.round_number < level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX ) {
 					eAttacker thread slow_zombie_attack_anim();
 				}
+				
 			}
 			self.stats["damage_taken"] += iDamage;
 		}

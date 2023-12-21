@@ -25,7 +25,7 @@ player_add_points( event, mod, hit_location, zombie)
 	multiplier = self get_points_multiplier();
 	
 
-	//iprintln("event: " + event + " mod: " + mod + " ");
+	iprintln("event: " + event + " mod: " + mod + " ");
 
 	switch( event )
 	{
@@ -46,7 +46,7 @@ player_add_points( event, mod, hit_location, zombie)
 				if( player_points > 0 )
 					player_points += quick_kill_bonus_points( zombie );
 			}
-
+			iprintln("Points after multiplier: " + player_points);
 
 			if(IsDefined(self.kill_tracker))
 			{
@@ -109,7 +109,8 @@ player_add_points( event, mod, hit_location, zombie)
 						multiplier = 0;
 				}				
 		
-				multiplier *= self weapon_points_multiplier( self getcurrentweapon() );
+				player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
+				iprintln("Points after multiplier: " + player_points);
 			}
 			else //Regular zombies!
 			{
@@ -184,7 +185,7 @@ weapon_points_multiplier( weapon, mod )
 			weapon = GetSubStr(weapon, 0, weapon.size-3);
 	}
 
-	if(mod == undefined) {
+	if( !IsDefined( mod ) ) {
 		mod = "MOD_UNKNOWN";
 	}
 

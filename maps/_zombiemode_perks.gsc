@@ -3722,6 +3722,7 @@ watch_stamina_upgrade(perk_str)
 			self VisionSetNaked( level.zombie_visionset, 0.5 );
 		else
 			self VisionSetNaked( "undefined", 0.5 );
+
 	}
 
 	checkDist(a, b, distance )
