@@ -388,7 +388,7 @@ zombie_determine_drop()
 			
 			if( rand < green_rate ) {
 				self.hasDrop = "GREEN";
-				iprintln("SUCESS: rand: " + rand + " < " + green_rate);
+				//iprintln("SUCESS: rand: " + rand + " < " + green_rate);
 			} 
 		}
 
@@ -404,7 +404,7 @@ zombie_determine_drop()
 			self.zombie_drop_model LinkTo( self, "tag_origin" );
 
 			//This needs to be in client csc for Vulture aid Pro, not for all to see
-			PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
+			// -- PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
 			//PlayFXOnTag( level._effect["powerup_on"], self, "J_SpineLower" ); - this wont get deleted
 		}
 }
@@ -666,7 +666,7 @@ set_run_speed()
 
 	//iprintln( "zombie_spawn_init -> rand = " + rand );
 //	self thread print_run_speed( rand );
-	if( rand <= 35 && level.gamemode == "survival" )
+	if( rand <= 35 )
 	{
 		self.zombie_move_speed = "walk";
 	}
