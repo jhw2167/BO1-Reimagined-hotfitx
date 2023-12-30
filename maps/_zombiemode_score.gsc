@@ -34,14 +34,17 @@ player_add_points( event, mod, hit_location, zombie)
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
 
+			//iprintln("zombie_death_player_points: " + player_points);
 			//Headshots and melee bonus
 			player_points += player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
+			//iprintln("KILL BONUS: " + player_points);
 
 			//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
 			if( level.apocalypse ) 
 			{
 				//No points for WondwerWeapons, double for pistols
 				player_points *= weapon_points_multiplier( self getcurrentweapon(), mod );
+				//iprintln("WEAPON multiplier: " + player_points);
 
 				//Bonus points for killing zombies quickly - not doubled, not valid on WW
 				if( player_points > 0 )
@@ -87,7 +90,7 @@ player_add_points( event, mod, hit_location, zombie)
 					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
 				}
 
-				multiplier = self weapon_points_multiplier( self getcurrentweapon(), mod );
+				player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
 				
 				//No points for shooting zombie if it respawned
 				if( IsDefined( zombie ) && ( zombie.animname == "zombie") )
@@ -260,7 +263,7 @@ get_zombie_death_player_points()
 		points = level.zombie_vars["zombie_score_kill_4player"];
 	}
 	
-	if( level.apocalypse)
+	if( level.apocalypse )
 		points = level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS;
 	
 	return( points );

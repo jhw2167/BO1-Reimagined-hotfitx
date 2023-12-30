@@ -52,12 +52,42 @@ init()
 
 		for( i = 0; i < zombie_debris.size; i++ )
 		{
-			if( IsDefined( zombie_doors[i].zombie_cost ) )
+			if( IsDefined( zombie_debris[i].zombie_cost ) )
 				zombie_debris[i].zombie_cost += 500;	//flat 500 increase
 		}
 
+		level.debris_print = zombie_debris;
+		level.door_print = zombie_doors;
+
+		//thread print_doors_costs();
+
 	}
 
+	print_doors_costs()
+	{
+		iprintln( "DOOR COSTS");
+		flag_wait("all_players_connected");
+		iprintln( "WAIT OVER");
+
+		for( i = 0; i < level.debris_print.size; i++ )
+		{
+			if( IsDefined( level.debris_print[i].zombie_cost ) ) {
+				iprintln( "Debris: " + Strtok( level.debris_print[i].script_flag, "," )[0] );
+				iprintln(" Cost: " + level.debris_print[i].zombie_cost + " ---------- " + i);
+			}
+				iprintln( "------" + i + "------" );
+		}
+
+		for( i = 0; i < level.door_print.size; i++ )
+		{
+			if( IsDefined( level.door_print[i].zombie_cost ) ) {
+				iprintln( "Door: " + Strtok( level.door_print[i].script_flag, "," )[0] );
+				iprintln(" Cost: " + level.door_print[i].zombie_cost );
+			}
+
+			iprintln( "------" + i + "------" );
+		}
+	}
 
 //
 //	BLOCKERS
@@ -279,6 +309,7 @@ door_buy()
 
 	if( is_player_valid( who ) )
 	{
+	
 		players = get_players();
 		// No pools in solo game
 		if ( players.size == 1 && who.score >= self.zombie_cost )
@@ -1015,6 +1046,7 @@ debris_think()
 
 		if( is_player_valid( who ) )
 		{
+			
 			// Can we afford this door?
 			players = get_players();
 			if(GetDvarInt( #"zombie_unlock_all") > 0)

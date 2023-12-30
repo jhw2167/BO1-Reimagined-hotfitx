@@ -3012,8 +3012,19 @@ monkey_pack_take_perk()
 	//iprintln("took perk");
 }
 
+hasProPerk( perk )
+{
+	return self.PRO_PERKS[ perk ];
+}
+
 monkey_perk_lost( perk )
 {
+	pro_perk = perk + "_upgrade";
+	if( self hasProPerk( pro_perk ) ) {
+		self maps\_zombiemode_perks::disableProPerk( pro_perk, level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME );
+		return;
+	}
+
 	if ( perk == "specialty_armorvest" )
 	{
 		if ( self.health > self.maxhealth )

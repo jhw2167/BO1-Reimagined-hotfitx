@@ -54,9 +54,11 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=10;	///
+	level.calculate_amount_override=2;	*///
 	level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
+
+	setApocalypseOptions();
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -109,7 +111,7 @@ main()
 	init_client_flags();
 
 	//Reimagined-Expanded -- Set Up Options and GameType
-	setApocalypseOptions();
+
 	level reimagined_init_level();
 
 	register_offhand_weapons_for_level_defaults();
@@ -643,10 +645,14 @@ reimagined_init_level()
 
 	//Maps
 
+	//Cosmodrome
+	level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME = 30;
+
 	//Temple
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_RATE = 33;		//1-1000, 3.2% chance per zombie
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_MAX = 5;
+
 
 	if( level.no_bosses ) {
 		level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 100000; //No special zombies
@@ -730,6 +736,8 @@ wait_set_player_visionset()
 	if( is_true(level.override_give_all_perks) ) {
 		self give_pro_perks( true );
 	}
+
+	//iprintln( "wait_set_player_visionset done");
 }
 
 //Reimagined-Expanded -- get zombies in provided range
@@ -1593,7 +1601,7 @@ init_levelvars()
 
 	//Reimagined Apocalypse
 	if(level.apocalypse) {
-		level.zombie_vars["zombie_score_bonus_melee"] = 25;
+		level.zombie_vars["zombie_score_bonus_melee"] = 30;
 		//level.zombie_vars["zombie_score_bonus_head"] = 50;
 	}
 	
