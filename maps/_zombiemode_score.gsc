@@ -30,6 +30,7 @@ player_add_points( event, mod, hit_location, zombie)
 	switch( event )
 	{
 		case "death":
+		case "ballistic_knife_death":
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
 
@@ -47,22 +48,6 @@ player_add_points( event, mod, hit_location, zombie)
 					player_points += quick_kill_bonus_points( zombie );
 			}
 			//iprintln("Points after multiplier: " + player_points);
-
-			if(IsDefined(self.kill_tracker))
-			{
-				self.kill_tracker++;
-			}
-			else
-			{
-				self.kill_tracker = 1;
-			}
-			//stats tracking
-			self.stats["kills"] = self.kill_tracker;
-
-			break;
-
-		case "ballistic_knife_death":
-			player_points = get_zombie_death_player_points() + level.zombie_vars["zombie_score_bonus_melee"];
 
 			if(IsDefined(self.kill_tracker))
 			{
@@ -102,14 +87,14 @@ player_add_points( event, mod, hit_location, zombie)
 					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
 				}
 
+				multiplier = self weapon_points_multiplier( self getcurrentweapon(), mod );
+				
 				//No points for shooting zombie if it respawned
 				if( IsDefined( zombie ) && ( zombie.animname == "zombie") )
 				{
 					if ( zombie.respawn_zombie )
 						multiplier = 0;
 				}				
-		
-				player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
 				//iprintln("Points after multiplier: " + player_points);
 			}
 			else //Regular zombies!
@@ -122,6 +107,8 @@ player_add_points( event, mod, hit_location, zombie)
 		case "rebuild_board":
 		case "carpenter_powerup":
 			player_points	= mod* (Int(level.round_number/5)+1);
+			if( player_points > level.THRESHOLD_MAX_POINTS_CARPENTER )
+				player_points = level.THRESHOLD_MAX_POINTS_CARPENTER;
 			break;
 
 		case "bonus_points_powerup":
@@ -130,6 +117,8 @@ player_add_points( event, mod, hit_location, zombie)
 
 		case "nuke_powerup":
 			player_points	= mod* (Int(level.round_number/5)+1);
+			if( player_points > level.THRESHOLD_MAX_POINTS_NUKE )
+				player_points = level.THRESHOLD_MAX_POINTS_NUKE;
 			team_points		= mod;
 			break;
 
@@ -346,14 +335,30 @@ quick_kill_bonus_points( zombie )
 	//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
 	valid_bonus_points = ( IsDefined( zombie ) 
 		&& ( zombie.animname == "zombie" )
-		&& ( level.expensive_perks )
-		&& (!zombie.respawn_zombie ) );
+		&& ( level.expensive_perks && level.tough_zombies )
+		&& ( !zombie.respawn_zombie ) );
 
-	if( valid_bonus_points ) {
+	valid_penalty_points = ( IsDefined( zombie ) 
+		&& ( zombie.animname == "zombie" )
+		&& ( level.expensive_perks && level.tough_zombies )
+		&& ( zombie.respawn_zombie ) );
+
+	if( valid_bonus_points ) 
+	{
 		bonus = level.ARRAY_QUICK_KILL_BONUS_POINTS[level.round_number];
 		if( IsDefined( bonus ) )
 			return bonus;
 	}	
+
+	if( valid_penalty_points ) 
+	{
+		penalty = -1*level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[level.round_number];
+		if( IsDefined( penalty ) )
+			return penalty;
+		else
+			return -1*level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[ level.THRESHOLD_MAX_APOCALYSE_ROUND ];
+	}
+
 	return 0;
 }
 

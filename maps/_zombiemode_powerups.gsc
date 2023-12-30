@@ -95,6 +95,7 @@ init()
 	//level thread remove_carpenter();
 	level thread add_powerup_later("fire_sale");
 	level thread add_powerup_later("minigun");
+	//level thread watch_bonfire();
 }
 
 //
@@ -1713,6 +1714,17 @@ start_fire_sale( item )
 		players[i].zombie_vars["zombie_powerup_fire_sale_on"] = false;
 	}
 	level notify ( "fire_sale_off" );
+}
+
+watch_bonfire()
+{
+	flag_wait( "all_players_connected" );
+	p = get_players()[0];
+	while(1)
+	{
+		p waittill("reload");
+		level thread start_bonfire_sale( undefined );
+	}
 }
 
 start_bonfire_sale( item )

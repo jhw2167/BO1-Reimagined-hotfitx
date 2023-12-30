@@ -47,16 +47,16 @@ main()
 
 	//Overrides
 	/* 									/
-	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=20;	///
+	//level.zombie_ai_limit_override=5;	///
+	level.starting_round_override=10;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=12;	///
+	level.calculate_amount_override=10;	///
 	level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	//for tracking stats
 	level.zombies_timeout_spawn = 0;
@@ -392,6 +392,10 @@ reimagined_init_level()
 	level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS = [];
 
 	level.ARRAY_QUICK_KILL_BONUS_POINTS = [];
+	level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS = [];
+
+	level.QUICK_KILL_BONUS_OVERRIDE = 0;	//allows us to turn off quick kill bonus
+	//level.QUICK_KILL_NEGATIVE_BONUS_OVERRIDE = 0;
 
 	for(i=0;i <= level.THRESHOLD_MAX_APOCALYSE_ROUND; i++) 
 	{
@@ -401,12 +405,14 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 250;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 0;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 0;
 		}
 		else if( i < 10 ) {
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 150;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 500;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 25;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 10;
 		}
 		else if( i < 15 ) {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10;
@@ -414,6 +420,7 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 500;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 25;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 20;
 		}
 		else if( i < 20 ) {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 15;
@@ -421,6 +428,7 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1000;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 50;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 30;
 		} 
 		else if( i < 25 ) {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
@@ -428,6 +436,7 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1000;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 50;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 40;
 		}
 		else if( i < 30 ) {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
@@ -435,14 +444,19 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
-		} else {
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 40;
+		} 
+		else {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = i;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
 
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 40;
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
 		}
 			
+		if( isdefined(level.QUICK_KILL_BONUS_OVERRIDE) )
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = level.QUICK_KILL_BONUS_OVERRIDE;	//allows us to turn off quick kill bonus
 	}
 		
 
@@ -497,6 +511,9 @@ reimagined_init_level()
 
 	level.THRESHOLD_MAX_DROPS = 4;	//Max Drops allowed per round. Protects against bugs
 
+	level.THRESHOLD_MAX_POINTS_CARPENTER = 1000;
+	level.THRESHOLD_MAX_POINTS_NUKE = 2400;
+
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
@@ -507,6 +524,11 @@ reimagined_init_level()
 	level.VALUE_PAP_EXPENSIVE_COST = 10000;
 	level.VALUE_PAP_X2_COST = 10000;
 	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
+
+	level.VALUE_PAP_BONFIRE_COST = 1000;
+	level.VALUE_PAP_EXPENSIVE_BONFIRE_COST = 5000;
+	level.VALUE_PAP_X2_BONFIRE_COST = 5000;
+	level.VALUE_PAP_X2_EXPENSIVE_BONFIRE_COST = 20000;
 	
 	level.VALUE_PERK_PUNCH_COST = 10000;
 	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
@@ -1609,7 +1631,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.1.0" );
+	SetDvar( "zm_mod_version", "1.2.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
