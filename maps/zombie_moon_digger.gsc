@@ -836,7 +836,7 @@ digger_hack_func(hacker)
 	level thread send_clientnotify( self.digger_name, true );
 	hacker thread maps\_zombiemode_audio::create_and_play_dialog( "digger", "hacked" );
 	level thread delayed_computer_hacked_vox( self.digger_name );
-	//iprintlnbold("Digger has been disabled");
+	////iprintlnbold("Digger has been disabled");
 
 	flag_set(self.hacked_flag);
 	if ( !flag( self.breached_flag ) )
@@ -863,7 +863,7 @@ digger_qed_func(hacker, digger_name)
 	level thread send_clientnotify( digger_name, true );
 	hacker thread maps\_zombiemode_audio::create_and_play_dialog( "digger", "hacked" );
 	level thread delayed_computer_hacked_vox( digger_name );
-	//iprintlnbold("Digger has been disabled");
+	////iprintlnbold("Digger has been disabled");
 
 	flag_set(digger_name + "_digger_hacked");
 	if ( !flag( digger_name + "_breached" ) )
@@ -1229,28 +1229,28 @@ play_timer_vox( digger_name )
 		{
 			level thread maps\zombie_moon_amb::play_mooncomp_vox( "vox_mcomp_digger_start_", digger_name );
 			played180sec = true;
-			//iprintlnbold("DIGGER> played180sec: "+time_left );
+			////iprintlnbold("DIGGER> played180sec: "+time_left );
 		}
 
 		if( time_left <= 120.0 && !played120sec)
 		{
 			level thread maps\zombie_moon_amb::play_mooncomp_vox( "vox_mcomp_digger_start_", digger_name );
 			played120sec = true;
-			//iprintlnbold("DIGGER> played120sec: "+time_left );
+			////iprintlnbold("DIGGER> played120sec: "+time_left );
 		}
 
 		if( time_left <= 60.0 && !played60sec)
 		{
 			level thread maps\zombie_moon_amb::play_mooncomp_vox( "vox_mcomp_digger_time_60_", digger_name );
 			played60sec = true;
-			//iprintlnbold("DIGGER> played60sec: "+time_left );
+			////iprintlnbold("DIGGER> played60sec: "+time_left );
 		}
 
 		if( time_left <= 30.0 && !played30sec )
 		{
 			level thread maps\zombie_moon_amb::play_mooncomp_vox( "vox_mcomp_digger_time_30_", digger_name );
 			played30sec = true;
-			//iprintlnbold("DIGGER> played30sec : "+time_left );
+			////iprintlnbold("DIGGER> played30sec : "+time_left );
 		}
 
 		wait( 1.0 );
@@ -1297,7 +1297,7 @@ get_correct_times( digger )
 
 	for(i=0;i<500;i++)
 	{
-		//iprintlnbold( i );
+		////iprintlnbold( i );
 		wait(1);
 	}
 }
@@ -1463,11 +1463,11 @@ digger_follow_path_calc_speed()
 		}
 	}
 
-	//iprintlnbold("DIGGER> numNodes: "+number_nodes );
-	//iprintlnbold("DIGGER> length: "+self.path_length );
+	////iprintlnbold("DIGGER> numNodes: "+number_nodes );
+	////iprintlnbold("DIGGER> length: "+self.path_length );
 
 	self.digger_speed = self.path_length / level.diggers_global_time;	// 4mins
-	//iprintlnbold("DIGGER> speed: "+self.digger_speed );
+	////iprintlnbold("DIGGER> speed: "+self.digger_speed );
 }
 
 digger_follow_path_recalc_speed( path_start_node )
@@ -1489,8 +1489,8 @@ digger_follow_path_recalc_speed( path_start_node )
 		}
 	}
 
-	//iprintlnbold("DIGGER> RECALC numNodes: "+number_nodes );
-	//iprintlnbold("DIGGER> length: "+self.path_length );
+	////iprintlnbold("DIGGER> RECALC numNodes: "+number_nodes );
+	////iprintlnbold("DIGGER> length: "+self.path_length );
 
 
 	curr_time = GetTime();
@@ -1499,7 +1499,7 @@ digger_follow_path_recalc_speed( path_start_node )
 	time_left = (level.diggers_global_time - time_used); //4mins - time_used
 
 	self.digger_speed = self.path_length / time_left;
-	//iprintlnbold("DIGGER> speed: "+self.digger_speed );
+	////iprintlnbold("DIGGER> speed: "+self.digger_speed );
 }
 
 
@@ -1633,9 +1633,9 @@ digger_follow_path(body,reverse,arm)
 			else
 			{
 				end_time = GetTime();
-				//iprintlnbold("DIGGER> end time: "+(end_time/1000) );
+				////iprintlnbold("DIGGER> end time: "+(end_time/1000) );
 				total_time = end_time - self.start_time;
-				//iprintlnbold("DIGGER> total time: "+(total_time/1000) );
+				////iprintlnbold("DIGGER> total time: "+(total_time/1000) );
 				reached_end = true;
 			}
 		}
@@ -1648,9 +1648,9 @@ digger_follow_path(body,reverse,arm)
 			else
 			{
 				end_time = GetTime();
-				//iprintlnbold("DIGGER> end time: "+(end_time/1000) );
+				////iprintlnbold("DIGGER> end time: "+(end_time/1000) );
 				total_time = end_time - self.start_time;
-				//iprintlnbold("DIGGER> total time: "+(total_time/1000) );
+				////iprintlnbold("DIGGER> total time: "+(total_time/1000) );
 				reached_end = true;
 			}
 		}
@@ -1679,9 +1679,9 @@ digger_follow_path(body,reverse,arm)
 			{
 				next_node = current_node.next_node;
 
-				//iprintlnbold("DIGGER> NODE CHANGE a: " );
-				//iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
-				//iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
+				////iprintlnbold("DIGGER> NODE CHANGE a: " );
+				////iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
+				////iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
 				self thread digger_follow_path_recalc_speed( current_node );
 
 				continue;
@@ -1690,9 +1690,9 @@ digger_follow_path(body,reverse,arm)
 			{
 				next_node = current_node.previous_node;
 
-				//iprintlnbold("DIGGER> NODE CHANGE b: " );
-				//iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
-				//iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
+				////iprintlnbold("DIGGER> NODE CHANGE b: " );
+				////iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
+				////iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
 				self thread digger_follow_path_recalc_speed( current_node );
 
 				continue;
@@ -1722,9 +1722,9 @@ digger_follow_path(body,reverse,arm)
 					{
 						next_node = current_node.next_node;
 
-						//iprintlnbold("DIGGER> NODE CHANGE c: " );
-						//iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
-						//iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
+						////iprintlnbold("DIGGER> NODE CHANGE c: " );
+						////iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
+						////iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
 						self thread digger_follow_path_recalc_speed( current_node );
 
 						continue;
@@ -1733,9 +1733,9 @@ digger_follow_path(body,reverse,arm)
 					{
 						next_node = current_node.previous_node;
 
-						//iprintlnbold("DIGGER> NODE CHANGE d: " );
-						//iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
-						//iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
+						////iprintlnbold("DIGGER> NODE CHANGE d: " );
+						////iprintlnbold("DIGGER> start_node origin: "+current_node.origin );
+						////iprintlnbold("DIGGER> next_node origin: "+next_node.origin );
 						self thread digger_follow_path_recalc_speed( current_node );
 
 						continue;
@@ -1785,7 +1785,7 @@ digger_follow_path(body,reverse,arm)
 		self.origin = self.origin + velocity * 0.05;
 
 		//digger_time_in_mins = maps\_zombiemode::to_mins( GetTime()-self.start_time );
-		//iprintlnbold("DIGGER> Time: " + digger_time_in_mins );
+		////iprintlnbold("DIGGER> Time: " + digger_time_in_mins );
 
 		look_ahead = current_node.lookahead + ( next_node.lookahead - current_node.lookahead ) * fraction;
 

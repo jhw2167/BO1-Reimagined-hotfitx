@@ -979,7 +979,7 @@ zombie_trap_death( trap, param, activator )
 			self dodamage(self.health + 666, self.origin, activator);
 		}
 
-//		//iprintlnbold("should be damaged");
+//		////iprintlnbold("should be damaged");
 		break;
 
 	case "rotating":
@@ -1159,7 +1159,7 @@ trap_dialog()
 				//players[i] create_and_play_dialog( plr, "vox_level_start", 0.25 );
 				wait(3);
 				self notify ("warning_dialog");
-				//iprintlnbold("warning_given");
+				////iprintlnbold("warning_given");
 			}
 		}
 	}

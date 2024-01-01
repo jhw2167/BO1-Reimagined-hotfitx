@@ -611,7 +611,7 @@ vending_weapon_upgrade()
 
 		if ( player.score < self.cost )
 		{
-			//player //iprintln( "Not enough points to buy Perk: " + perk );
+			//player ////iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -619,7 +619,7 @@ vending_weapon_upgrade()
 		
 		if ( player maps\_zombiemode_weapons::is_weapon_upgraded( current_weapon ) && player.score < self.double_cost )
 		{
-			//player //iprintln( "Not enough points to buy Perk: " + perk );
+			//player ////iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -675,7 +675,7 @@ vending_weapon_upgrade()
 		self SetHintString("");
 		self disable_trigger();
 
-		//iprintln("Call knuckle crack from main thread");
+		////iprintln("Call knuckle crack from main thread");
 		player thread do_knuckle_crack();
 
 		// Remember what weapon we have.  This is needed to check unique weapon counts.
@@ -837,7 +837,7 @@ wait_for_player_to_take( player, weapon, packa_timer )
 			/#
 			if ( "none" == current_weapon )
 			{
-				//iprintlnbold( "WEAPON IS NONE, PACKAPUNCH RETRIEVAL DENIED" );
+				////iprintlnbold( "WEAPON IS NONE, PACKAPUNCH RETRIEVAL DENIED" );
 			}
 			#/
 
@@ -1348,7 +1348,7 @@ turn_divetonuke_on()
 divetonuke_explode( attacker, origin )
 {
 	// tweakable vars
-	//iprintln("divetonuke_explode");
+	////iprintln("divetonuke_explode");
 	radius = level.zombie_vars["zombie_perk_divetonuke_radius"];
 	min_damage = level.zombie_vars["zombie_perk_divetonuke_min_damage"];
 	max_damage = level.zombie_vars["zombie_perk_divetonuke_max_damage"];
@@ -1378,7 +1378,7 @@ divetonuke_explode( attacker, origin )
 		}
 		
 	} else {
-		//iprintln("divetonuke_explode");
+		////iprintln("divetonuke_explode");
 		PlayFx( level._effect["divetonuke_groundhit"], origin );
 	}
 
@@ -1533,7 +1533,7 @@ electric_perks_dialog()
 				wait(3);
 				self notify ("warning_dialog");
 				/#
-				//iprintlnbold("warning_given");
+				////iprintlnbold("warning_given");
 				#/
 			}
 		}
@@ -1644,14 +1644,14 @@ addProPerk( perk )
 	if (perk == "specialty_extraamo_upgrade")
 		self.PRO_PERKS[ level.WWN_PRO ] = true;
 
-	//iprintln( " ADD PRO PERK : " + perk);
+	////iprintln( " ADD PRO PERK : " + perk);
 }
 
 
 disableProPerk( perk, time ) 
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
-		//iprintln("disableProPerk: self or self.PRO_PERKS is undefined");
+		////iprintln("disableProPerk: self or self.PRO_PERKS is undefined");
 		return;
 	}
 
@@ -1679,7 +1679,7 @@ returnProPerk( perk )
 removeProPerk( perk, removeOrDisableHud )
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
-		//iprintln("removeProPerk: self or self.PRO_PERKS is undefined");
+		////iprintln("removeProPerk: self or self.PRO_PERKS is undefined");
 		return;
 	}
 
@@ -1762,7 +1762,7 @@ givePhdUpgrade() {
 player_print_msg(msg) {
 	flag_wait( "all_players_connected" );
 	wait(2);
-	//iprintln( msg );
+	////iprintln( msg );
 }
 
 disableSpeed( wait_time ) {
@@ -1782,7 +1782,7 @@ vending_trigger_think()
 	//self thread turn_cola_off();
 	perk = self.script_noteworthy;
 	solo = false;
-	//iprintln("PRINT PERK" + perk);
+	////iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
 	if ( IsDefined(perk) && perk == "specialty_bulletaccuracy" )
 	{
@@ -1848,7 +1848,7 @@ vending_trigger_think()
 
 			if ( player.score < cost )
 			{
-				//player //iprintln( "Not enough points to buy Perk: " + perk );
+				//player ////iprintln( "Not enough points to buy Perk: " + perk );
 				wait(0.1);
 				self playsound("evt_perk_deny");
 				continue;
@@ -1869,7 +1869,7 @@ vending_trigger_think()
 			wait (.2);
 			player thread maps\_gameskill::event_heart_beat( "none" , 0 );
 			player.preMaxHealth = 140;
-			//iprintln("player max health: " + player.preMaxHealth);
+			////iprintln("player max health: " + player.preMaxHealth);
 			if(player.maxHealth < 140)
 			{
 				player SetMaxHealth( 140 );
@@ -2163,7 +2163,7 @@ vending_trigger_think()
 				player.num_perks--;		//Will be incremented later when perk is perchased, so we pre-decrement!
 			} else if ( cheat != true )
 			{
-				//player //iprintln( "Already using Perk: " + perk );
+				//player ////iprintln( "Already using Perk: " + perk );
 				self playsound("deny");
 				player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 1 );
 				continue;
@@ -2172,7 +2172,7 @@ vending_trigger_think()
 
 		if ( player.score < cost )
 		{
-			//player //iprintln( "Not enough points to buy Perk: " + perk );
+			//player ////iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -2181,7 +2181,7 @@ vending_trigger_think()
 		
 		if ( player.num_perks >= level.max_perks && !is_true(player._retain_perks) )
 		{
-			//player //iprintln( "Too many perks already to buy Perk: " + perk );
+			//player ////iprintln( "Too many perks already to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			// COLLIN: do we have a VO that would work for this? if not we'll leave it at just the deny sound
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "sigh" );
@@ -2204,7 +2204,7 @@ vending_trigger_think()
 		//	perk += "_upgrade";
 		//}
 
-		//iprintln( "Bought Perk: " + perk );
+		////iprintln( "Bought Perk: " + perk );
 		///bottle_dispense
 		switch( perk )
 		{
@@ -2302,7 +2302,7 @@ give_perk_think(player, gun, perk, cost)
 
 	//player give_perk( perk, true );
 
-	//player //iprintln( "Bought Perk: " + perk );
+	//player ////iprintln( "Bought Perk: " + perk );
 	bbPrint( "zombie_uses: playername %s playerscore %d teamscore %d round %d cost %d name %s x %f y %f z %f type perk",
 		player.playername, player.score, level.team_pool[ player.team_num ].score, level.round_number, cost, perk, self.origin );
 }
@@ -2349,14 +2349,14 @@ unlocked_perk_upgrade( perk )
 
 give_perk( perk, bought )
 {
-	//iprintln( "Giving Perk " + perk );
-	//iprintln(" Player " + self.entity_num );
+	////iprintln( "Giving Perk " + perk );
+	////iprintln(" Player " + self.entity_num );
 
 	//Reimagined-Expanded
 	if( IsSubStr( perk, "_upgrade" ) )
 	{	
 		if( self hasProPerk( perk ) ) {
-			//iprintln( "Self has pro perk: " + self.entity_num);
+			////iprintln( "Self has pro perk: " + self.entity_num);
 			return;
 		}
 
@@ -2711,7 +2711,7 @@ perk_think( perk )
 		self notify(perk_str);
 	}
 
-	//iprintln( "Perk Lost: " + perk );
+	////iprintln( "Perk Lost: " + perk );
 	self UnsetPerk( perk );
 	self.num_perks--;
 
@@ -2773,7 +2773,7 @@ perk_think( perk )
 		self perk_hud_destroy( perk );
 
 	self.perk_purchased = undefined;
-	//self //iprintln( "Perk Lost: " + perk );
+	//self ////iprintln( "Perk Lost: " + perk );
 
 
 	if ( IsDefined( level.perk_lost_func ) )
@@ -2907,7 +2907,7 @@ perk_hud_create( perk )
 	if( self.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
 		return;
 	
-	//iprintln("shader: " + shader);
+	////iprintln("shader: " + shader);
 
 	hud = create_simple_hud( self );
 	hud.foreground = true;
@@ -3228,7 +3228,7 @@ perk_give_bottle_end( gun, perk )
 		return;
 	}
 
-	//iprintln("give perk: " + perk);
+	////iprintln("give perk: " + perk);
 	self give_perk(perk, true);
 
 	if(self HasWeapon(gun) && is_placeable_mine(gun) && self GetWeaponAmmoClip(gun) == 0)
@@ -3236,7 +3236,7 @@ perk_give_bottle_end( gun, perk )
 		gun = "none";
 	}
 
-	//iprintln("taking weapon line 2681: " + weapon);
+	////iprintln("taking weapon line 2681: " + weapon);
 	self TakeWeapon(weapon);
 
 	if( self is_multiple_drinking() )
@@ -3549,7 +3549,7 @@ move_faster_while_ads(perk_str)
 	while(1)
 	{
 		current_ads = self PlayerADS();
-		//iprintln(current_ads);
+		////iprintln(current_ads);
 		if(current_ads == 0 || previous_ads > current_ads || self.still_reloading) // || self.is_reloading
 		{
 			if(set)
@@ -3771,7 +3771,7 @@ watch_fastreload_upgrade(perk_str)
 		{
 			//wait till player switches weapons
 			self waittill("weapon_switch_complete");
-			//iprintln("Observed weapon switch");	
+			////iprintln("Observed weapon switch");	
 
 			self thread magicReload();
 		}
@@ -3823,7 +3823,7 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 
 	level.sound_num++;
 	level.sound_num = level.sound_num % 5;
-	//iprintln("sound_num: " + level.sound_num);
+	////iprintln("sound_num: " + level.sound_num);
 	if( hitWeakpoint ) 
 	{
 		//play the sound 2 times

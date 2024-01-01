@@ -157,7 +157,7 @@ pack_print( str )
 	/#
 	if ( is_true( level.pack_debug ) )
 	{
-		//iprintln( str );
+		////iprintln( str );
 	}
 	#/
 }
@@ -192,7 +192,7 @@ launch_rocket()
 	//DCS: power now available, switching to green switch.
 	panel setmodel("p_zom_key_console_01");
 	
-	//iprintlnbold("Launch authorization granted");
+	////iprintlnbold("Launch authorization granted");
 	//level thread maps\zombie_cosmodrome_amb::play_cosmo_announcer_vox( "vox_ann_landers_used" );
 	
 	//light setmodel("zombie_zapper_cagelight_green");
@@ -243,7 +243,7 @@ delete_rocket_sound_ents()
 do_launch_countdown()
 {
 
-	//iprintlnbold("Launch initiated in t-minus 10 seconds");	
+	////iprintlnbold("Launch initiated in t-minus 10 seconds");	
 	
 	level.gantry_r rotateyaw(60,6);
 	level.gantry_l rotateyaw(-60,6);

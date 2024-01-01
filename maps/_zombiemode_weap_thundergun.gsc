@@ -102,7 +102,7 @@ thundergun_fired(currentweapon)
 
 	self thundergun_get_enemies_in_range();
 
-	//iprintlnbold( "flg: " + level.thundergun_fling_enemies.size + " gib: " + level.thundergun_gib_enemies.size + " kno: " + level.thundergun_knockdown_enemies.size );
+	////iprintlnbold( "flg: " + level.thundergun_fling_enemies.size + " gib: " + level.thundergun_gib_enemies.size + " kno: " + level.thundergun_knockdown_enemies.size );
 
 	level.thundergun_network_choke_count = 0;
 	for ( i = 0; i < level.thundergun_fling_enemies.size; i++ )

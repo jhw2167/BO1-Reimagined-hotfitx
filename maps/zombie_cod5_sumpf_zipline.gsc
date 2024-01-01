@@ -916,7 +916,7 @@ player_collision_fix()
 
 		if ( player.origin[2] < z )
 		{
-			//iprintlnbold( "player stuck" );
+			////iprintlnbold( "player stuck" );
 
 			offset = z + 6;
 			origin = ( player.origin[0], player.origin[1], offset );

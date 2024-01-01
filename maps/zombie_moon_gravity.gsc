@@ -715,7 +715,7 @@ low_gravity_watch()
 	while ( 1 )
 	{
 		diff = nextTime - startTime;
-		//iprintln( "time in low gravity = " + time_in_low_gravity );
+		////iprintln( "time in low gravity = " + time_in_low_gravity );
 
 		if ( IsGodMode( self ) )
 		{
@@ -756,7 +756,7 @@ low_gravity_watch()
 			{
 				self playsoundtoplayer( "evt_suffocate_whump", self );
 				self DoDamage( self.health * 10, self.origin );
-				//iprintln( "low g too long" );
+				////iprintln( "low g too long" );
 				self SetBlur( 0, 0.1 );
 			}
 			else if ( blur_level < blur_occur.size && time_til_damage > blur_occur[ blur_level ] )
@@ -773,7 +773,7 @@ low_gravity_watch()
 				//dmg = self.health * 0.5;
 				//self DoDamage( dmg, self.origin );
 				time_til_damage = 0;
-				//iprintln( "low g tick" );
+				////iprintln( "low g tick" );
 			}
 		}
 		else

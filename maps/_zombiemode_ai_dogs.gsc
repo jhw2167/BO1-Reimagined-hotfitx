@@ -670,7 +670,7 @@ dog_death()
 {
 	self waittill( "death" );
 
-	//iprintln("Has drop: " + self.hasDrop );
+	////iprintln("Has drop: " + self.hasDrop );
 	if( IsDefined( self.hasDrop ) )
 	{
 		level.last_dog_origin = self.origin;

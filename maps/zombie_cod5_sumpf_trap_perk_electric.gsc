@@ -50,7 +50,7 @@ electric_trap_dialog()
 				//players[i] thread do_player_vo("vox_start", 5);
 				wait(3);
 				self notify ("warning_dialog");
-				//iprintlnbold("warning_given");
+				////iprintlnbold("warning_given");
 			}
 		}
 	}

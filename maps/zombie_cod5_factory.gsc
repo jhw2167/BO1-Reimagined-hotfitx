@@ -1018,7 +1018,7 @@ electric_trap_dialog()
 				players[i] maps\_zombiemode_audio::create_and_play_dialog( "general", "intro" );
 				wait(3);
 				self notify ("warning_dialog");
-				//iprintlnbold("warning_given");
+				////iprintlnbold("warning_given");
 			}
 		}
 	}
@@ -1410,7 +1410,7 @@ zombie_elec_death(flame_chance, who)
 	self.trap_death = true;
 	self.no_powerups = true;
 	self dodamage(self.health + 666, self.origin, who);
-	//iprintlnbold("should be damaged");
+	////iprintlnbold("should be damaged");
 }
 
 zombie_flame_watch()
@@ -1611,7 +1611,7 @@ flytrap()
 	trig_control_panel playsound( "flytrap_hit" );
 	playsoundatposition( "flytrap_creeper", trig_control_panel.origin );
 	thread play_sound_2d( "sam_fly_laugh" );
-	//iprintlnbold( "Samantha Sez: Hahahahahaha" );
+	////iprintlnbold( "Samantha Sez: Hahahahahaha" );
 
 	// Float the objects
 //	level achievement_notify("DLC3_ZOMBIE_ANTI_GRAVITY");
@@ -1621,7 +1621,7 @@ flytrap()
 	wait(6.0);
 
 	thread play_sound_2d( "sam_fly_act_1" );
-	//iprintlnbold( "Samantha Sez: Let's play Hide and Seek!" );
+	////iprintlnbold( "Samantha Sez: Let's play Hide and Seek!" );
 
 	//	Now find them!
 	flag_set( "hide_and_seek" );
@@ -1722,17 +1722,17 @@ play_phono_egg()
 
 	if( level.phono_counter == 1 )
 	{
-		//iprintlnbold( "Phono Egg One Activated!" );
+		////iprintlnbold( "Phono Egg One Activated!" );
 		self playsound( "phono_one" );
 	}
 	if( level.phono_counter == 2 )
 	{
-		//iprintlnbold( "Phono Egg Two Activated!" );
+		////iprintlnbold( "Phono Egg Two Activated!" );
 		self playsound( "phono_two" );
 	}
 	if( level.phono_counter == 3 )
 	{
-		//iprintlnbold( "Phono Egg Three Activated!" );
+		////iprintlnbold( "Phono Egg Three Activated!" );
 		self playsound( "phono_three" );
 	}
 }
@@ -1762,7 +1762,7 @@ radio_egg_init( trigger_name, origin_name )
 	{
 		radio_trig waittill( "trigger", players);
 		radio_origin stoploopsound( .1 );
-		//iprintlnbold( "You activated " + trigger_name + ", playing off " + origin_name );
+		////iprintlnbold( "You activated " + trigger_name + ", playing off " + origin_name );
 		radio_origin playsound( trigger_name );
 	}
 }
@@ -1828,17 +1828,17 @@ flytrap_samantha_vox()
 
 	if( level.flytrap_counter == 1 )
 	{
-		//iprintlnbold( "Samantha Sez: Way to go!" );
+		////iprintlnbold( "Samantha Sez: Way to go!" );
 		thread play_sound_2d( "sam_fly_first" );
 	}
 	if( level.flytrap_counter == 2 )
 	{
-		//iprintlnbold( "Samantha Sez: Two? WOW!" );
+		////iprintlnbold( "Samantha Sez: Two? WOW!" );
 		thread play_sound_2d( "sam_fly_second" );
 	}
 	if( level.flytrap_counter == 3 )
 	{
-		//iprintlnbold( "Samantha Sez: And GAME OVER!" );
+		////iprintlnbold( "Samantha Sez: And GAME OVER!" );
 		thread play_sound_2d( "sam_fly_last" );
 		return;
 	}
@@ -1861,7 +1861,7 @@ play_giant_mythos_lines()
 				players = get_players();
 				p = randomint(players.size);
 				players[p] thread maps\_zombiemode_audio::create_and_play_dialog( "level", "gen_giant" );
-				//iprintlnbold( "Just played Gen Giant line off of player " + p );
+				////iprintlnbold( "Just played Gen Giant line off of player " + p );
 			}
 		}
 		else if (level.round_number > round )
@@ -1877,7 +1877,7 @@ play_level_easteregg_vox( object )
 	percent = 35;
 
 	trig = getent( object, "targetname" );
-//	//iprintlnbold ("trig = " + trig.targetname);
+//	////iprintlnbold ("trig = " + trig.targetname);
 	if(!isdefined( trig ) )
 	{
 		return;
@@ -1906,49 +1906,49 @@ play_level_easteregg_vox( object )
 			switch( object )
 			{
 				case "vox_corkboard_1":
-	//				//iprintlnbold( "Inside trigger " + object );
+	//				////iprintlnbold( "Inside trigger " + object );
 					who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "corkboard_1" );
 					break;
 				case "vox_corkboard_2":
-	//				//iprintlnbold( "Inside trigger " + object );
+	//				////iprintlnbold( "Inside trigger " + object );
 					who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "corkboard_2" );
 					break;
 				case "vox_corkboard_3":
-	//				//iprintlnbold( "Inside trigger " + object );
+	//				////iprintlnbold( "Inside trigger " + object );
 					who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "corkboard_3" );
 					break;
 				case "vox_teddy":
 					if( index != 2 )
 					{
-						//iprintlnbold( "Inside trigger " + object );
+						////iprintlnbold( "Inside trigger " + object );
 						who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "teddy" );
 					}
 					break;
 				case "vox_fieldop":
 					if( (index != 1) && (index != 3) )
 					{
-						//iprintlnbold( "Inside trigger " + object );
+						////iprintlnbold( "Inside trigger " + object );
 						who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "fieldop" );
 					}
 					break;
 				case "vox_maxis":
 					if( index == 3 )
 					{
-						//iprintlnbold( "Inside trigger " + object );
+						////iprintlnbold( "Inside trigger " + object );
 						who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "maxis" );
 					}
 					break;
 				case "vox_illumi_1":
 					if( index == 3 )
 					{
-						//iprintlnbold( "Inside trigger " + object );
+						////iprintlnbold( "Inside trigger " + object );
 						who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "maxis" );
 					}
 					break;
 				case "vox_illumi_2":
 					if( index == 3 )
 					{
-						//iprintlnbold( "Inside trigger " + object );
+						////iprintlnbold( "Inside trigger " + object );
 						who thread maps\_zombiemode_audio::create_and_play_dialog( "level", "maxis" );
 					}
 					break;
@@ -1967,7 +1967,7 @@ play_level_easteregg_vox( object )
 setup_custom_vox()
 {
 	wait(1);
-//	//iprintlnbold ("setting up custom vox");
+//	////iprintlnbold ("setting up custom vox");
 
 	level.plr_vox["level"]["corkboard_1"] = "resp_corkmap";
 	level.plr_vox["level"]["corkboard_2"] = "resp_corkmap";

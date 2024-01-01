@@ -24,7 +24,7 @@ zombie_blood_powerup( player, powerup_time )
 	player endon( "zombie_blood_over" );
 	level.plr_currently_using_zombie_blood = true;
 	player.zombie_vars[ "zombie_powerup_zombie_blood_time" ] += powerup_time;
-	//iprintln("bloodPowerup::zombeieblood");
+	////iprintln("bloodPowerup::zombeieblood");
 	if( player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] )
 	{
 		return;
@@ -33,7 +33,7 @@ zombie_blood_powerup( player, powerup_time )
 	//player thread zombie_blood_on_death();
 	player.zombie_vars[ "zombie_powerup_zombie_blood_on" ] = true;
 	
-	//iprintln("Setting clientSysState for player with weapon: " + player GetCurrentWeapon() );
+	////iprintln("Setting clientSysState for player with weapon: " + player GetCurrentWeapon() );
 
 	//setClientSysState( "levelNotify", "zblood_on", player );
 	//setClientSysState( "levelNotify", "zblood_on");
@@ -150,7 +150,7 @@ zombie_blood_create_fx()
 	fx_origin LinkTo( self );
 	fx_origin PlayLoopSound( "zmb_bo2_powerup_zombie_blood_loop" );
 	PlayFXOnTag( level._effect[ "bo2_powerup_zombie_blood_glow" ], fx_origin, "tag_origin" );
-	//iprintln("waiting for zombie blood over");
+	////iprintln("waiting for zombie blood over");
 	self waittill_any( "zombie_blood_over", "disconnect" );
 	fx_origin StopLoopSound();
 	fx_origin Delete();

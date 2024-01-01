@@ -856,7 +856,7 @@ is_weapon_double_upgraded( weaponname )
 		return false;
 	}
 
-	//iprintln("Is weapon double upgraded: "+ IsSubStr( weaponname, "x2" ));
+	////iprintln("Is weapon double upgraded: "+ IsSubStr( weaponname, "x2" ));
 	weaponname = ToLower( weaponname );
 	return IsSubStr( weaponname, "x2" );
 }
@@ -2289,7 +2289,7 @@ check_for_desirable_chest_location()
 	}
 
 	/#
-		//iprintln(level.desirable_chest_location + " is an invalid box location!");
+		////iprintln(level.desirable_chest_location + " is an invalid box location!");
 #/
 	level.desirable_chest_location = undefined;
 	return level.chest_index;

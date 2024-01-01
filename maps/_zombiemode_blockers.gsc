@@ -65,27 +65,27 @@ init()
 
 	print_doors_costs()
 	{
-		iprintln( "DOOR COSTS");
+		//iprintln( "DOOR COSTS");
 		flag_wait("all_players_connected");
-		iprintln( "WAIT OVER");
+		//iprintln( "WAIT OVER");
 
 		for( i = 0; i < level.debris_print.size; i++ )
 		{
 			if( IsDefined( level.debris_print[i].zombie_cost ) ) {
-				iprintln( "Debris: " + Strtok( level.debris_print[i].script_flag, "," )[0] );
-				iprintln(" Cost: " + level.debris_print[i].zombie_cost + " ---------- " + i);
+				//iprintln( "Debris: " + Strtok( level.debris_print[i].script_flag, "," )[0] );
+				//iprintln(" Cost: " + level.debris_print[i].zombie_cost + " ---------- " + i);
 			}
-				iprintln( "------" + i + "------" );
+				//iprintln( "------" + i + "------" );
 		}
 
 		for( i = 0; i < level.door_print.size; i++ )
 		{
 			if( IsDefined( level.door_print[i].zombie_cost ) ) {
-				iprintln( "Door: " + Strtok( level.door_print[i].script_flag, "," )[0] );
-				iprintln(" Cost: " + level.door_print[i].zombie_cost );
+				//iprintln( "Door: " + Strtok( level.door_print[i].script_flag, "," )[0] );
+				//iprintln(" Cost: " + level.door_print[i].zombie_cost );
 			}
 
-			iprintln( "------" + i + "------" );
+			//iprintln( "------" + i + "------" );
 		}
 	}
 
@@ -375,7 +375,7 @@ door_delay()
 	for ( i=0; i<self.script_int; i++ )
 	{
 		/#
-		//iprintln( self.script_int - i );
+		////iprintln( self.script_int - i );
 		#/
 		wait(1);
 	}
@@ -1757,7 +1757,7 @@ board_completion()
 		// need to be place a delay if done within a certain time frame
 		//wait(1.2);
 		//self play_sound_on_ent( "purchase" );
-		//players[i] //iprintlnbold("Entrance 1 is fixed!!!");
+		//players[i] ////iprintlnbold("Entrance 1 is fixed!!!");
 		//wait(0.3);
 		//self play_sound_on_ent( "purchase" );
 		//wait(0.3);
@@ -2269,7 +2269,7 @@ zombie_boardtear_audio_offset(chunk)
 zombie_bartear_audio_offset(chunk)
 {
 	chunk play_sound_on_ent( "grab_metal_bar" );
-	//iprintlnbold("RRIIIPPPPP!!!");
+	////iprintlnbold("RRIIIPPPPP!!!");
 	wait( randomfloat( 0.3, 0.6 ));
 	chunk play_sound_on_ent( "break_metal_bar" );
 	wait( randomfloat( 1.0, 1.3 ));
@@ -2635,11 +2635,11 @@ replace_chunk( chunk, perk, via_powerup )
 		sound = "zmb_vent_fix";
 	}*/
 	
-	/*//iprintln("script_ender: " + self.script_ender);
-	//iprintln("script_string: " + chunk.script_string);
-	//iprintln("script_parameters: " + chunk.script_parameters);
-	//iprintln("material: " + chunk.material);
-	//iprintln("script_noteworthy: " + chunk.unbroken_section.script_noteworthy);*/
+	/*////iprintln("script_ender: " + self.script_ender);
+	////iprintln("script_string: " + chunk.script_string);
+	////iprintln("script_parameters: " + chunk.script_parameters);
+	////iprintln("material: " + chunk.material);
+	////iprintln("script_noteworthy: " + chunk.unbroken_section.script_noteworthy);*/
 
 		//TUEY Play the sounds
 		// JL, hey Tuey I added calls in here for our different windows so we can call different sounds
@@ -3066,7 +3066,7 @@ flag_blocker()
 	{
 		self ConnectPaths();
 		//FOCKER
-		//iprintlnbold("BOARDS AREE ALL DOWN!!!");
+		////iprintlnbold("BOARDS AREE ALL DOWN!!!");
 		self disable_trigger();
 		return;
 	}
@@ -3074,7 +3074,7 @@ flag_blocker()
 	if( type == "disconnectpaths" )
 	{
 		self DisconnectPaths();
-		//iprintlnbold("BOARDS ARE ALL UP!!!");
+		////iprintlnbold("BOARDS ARE ALL UP!!!");
 		self disable_trigger();
 		return;
 	}

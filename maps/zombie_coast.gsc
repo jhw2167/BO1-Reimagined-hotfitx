@@ -835,7 +835,7 @@ play_door_dialog()
 				players[i] thread do_player_vo("vox_start", 5);
 				wait(3);
 				self notify ("warning_dialog");
-				//iprintlnbold("warning_given");
+				////iprintlnbold("warning_given");
 			}
 		}
 	}
@@ -1025,7 +1025,7 @@ stairs_think(planks, debris, clip)
 				level notify ("junk purchased");
 				level.stairs_pieces = 0;
 /*
-				//iprintlnbold("How many planks ", planks.size);
+				////iprintlnbold("How many planks ", planks.size);
 				for( i = 0; i < planks.size; i++ )
 				{
 

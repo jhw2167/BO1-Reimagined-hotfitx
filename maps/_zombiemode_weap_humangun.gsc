@@ -661,7 +661,7 @@ humangun_zombie_get_destination_point_origin()
 	if ( struct_array_active_human_spots.size == 0 )
 	{
 /#
-		//iprintlnbold( "no escape structs in a playable area!" );
+		////iprintlnbold( "no escape structs in a playable area!" );
 #/
 		return self.origin;
 	}
@@ -895,7 +895,7 @@ humangun_zombie_get_closest_zombie_loop()
 		}
 
 		closest_zomb = getClosest(self.origin, valid_zombies);
-		//iprintln(closest_zomb.origin);
+		////iprintln(closest_zomb.origin);
 
 		if(!IsDefined(closest_zomb))
 		{

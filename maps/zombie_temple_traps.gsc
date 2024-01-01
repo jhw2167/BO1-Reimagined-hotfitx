@@ -161,7 +161,7 @@ spear_trap_slow(activator, trap)
 			self thread maps\_zombiemode_audio::create_and_play_dialog( "general", "spikes_damage" );
 			//self thread _fake_red();
 			RadiusDamage(self.origin + (0, 0, 5), 10, 50, 50, undefined, "MOD_UNKNOWN");
-			//iprintln(self.health);
+			////iprintln(self.health);
 		}
 		self setvelocity((0,0,0));
 		self.move_speed = .2;

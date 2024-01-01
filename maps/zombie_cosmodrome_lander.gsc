@@ -1051,7 +1051,7 @@ lock_players(destination, activator, lander_buy)
 			if(players[i] maps\_laststand::player_is_in_laststand() )
 			{
 
-				//iprintlnbold(  "Distance:" + distance(players[i].origin,base.origin) + "**");
+				////iprintlnbold(  "Distance:" + distance(players[i].origin,base.origin) + "**");
 				if(!isDefined(players[i].on_lander_last_stand) && distance(players[i].origin,base.origin) <= 196)
 				{
 					if(flag("lander_landing"))

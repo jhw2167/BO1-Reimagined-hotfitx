@@ -214,7 +214,7 @@ track_door_entry_exit( special )
 			if( where == "outside" && !level.audio_zones_breached[self.script_noteworthy] )
 			{
 				
-				//iprintlnbold( "Entering Area " + self.script_int );
+				////iprintlnbold( "Entering Area " + self.script_int );
 				
 				ent PlaySoundToPlayer("vox_mcomp_enter_" + self.script_int, player);
 				//playsoundatposition( "vox_mcomp_enter_" + self.script_int, self.origin );
@@ -233,12 +233,12 @@ track_door_entry_exit( special )
 						ent PlaySoundToPlayer("vox_mcomp_enter_4", player);
 						//playsoundatposition( "vox_mcomp_enter_4", self.origin );
 					}
-					//iprintlnbold( "Entering Area 3" );
+					////iprintlnbold( "Entering Area 3" );
 				}
 				else
 				{
 					/#
-					//iprintlnbold( "Entering Airless Environment" );
+					////iprintlnbold( "Entering Airless Environment" );
 					#/
 					//playsoundatposition( "vox_mcomp_enter_5", self.origin );
 				}
@@ -347,7 +347,7 @@ audio_alias_override()
 force_player4_override()
 {
 	wait(5);
-	//iprintlnbold( "Player 4 Override in 5 seconds!" );
+	////iprintlnbold( "Player 4 Override in 5 seconds!" );
 	wait(5);
 	level thread player_4_override();
 }

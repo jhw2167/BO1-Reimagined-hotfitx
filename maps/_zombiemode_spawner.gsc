@@ -222,7 +222,7 @@ zombie_spawn_init( animname_set )
 			self.zombie_type = respawn_queue_interface("POP");
 			self.respawn_zombie = true;
 
-			//iprintln("Respawning zombie from queue: " + self.zombie_type);
+			////iprintln("Respawning zombie from queue: " + self.zombie_type);
 			
 		} else {
 
@@ -367,7 +367,7 @@ zombie_determine_drop()
 		rand = randomint(1000);	//Normalized to 1000, don't want to to deal with decimals
 
 		//print total and rand
-		//iprintln(" rand: " + rand);
+		////iprintln(" rand: " + rand);
 
 		green_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN / total ) * 1000);
 		blue_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
@@ -388,7 +388,7 @@ zombie_determine_drop()
 			
 			if( rand < green_rate ) {
 				self.hasDrop = "GREEN";
-				//iprintln("SUCESS: rand: " + rand + " < " + green_rate);
+				////iprintln("SUCESS: rand: " + rand + " < " + green_rate);
 			} 
 		}
 
@@ -398,7 +398,7 @@ zombie_determine_drop()
 			
 		if( self.hasDrop == "GREEN" || self.hasDrop == "BLUE" || self.hasDrop == "RED" ) 
 		{
-			//iprintln("Zombie drop: " + self.hasDrop);
+			////iprintln("Zombie drop: " + self.hasDrop);
 			self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
 			self.zombie_drop_model setModel( "tag_origin" );
 			self.zombie_drop_model LinkTo( self, "tag_origin" );
@@ -466,7 +466,7 @@ respawn_queue_interface( action, zombie_type )
 	if( !IsDefined(zombie_type) )
 		zombie_type = "normal";
 	
-	//iprintln("respawn_queue_interface: " + action + " | " + zombie_type);
+	////iprintln("respawn_queue_interface: " + action + " | " + zombie_type);
 	queue_num = level.respawn_queue_num;
 	while( level.respawn_queue_locked  || queue_num < level.respawn_queue_unlocks_num) 
 	{
@@ -480,7 +480,7 @@ respawn_queue_interface( action, zombie_type )
 
 	level.respawn_queue_unlocks_num++;
 	level.respawn_queue_locked = false;
-	//iprintln("interface returning: " + response);
+	////iprintln("interface returning: " + response);
 	return response;
 }
 
@@ -598,7 +598,7 @@ set_zombie_run_cycle( new_move_speed )
 	self.deathanim = random(death_anims);
 
 	if( self.animname != "zombie" ) {
-		//iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
+		////iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
 	}
 
 // var = 0;
@@ -633,7 +633,7 @@ set_zombie_run_cycle( new_move_speed )
 			{
 				self.moveplaybackrate = self.zombie_speed_up;
 				self.animplaybackrate = self.zombie_speed_up;
-				//iprintln("super sprinter spawned - " + self.zombie_speed_up);
+				////iprintln("super sprinter spawned - " + self.zombie_speed_up);
 				var=5;
 			}
 		}
@@ -664,7 +664,7 @@ set_run_speed()
 	}
 	
 
-	//iprintln( "zombie_spawn_init -> rand = " + rand );
+	////iprintln( "zombie_spawn_init -> rand = " + rand );
 //	self thread print_run_speed( rand );
 	if( rand <= 35 )
 	{
@@ -1083,7 +1083,7 @@ zombie_assure_node()
 
 	//assertmsg( "^1Zombie @ " + self.origin + " did not find a good entrance point... Please fix pathing or Entity setup" );
 	wait(20);
-	//iprintln( "^1Zombie @ " + self.origin + " did not find a good entrance point... Please fix pathing or Entity setup" );
+	////iprintln( "^1Zombie @ " + self.origin + " did not find a good entrance point... Please fix pathing or Entity setup" );
 	level.zombie_total++;
 	self DoDamage( self.health + 10, self.origin );
 
@@ -1350,7 +1350,7 @@ should_attack_player_thru_boards()
 	}
 	if(attack && freq >= randomint(100) )
 	{
-		//iprintln("checking attack");
+		////iprintln("checking attack");
 		// index 0 is center, index 2 is left and index 1 is the right
 		//check to see if the guy is left, right, or center
 		self.old_origin = self.origin;
@@ -1596,7 +1596,7 @@ zombie_tear_notetracks( msg, chunk, node, tear_anim )
 								//if( random_chance >= 4 )
 								//{
 									bar_bend_left = spawn( "script_model", chunk.origin);
-									// jl, debug //iprintlnbold("BEND LEFT");
+									// jl, debug ////iprintlnbold("BEND LEFT");
 									bar_bend_left RotateTo( chunk.angles ,  0.2, 0.1, 0.1 );
 									bar_bend_left waittill("rotatedone");
 									bar_bend_left SetModel( "p_zom_win_cell_bars_01_vert01_bent" ); // jl this should not be the 180, this is a hack to adjust for the prefab orientation not being aligned
@@ -1639,7 +1639,7 @@ zombie_tear_notetracks( msg, chunk, node, tear_anim )
 								//if( random_chance >= 4 )
 								//{
 									bar_bend_right = spawn( "script_model", chunk.origin);
-									// jl, debug //iprintlnbold("BEND LEFT");
+									// jl, debug ////iprintlnbold("BEND LEFT");
 									bar_bend_right RotateTo( chunk.angles ,  0.2, 0.1, 0.1 );
 									bar_bend_right waittill("rotatedone");
 									bar_bend_right SetModel( "p_zom_win_cell_bars_01_vert04_bent" ); // jl this should not be the 180, this is a hack to adjust for the prefab orientation not being aligned
@@ -1676,7 +1676,7 @@ zombie_tear_notetracks( msg, chunk, node, tear_anim )
 							if( chunk.script_string == "prestine_bend" )
 							{
 										bar_bend_right = spawn( "script_model", chunk.origin );
-										//iprintlnbold("BEND RIGHT");
+										////iprintlnbold("BEND RIGHT");
 										bar_bend_right RotateTo( chunk.angles ,  0.2, 0.1, 0.1 );
 										//bar_bend_right RotateTo( chunk.angles +(0, -145,0), 0.2, 0.1, 0.1 );
 										wait (0.3);
@@ -1690,7 +1690,7 @@ zombie_tear_notetracks( msg, chunk, node, tear_anim )
 							{
 								chunk.angles = chunk GetTagAngles ( "Tag_fx_top" );
 								bar_bend_right = spawn( "script_model", chunk.origin );
-								//iprintlnbold("BEND RIGHT" );
+								////iprintlnbold("BEND RIGHT" );
 								bar_bend_right RotateTo( chunk.angles ,  0.2, 0.1, 0.1 );
 								wait (0.3);
 								bar_bend_right SetModel( "p_zom_win_cell_bars_01_vert04_bent" );
@@ -3726,7 +3726,7 @@ get_number_variants(aliasPrefix)
 		{
 			if( !SoundExists( aliasPrefix + "_" + i) )
 			{
-				//iprintlnbold(aliasPrefix +"_" + i);
+				////iprintlnbold(aliasPrefix +"_" + i);
 				return i;
 			}
 		}

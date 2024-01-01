@@ -1519,7 +1519,7 @@ DebugTakeCoverWarnings()
 	}
 	if ( getdebugdvar( "scr_debugtakecover" ) == "1" )
 	{
-		//iprintln( "Warnings remaining: ", getdebugdvarint( "takeCoverWarnings" ) - 3 );
+		////iprintln( "Warnings remaining: ", getdebugdvarint( "takeCoverWarnings" ) - 3 );
 	}
 }
 #/
@@ -1802,7 +1802,7 @@ heartbeat_state_transitions()
 
 	/*while (level.current_heart_waittime > level.heart_waittime)
 	{
-		//iprintlnbold ("current: " + level.current_heart_waittime + "goal: "  + level.heart_waittime);
+		////iprintlnbold ("current: " + level.current_heart_waittime + "goal: "  + level.heart_waittime);
 		level.current_heart_waittime = level.current_heart_waittime - .10;
 		wait(.30);
 

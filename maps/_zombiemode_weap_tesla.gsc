@@ -407,7 +407,7 @@ tesla_play_arc_fx( target )
 		return;
 	}
 	
-	//iprintln("Self and target defined, is tesla_bolt defined: " + IsDefined(level._effect["tesla_bolt"]));
+	////iprintln("Self and target defined, is tesla_bolt defined: " + IsDefined(level._effect["tesla_bolt"]));
 
 	tag = "J_SpineUpper";
 
@@ -466,7 +466,7 @@ tesla_debug_arc( origin, distance )
 
 is_tesla_damage( mod )
 {
-	//iprintln("Is weapon tesla: ");
+	////iprintln("Is weapon tesla: ");
 	//return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm") ) && ( mod == "MOD_PROJECTILE" || mod == "MOD_PROJECTILE_SPLASH" ) );
 	return ( ( IsDefined( self.damageweapon ) && (self.damageweapon == "tesla_gun_zm" || self.damageweapon == "tesla_gun_upgraded_zm" || self.damageweapon == "tesla_gun_powerup_zm" || self.damageweapon == "tesla_gun_powerup_upgraded_zm" || self.damageweapon == "knife_ballistic_upgraded_zm_x2")  )  );
 }

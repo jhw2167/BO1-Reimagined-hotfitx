@@ -1105,7 +1105,7 @@ nml_ramp_up_zombies()
 					}
 				}
 			}
-			//iprintln( "RAMP UP: " + level.nml_timer + " - " + level.zombie_health );
+			////iprintln( "RAMP UP: " + level.nml_timer + " - " + level.zombie_health );
 		}
 
 		if(	level.nml_timer == 6)

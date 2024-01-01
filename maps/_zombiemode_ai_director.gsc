@@ -278,9 +278,9 @@ director_health_watch()
 	while ( 1 )
 	{
 		
-		//iprintln( "health = " + self.health );
-		//iprintln( "max health = " + self.maxhealth );
-		//iprintln( "dmg = " + self.dmg_taken );
+		////iprintln( "health = " + self.health );
+		////iprintln( "max health = " + self.maxhealth );
+		////iprintln( "dmg = " + self.dmg_taken );
 		wait( 5 );
 	}
 }
@@ -500,7 +500,7 @@ director_zombie_spawn()
 	director_zombie Hide();
 
 	//Sound - Shawn J - adding boss spawn sound - note: sound is played in 2d so it doesn't matter what it's played off of.
-	//iprintlnbold( "Boss_Spawning!" );
+	////iprintlnbold( "Boss_Spawning!" );
 	//self playsound( "zmb_engineer_spawn" );
 
 	self.count = 666;
@@ -578,7 +578,7 @@ show_damage()
 {
 	while ( 1 )
 	{
-		//iprintln( "damage = " + self.dmg_taken );
+		////iprintln( "damage = " + self.dmg_taken );
 		wait( 1 );
 	}
 }
@@ -1386,7 +1386,7 @@ director_zombie_check_player_proximity()
 		for ( i = 0; i < players.size; i++ )
 		{
 			dist = DistanceSquared( self.origin, players[i].origin );
-			//iprintln( "dist = " + dist );
+			////iprintln( "dist = " + dist );
 			if ( dist < level.director_zombie_proximity_wake )
 			{
 				self notify( "hit_player" );
@@ -3069,7 +3069,7 @@ director_print( str )
 /#
 	if ( is_true( level.debug_director ) )
 	{
-		//iprintln( str + "\n" );
+		////iprintln( str + "\n" );
 	}
 #/
 }

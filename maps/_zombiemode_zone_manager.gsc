@@ -770,7 +770,7 @@ create_spawner_list( zkeys )
 					{
 						//i = RandomIntRange(0, zone.spawners.size);
 						i = level.spawners_to_remove[j];
-						//iprintln(i);
+						////iprintln(i);
 						zone.spawners = array_remove(zone.spawners, zone.spawners[i], true);
 						j++;
 					}
