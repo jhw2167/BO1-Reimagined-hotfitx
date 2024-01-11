@@ -49,7 +49,7 @@ place_martyrdom()
 	machine_angles = level.perk_spawn_location[0].angles;
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_electric_cherry" );
+	perk setModel( "p6_zm_vending_electric_cherry_off" );
 	perk.targetname = "vending_electriccherry";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
