@@ -176,6 +176,7 @@ fx,env/fire/fx_fire_player_torso_mp
 fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
 fx,weapon/freeze_gun/fx_exp_freezegun_impact
 fx,electric_cherry/fx_electric_cherry_shock
+fx,electric_cherry/fx_electric_cherry_shock_large
 //fx,trail/fx_trail_blood_streak
 
 
@@ -442,6 +443,12 @@ xanim,vm_perk_bottle_t7_ads_down
 xanim,vm_perk_bottle_t7_ads_up
 xanim,vm_perk_bottle_t7_drink
 xanim,vm_perk_bottle_t7_idle
+
+xanim,ai_zombie_afterlife_stun_a
+xanim,ai_zombie_afterlife_stun_b
+xanim,ai_zombie_afterlife_stun_c
+xanim,ai_zombie_afterlife_stun_d
+xanim,ai_zombie_afterlife_stun_e
 
 
 //PLAYER ANIMS

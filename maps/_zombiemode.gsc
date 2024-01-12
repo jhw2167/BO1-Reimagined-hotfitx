@@ -48,15 +48,15 @@ main()
 	//Overrides
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=1;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	//*/
+	//level.calculate_amount_override=2;	//*/
 	level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -462,6 +462,9 @@ reimagined_init_level()
 	}
 		
 
+	//Zombie values
+	level.ARRAY_VALID_EFFECT_ZOMBIES = array( "zombie", "quad_zombie", "zombie_dog" );
+
 	level.VALUE_HORDE_SIZE = 100; 			/// none in early rounds
 	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
 	level.THRESHOLD_ZOMBIE_AI_LIMIT = 45;
@@ -560,13 +563,13 @@ reimagined_init_level()
 		level.STM_PRO,
 		level.PHD_PRO,
 		level.DST_PRO,
-		level.MUL_PRO
-		//level.ECH_PRO,
-		//level.VLT_PRO,
-		//level.WWN_PRO
+		level.MUL_PRO,
+		level.ECH_PRO,
+		level.VLT_PRO,
+		level.WWN_PRO
 	);
 
-	//Stamine
+	//Stamina
 	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 2s to sprint and activate ghost
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //3 seconds
 	level.COOLDOWN_STAMINA_PRO_GHOST = 8; 	//8s
@@ -584,22 +587,30 @@ reimagined_init_level()
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE = 2;
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE = 2;
 
-
 	//Speed
 	level.COOLDOWN_SPEED_PRO_RELOAD = 2.0;
+
 	//Deadshot
 	level.CONDITION_DEADSHOT_PRO_WEAKPOINTS = array( "head", "helmet", "neck");
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
+
 	//Double Tap
 	level.VALUE_DBT_UNITS = 5;
 	level.VALUE_DBT_PENN_DIST = 20;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
 	level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS = 6;
+
 	//Quick Revive
 	level.VALUE_QRV_PRO_REVIVE_RADIUS_MULTIPLIER = 2;
 	level.VALUE_QRV_PRO_REVIVE_ZOMBIEBLOOD_TIME = 10;
+
 	//Jugg
 	level.VALUE_JUGG_PRO_MAX_HEALTH = 325;
+
+	//	-- BO2 Perks
+
+	//Cherry
+	level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME = 2;
 	
 	//Bullet Effects
 	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
@@ -1515,6 +1526,18 @@ init_levelvars()
 
 	level.zombie_vars = [];
 
+	level.JUG_PRK = "specialty_armorvest";
+	level.QRV_PRK = "specialty_quickrevive";
+	level.SPD_PRK = "specialty_fastreload";
+	level.DBT_PRK = "specialty_rof";
+	level.STM_PRK = "specialty_endurance";
+	level.PHD_PRK = "specialty_flakjacket";
+	level.DST_PRK = "specialty_deadshot";
+	level.MUL_PRK = "specialty_additionalprimaryweapon";
+	level.ECH_PRK = "specialty_bulletdamage";
+	level.VLT_PRK = "specialty_altmelee";
+	level.WWN_PRK = "specialty_extraamo";
+
 	//Reimagined-Expanded -- Pro Perk Vars
 	level.JUG_PRO = "specialty_armorvest_upgrade";
 	level.QRV_PRO = "specialty_quickrevive_upgrade";
@@ -1527,7 +1550,6 @@ init_levelvars()
 	level.ECH_PRO = "specialty_bulletdamage_upgrade";
 	level.VLT_PRO = "specialty_altmelee_upgrade";
 	level.WWN_PRO = "specialty_extraamo_upgrade";
-
 
 	difficulty = 1;
 	column = int(difficulty) + 1;
@@ -5775,6 +5797,7 @@ setApocalypseOptions()
 
 	} else if( level.server_cheats > 0) {
 		level.server_cheats=true;
+		level.total_perks = 100;
 	}
 
 	if(IsDefined(level.server_cheats_override))
@@ -8158,7 +8181,12 @@ hasProPerk( perk )
 
 is_boss_zombie( animname )
 {
-	return (animname == "thief_zombie" || animname == "director_zombie" || animname == "astro_zombie");
+	return (animname == "thief_zombie"
+	|| animname == "director_zombie" 
+	|| animname == "astro_zombie" 
+	|| animname == "bo2_zm_mech" 
+	|| animname == "kf2_scrake" 
+	|| animname == "bo1_simianaut" );
 }
 
 is_headshot( sWeapon, sHitLoc, sMeansOfDeath )

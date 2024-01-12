@@ -1,6 +1,7 @@
 #include maps\_utility;
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
+#include maps\_zombiemode_net;
 
 init()
 {
@@ -15,8 +16,8 @@ init()
 	level.zombiemode_using_deadshot_perk = true;
 	level.zombiemode_using_additionalprimaryweapon_perk = true;
 	level.zombiemode_using_electriccherry_perk = true;
-	//level.zombiemode_using_vulture_perk = true;
-	//level.zombiemode_using_widowswine_perk = true;
+	level.zombiemode_using_vulture_perk = true;
+	level.zombiemode_using_widowswine_perk = true;
 
 	/*
 	level.zombiemode_using_chugabud_perk = true;
@@ -1368,7 +1369,7 @@ divetonuke_explode( attacker, origin )
 		zombies = GetAiSpeciesArray( "axis", "all" );
 		for( i = 0; i < zombies.size; i++ ) 
 		{
-			if( maps\_zombiemode::is_boss_zombie( zombies[i].animname ) )
+			if( is_boss_zombie( zombies[i].animname ) )
 				continue;
 
 			if( checkDist( self.origin, zombies[i].origin, level.VALUE_PHD_PRO_COLLISIONS_RANGE ) ) {
@@ -1442,7 +1443,7 @@ turn_additionalprimaryweapon_on()
 
 turn_electriccherry_on()
 {
-	//init_electric_cherry();
+	init_electric_cherry();
 	machine = GetEntArray( "vending_electriccherry", "targetname" );
 	level waittill( "electriccherry_on" );
 	for( i = 0; i < machine.size; i ++ )
@@ -1577,6 +1578,11 @@ addProPerk( p )
 //Self is player
 */
 
+is_boss_zombie( animname ) {
+	return maps\_zombiemode::is_boss_zombie( animname );
+}
+
+
 hasProPerk( perk )
 {
 	if (perk == "specialty_armorvest_upgrade")
@@ -1603,6 +1609,34 @@ hasProPerk( perk )
 		return self.PRO_PERKS[ level.WWN_PRO ];
 
 	return false;
+}
+
+playerHasPerk( perk )
+{
+	//Mirror the above function - without "_upgrade"
+	if (perk == "specialty_armorvest")
+		return self HasPerk( "specialty_armorvest" );
+	if (perk == "specialty_quickrevive")
+		return self HasPerk( "specialty_quickrevive" );
+	if (perk == "specialty_fastreload")
+		return self HasPerk( "specialty_fastreload" );
+	if (perk == "specialty_rof")
+		return self HasPerk( "specialty_rof" );
+	if (perk == "specialty_endurance")
+		return self HasPerk( "specialty_endurance" );
+	if (perk == "specialty_flakjacket")
+		return self HasPerk( "specialty_flakjacket" );
+	if (perk == "specialty_deadshot")
+		return self HasPerk( "specialty_deadshot" );
+	if (perk == "specialty_additionalprimaryweapon")
+		return self HasPerk( "specialty_additionalprimaryweapon" );
+	if (perk == "specialty_bulletdamage")
+		return self HasPerk( "specialty_bulletdamage" );		//cherry
+	if (perk == "specialty_altmelee")
+		return self HasPerk( "specialty_altmelee" );		//vulture
+	if (perk == "specialty_extraamo")
+		return self HasPerk( "specialty_extraamo" );		//widowswine
+
 }
 
 //player is player
@@ -2429,28 +2463,6 @@ give_perk( perk, bought )
 		//self SetPerk("specialty_fastsprintrecovery");
 		//self SetPerk("specialty_stalker");
 	}
-	else if( perk == "specialty_deadshot_upgrade" )
-	{
-		self SetClientFlag(level._ZOMBIE_PLAYER_FLAG_DEADSHOT_PERK);
-	}
-
-	// quick revive in solo gives an extra life
-	players = getplayers();
-	/*if ( players.size == 1 && perk == "specialty_quickrevive" )
-	{
-		self.lives = 1;
-
-		level.solo_lives_given++;
-
-		if( level.solo_lives_given >= 3 )
-		{
-			flag_set( "solo_revive" );
-		}
-
-		self thread solo_revive_buy_trigger_move( perk );
-
-		// self disable_trigger();
-	}*/
 
 	if(perk == "specialty_additionalprimaryweapon")
 	{
@@ -2459,6 +2471,22 @@ give_perk( perk, bought )
 		self thread give_back_additional_weapon();
 		self thread additional_weapon_indicator(perk, perk_str);
 		self thread unsave_additional_weapon_on_bleedout();
+	}
+
+	iprintln("Giving Perk: " + perk);
+	if(perk == level.ECH_PRK)
+	{
+		self thread player_watch_electric_cherry();
+	}
+
+	if(perk == level.VLT_PRK)
+	{
+		//self thread player_watch_vulture_aid();
+	}
+
+	if(perk == level.WWN_PRK)
+	{
+		//self thread player_watch_widowswine();
 	}
 
 
@@ -2807,6 +2835,7 @@ perk_hud_create( perk )
 		return;
 	}
 
+	//watch_electric_cherry
 	shader = "";
 	switch( perk )
 	{
@@ -3883,7 +3912,7 @@ watch_phd_upgrade(perk_str)
 }
 
 
-/*
+
 
 //=========================================================================================================
 // Electric Cherry
@@ -3892,22 +3921,209 @@ watch_phd_upgrade(perk_str)
 
 init_electric_cherry()
 {
-	level._effect[ "electric_cherry_explode" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
-	level._effect[ "electric_cherry_reload_small" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
-	level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
-	level._effect[ "electric_cherry_reload_large" ] = LoadFX( "sanchez/electric_cherry/cherry_shock_large" );
-	level._effect[ "tesla_shock" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock" );
-	level._effect[ "tesla_shock_secondary" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock_secondary" );
+	//level._effect[ "electric_cherry_explode" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
+	//level._effect[ "electric_cherry_reload_small" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
+	//level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
+	level._effect[ "electric_cherry_reload_large" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
+	level._effect[ "electric_cherry_pool" ] = LoadFX( "electric_cherry/fx_electric_cherry_pool" );
+	
+	//Reimagined-Expanded
+	// See weapon_effects::init() 
+	//level._effect[ "tesla_shock" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock" );
+	//level._effect[ "tesla_shock_secondary" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock_secondary" );
 	//level.custom_laststand_func = ::electric_cherry_laststand;
+
 	set_zombie_var( "tesla_head_gib_chance", 50 );
 	//OnPlayerConnect_Callback( ::on_player_spawned );
 	level.electric_stun = [];
+
 	level.electric_stun[0] = %ai_zombie_afterlife_stun_a;
 	level.electric_stun[1] = %ai_zombie_afterlife_stun_b;
 	level.electric_stun[2] = %ai_zombie_afterlife_stun_c;
 	level.electric_stun[3] = %ai_zombie_afterlife_stun_d;
 	level.electric_stun[4] = %ai_zombie_afterlife_stun_e;
+
 }
+
+
+//Self is player
+player_watch_electric_cherry()
+{
+	while( self HasPerk( level.ECH_PRK ) )
+	{
+		iprintln("Waiting for reload: ");
+		self waittill( "reload_start" );
+
+		self thread electric_cherry_reload_attack();
+
+		self player_handle_eletric_cherry_cooldown();
+	}
+
+	iprintln("Player lost cherry: ");
+}
+
+	/*
+		1. Player visual and sound efx in world
+		2. Gather closest zombies
+			- Damage and range based off reload ammo fraction
+		3. return
+	// */
+	electric_cherry_reload_attack()
+	{
+		self endon( "death" );
+		self endon( "disconnect" );
+
+		weapon = self GetCurrentWeapon();
+	
+		n_clip_current = self GetWeaponAmmoClip( weapon );
+		n_clip_max = WeaponClipSize( weapon );
+		n_fraction = n_clip_current / n_clip_max;
+		perk_radius = 128; // linear_map( n_fraction, 1, 0, 32, 128 );
+		perk_dmg = 500; //linear_map( n_fraction, 1, 0, 1, 1045 );
+
+		self thread electric_cherry_reload_fx( n_fraction );
+		//self notify( "electric_cherry_start" );
+		a_zombies = GetAISpeciesArray( "axis", "all" );
+		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
+		n_zombies_hit = 0;
+		n_zombie_limit = 8;
+		
+		for( i = 0; i < a_zombies.size; i ++ )
+		{
+			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
+			{
+				if( n_zombies_hit > n_zombie_limit )
+					break;
+				
+				if( a_zombies[i].health <= perk_dmg ) 
+				{
+					a_zombies[i] thread electric_cherry_death_fx();
+					if( IsDefined( self.cherry_kills ) ) {
+						self.cherry_kills ++;
+					}
+					//self maps\_zombiemode_score::add_to_player_score( 40 );
+				}
+				else {
+		
+					a_zombies[i] thread electric_cherry_stun();
+					a_zombies[i] thread electric_cherry_shock_fx();
+				}
+				wait 0.1;
+				a_zombies[i] DoDamage( perk_dmg, self.origin, self, self );
+				n_zombies_hit++;
+
+			}
+		}
+		
+
+	}
+	
+
+		//Reload fx
+	 
+		electric_cherry_reload_fx( n_fraction ) 
+		{
+			self PlaySound( "cherry_reload" );	//"Explode" sound file
+		
+			//Nested for loop to create a 2x2 grid of fx
+			baseDir = (40, 40, 8);
+			for( i = -1; i < 2; i +=2 ) 
+			{
+				for( j = -1; j < 2; j +=2 ) {
+					offset = baseDir * (i, j, 1);
+					handle_cherry_pool_fx( self.origin, offset );
+				}
+			}
+			
+		}
+
+			handle_cherry_pool_fx( origin, offset )
+			{
+				model = Spawn( "script_model", self.origin );
+				model setModel( "tag_origin" );
+				model LinkTo( self, "tag_origin", offset, ( 270, 0, 0 ) );
+
+				PlayFXOnTag(level._effect[ "electric_cherry_reload_large" ], model, "tag_origin" );
+
+				model delete();
+			}
+	
+	
+		electric_cherry_death_fx()
+		{
+			self endon( "death" );
+			tag = "J_SpineUpper";
+			fx = "fx_electric_cherry_shock";
+			if( self.isdog )
+			{
+				tag = "J_Spine1";
+			}
+			self PlaySound( "zmb_elec_jib_zombie" );
+			network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect[ fx ], self, tag );
+			if( IsDefined( self.tesla_head_gib_func ) && !self.head_gibbed )
+			{
+				[[ self.tesla_head_gib_func ]]();
+			}
+		}
+		
+	
+		electric_cherry_shock_fx()
+		{
+			self endon( "death" );
+			tag = "J_SpineUpper";
+			fx = "tesla_shock_secondary";
+			fx = "fx_electric_cherry_shock";
+			if( self.isdog )
+			{
+				tag = "J_Spine1";
+			}
+			self PlaySound( "zmb_elec_jib_zombie" );
+			network_safe_play_fx_on_tag( "tesla_shock_fx", 2, level._effect[ fx ], self, tag );
+		}
+		
+		
+		
+		electric_cherry_stun()
+		{
+			self endon( "death" );
+			self notify( "stun_zombie" );
+			self endon( "stun_zombie" );
+			if( self.health <= 0 )
+			{
+				return;
+			}
+			if( !self.has_legs )
+			{
+				return;
+			}
+			if( !is_in_array( level.ARRAY_VALID_ZOMBIES, self.animname ) )
+			{
+				return;
+			}
+			self.forcemovementscriptstate = true;
+			self.ignoreall = true;
+			for( i = 0; i < 2; i ++ )
+			{
+				self AnimScripted( "stunned", self.origin, self.angles, level.electric_stun[0] );
+				self animscripts\zombie_shared::DoNoteTracks( "stunned" );
+			}
+			self.forcemovementscriptstate = false;
+			self.ignoreall = true;
+			self SetGoalPos( self.origin );
+			self thread maps\_zombiemode_spawner::find_flesh();
+		}
+
+
+	/*
+		1. Wait for reload to end or other possible effects or timeout
+		2. return;
+	*/
+	player_handle_eletric_cherry_cooldown()
+	{
+		wait( level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME );
+	}
+
+
 
 /*
 on_player_spawned()
@@ -3963,13 +4179,12 @@ electric_cherry_laststand()
 		self notify( "electric_cherry_end" );
 	}
 }
-/
 
 electric_cherry_death_fx()
 {
 	self endon( "death" );
 	tag = "J_SpineUpper";
-	fx = "tesla_shock";
+	fx = "fx_electric_cherry_shock";
 	if( self.isdog )
 	{
 		tag = "J_Spine1";
@@ -4201,7 +4416,7 @@ electric_cherry_perk_lost()
 	self notify( "stop_electric_cherry_reload_attack" );
 }
 
-*/
+// */
 
 
 
