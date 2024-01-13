@@ -3752,6 +3752,7 @@ watch_stamina_upgrade(perk_str)
 		self setMoveSpeedScale( self.moveSpeed - 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
+		iprintln("zombie visionset" + level.zombie_visionset);
 		if( IsDefined( level.zombie_visionset ) )
 			self VisionSetNaked( level.zombie_visionset, 0.5 );
 		else

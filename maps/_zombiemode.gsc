@@ -48,13 +48,13 @@ main()
 	//Overrides
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=5;	///
+	level.starting_round_override=2;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=2;	//*/
+	level.calculate_amount_override=2;	//*/
 	level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -735,8 +735,8 @@ reimagined_init_player()
 wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
-	////iprintln( "wait_set_player_visionset");
-	////iprintln( level.zombie_visionset );
+	//iprintln( "wait_set_player_visionset");
+	//iprintln( level.zombie_visionset );
 	if(IsDefined(level.zombie_visionset)) {
 		self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
