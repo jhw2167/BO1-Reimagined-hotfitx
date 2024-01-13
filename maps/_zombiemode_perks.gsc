@@ -4024,14 +4024,16 @@ player_watch_electric_cherry()
 		electric_cherry_reload_fx( n_fraction ) 
 		{
 			self PlaySound( "cherry_reload" );	//"Explode" sound file
+			self PlayLocalSound( "cherry_reload" );	//"Explode" sound file
+			PlaySoundAtPosition("cherry_reload", self.origin);	//"Explode" sound file
 		
 			//Nested for loop to create a 2x2 grid of fx
-			baseDir = (40, 40, 8);
+			baseDir = (30, 30, 2);
 			for( i = -1; i < 2; i +=2 ) 
 			{
 				for( j = -1; j < 2; j +=2 ) {
 					offset = baseDir * (i, j, 1);
-					handle_cherry_pool_fx( self.origin, offset );
+					self thread handle_cherry_pool_fx( self.origin, offset );
 				}
 			}
 			
@@ -4044,7 +4046,7 @@ player_watch_electric_cherry()
 				model LinkTo( self, "tag_origin", offset, ( 270, 0, 0 ) );
 
 				PlayFXOnTag(level._effect[ "electric_cherry_reload_large" ], model, "tag_origin" );
-
+				wait( level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME );
 				model delete();
 			}
 	
