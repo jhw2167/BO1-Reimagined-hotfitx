@@ -54,7 +54,7 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	//*/
+	level.calculate_amount_override=6;	//*/
 	level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -480,6 +480,8 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
 	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
 
+	level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER = 5;
+	level.STRING_MIN_ZOMBS_REMAINING_NOTIFY = "MIN_ZOMBS_REMAINING_NOTIFY";		//level message when < 5 zombies remain
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
 
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
@@ -1661,7 +1663,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.2.4" );
+	SetDvar( "zm_mod_version", "1.2.5" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -4746,7 +4748,7 @@ determine_horde_wait( count )
 		
 	if(      count > 0 
 		&& ( count % level.VALUE_HORDE_SIZE ) == 0  //
-		&& level.zombie_total >= 5 					//No horde wait if only 5 zombies left
+		&& level.zombie_total >= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER 					//No horde wait if only 5 zombies left
 		&& level.zombie_total >= horde_threshold			//No horde wait if they need to kill zombs quickly
 		)
 		{
@@ -10124,10 +10126,20 @@ enemies_remaining_hud()
 		return;
 	}
 
+	notifyDespawnOnce = false;
 	while(1)
 	{
 		players = get_players();
 		zombs = level.zombie_total + get_enemy_count();
+
+		if( zombs <= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER && !notifyDespawnOnce ) {
+			level notify( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+			notifyDespawnOnce = true;
+		} else if( zombs > level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER ) {
+			notifyDespawnOnce = false;
+		}
+			
+
 
 		if( zombs == 0 || is_true(flag("enter_nml")) || is_true(flag("round_restarting")) )
 		{

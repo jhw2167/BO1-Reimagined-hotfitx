@@ -3982,7 +3982,7 @@ player_watch_electric_cherry()
 		perk_radius = 128; // linear_map( n_fraction, 1, 0, 32, 128 );
 		perk_dmg = 500; //linear_map( n_fraction, 1, 0, 1, 1045 );
 
-		self thread electric_cherry_reload_fx( n_fraction );
+		self electric_cherry_reload_fx( n_fraction );
 		//self notify( "electric_cherry_start" );
 		a_zombies = GetAISpeciesArray( "axis", "all" );
 		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
@@ -4024,9 +4024,14 @@ player_watch_electric_cherry()
 	 
 		electric_cherry_reload_fx( n_fraction ) 
 		{
-			self PlaySound( "cherry_reload" );	//"Explode" sound file
-			self PlayLocalSound( "cherry_reload" );	//"Explode" sound file
-			PlaySoundAtPosition("cherry_reload", self.origin);	//"Explode" sound file
+			//self PlaySound( "cherry_reload" );	//"Explode" sound file
+			//self PlaySound( "cherry_explode" );	//"Explode" sound file
+			self PlaySound( "zmb_cherry_explode" );
+			self PlaySound( "MP_hit_alert" );
+
+			//self PlayLocalSound( "cherry_explode" );	//"Explode" sound file
+			//PlaySoundAtPosition("cherry_explode", self.origin);	//"Explode" sound file
+
 		
 			//Nested for loop to create a 2x2 grid of fx
 			baseDir = (30, 30, 2);

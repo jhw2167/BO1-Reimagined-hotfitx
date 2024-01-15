@@ -416,6 +416,7 @@ zombie_watch_despawn_no_damage()
 	wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 	self.zombie_despawn=false;
 	self endon("death");
+	level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
 	while( !self.zombie_despawn )
 	{
 		self zombie_watch_despawn_no_damage_trigger();
@@ -431,6 +432,7 @@ zombie_watch_despawn_no_damage()
 	{
 		self endon("zombie_damaged");
 		self endon( "hit_player" );
+		level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 		players = GetPlayers();
 		for(i=0; i < players.size ; i++) {
