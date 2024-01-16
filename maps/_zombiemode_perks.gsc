@@ -1393,8 +1393,6 @@ divetonuke_explode( attacker, origin )
 	// play fx
 	//PlayFx( level._effect["custom_large_explosion"], origin );
 
-
-
 	// WW (01/12/11): start clientsided effects - These client flags are defined in _zombiemode.gsc & _zombiemode.csc
 	// Used for zombie_dive2nuke_visionset() in _zombiemode.csc
 	attacker SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
@@ -1483,7 +1481,6 @@ turn_widowswine_on()
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		machine[i] thread perk_fx( "widow_light" );
 	}
-	iprintlnbold("widowswine_on");
 	level notify( "specialty_extraammo_power_on" );
 }
 
@@ -1819,7 +1816,7 @@ vending_trigger_think()
 	solo = false;
 	////iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
-	if ( IsDefined(perk) && perk == "specialty_bulletaccuracy" )
+	if ( IsDefined(perk) && perk == "specialty_temp" )
 	{
 		cost = 500;
 		if(level.expensive_perks)
@@ -2036,9 +2033,6 @@ vending_trigger_think()
 	{
 		notify_name = perk + "_power_on";
 		level waittill( notify_name );
-		iprintlnbold("catching widowswine_on" + perk);
-		hasPerk = get_players()[0] playerHasPerk( perk );
-		iprintln("has perk: " hasPerk);
 	}
 
 	if(!IsDefined(level._perkmachinenetworkchoke))
@@ -2111,8 +2105,8 @@ vending_trigger_think()
 			self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
 			break;
 
-		case "specialty_bulletaccuracy_upgrade":
-		case "specialty_bulletaccuracy":
+		case "specialty_temp_upgrade":
+		case "specialty_temp":
 			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
 			break;
 
@@ -2148,9 +2142,6 @@ vending_trigger_think()
 
 	CONST_PERK = perk;
 	CONST_COST = cost;
-
-		if(perk == "specialty_extraamo")
-			iprintlnbold("Entering trigger loop for widowswine_on");
 
 	for( ;; )
 	{
@@ -2252,8 +2243,55 @@ vending_trigger_think()
 		//	perk += "_upgrade";
 		//}
 
-		iprintln("Playing self script label:");
-		iprintln(self.script_label);
+		////iprintln( "Bought Perk: " + perk );
+		///bottle_dispense
+		switch( perk )
+		{
+		case "specialty_armorvest_upgrade":
+		case "specialty_armorvest":
+			sound = "mus_perks_jugger_sting";
+			break;
+
+		case "specialty_quickrevive_upgrade":
+		case "specialty_quickrevive":
+			sound = "mus_perks_revive_sting";
+			break;
+
+		case "specialty_fastreload_upgrade":
+		case "specialty_fastreload":
+			sound = "mus_perks_speed_sting";
+			break;
+
+		case "specialty_rof_upgrade":
+		case "specialty_rof":
+			sound = "mus_perks_doubletap_sting";
+			break;
+
+		case "specialty_endurance_upgrade":
+		case "specialty_endurance":
+			sound = "mus_perks_phd_sting";
+			break;
+
+		case "specialty_flakjacket_upgrade":
+		case "specialty_flakjacket":
+			sound = "mus_perks_stamin_sting";
+			break;
+
+		case "specialty_deadshot_upgrade":
+		case "specialty_deadshot":
+			sound = "mus_perks_jugger_sting"; // WW TODO: Place new deadshot stinger
+			break;
+
+		case "specialty_additionalprimaryweapon_upgrade":
+		case "specialty_additionalprimaryweapon":
+			sound = "mus_perks_mulekick_sting";
+			break;
+
+		default:
+			sound = "mus_perks_jugger_sting";
+			break;
+		}
+
 		self thread maps\_zombiemode_audio::play_jingle_or_stinger (self.script_label);
 
 		//		self waittill("sound_done");
@@ -2848,8 +2886,8 @@ perk_hud_create( perk )
 			shader = "specialty_mulekick_zombies";
 			break;
 
-		case "specialty_bulletaccuracy_upgrade":
-		case "specialty_bulletaccuracy":
+		case "specialty_temp_upgrade":
+		case "specialty_temp":
 			shader = "specialty_chugabud_zombies";
 			break;
 
@@ -3286,7 +3324,7 @@ give_random_perk()
 	{
 		perk = vending_triggers[i].script_noteworthy;
 
-		if(perk == "specialty_bulletaccuracy") //babyjugg
+		if(perk == "specialty_temp") //babyjugg
 			continue;
 
 		if ( isdefined( self.perk_purchased ) && self.perk_purchased == perk )
@@ -3994,7 +4032,6 @@ player_watch_electric_cherry()
 			//self PlaySound( "cherry_reload" );	//"Explode" sound file
 			//self PlaySound( "cherry_explode" );	//"Explode" sound file
 			self PlaySound( "zmb_cherry_explode" );
-			//self PlaySound("zmb_phdflop_explo");
 			//self PlaySound( "MP_hit_alert" );
 
 			//self PlayLocalSound( "cherry_explode" );	//"Explode" sound file
@@ -5634,7 +5671,7 @@ setup_perk_machine_fx()
 	register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
 	register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
 	register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
-	register_perk_machine_fx( "specialty_bulletaccuracy", "vulture_perk_machine_glow_whos_who" );
+	register_perk_machine_fx( "specialty_temp", "vulture_perk_machine_glow_whos_who" );
 	register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
 	register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
 	register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_widows_wine" );
