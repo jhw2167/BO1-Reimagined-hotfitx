@@ -7363,11 +7363,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	////iprintln("Testing has Upp ECH: " + attacker hasProPerk(level.ECH_PRO));
 	////iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
 	////iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO)); 
-	*/
 
 	iprintln("BA: " + attacker HasPerk("specialty_bulletaccuracy"));
 	iprintln("SA: " + attacker HasPerk("specialty_bulletaccuracy"));
 	iprintln("SS: " + attacker HasPerk("specialty_stockpile"));
+
+	*/
+
+	
 	
 	if(weapon == "ray_gun_zm" )
 	{

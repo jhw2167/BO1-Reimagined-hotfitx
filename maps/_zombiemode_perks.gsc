@@ -2180,14 +2180,12 @@ vending_trigger_think()
 			continue;
 		}
 		
-		iprintlnbold("1	-	" + i);
 		if( player.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
 		{
 			wait( 0.1 );
 			continue;
 		}
 
-		iprintlnbold("2	-	" + i);
 		if ( player HasPerk( perk ) )
 		{
 			cheat = false;
@@ -2214,7 +2212,6 @@ vending_trigger_think()
 			}
 		}
 
-		iprintlnbold("3	-	" + i);
 		if ( player.score < cost )
 		{
 			//player ////iprintln( "Not enough points to buy Perk: " + perk );
@@ -2223,8 +2220,6 @@ vending_trigger_think()
 			continue;
 		}
 
-
-		iprintlnbold("4	-	" + i);		
 		if ( player.num_perks >= level.max_perks && !is_true(player._retain_perks) )
 		{
 			//player ////iprintln( "Too many perks already to buy Perk: " + perk );
