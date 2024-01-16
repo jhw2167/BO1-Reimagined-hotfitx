@@ -73,7 +73,7 @@ randomize_vending_machines()
 	start_locations[3] = GetEnt( "random_vending_start_location_3", "script_noteworthy" );
 	start_locations[4] = spawn_perk_machine_location( "specialty_longersprint" );
 	start_locations[5] = spawn_perk_machine_location( "specialty_flakjacket" );
-	//start_locations[6] = spawn_perk_machine_location( "specialty_extraammo" );			//wine not used yet
+	//start_locations[6] = spawn_perk_machine_location( "specialty_bulletaccuracy" );			//wine not used yet
 	
 
 	level.start_locations = [];
@@ -203,14 +203,14 @@ activate_vending_machine( machine, origin, entity )
 			break;
 
 		case "p6_zm_vending_chugabud_on":
-			level.perk_randomization_on[ "specialty_extraamo" ] = true;
-			level notify( "specialty_extraamo_power_on" );
+			level.perk_randomization_on[ "specialty_extraammo" ] = true;
+			level notify( "specialty_extraammo_power_on" );
 			entity maps\_zombiemode_perks::perk_fx( "sleight_light" );
 			break;
 
 		case "bo3_p7_zm_vending_widows_wine_on":
-			level.perk_randomization_on[ "specialty_extraammo" ] = true;
-			level notify( "specialty_extraammo_power_on" );
+			level.perk_randomization_on[ "specialty_bulletaccuracy" ] = true;
+			level notify( "specialty_bulletaccuracy_power_on" );
 			entity maps\_zombiemode_perks::perk_fx( "jugger_light" );
 			break;
 	}

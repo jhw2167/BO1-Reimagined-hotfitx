@@ -19,10 +19,10 @@ init()
 	spawn_perk( "zombie_vending_marathon", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
 	spawn_perk( "zombie_vending_ads", "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" );
 	spawn_perk( "zombie_vending_three_gun", "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" );
-	//spawn_perk( "p6_zm_vending_chugabud", "zombie_vending", "vending_chugabud", "specialty_extraamo", "mus_perks_whoswho_jingle", "mus_perks_whoswho_sting" );
+	//spawn_perk( "p6_zm_vending_chugabud", "zombie_vending", "vending_chugabud", "specialty_extraammo", "mus_perks_whoswho_jingle", "mus_perks_whoswho_sting" );
 	//spawn_perk( "p6_zm_vending_electric_cherry_off", "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" );
 	//spawn_perk( "bo2_zombie_vending_vultureaid", "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" );
-	//spawn_perk( "bo3_p7_zm_vending_widows_wine_off", "zombie_vending", "vending_widowswine", "specialty_extraammo", "mus_perks_widows_jingle", "mus_perks_widows_sting" );
+	//spawn_perk( "bo3_p7_zm_vending_widows_wine_off", "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" );
 	//spawn_perk( "zombie_vending_packapunch", "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" );
 	level._solo_revive_machine_expire_func = ::solo_quick_revive_disable;
 	level thread randomize_perks_think();
@@ -39,7 +39,7 @@ place_babyjug()
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 0), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_babyjugg";
-	perk_trigger.script_noteworthy = "specialty_extraamo";
+	perk_trigger.script_noteworthy = "specialty_extraammo";
 
 }
 

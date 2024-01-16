@@ -553,9 +553,9 @@ reimagined_init_level()
 	 "specialty_additionalprimaryweapon", 	//Mule
 	 "specialty_bulletdamage", 				//cherry
 	 "specialty_altmelee", 					//Vulture
-	 "specialty_extraammo"					//Widows wine
+	 "specialty_bulletaccuracy"					//Widows wine
 	 );
-	 // "specialty_extraamo", 			//babyjugg
+	 // "specialty_extraammo", 			//babyjugg
 
 	level.ARRAY_VALID_PRO_PERKS = array(
 		level.QRV_PRO,
@@ -684,10 +684,10 @@ reimagined_init_player()
 	self UnsetPerk("specialty_flakjacket");
 	self UnsetPerk("specialty_deadshot");
 	self UnsetPerk("specialty_additionalprimaryweapon");
-	self UnsetPerk("specialty_extraamo");		//babyjugg
+	self UnsetPerk("specialty_extraammo");		//babyjugg
 	self UnsetPerk("specialty_bulletdamage");		//cherry
 	self UnsetPerk("specialty_altmelee");				//Vulture
-	self UnsetPerk("specialty_extraammo");				//Widows wine
+	self UnsetPerk("specialty_bulletaccuracy");				//Widows wine
 
 	self.PRO_PERKS = [];
 	self.PRO_PERKS[ level.JUG_PRO ] = false;
@@ -7364,6 +7364,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	////iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
 	////iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO)); 
 	*/
+
+	iprintln("BA: " + attacker HasPerk("specialty_bulletaccuracy"));
+	iprintln("SA: " + attacker HasPerk("specialty_bulletaccuracy"));
+	iprintln("SS: " + attacker HasPerk("specialty_stockpile"));
 	
 	if(weapon == "ray_gun_zm" )
 	{

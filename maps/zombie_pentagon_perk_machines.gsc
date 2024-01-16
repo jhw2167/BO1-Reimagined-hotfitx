@@ -26,7 +26,7 @@ place_babyjug()
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 0), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_babyjugg";
-	perk_trigger.script_noteworthy = "specialty_extraamo";
+	perk_trigger.script_noteworthy = "specialty_extraammo";
 
 }
 
@@ -137,7 +137,7 @@ place_extraammo()
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_widowswine";
-	perk_trigger.script_noteworthy = "specialty_extraammo";
+	perk_trigger.script_noteworthy = "specialty_bulletaccuracy";
 	perk_trigger.script_sound = "mus_perks_widows_jingle";
 	perk_trigger.script_label = "mus_perks_widows_sting";
 	perk_clip = spawn( "script_model", machine_origin );
@@ -161,7 +161,7 @@ place_chugabud()
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_chugabud";
-	perk_trigger.script_noteworthy = "specialty_extraamo";
+	perk_trigger.script_noteworthy = "specialty_extraammo";
 	perk_trigger.script_sound = "mus_perks_whoswho_jingle";
 	perk_trigger.script_label = "mus_perks_whoswho_sting";
 	perk_clip = spawn( "script_model", machine_origin );

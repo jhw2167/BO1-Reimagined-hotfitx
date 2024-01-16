@@ -1481,7 +1481,7 @@ turn_widowswine_on()
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		machine[i] thread perk_fx( "widow_light" );
 	}
-	level notify( "specialty_extraammo_power_on" );
+	level notify( "specialty_bulletaccuracy_power_on" );
 }
 
 //
@@ -1562,7 +1562,7 @@ electric_perks_dialog()
 		return "specialty_cherry_zombies_pro";
 	if (perk == "specialty_altmelee_upgrade")
 		return "specialty_vulture_zombies_pro";
-	if (perk == "specialty_extraammo_upgraded")
+	if (perk == "specialty_bulletaccuracy_upgraded")
 		return "specialty_widowswine_zombies_pro";
     
 return "UNKOWN";
@@ -1816,7 +1816,7 @@ vending_trigger_think()
 	solo = false;
 	////iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
-	if ( IsDefined(perk) && perk == "specialty_extraamo" )
+	if ( IsDefined(perk) && perk == "specialty_extraammo" )
 	{
 		cost = 500;
 		if(level.expensive_perks)
@@ -2020,8 +2020,8 @@ vending_trigger_think()
 		cost = 3000;
 		break;
 
-	case "specialty_extraammo_upgrade":	//wine
-	case "specialty_extraammo":
+	case "specialty_bulletaccuracy_upgrade":	//wine
+	case "specialty_bulletaccuracy":
 		cost = 3000;
 		break;
 
@@ -2105,8 +2105,8 @@ vending_trigger_think()
 			self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
 			break;
 
-		case "specialty_extraamo_upgrade":
-		case "specialty_extraamo":
+		case "specialty_extraammo_upgrade":
+		case "specialty_extraammo":
 			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
 			break;
 
@@ -2120,8 +2120,8 @@ vending_trigger_think()
 			self SetHintString( &"REIMAGINED_PERK_VULTURE", cost, upgrade_perk_cost );
 			break;
 
-		case "specialty_extraammo_upgrade":
-		case "specialty_extraammo":
+		case "specialty_bulletaccuracy_upgrade":
+		case "specialty_bulletaccuracy":
 			self SetHintString( &"REIMAGINED_PERK_WIDOWSWINE", cost, upgrade_perk_cost );
 			break;
 
@@ -2143,8 +2143,11 @@ vending_trigger_think()
 	CONST_PERK = perk;
 	CONST_COST = cost;
 
+	i =0;
 	for( ;; )
 	{
+		wait(2);
+		i++;
 		self waittill( "trigger", player );
 
 		index = maps\_zombiemode_weapons::get_player_index(player);
@@ -2177,12 +2180,14 @@ vending_trigger_think()
 			continue;
 		}
 		
+		iprintlnbold("1	-	" + i);
 		if( player.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
 		{
 			wait( 0.1 );
 			continue;
 		}
 
+		iprintlnbold("2	-	" + i);
 		if ( player HasPerk( perk ) )
 		{
 			cheat = false;
@@ -2209,6 +2214,7 @@ vending_trigger_think()
 			}
 		}
 
+		iprintlnbold("3	-	" + i);
 		if ( player.score < cost )
 		{
 			//player ////iprintln( "Not enough points to buy Perk: " + perk );
@@ -2217,7 +2223,8 @@ vending_trigger_think()
 			continue;
 		}
 
-		
+
+		iprintlnbold("4	-	" + i);		
 		if ( player.num_perks >= level.max_perks && !is_true(player._retain_perks) )
 		{
 			//player ////iprintln( "Too many perks already to buy Perk: " + perk );
@@ -2700,6 +2707,8 @@ check_player_has_perk(perk)
 				{
 					self SetInvisibleToPlayer(players[i], true);
 				}
+
+				self SetInvisibleToPlayer(players[i], false);
 			}
 		}
 		wait(0.05);
@@ -2886,8 +2895,8 @@ perk_hud_create( perk )
 			shader = "specialty_mulekick_zombies";
 			break;
 
-		case "specialty_extraamo_upgrade":
-		case "specialty_extraamo":
+		case "specialty_extraammo_upgrade":
+		case "specialty_extraammo":
 			shader = "specialty_chugabud_zombies";
 			break;
 
@@ -2901,8 +2910,8 @@ perk_hud_create( perk )
 			shader = "specialty_vulture_zombies";
 			break;
 
-		case "specialty_extraammo_upgrade":
-		case "specialty_extraammo":
+		case "specialty_bulletaccuracy_upgrade":
+		case "specialty_bulletaccuracy":
 			shader = "specialty_widowswine_zombies";
 			break;
 
@@ -3324,7 +3333,7 @@ give_random_perk()
 	{
 		perk = vending_triggers[i].script_noteworthy;
 
-		if(perk == "specialty_extraamo") //babyjugg
+		if(perk == "specialty_extraammo") //babyjugg
 			continue;
 
 		if ( isdefined( self.perk_purchased ) && self.perk_purchased == perk )
@@ -3987,7 +3996,7 @@ player_watch_electric_cherry()
 		perk_radius = 128; // linear_map( n_fraction, 1, 0, 32, 128 );
 		perk_dmg = 500; //linear_map( n_fraction, 1, 0, 1, 1045 );
 
-		self electric_cherry_reload_fx( n_fraction );
+		self thread electric_cherry_reload_fx( n_fraction );
 		//self notify( "electric_cherry_start" );
 		a_zombies = GetAISpeciesArray( "axis", "all" );
 		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
@@ -4033,6 +4042,10 @@ player_watch_electric_cherry()
 			//self PlaySound( "cherry_explode" );	//"Explode" sound file
 			self PlaySound( "zmb_cherry_explode" );
 			//self PlaySound( "MP_hit_alert" );
+
+
+			self PlaySound( "zmb_vulture_drop_pickup_money" );
+			self PlaySound( "zmb_vulture_drop_pickup_ammo" );
 
 			//self PlayLocalSound( "cherry_explode" );	//"Explode" sound file
 			//PlaySoundAtPosition("cherry_explode", self.origin);	//"Explode" sound file
@@ -5671,10 +5684,10 @@ setup_perk_machine_fx()
 	register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
 	register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
 	register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
-	register_perk_machine_fx( "specialty_extraamo", "vulture_perk_machine_glow_whos_who" );
+	register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_whos_who" );
 	register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
 	register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
-	register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_widows_wine" );
+	register_perk_machine_fx( "specialty_bulletaccuracy", "vulture_perk_machine_glow_widows_wine" );
 }
 
 register_perk_machine_fx( str_perk, str_fx_reference )
