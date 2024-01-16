@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=6;	//*/
 	level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 

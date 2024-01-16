@@ -73,7 +73,7 @@ place_extraammo()
 	machine_angles = level.perk_spawn_location[1].angles;
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p7_zm_vending_widows_wine" );
+	perk setModel( "bo3_p7_zm_vending_widows_wine_off" );
 	perk.targetname = "vending_widowswine";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";

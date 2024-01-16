@@ -368,7 +368,7 @@ default_vending_precaching()
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_on" );
 		PreCacheString( &"REIMAGINED_PERK_WIDOWSWINE" );
 		level._effect[ "widow_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
-		//level thread turn_widowswine_on();
+		level thread turn_widowswine_on();
 	}
 	if( is_true( level.zombiemode_using_bandolier_perk ) )
 	{
@@ -1278,7 +1278,7 @@ turn_jugger_on()
 	level notify("deadshot_on");
 	level notify("additionalprimaryweapon_on");
 	level notify("electriccherry_on");
-	level notify("vultureon");
+	level notify("vulture_on");
 	level notify("widowswine_on");
 
 
@@ -1364,6 +1364,7 @@ divetonuke_explode( attacker, origin )
 		max_damage = level.VALUE_PHD_PRO_DAMAGE;
 
 		PlayFx( level._effect["custom_large_explosion"], origin );
+		attacker PlaySound("zmb_phdflop_explo");
 		//Also apply hellfire to closest zombies, form _zombiemode_weaponeffects
 		//Get all zombies in radius
 		zombies = GetAiSpeciesArray( "axis", "all" );
@@ -1381,6 +1382,7 @@ divetonuke_explode( attacker, origin )
 	} else {
 		////iprintln("divetonuke_explode");
 		PlayFx( level._effect["divetonuke_groundhit"], origin );
+		attacker PlaySound("wpn_grenade_explode");
 	}
 
 	// radius damage
@@ -1391,9 +1393,7 @@ divetonuke_explode( attacker, origin )
 	// play fx
 	//PlayFx( level._effect["custom_large_explosion"], origin );
 
-	// play sound
-	attacker PlaySound("wpn_grenade_explode");
-	//attacker playsound("zmb_phdflop_explo");
+
 
 	// WW (01/12/11): start clientsided effects - These client flags are defined in _zombiemode.gsc & _zombiemode.csc
 	// Used for zombie_dive2nuke_visionset() in _zombiemode.csc
@@ -1463,7 +1463,7 @@ turn_vulture_on()
 	level waittill( "vulture_on" );
 	for( i = 0; i < machine.size; i ++ )
 	{
-		machine[i] SetModel( "p6_zm_vending_vultureaid_on" );
+		machine[i] SetModel( "bo2_zombie_vending_vultureaid_on" );
 		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		machine[i] thread perk_fx( "vulture_light" );
@@ -1478,11 +1478,12 @@ turn_widowswine_on()
 	level waittill( "widowswine_on" );
 	for( i = 0; i < machine.size; i ++ )
 	{
-		machine[i] SetModel( "p7_zm_vending_widows_wine_on" );
+		machine[i] SetModel( "bo3_p7_zm_vending_widows_wine_on" );
 		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		machine[i] thread perk_fx( "widow_light" );
 	}
+	iprintlnbold("widowswine_on");
 	level notify( "specialty_extraammo_power_on" );
 }
 
@@ -1979,14 +1980,6 @@ vending_trigger_think()
 
 	case "specialty_quickrevive_upgrade":
 	case "specialty_quickrevive":
-		/*if( solo )
-		{
-			cost = 500;
-		}
-		else
-		{
-			cost = 1500;
-		}*/
 		cost = 1500;
 		break;
 
@@ -2020,6 +2013,21 @@ vending_trigger_think()
 		cost = 4000;
 		break;
 
+	case "specialty_bulletdamage_upgrade":	//Cherry
+	case "specialty_bulletdamage":
+		cost = 2500;
+		break;
+
+	case "specialty_altmelee_upgrade":	//Vulture
+	case "specialty_altmelee":
+		cost = 3000;
+		break;
+
+	case "specialty_extraammo_upgrade":	//wine
+	case "specialty_extraammo":
+		cost = 3000;
+		break;
+
 	}
 
 	self.cost = cost;
@@ -2028,6 +2036,9 @@ vending_trigger_think()
 	{
 		notify_name = perk + "_power_on";
 		level waittill( notify_name );
+		iprintlnbold("catching widowswine_on" + perk);
+		hasPerk = get_players()[0] playerHasPerk( perk );
+		iprintln("has perk: " hasPerk);
 	}
 
 	if(!IsDefined(level._perkmachinenetworkchoke))
@@ -2138,6 +2149,9 @@ vending_trigger_think()
 	CONST_PERK = perk;
 	CONST_COST = cost;
 
+		if(perk == "specialty_extraamo")
+			iprintlnbold("Entering trigger loop for widowswine_on");
+
 	for( ;; )
 	{
 		self waittill( "trigger", player );
@@ -2238,55 +2252,8 @@ vending_trigger_think()
 		//	perk += "_upgrade";
 		//}
 
-		////iprintln( "Bought Perk: " + perk );
-		///bottle_dispense
-		switch( perk )
-		{
-		case "specialty_armorvest_upgrade":
-		case "specialty_armorvest":
-			sound = "mus_perks_jugger_sting";
-			break;
-
-		case "specialty_quickrevive_upgrade":
-		case "specialty_quickrevive":
-			sound = "mus_perks_revive_sting";
-			break;
-
-		case "specialty_fastreload_upgrade":
-		case "specialty_fastreload":
-			sound = "mus_perks_speed_sting";
-			break;
-
-		case "specialty_rof_upgrade":
-		case "specialty_rof":
-			sound = "mus_perks_doubletap_sting";
-			break;
-
-		case "specialty_endurance_upgrade":
-		case "specialty_endurance":
-			sound = "mus_perks_phd_sting";
-			break;
-
-		case "specialty_flakjacket_upgrade":
-		case "specialty_flakjacket":
-			sound = "mus_perks_stamin_sting";
-			break;
-
-		case "specialty_deadshot_upgrade":
-		case "specialty_deadshot":
-			sound = "mus_perks_jugger_sting"; // WW TODO: Place new deadshot stinger
-			break;
-
-		case "specialty_additionalprimaryweapon_upgrade":
-		case "specialty_additionalprimaryweapon":
-			sound = "mus_perks_mulekick_sting";
-			break;
-
-		default:
-			sound = "mus_perks_jugger_sting";
-			break;
-		}
-
+		iprintln("Playing self script label:");
+		iprintln(self.script_label);
 		self thread maps\_zombiemode_audio::play_jingle_or_stinger (self.script_label);
 
 		//		self waittill("sound_done");
@@ -4027,7 +3994,8 @@ player_watch_electric_cherry()
 			//self PlaySound( "cherry_reload" );	//"Explode" sound file
 			//self PlaySound( "cherry_explode" );	//"Explode" sound file
 			self PlaySound( "zmb_cherry_explode" );
-			self PlaySound( "MP_hit_alert" );
+			//self PlaySound("zmb_phdflop_explo");
+			//self PlaySound( "MP_hit_alert" );
 
 			//self PlayLocalSound( "cherry_explode" );	//"Explode" sound file
 			//PlaySoundAtPosition("cherry_explode", self.origin);	//"Explode" sound file

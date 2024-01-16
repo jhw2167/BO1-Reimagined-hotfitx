@@ -208,7 +208,7 @@ activate_vending_machine( machine, origin, entity )
 			entity maps\_zombiemode_perks::perk_fx( "sleight_light" );
 			break;
 
-		case "p7_zm_vending_widows_wine_on":
+		case "bo3_p7_zm_vending_widows_wine_on":
 			level.perk_randomization_on[ "specialty_extraammo" ] = true;
 			level notify( "specialty_extraammo_power_on" );
 			entity maps\_zombiemode_perks::perk_fx( "jugger_light" );

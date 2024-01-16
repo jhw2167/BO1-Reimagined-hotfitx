@@ -132,7 +132,7 @@ place_extraammo()
 	machine_angles = (0, 45, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p7_zm_vending_widows_wine_on" );
+	perk setModel( "bo3_p7_zm_vending_widows_wine_on" );
 	perk.targetname = "vending_widowswine";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
@@ -207,7 +207,7 @@ place_vulture()
 	machine_angles = (0, -90, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_vultureaid_on" );
+	perk setModel( "bo2_zombie_vending_vultureaid_on" );
 	perk.targetname = "vending_vulture";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
