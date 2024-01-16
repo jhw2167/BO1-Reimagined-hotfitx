@@ -203,8 +203,8 @@ activate_vending_machine( machine, origin, entity )
 			break;
 
 		case "p6_zm_vending_chugabud_on":
-			level.perk_randomization_on[ "specialty_bulletaccuracy" ] = true;
-			level notify( "specialty_bulletaccuracy_power_on" );
+			level.perk_randomization_on[ "specialty_extraamo" ] = true;
+			level notify( "specialty_extraamo_power_on" );
 			entity maps\_zombiemode_perks::perk_fx( "sleight_light" );
 			break;
 

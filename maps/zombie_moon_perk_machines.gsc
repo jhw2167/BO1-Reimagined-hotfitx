@@ -21,7 +21,7 @@ place_babyjug()
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 0), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_babyjugg";
-	perk_trigger.script_noteworthy = "specialty_bulletaccuracy";
+	perk_trigger.script_noteworthy = "specialty_extraamo";
 
 }
 

@@ -1603,7 +1603,7 @@ hasProPerk( perk )
 		return self.PRO_PERKS[ level.ECH_PRO ];
 	if (perk == "specialty_altmelee_upgrade")
 		return self.PRO_PERKS[ level.VLT_PRO ];
-	if (perk == "specialty_extraamo_upgrade")
+	if (perk == "specialty_bulletaccuracy_upgrade")
 		return self.PRO_PERKS[ level.WWN_PRO ];
 
 	return false;
@@ -1632,8 +1632,8 @@ playerHasPerk( perk )
 		return self HasPerk( "specialty_bulletdamage" );		//cherry
 	if (perk == "specialty_altmelee")
 		return self HasPerk( "specialty_altmelee" );		//vulture
-	if (perk == "specialty_extraamo")
-		return self HasPerk( "specialty_extraamo" );		//widowswine
+	if (perk == "specialty_bulletaccuracy")
+		return self HasPerk( "specialty_bulletaccuracy" );		//widowswine
 
 }
 
@@ -1673,7 +1673,7 @@ addProPerk( perk )
 		self.PRO_PERKS[ level.ECH_PRO ] = true;
 	if (perk == "specialty_altmelee_upgrade")
 		self.PRO_PERKS[ level.VLT_PRO ] = true;
-	if (perk == "specialty_extraamo_upgrade")
+	if (perk == "specialty_bulletaccuracy_upgrade")
 		self.PRO_PERKS[ level.WWN_PRO ] = true;
 
 	////iprintln( " ADD PRO PERK : " + perk);
@@ -1816,7 +1816,7 @@ vending_trigger_think()
 	solo = false;
 	////iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
-	if ( IsDefined(perk) && perk == "specialty_temp" )
+	if ( IsDefined(perk) && perk == "specialty_extraamo" )
 	{
 		cost = 500;
 		if(level.expensive_perks)
@@ -2105,8 +2105,8 @@ vending_trigger_think()
 			self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
 			break;
 
-		case "specialty_temp_upgrade":
-		case "specialty_temp":
+		case "specialty_extraamo_upgrade":
+		case "specialty_extraamo":
 			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
 			break;
 
@@ -2886,8 +2886,8 @@ perk_hud_create( perk )
 			shader = "specialty_mulekick_zombies";
 			break;
 
-		case "specialty_temp_upgrade":
-		case "specialty_temp":
+		case "specialty_extraamo_upgrade":
+		case "specialty_extraamo":
 			shader = "specialty_chugabud_zombies";
 			break;
 
@@ -3140,8 +3140,8 @@ perk_give_bottle_begin( perk )
 		modelIndex = 9;
 		break;
 
-	case "specialty_extraamo": // ww: wine
-	case "specialty_extraamo_upgrade":
+	case "specialty_bulletaccuracy": // ww: wine
+	case "specialty_bulletaccuracy_upgrade":
 		weapon = "bo3_widows_wine_bottle";
 		modelIndex = 10;
 		break;
@@ -3248,8 +3248,8 @@ perk_give_bottle_end( gun, perk )
 		weapon = "t6_wpn_zmb_perk_bottle_vulture";
 		break;
 
-	case "specialty_extraamo": // ww: wine
-	case "specialty_extraamo_upgrade":
+	case "specialty_bulletaccuracy": // ww: wine
+	case "specialty_bulletaccuracy_upgrade":
 		weapon = "bo3_widows_wine_bottle";
 		break;
 	}
@@ -3324,7 +3324,7 @@ give_random_perk()
 	{
 		perk = vending_triggers[i].script_noteworthy;
 
-		if(perk == "specialty_temp") //babyjugg
+		if(perk == "specialty_extraamo") //babyjugg
 			continue;
 
 		if ( isdefined( self.perk_purchased ) && self.perk_purchased == perk )
@@ -5671,7 +5671,7 @@ setup_perk_machine_fx()
 	register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
 	register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
 	register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
-	register_perk_machine_fx( "specialty_temp", "vulture_perk_machine_glow_whos_who" );
+	register_perk_machine_fx( "specialty_extraamo", "vulture_perk_machine_glow_whos_who" );
 	register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
 	register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
 	register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_widows_wine" );

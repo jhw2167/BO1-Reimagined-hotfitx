@@ -555,7 +555,7 @@ reimagined_init_level()
 	 "specialty_altmelee", 					//Vulture
 	 "specialty_extraammo"					//Widows wine
 	 );
-	 // "specialty_bulletaccuracy", 			//babyjugg
+	 // "specialty_extraamo", 			//babyjugg
 
 	level.ARRAY_VALID_PRO_PERKS = array(
 		level.QRV_PRO,
@@ -684,7 +684,7 @@ reimagined_init_player()
 	self UnsetPerk("specialty_flakjacket");
 	self UnsetPerk("specialty_deadshot");
 	self UnsetPerk("specialty_additionalprimaryweapon");
-	self UnsetPerk("specialty_bulletaccuracy");		//babyjugg
+	self UnsetPerk("specialty_extraamo");		//babyjugg
 	self UnsetPerk("specialty_bulletdamage");		//cherry
 	self UnsetPerk("specialty_altmelee");				//Vulture
 	self UnsetPerk("specialty_extraammo");				//Widows wine
@@ -1538,7 +1538,7 @@ init_levelvars()
 	level.MUL_PRK = "specialty_additionalprimaryweapon";
 	level.ECH_PRK = "specialty_bulletdamage";
 	level.VLT_PRK = "specialty_altmelee";
-	level.WWN_PRK = "specialty_extraamo";
+	level.WWN_PRK = "specialty_bulletaccuracy";
 
 	//Reimagined-Expanded -- Pro Perk Vars
 	level.JUG_PRO = "specialty_armorvest_upgrade";
@@ -1551,7 +1551,7 @@ init_levelvars()
 	level.MUL_PRO = "specialty_additionalprimaryweapon_upgrade";
 	level.ECH_PRO = "specialty_bulletdamage_upgrade";
 	level.VLT_PRO = "specialty_altmelee_upgrade";
-	level.WWN_PRO = "specialty_extraamo_upgrade";
+	level.WWN_PRO = "specialty_bulletaccuracy_upgrade";
 
 	difficulty = 1;
 	column = int(difficulty) + 1;
