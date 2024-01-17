@@ -2703,7 +2703,7 @@ check_player_has_perk(perk)
 					self SetInvisibleToPlayer(players[i], true);
 				}
 
-				self SetInvisibleToPlayer(players[i], false);
+				//self SetInvisibleToPlayer(players[i], false);		//bugfixing only
 			}
 		}
 		wait(0.05);
@@ -4039,8 +4039,10 @@ player_watch_electric_cherry()
 			//self PlaySound( "MP_hit_alert" );
 
 
-			self PlaySound( "zmb_vulture_drop_pickup_money" );
-			self PlaySound( "zmb_vulture_drop_pickup_ammo" );
+			//self PlaySound( "zmb_vulture_drop_pickup_money" );
+			//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
+			//self PlaySound( "vulture_pickup" );
+			//self PlaySound( "vulture_money" );
 
 			//self PlayLocalSound( "cherry_explode" );	//"Explode" sound file
 			//PlaySoundAtPosition("cherry_explode", self.origin);	//"Explode" sound file
