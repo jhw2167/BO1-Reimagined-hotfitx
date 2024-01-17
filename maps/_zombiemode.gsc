@@ -48,13 +48,13 @@ main()
 	//Overrides
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=2;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=6;	//*/
+	level.calculate_amount_override=32;	//*/
 	level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -613,6 +613,20 @@ reimagined_init_level()
 
 	//Cherry
 	level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME = 2;
+	level.VALUE_CHERRY_SHOCK_RANGE = 128;
+	level.VALUE_CHERRY_SHOCK_DMG = 32768;	//2^15
+	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 1;
+	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 2;
+	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
+	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
+
+	level.VALUE_CHERRY_PRO_SCALAR = 2;	//scales range, damage, max enemies by 2
+
+	//Vulture
+
+
+	//Wine
+
 	
 	//Bullet Effects
 	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
@@ -675,6 +689,8 @@ reimagined_init_level()
 
 reimagined_init_player()
 {
+	//init-player
+
 	//Standard Perks
 	self UnsetPerk("specialty_armorvest");
 	self UnsetPerk("specialty_quickrevive");
@@ -716,7 +732,8 @@ reimagined_init_player()
 	self.PRO_PERKS_DISABLED[ level.WWN_PRO ] = false;
 
 	
-	
+	//Perk Values
+	self.cherry_sequence = 0;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;

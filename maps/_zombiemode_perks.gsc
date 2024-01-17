@@ -3843,8 +3843,11 @@ magicReload()
 		if(weapons[i] == primary || diff == 0 || stock == 0)
 			continue;
 
+		self electric_cherry_reload_attack( self.cherry_sequence, weapons[i] );		//triggers cherry
+
 		self SetWeaponAmmoClip(weapons[i], clip + diff);
-		self SetWeaponAmmoStock(weapons[i], stock - diff);		
+		self SetWeaponAmmoStock(weapons[i], stock - diff);
+
 	}
 
 }
@@ -3964,12 +3967,15 @@ player_watch_electric_cherry()
 		iprintln("Waiting for reload: ");
 		self waittill( "reload_start" );
 
-		self thread electric_cherry_reload_attack();
+		self thread electric_cherry_reload_attack( self.cherry_sequence );
 
-		self player_handle_eletric_cherry_cooldown();
+		if( self.cherry_sequence == 0 )
+			self thread player_handle_eletric_cherry_cooldown();
+
+		self.cherry_sequence++;
+		wait( level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN);
 	}
 
-	iprintln("Player lost cherry: ");
 }
 
 	/*
@@ -3978,31 +3984,64 @@ player_watch_electric_cherry()
 			- Damage and range based off reload ammo fraction
 		3. return
 	// */
-	electric_cherry_reload_attack()
+	electric_cherry_reload_attack( sequence, weapon )
 	{
 		self endon( "death" );
 		self endon( "disconnect" );
 
-		weapon = self GetCurrentWeapon();
+		if( weapon == undefined )
+			weapon = self GetCurrentWeapon();
 	
 		n_clip_current = self GetWeaponAmmoClip( weapon );
 		n_clip_max = WeaponClipSize( weapon );
 		n_fraction = n_clip_current / n_clip_max;
-		perk_radius = 128; // linear_map( n_fraction, 1, 0, 32, 128 );
-		perk_dmg = 500; //linear_map( n_fraction, 1, 0, 1, 1045 );
+		/*
+		level.VALUE_CHERRY_SHOCK_RANGE = 400;
+	level.VALUE_CHERRY_SHOCK_DMG = 50000;
+	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 1;
+	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 16;
+	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
+	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
+	*/
+		perk_radius = level.VALUE_CHERRY_SHOCK_RANGE;
+		perk_dmg = level.VALUE_CHERRY_SHOCK_DMG;
+		max_enemies = level.VALUE_CHERRY_SHOCK_MAX_ENEMIES;
+		efx_range = (32, 32, 4);
 
-		self thread electric_cherry_reload_fx( n_fraction );
-		//self notify( "electric_cherry_start" );
+		if( n_fraction > 0.75 || sequence>=4 )
+			sequence=3;
+		else if( n_fraction > 0.5 || sequence==3 )
+			sequence=2;
+		else if( n_fraction > 0.25 || sequence==2 )
+			sequence=1;
+		else
+			sequence=0;
+
+		for( i = 0; i < sequence; i++ ) {
+			perk_radius /= 2;
+			perk_dmg /= 2;
+			max_enemies /= 2;
+			efx_range /= 2;
+		}
+
+		if( self hasProPerk( level.ECH_PRO) )
+		{
+			perk_radius *= level.VALUE_CHERRY_PRO_SCALAR;
+			perk_dmg *= level.VALUE_CHERRY_PRO_SCALAR;
+			max_enemies *= level.VALUE_CHERRY_PRO_SCALAR;
+		}
+
+		self thread electric_cherry_reload_fx( efx_range );
+		
 		a_zombies = GetAISpeciesArray( "axis", "all" );
 		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
 		n_zombies_hit = 0;
-		n_zombie_limit = 8;
 		
 		for( i = 0; i < a_zombies.size; i ++ )
 		{
 			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
 			{
-				if( n_zombies_hit > n_zombie_limit )
+				if( n_zombies_hit > max_enemies )
 					break;
 				
 				if( a_zombies[i].health <= perk_dmg ) 
@@ -4031,7 +4070,7 @@ player_watch_electric_cherry()
 
 		//Reload fx
 	 
-		electric_cherry_reload_fx( n_fraction ) 
+		electric_cherry_reload_fx( range ) 
 		{
 			//self PlaySound( "cherry_reload" );	//"Explode" sound file
 			//self PlaySound( "cherry_explode" );	//"Explode" sound file
@@ -4043,17 +4082,12 @@ player_watch_electric_cherry()
 			//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
 			//self PlaySound( "vulture_pickup" );
 			//self PlaySound( "vulture_money" );
-
-			//self PlayLocalSound( "cherry_explode" );	//"Explode" sound file
-			//PlaySoundAtPosition("cherry_explode", self.origin);	//"Explode" sound file
-
 		
 			//Nested for loop to create a 2x2 grid of fx
-			baseDir = (30, 30, 2);
 			for( i = -1; i < 2; i +=2 ) 
 			{
 				for( j = -1; j < 2; j +=2 ) {
-					offset = baseDir * (i, j, 1);
+					offset = range * (i, j, 1);
 					self thread handle_cherry_pool_fx( self.origin, offset );
 				}
 			}
@@ -4136,14 +4170,10 @@ player_watch_electric_cherry()
 			self thread maps\_zombiemode_spawner::find_flesh();
 		}
 
-
-	/*
-		1. Wait for reload to end or other possible effects or timeout
-		2. return;
-	*/
 	player_handle_eletric_cherry_cooldown()
 	{
-		wait( level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME );
+		wait( level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN );
+		self.cherry_sequence = 0;
 	}
 
 

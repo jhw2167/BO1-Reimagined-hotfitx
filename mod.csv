@@ -148,7 +148,7 @@ weapon,sp/zombie_perk_bottle
 
 
 //SOUNDS
-sound,custom_sounds
+sound,reimagined
 
 //CAMOS
 stringtable,weaponoptions.csv
