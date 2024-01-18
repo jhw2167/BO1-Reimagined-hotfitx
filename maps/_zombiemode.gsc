@@ -48,7 +48,7 @@ main()
 	//Overrides
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=20;	///
+	level.starting_round_override=30;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -613,16 +613,20 @@ reimagined_init_level()
 
 	//Cherry
 	level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME = 2;
-	level.VALUE_CHERRY_SHOCK_RANGE = 128;
+	level.VALUE_CHERRY_SHOCK_RANGE = 196;
 	level.VALUE_CHERRY_SHOCK_DMG = 32768;	//2^15
-	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 1;
-	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 2;
+	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 4;
+	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 16;
 	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
 	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
 
+	level.VALUE_CHERRY_PRO_DEFENSE_COOLDOWN = 12;	//cooldown for cherry defense
 	level.VALUE_CHERRY_PRO_SCALAR = 2;	//scales range, damage, max enemies by 2
 
 	//Vulture
+	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;
+	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.15;
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 0.15;
 
 
 	//Wine
@@ -734,6 +738,7 @@ reimagined_init_player()
 	
 	//Perk Values
 	self.cherry_sequence = 0;
+	self.cherry_defense = true;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;
@@ -6777,25 +6782,33 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		eAttacker notify( "hit_player" );
 
 		// tracking player damage
-		if(is_true(eAttacker.is_zombie))
+		if( !is_boss_zombie(eAttacker.animname) )
 		{
-			if( isDefined(eAttacker.zombie_hash) )
-			{
-				hash = eAttacker.zombie_hash;
-				if( hash == self.previous_zomb_attacked_by )
-					iDamage = int(iDamage * 0.5);
-				self.previous_zomb_attacked_by = hash;
+			if( self hasProPerk( level.ECH_PRO ) && self.cherry_defense )
+				self thread maps\_zombiemode_perks::player_electric_cherry_defense( eAttacker );
 
-				//Reimagined-Expaded, maybe we'lll use later, not necessary right now
-				//Slow consequtive zombie attack by slowing animation
-				
-				if( level.round_number < level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX ) {
-					eAttacker thread slow_zombie_attack_anim();
+			if( is_true(eAttacker.is_zombie) )
+			{
+				if( isDefined(eAttacker.zombie_hash) )
+				{
+					hash = eAttacker.zombie_hash;
+					if( hash == self.previous_zomb_attacked_by )
+						iDamage = int(iDamage * 0.5);
+					self.previous_zomb_attacked_by = hash;
+
+					//Reimagined-Expaded, maybe we'lll use later, not necessary right now
+					//Slow consequtive zombie attack by slowing animation
+					
+					if( level.round_number < level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX ) {
+						eAttacker thread slow_zombie_attack_anim();
+					}
+					
 				}
-				
+				self.stats["damage_taken"] += iDamage;
 			}
-			self.stats["damage_taken"] += iDamage;
+
 		}
+		
 
 
 		if( is_true(eattacker.is_zombie) && eattacker.animname == "director_zombie" )

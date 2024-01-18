@@ -3934,20 +3934,13 @@ watch_phd_upgrade(perk_str)
 
 init_electric_cherry()
 {
-	//level._effect[ "electric_cherry_explode" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
-	//level._effect[ "electric_cherry_reload_small" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
-	//level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
 	level._effect[ "electric_cherry_reload_large" ] = LoadFX( "electric_cherry/fx_electric_cherry_shock_large" );
 	level._effect[ "electric_cherry_pool" ] = LoadFX( "electric_cherry/fx_electric_cherry_pool" );
 	
 	//Reimagined-Expanded
-	// See weapon_effects::init() 
-	//level._effect[ "tesla_shock" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock" );
-	//level._effect[ "tesla_shock_secondary" ] = LoadFX( "maps/zombie/fx_zombie_tesla_shock_secondary" );
-	//level.custom_laststand_func = ::electric_cherry_laststand;
+	// See weapon_effects::init() fr init tesla shock fx
 
 	set_zombie_var( "tesla_head_gib_chance", 50 );
-	//OnPlayerConnect_Callback( ::on_player_spawned );
 	level.electric_stun = [];
 
 	level.electric_stun[0] = %ai_zombie_afterlife_stun_a;
@@ -3964,16 +3957,14 @@ player_watch_electric_cherry()
 {
 	while( self HasPerk( level.ECH_PRK ) )
 	{
-		iprintln("Waiting for reload: ");
 		self waittill( "reload_start" );
 
 		self thread electric_cherry_reload_attack( self.cherry_sequence );
-
 		if( self.cherry_sequence == 0 )
 			self thread player_handle_eletric_cherry_cooldown();
 
 		self.cherry_sequence++;
-		wait( level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN);
+		self waittill_any_or_timeout( level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN, "reload");
 	}
 
 }
@@ -3989,20 +3980,21 @@ player_watch_electric_cherry()
 		self endon( "death" );
 		self endon( "disconnect" );
 
-		if( weapon == undefined )
-			weapon = self GetCurrentWeapon();
-	
-		n_clip_current = self GetWeaponAmmoClip( weapon );
-		n_clip_max = WeaponClipSize( weapon );
-		n_fraction = n_clip_current / n_clip_max;
-		/*
-		level.VALUE_CHERRY_SHOCK_RANGE = 400;
-	level.VALUE_CHERRY_SHOCK_DMG = 50000;
-	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 1;
-	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 16;
-	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
-	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
-	*/
+		
+		n_fraction = 0;
+		if( weapon == "none" ) {
+			//nothing
+		} else 
+		{
+			if( !isDefined( weapon ) )
+				weapon = self GetCurrentWeapon();
+
+			n_clip_current = self GetWeaponAmmoClip( weapon );
+			n_clip_max = WeaponClipSize( weapon );
+			n_fraction = n_clip_current / n_clip_max;
+
+		}
+		
 		perk_radius = level.VALUE_CHERRY_SHOCK_RANGE;
 		perk_dmg = level.VALUE_CHERRY_SHOCK_DMG;
 		max_enemies = level.VALUE_CHERRY_SHOCK_MAX_ENEMIES;
@@ -4017,11 +4009,12 @@ player_watch_electric_cherry()
 		else
 			sequence=0;
 
-		for( i = 0; i < sequence; i++ ) {
-			perk_radius /= 2;
-			perk_dmg /= 2;
-			max_enemies /= 2;
-			efx_range /= 2;
+		fr = 10/16;	// Reduce scalars by 60&, reciprol of 16/10
+		for( i = 0; i < sequence; i++ ) 
+		{
+			perk_radius = int( perk_radius * fr );
+			perk_dmg = int( perk_dmg * fr );
+			max_enemies = int( max_enemies * fr );
 		}
 
 		if( self hasProPerk( level.ECH_PRO) )
@@ -4031,7 +4024,7 @@ player_watch_electric_cherry()
 			max_enemies *= level.VALUE_CHERRY_PRO_SCALAR;
 		}
 
-		self thread electric_cherry_reload_fx( efx_range );
+		self thread electric_cherry_reload_fx( efx_range, perk_radius );
 		
 		a_zombies = GetAISpeciesArray( "axis", "all" );
 		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
@@ -4039,26 +4032,30 @@ player_watch_electric_cherry()
 		
 		for( i = 0; i < a_zombies.size; i ++ )
 		{
+			if( a_zombies[i].marked_for_tesla )
+				continue;
+
 			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
 			{
+
 				if( n_zombies_hit > max_enemies )
 					break;
-				
+				a_zombies[i].marked_for_tesla = true;
+
 				if( a_zombies[i].health <= perk_dmg ) 
 				{
 					a_zombies[i] thread electric_cherry_death_fx();
-					if( IsDefined( self.cherry_kills ) ) {
-						self.cherry_kills ++;
-					}
-					//self maps\_zombiemode_score::add_to_player_score( 40 );
+					self maps\_zombiemode_score::add_to_player_score( level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS );
 				}
 				else {
 		
 					a_zombies[i] thread electric_cherry_stun();
 					a_zombies[i] thread electric_cherry_shock_fx();
+
+					a_zombies[i] thread wait_reset_tesla_mark();
 				}
 				wait 0.1;
-				a_zombies[i] DoDamage( perk_dmg, self.origin, self, self );
+				a_zombies[i] DoDamage( perk_dmg, a_zombies[i].origin, self, self );
 				n_zombies_hit++;
 
 			}
@@ -4066,22 +4063,20 @@ player_watch_electric_cherry()
 		
 
 	}
+		
+		wait_reset_tesla_mark()
+		{
+			wait 2;
+			if( IsDefined( self ) && IsAlive( self ) )
+				self.marked_for_tesla = false;
+		}
 	
 
-		//Reload fx
-	 
-		electric_cherry_reload_fx( range ) 
+		//Reload fx 
+		electric_cherry_reload_fx( range, perk_radius ) 
 		{
-			//self PlaySound( "cherry_reload" );	//"Explode" sound file
 			//self PlaySound( "cherry_explode" );	//"Explode" sound file
 			self PlaySound( "zmb_cherry_explode" );
-			//self PlaySound( "MP_hit_alert" );
-
-
-			//self PlaySound( "zmb_vulture_drop_pickup_money" );
-			//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
-			//self PlaySound( "vulture_pickup" );
-			//self PlaySound( "vulture_money" );
 		
 			//Nested for loop to create a 2x2 grid of fx
 			for( i = -1; i < 2; i +=2 ) 
@@ -4176,302 +4171,41 @@ player_watch_electric_cherry()
 		self.cherry_sequence = 0;
 	}
 
-
-
-/*
-on_player_spawned()
-{
-	while( true )
+	//Self is player, only triggers if player has Cherry Pro
+	player_electric_cherry_defense( zombie )
 	{
-		self waittill( "spawned_player" );
-		self thread init_electric_cherry_reload_fx();
-	}
-}
-/
+		self.cherry_defense = false;
+		cherry_damage = level.VALUE_CHERRY_SHOCK_DMG * level.VALUE_CHERRY_PRO_SCALAR;
+		kill_zombie = ( cherry_damage > zombie.health ) || zombie.animname != "zombie"; //just kill dogs and monkeys and quads, no stun fx
 
-init_electric_cherry_reload_fx()
-{
-	wait 1;
-	self SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
-}
-
-/*
-electric_cherry_laststand()
-{
-	VisionSetLastStand( "zombie_last_stand", 1 );
-	if( IsDefined( self ) )
-	{
-		PlayFX( level._effect[ "electric_cherry_explode" ], self.origin );
-		self PlaySound( "zmb_cherry_explode" );
-		self notify( "electric_cherry_start" );
-		wait 0.05;
-		a_zombies = GetAISpeciesArray( "axis", "all" );
-		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, 500 );
-		for( i = 0; i < a_zombies.size; i ++ )
+		if( kill_zombie ) 
 		{
-			if( IsAlive( self ) )
-			{
-				if( a_zombies[i].health <= 1000 )
-				{
-					a_zombies[i] thread electric_cherry_death_fx();
-					if( IsDefined( self.cherry_kills ) )
-					{
-						self.cherry_kills ++;
-					}
-					self maps\_zombiemode_score::add_to_player_score( 40 );
-				}
-				else
-				{
-					a_zombies[i] thread electric_cherry_stun();
-					a_zombies[i] thread electric_cherry_shock_fx();
-				}
-				wait 0.1;
-				a_zombies[i] DoDamage( 1000, self.origin, self, self );
-			}
+			zombie thread electric_cherry_death_fx();
+			self maps\_zombiemode_score::add_to_player_score( level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS );
 		}
-		self notify( "electric_cherry_end" );
-	}
-}
+		else {
+			zombie thread electric_cherry_stun();
+			zombie thread electric_cherry_shock_fx();
 
-electric_cherry_death_fx()
-{
-	self endon( "death" );
-	tag = "J_SpineUpper";
-	fx = "fx_electric_cherry_shock";
-	if( self.isdog )
-	{
-		tag = "J_Spine1";
-	}
-	self PlaySound( "zmb_elec_jib_zombie" );
-	network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect[ fx ], self, tag );
-	if( IsDefined( self.tesla_head_gib_func ) && !self.head_gibbed )
-	{
-		[[ self.tesla_head_gib_func ]]();
-	}
-}
-
-electric_cherry_shock_fx()
-{
-	self endon( "death" );
-	tag = "J_SpineUpper";
-	fx = "tesla_shock_secondary";
-	if( self.isdog )
-	{
-		tag = "J_Spine1";
-	}
-	self PlaySound( "zmb_elec_jib_zombie" );
-	network_safe_play_fx_on_tag( "tesla_shock_fx", 2, level._effect[ fx ], self, tag );
-}
-
-electric_cherry_stun()
-{
-	self endon( "death" );
-	self notify( "stun_zombie" );
-	self endon( "stun_zombie" );
-	if( self.health <= 0 )
-	{
-		return;
-	}
-	if( !self.has_legs )
-	{
-		return;
-	}
-	if( self.animname != "zombie" )
-	{
-		return;
-	}
-	self.forcemovementscriptstate = true;
-	self.ignoreall = true;
-	for( i = 0; i < 2; i ++ )
-	{
-		self AnimScripted( "stunned", self.origin, self.angles, random( level.electric_stun ) );
-		self animscripts\zombie_shared::DoNoteTracks( "stunned" );
-	}
-	self.forcemovementscriptstate = false;
-	self.ignoreall = true;
-	self SetGoalPos( self.origin );
-	self thread maps\_zombiemode_spawner::find_flesh();
-}
-
-electric_cherry_reload_attack()
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "stop_electric_cherry_reload_attack" );
-	self.wait_on_reload = [];
-	self.consecutive_electric_cherry_attacks = 0;
-	while( true )
-	{
-		self waittill( "reload_start" );
-		str_current_weapon = self GetCurrentWeapon();
-		if( is_in_array( self.wait_on_reload, str_current_weapon ) )
-		{
-			continue;
+			zombie thread wait_reset_tesla_mark();
 		}
-		self.wait_on_reload[ self.wait_on_reload.size ] = str_current_weapon;
-		self.consecutive_electric_cherry_attacks ++;
-		n_clip_current = self GetWeaponAmmoClip( str_current_weapon );
-		n_clip_max = WeaponClipSize( str_current_weapon );
-		n_fraction = n_clip_current / n_clip_max;
-		perk_radius = linear_map( n_fraction, 1, 0, 32, 128 );
-		perk_dmg = linear_map( n_fraction, 1, 0, 1, 1045 );
-		self thread check_for_reload_complete( str_current_weapon );
-		if( IsDefined( self ) )
-		{
-			switch( self.consecutive_electric_cherry_attacks )
-			{
-				case 0:
-				case 1:
-					n_zombie_limit = undefined;
-					break;
 
-				case 2:
-					n_zombie_limit = 8;
-					break;
+		zombie.marked_for_tesla = true;
+		zombie DoDamage( cherry_damage, zombie.origin, self, self );
 
-				case 3:
-					n_zombie_limit = 4;
-					break;
-
-				case 4:
-					n_zombie_limit = 2;
-					break;
-
-				default:
-					n_zombie_limit = 0;
-					break;
-			}
-			self thread electric_cherry_cooldown_timer( str_current_weapon );
-			if( IsDefined( n_zombie_limit ) && n_zombie_limit == 0 )
-			{
-				continue;
-			}
-			self thread electric_cherry_reload_fx( n_fraction );
-			self notify( "electric_cherry_start" );
-			self PlaySound( "zmb_cherry_explode" );
-			a_zombies = GetAISpeciesArray( "axis", "all" );
-			a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
-			n_zombies_hit = 0;
-			for( i = 0; i < a_zombies.size; i ++ )
-			{
-				if( IsAlive( self ) && IsAlive( a_zombies[i] ) && a_zombies[i].animName != "bo2_zm_mech" && a_zombies[i].animName != "kf2_scrake" && a_zombies[i].animName != "bo1_simianaut" )
-				{
-					if( IsDefined( n_zombie_limit ) )
-					{
-						if( n_zombies_hit < n_zombie_limit )
-						{
-							n_zombies_hit ++;
-						}
-						else
-						{
-							break;
-						}
-					}
-					if( a_zombies[i].health <= perk_dmg )
-					{
-						a_zombies[i] thread electric_cherry_death_fx();
-						if( IsDefined( self.cherry_kills ) )
-						{
-							self.cherry_kills ++;
-						}
-						self maps\_zombiemode_score::add_to_player_score( 40 );
-					}
-					else
-					{
-						if( !IsDefined( a_zombies[i].is_brutus ) )
-						{
-							a_zombies[i] thread electric_cherry_stun();
-						}
-						a_zombies[i] thread electric_cherry_shock_fx();
-					}
-					wait 0.1;
-					a_zombies[i] DoDamage( perk_dmg, self.origin, self, self );
-				}
-			}
-			self notify( "electric_cherry_end" );
-		}
+		self thread electric_cherry_reload_attack( 3, "NONE" );
+		self player_cherry_defense_cooldown();
 	}
-}
 
-electric_cherry_cooldown_timer( str_current_weapon )
-{
-	self notify( "electric_cherry_cooldown_started" );
-	self endon( "electric_cherry_cooldown_started" );
-	self endon( "death" );
-	self endon( "disconnect" );
-	n_reload_time = WeaponReloadTime( str_current_weapon );
-	if( self HasPerk( "specialty_fastreload" ) )
+	//self is player
+	player_cherry_defense_cooldown() 
 	{
-		n_reload_time *= GetDvarFloat( "perk_weapReloadMultiplier" );
+		self endon( "disconnect" );
+		self endon( "death" );
+		
+		wait( level.VALUE_CHERRY_PRO_DEFENSE_COOLDOWN );
+		self.cherry_defense = true;
 	}
-	n_cooldown_time = n_reload_time + 3;
-	wait n_cooldown_time;
-	self.consecutive_electric_cherry_attacks = 0;
-}
-
-check_for_reload_complete( weapon )
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "player_lost_weapon_" + weapon );
-	self thread weapon_replaced_monitor( weapon );
-	while( true )
-	{
-		self waittill( "reload" );
-		str_current_weapon = self GetCurrentWeapon();
-		if( str_current_weapon == weapon )
-		{
-			self.wait_on_reload = array_remove_nokeys( self.wait_on_reload, weapon );
-			self notify( "weapon_reload_complete_" + weapon );
-			return;
-		}
-	}
-}
-
-weapon_replaced_monitor( weapon )
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "weapon_reload_complete_" + weapon );
-	while( true )
-	{
-		self waittill( "weapon_change" );
-		primaryweapons = self GetWeaponsListPrimaries();
-		if( !is_in_array( primaryweapons, weapon ) )
-		{
-			self notify( "player_lost_weapon_" + weapon );
-			self.wait_on_reload = array_remove_nokeys( self.wait_on_reload, weapon );
-			return;
-		}
-	}
-}
-
-electric_cherry_reload_fx( n_fraction )
-{
-	if( n_fraction >= 0.67 )
-	{
-		setClientSysState( "levelNotify", "cherry_fx_small_" + self GetEntityNumber() );
-	}
-	else if( n_fraction >= 0.33 && n_fraction < 0.67 )
-	{
-		setClientSysState( "levelNotify", "cherry_fx_medium_" + self GetEntityNumber() );
-	}
-	else
-	{
-		setClientSysState( "levelNotify", "cherry_fx_large_" + self GetEntityNumber() );
-	}
-	wait 1;
-	setClientSysState( "levelNotify", "cherry_fx_cancel_" + self GetEntityNumber() );
-}
-
-electric_cherry_perk_lost()
-{
-	self notify( "stop_electric_cherry_reload_attack" );
-}
-
-// */
-
-
 
 
 //=========================================================================================================
@@ -4542,7 +4276,12 @@ init_vulture()
 	initialize_bonus_entity_pool();
 	initialize_stink_entity_pool();
 	level thread vulture_perk_watch_waypoints();
-	OnPlayerConnect_Callback( ::vulture_player_connect_callback );
+	
+
+	//self PlaySound( "zmb_vulture_drop_pickup_money" );
+	//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
+	//self PlaySound( "vulture_pickup" );
+	//self PlaySound( "vulture_money" );
 }
 
 add_additional_stink_locations_for_zone( str_zone, a_zones )
