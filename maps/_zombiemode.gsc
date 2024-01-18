@@ -7413,16 +7413,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("SS: " + attacker HasPerk("specialty_stockpile"));
 
 	*/
-
-	//TEST:
-	if( attacker HasPerk( level.VLT_PRK) )
-	{
-		str_perk = level.ARRAY_VALID_PERKS[ RandomInt( 0, level.ARRAY_VALID_PERKS.size - 1 ) ];	
-		iprintln("Testing fx: " + str_perk);
-		iprintln("Perk Defined: " + level.perk_vulture.perk_machine_fx[ str_perk ]);
-		PlayFX( level.perk_vulture.perk_machine_fx[ str_perk ], self.origin );
-	}
-	
 	
 	if(weapon == "ray_gun_zm" )
 	{

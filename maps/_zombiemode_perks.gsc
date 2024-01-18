@@ -4242,8 +4242,8 @@ init_vulture_assets()
 {
 	PreCacheShader( "hud_vulture_aid_stink" );
 	PreCacheShader( "hud_vulture_aid_stink_outline" );
-	PreCacheModel( "p6_zm_perk_vulture_ammo" );
-	PreCacheModel( "p6_zm_perk_vulture_points" );
+	PreCacheModel( "bo2_p6_zm_perk_vulture_ammo" );
+	PreCacheModel( "bo2_p6_zm_perk_vulture_points" );
 	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
 	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
 	//level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
@@ -4260,7 +4260,7 @@ init_vulture_assets()
 	level._effect[ "vulture_perk_machine_glow_electric_cherry" ] = LoadFX( "vulture/fx_vulture_cherry" );
 	level._effect[ "vulture_perk_machine_glow_phd_flopper" ] = LoadFX( "vulture/fx_vulture_phd" );
 	//level._effect[ "vulture_perk_machine_glow_whos_who" ] = LoadFX( "vulture/fx_vulture_whoswho" );
-	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/fx_vulture_widows_efx" );
+	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/fx_vulture_widow" );
 	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "vulture/fx_vulture_deadshot" );
 	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
 	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
@@ -4392,13 +4392,12 @@ init_vulture()
 					if( !player HasPerk( level.VLT_PRK) )
 						continue;
 
-					iprintln("Player has vulture");
 					num = player GetEntityNumber();
 					is_visible = check_waypoint_visible( player, struct );
 					if( !IsDefined( struct.player_visible ) ) {
 						struct.player_visible = [];
 					}
-					
+
 					if( is_visible )
 					{
 						if( !is_true( struct.player_visible[ num ] ) )
