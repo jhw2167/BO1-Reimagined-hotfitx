@@ -15,34 +15,7 @@ main()
 	init_client_flag_callback_funcs();
 	//init_blocker_fx();
 	//init_riser_fx();
-	level._effect[ "zmb_new_gibtrail_fx" ] = LoadFX( "custom/zm_dog_v2/fx_zmb_blood_trail_mature" );	
-	level._effect[ "electric_cherry_explode" ] = LoadFX( "electric_cherry/cherry_shock_large" );
-	level._effect[ "electric_cherry_reload_small" ] = LoadFX( "electric_cherry/cherry_shock_large" );
-	level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "electric_cherry/cherry_shock_large" );
-	level._effect[ "electric_cherry_reload_large" ] = LoadFX( "electric_cherry/cherry_shock_large" );
-	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
-	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
-	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
-	level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
-	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/vulture_wallgun_glow" );
-	level._effect[ "vulture_perk_machine_glow_doubletap" ] = LoadFX( "vulture/vulture_dtap_glow" );
-	level._effect[ "vulture_perk_machine_glow_juggernog" ] = LoadFX( "vulture/vulture_jugg_glow" );
-	level._effect[ "vulture_perk_machine_glow_revive" ] = LoadFX( "vulture/vulture_revive_glow" );
-	level._effect[ "vulture_perk_machine_glow_speed" ] = LoadFX( "vulture/vulture_speed_glow" );
-	level._effect[ "vulture_perk_machine_glow_marathon" ] = LoadFX( "vulture/vulture_stamin_glow" );
-	level._effect[ "vulture_perk_machine_glow_mule_kick" ] = LoadFX( "vulture/vulture_mule_glow" );
-	level._effect[ "vulture_perk_machine_glow_pack_a_punch" ] = LoadFX( "vulture/vulture_pap_glow" );
-	level._effect[ "vulture_perk_machine_glow_vulture" ] = LoadFX( "vulture/vulture_aid_glow" );
-	level._effect[ "vulture_perk_machine_glow_electric_cherry" ] = LoadFX( "vulture/vulture_cherry_glow" );
-	level._effect[ "vulture_perk_machine_glow_phd_flopper" ] = LoadFX( "vulture/vulture_phd_glow" );
-	//level._effect[ "vulture_perk_machine_glow_whos_who" ] = LoadFX( "vulture/vulture_whoswho_glow" );
-	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/vulture_widows_glow" );
-	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "vulture/vulture_deadshot_glow" );
-	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/vulture_box_glow" );
-	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/vulture_powerup_glow" );
-	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
-	//level._effect[ "widows_wine_wrap" ] = LoadFX( "widows_wine/fx_widows_wine_zombie" );
-	//level._effect[ "widows_wine_exp_1p" ] = LoadFX( "widows_wine/fx_widows_wine_explode" );
+	init_perk_fx();
 	level._zombieCBFunc = ::on_zombie_spawn;
 	level._playerCBFunc = ::on_player_spawn;
 	level._gibEventCBFunc = ::on_gib_event;
@@ -69,7 +42,7 @@ main()
 	clientscripts\_zombiemode_weap_tesla::init();
 	//init_zombie_blood();
 	init_client_side_fx();
-	//init_vulture();
+	init_vulture();
 	//init_lowhealth_sound();
 	//clientscripts\_zombiemode_weap_freezegun::init();
 	//clientscripts\_zombiemode_weap_tazer_knuckles::init();
@@ -79,6 +52,41 @@ main()
 	level thread clientscripts\_zombiemode_ffotd::main_end();
 	
 	//iprintlnbold("FINISHED zombiemode init csc");
+}
+
+//=========================================================================================================
+
+init_perk_fx()
+{
+	//level._effect[ "zmb_new_gibtrail_fx" ] = LoadFX( "custom/zm_dog_v2/fx_zmb_blood_trail_mature" );	
+	//level._effect[ "electric_cherry_explode" ] = LoadFX( "electric_cherry/cherry_shock_large" );
+	//level._effect[ "electric_cherry_reload_small" ] = LoadFX( "electric_cherry/cherry_shock_large" );
+	//level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "electric_cherry/cherry_shock_large" );
+	//level._effect[ "electric_cherry_reload_large" ] = LoadFX( "electric_cherry/cherry_shock_large" );
+	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
+	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
+	
+	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
+	level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
+	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/vulture_wallgun_glow" );
+	level._effect[ "vulture_perk_machine_glow_doubletap" ] = LoadFX( "vulture/vulture_dtap_glow" );
+	level._effect[ "vulture_perk_machine_glow_juggernog" ] = LoadFX( "vulture/vulture_jugg_glow" );
+	level._effect[ "vulture_perk_machine_glow_revive" ] = LoadFX( "vulture/vulture_revive_glow" );
+	level._effect[ "vulture_perk_machine_glow_speed" ] = LoadFX( "vulture/vulture_speed_glow" );
+	level._effect[ "vulture_perk_machine_glow_marathon" ] = LoadFX( "vulture/vulture_stamin_glow" );
+	level._effect[ "vulture_perk_machine_glow_mule_kick" ] = LoadFX( "vulture/vulture_mule_glow" );
+	level._effect[ "vulture_perk_machine_glow_pack_a_punch" ] = LoadFX( "vulture/vulture_pap_glow" );
+	level._effect[ "vulture_perk_machine_glow_vulture" ] = LoadFX( "vulture/vulture_aid_glow" );
+	level._effect[ "vulture_perk_machine_glow_electric_cherry" ] = LoadFX( "vulture/vulture_cherry_glow" );
+	level._effect[ "vulture_perk_machine_glow_phd_flopper" ] = LoadFX( "vulture/vulture_phd_glow" );
+	//level._effect[ "vulture_perk_machine_glow_whos_who" ] = LoadFX( "vulture/vulture_whoswho_glow" );
+	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/vulture_widows_glow" );
+	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "vulture/vulture_deadshot_glow" );
+	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/vulture_box_glow" );
+	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/vulture_powerup_glow" );
+	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
+	//level._effect[ "widows_wine_wrap" ] = LoadFX( "widows_wine/fx_widows_wine_zombie" );
+	//level._effect[ "widows_wine_exp_1p" ] = LoadFX( "widows_wine/fx_widows_wine_explode" );
 }
 
 init_level_vars()
@@ -459,11 +467,9 @@ zombie_eye_callback( localClientNum, hasEyes )
 // Perk Machine Lights ( Obsolete )
 //=========================================================================================================
 
-init_perk_machines_fx()
-{
-
+init_perk_machines_fx() {
+	//called from someonewher, dont delete
 }
-
 //=========================================================================================================
 // Zombie Gibbing
 //=========================================================================================================
@@ -1198,6 +1204,7 @@ init_client_side_fx()
 	level.client_side_fx = [];
 	level.client_side_sound = [];
 	registerSystem( "client_side_fx", ::handle_client_side_fx );
+	clientscripts\_zombiemode_ffotd::register_client_system("client_side_fx", ::handle_client_side_fx);
 }
 
 handle_client_side_fx( localClientNum, state, oldState )
@@ -1314,8 +1321,8 @@ init_vulture()
 	level.perk_vulture_vulture_vision_powerups = [];
 	level.perk_vulture_vulture_vision_actors_eye_glow = [];
 	level.perk_vulture_players_with_vulture_perk = [];
-	add_level_notify_callback( "vulture_active_1", ::vulture_toggle, "1" );
-	add_level_notify_callback( "vulture_active_0", ::vulture_toggle, "0" );
+	//add_level_notify_callback( "vulture_active_1", ::vulture_toggle, "1" );
+	//add_level_notify_callback( "vulture_active_0", ::vulture_toggle, "0" );
 	//add_level_notify_callback( "vulture_stink_sound_1", ::sndvulturestink, "1" );
 	//add_level_notify_callback( "vulture_stink_sound_0", ::sndvulturestink, "0" );
 	level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP = 12;
@@ -1332,17 +1339,8 @@ vulture_toggle( localclientnumber, newval )
 {
 	if( newval == "1" )
 	{
+		iprintlnbold("Adding powerup_watch");
 		level.perk_vulture_players_with_vulture_perk[ localclientnumber ] = true;
-		for( i = 0; i < level.perk_vulture_array_stink_zombies.size; i ++ )
-		{
-			zombie = level.perk_vulture_array_stink_zombies[i];
-			zombie _stink_trail_enable( localclientnumber );
-		}
-		for( i = 0; i < level.perk_vulture_array_stink_drop_locations.size; i ++ )
-		{
-			ent = level.perk_vulture_array_stink_drop_locations[i];
-			ent _stink_fx_enable( localclientnumber );
-		}
 		for( i = 0; i < level.perk_vulture_vulture_vision_powerups.size; i ++ )
 		{
 			powerup = level.perk_vulture_vulture_vision_powerups[i];

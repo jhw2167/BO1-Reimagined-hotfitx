@@ -182,6 +182,35 @@ fx,electric_cherry/fx_electric_cherry_shock
 fx,electric_cherry/fx_electric_cherry_shock_large
 //fx,trail/fx_trail_blood_streak
 
+//Vulture fx
+fx,vulture/fx_vulture_box
+fx,vulture/fx_vulture_cherry
+fx,vulture/fx_vulture_deadshot
+fx,vulture/fx_vulture_double
+fx,vulture/fx_vulture_glow
+fx,vulture/fx_vulture_jugg
+fx,vulture/fx_vulture_mist
+fx,vulture/fx_vulture_mist_disperse
+fx,vulture/fx_vulture_mist_oneshot
+fx,vulture/fx_vulture_mule
+fx,vulture/fx_vulture_pap
+fx,vulture/fx_vulture_phd
+fx,vulture/fx_vulture_powerup
+fx,vulture/fx_vulture_revive
+fx,vulture/fx_vulture_rifle
+fx,vulture/fx_vulture_skull
+fx,vulture/fx_vulture_speed
+fx,vulture/fx_vulture_stamin
+fx,vulture/fx_vulture_tomb
+fx,vulture/fx_vulture_tombstone
+fx,vulture/fx_vulture_vulture
+fx,vulture/fx_vulture_whoswho
+fx,vulture/fx_vulture_widow
+fx,vulture/fx_vulture_widowwine
+fx,vulture/fx_vulture_widow_old
+fx,vulture/fx_vulture_wunderfizz
+
+
 
 //MATERIALS
 material,cdc_logo

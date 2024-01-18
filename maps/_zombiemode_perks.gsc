@@ -1456,7 +1456,7 @@ turn_electriccherry_on()
 
 turn_vulture_on()
 {
-	//init_vulture();
+	init_vulture();
 	machine = GetEntArray( "vending_vulture", "targetname" );
 	level waittill( "vulture_on" );
 	for( i = 0; i < machine.size; i ++ )
@@ -2488,7 +2488,7 @@ give_perk( perk, bought )
 
 	if(perk == level.VLT_PRK)
 	{
-		//self thread player_watch_vulture_aid();
+		self thread player_watch_vulture();
 	}
 
 	if(perk == level.WWN_PRK)
@@ -4212,47 +4212,65 @@ player_watch_electric_cherry()
 // Vulture Aid
 //=========================================================================================================
 
-/*
+//Self is player
+player_watch_vulture()
+{
+	self send_message_to_csc("hud_anim_handler", "vulture_hud_on");
+	while( self HasPerk( level.VLT_PRK ) )	{
+		//wait
+		wait(0.1);
+	}
+
+	self send_message_to_csc("hud_anim_handler", "vulture_hud_off");
+}
+
+
 vulture_player_connect_callback()
 {
-	self thread end_game_turn_off_vulture_overlay();
-	self thread watch_vulture_shader_glow();
+	//self thread end_game_turn_off_vulture_overlay();
+	//self thread watch_vulture_shader_glow();
 }
 
 end_game_turn_off_vulture_overlay()
 {
 	self endon( "disconnect" );
 	level waittill( "end_game" );
-	self thread take_vulture_perk();
+	//self thread take_vulture_perk();
 }
 
-init_vulture()
+init_vulture_assets()
 {
 	PreCacheShader( "hud_vulture_aid_stink" );
 	PreCacheShader( "hud_vulture_aid_stink_outline" );
 	PreCacheModel( "p6_zm_perk_vulture_ammo" );
 	PreCacheModel( "p6_zm_perk_vulture_points" );
-	level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "sanchez/vulture/fx_zm_vulture_perk_stink" );
-	level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "sanchez/vulture/fx_zm_vulture_perk_stink_trail" );
-	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "sanchez/vulture/fx_zombie_powerup_vulture" );
-	level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
-	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "sanchez/vulture/vulture_wallgun_glow" );
-	level._effect[ "vulture_perk_machine_glow_doubletap" ] = LoadFX( "sanchez/vulture/vulture_dtap_glow" );
-	level._effect[ "vulture_perk_machine_glow_juggernog" ] = LoadFX( "sanchez/vulture/vulture_jugg_glow" );
-	level._effect[ "vulture_perk_machine_glow_revive" ] = LoadFX( "sanchez/vulture/vulture_revive_glow" );
-	level._effect[ "vulture_perk_machine_glow_speed" ] = LoadFX( "sanchez/vulture/vulture_speed_glow" );
-	level._effect[ "vulture_perk_machine_glow_marathon" ] = LoadFX( "sanchez/vulture/vulture_stamin_glow" );
-	level._effect[ "vulture_perk_machine_glow_mule_kick" ] = LoadFX( "sanchez/vulture/vulture_mule_glow" );
-	level._effect[ "vulture_perk_machine_glow_pack_a_punch" ] = LoadFX( "sanchez/vulture/vulture_pap_glow" );
-	level._effect[ "vulture_perk_machine_glow_vulture" ] = LoadFX( "sanchez/vulture/vulture_aid_glow" );
-	level._effect[ "vulture_perk_machine_glow_electric_cherry" ] = LoadFX( "sanchez/vulture/vulture_cherry_glow" );
-	level._effect[ "vulture_perk_machine_glow_phd_flopper" ] = LoadFX( "sanchez/vulture/vulture_phd_glow" );
-	level._effect[ "vulture_perk_machine_glow_whos_who" ] = LoadFX( "sanchez/vulture/vulture_whoswho_glow" );
-	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "sanchez/vulture/vulture_widows_glow" );
-	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "sanchez/vulture/vulture_deadshot_glow" );
-	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "sanchez/vulture/vulture_box_glow" );
-	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "sanchez/vulture/vulture_powerup_glow" );
-	level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "sanchez/vulture/fx_zombie_eye_vulture" );
+	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
+	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
+	//level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
+	//level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
+	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/fx_vulture_glow" );
+	level._effect[ "vulture_perk_machine_glow_doubletap" ] = LoadFX( "vulture/fx_vulture_double" );
+	level._effect[ "vulture_perk_machine_glow_juggernog" ] = LoadFX( "vulture/fx_vulture_jugg" );
+	level._effect[ "vulture_perk_machine_glow_revive" ] = LoadFX( "vulture/fx_vulture_revive" );
+	level._effect[ "vulture_perk_machine_glow_speed" ] = LoadFX( "vulture/fx_vulture_speed" );
+	level._effect[ "vulture_perk_machine_glow_marathon" ] = LoadFX( "vulture/fx_vulture_stamin" );
+	level._effect[ "vulture_perk_machine_glow_mule_kick" ] = LoadFX( "vulture/fx_vulture_mule" );
+	level._effect[ "vulture_perk_machine_glow_pack_a_punch" ] = LoadFX( "vulture/fx_vulture_pap" );
+	level._effect[ "vulture_perk_machine_glow_vulture" ] = LoadFX( "vulture/fx_vulture_vulture" );
+	level._effect[ "vulture_perk_machine_glow_electric_cherry" ] = LoadFX( "vulture/fx_vulture_cherry" );
+	level._effect[ "vulture_perk_machine_glow_phd_flopper" ] = LoadFX( "vulture/fx_vulture_phd" );
+	//level._effect[ "vulture_perk_machine_glow_whos_who" ] = LoadFX( "vulture/fx_vulture_whoswho" );
+	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/fx_vulture_widows_efx" );
+	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "vulture/fx_vulture_deadshot" );
+	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
+	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
+	level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
+
+}
+
+init_vulture()
+{
+	init_vulture_assets();
 	level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP = 12;
 	level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_STINK_FX = 13;
 	level._ZOMBIE_ACTOR_FLAG_VULTURE_STINK_TRAIL_FX = 3;
@@ -4262,28 +4280,334 @@ init_vulture()
 	level.perk_vulture.drop_slots_for_network = 0;
 	level.perk_vulture.last_stink_zombie_spawned = 0;
 	level.perk_vulture.use_exit_behavior = false;
-	maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
-	maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
-	level thread vulture_perk_watch_mystery_box();
-	level thread vulture_perk_watch_fire_sale();
-	level thread vulture_perk_watch_powerup_drops();
-	level.exit_level_func = ::vulture_zombies_find_exit_point;
-	level.perk_vulture.invalid_bonus_ammo_weapons = array( "time_bomb_zm", "time_bomb_detonator_zm" );
+	//maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
+	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
+	level thread vulture_perk_watch_waypoints();
+	//level thread vulture_perk_watch_mystery_box();
+	//level thread vulture_perk_watch_fire_sale();
+	//level thread vulture_perk_watch_powerup_drops();
+	//level.exit_level_func = ::vulture_zombies_find_exit_point;
+	//level.perk_vulture.invalid_bonus_ammo_weapons = array( "time_bomb_zm", "time_bomb_detonator_zm" );
 	if( !IsDefined( level.perk_vulture.func_zombies_find_valid_exit_locations ) )
 	{
-		level.perk_vulture.func_zombies_find_valid_exit_locations = ::get_valid_exit_points_for_zombie;
+		//level.perk_vulture.func_zombies_find_valid_exit_locations = ::get_valid_exit_points_for_zombie;
 	}
-	initialize_bonus_entity_pool();
-	initialize_stink_entity_pool();
-	level thread vulture_perk_watch_waypoints();
+	//initialize_bonus_entity_pool();
+	//initialize_stink_entity_pool();
 	
-
 	//self PlaySound( "zmb_vulture_drop_pickup_money" );
 	//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
 	//self PlaySound( "vulture_pickup" );
 	//self PlaySound( "vulture_money" );
 }
 
+
+/* Waypoints 
+// */
+
+
+
+	vulture_perk_watch_waypoints()
+	{
+		setup_perk_machine_fx();
+		flag_wait( "all_players_connected" );
+		wait 1;
+		structs = [];
+		weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
+		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "betty_purchase", "targetname" ) );
+		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "tazer_upgrade", "targetname" ) );
+		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "bowie_upgrade", "targetname" ) );
+		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "claymore_purchase", "targetname" ) );
+		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "sickle_upgrade", "targetname" ) );
+		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "spikemore_purchase", "targetname" ) );
+
+		for( i = 0; i < weapon_spawns.size; i ++ )
+		{
+			model = GetEnt( weapon_spawns[i].target, "targetname" );
+			struct = SpawnStruct();
+			struct.location = weapon_spawns[i] get_waypoint_origin( "wallgun" );
+			struct.check_perk = false;
+			struct.perk_to_check = undefined;
+			struct.is_revive = false;
+			struct.is_chest = false;
+			struct.chest_to_check = undefined;
+			struct.fx_var = "vulture_perk_wallbuy_static";
+			struct.ent_num = model GetEntityNumber();
+			structs[ structs.size ] = struct;
+		}
+		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+		for( i = 0; i < vending_triggers.size; i ++ )
+		{
+			perk = vending_triggers[i].script_noteworthy;
+			struct = SpawnStruct();
+			struct.location = vending_triggers[i] get_waypoint_origin( "perk" );
+			struct.check_perk = perk != "specialty_altmelee";
+			struct.perk_to_check = perk;
+			struct.is_revive = perk == "specialty_quickrevive";
+			struct.is_chest = false;
+			struct.chest_to_check = undefined;
+			struct.fx_var = level.perk_vulture.perk_machine_fx[ perk ];
+			struct.ent_num = vending_triggers[i] GetEntityNumber();
+			structs[ structs.size ] = struct;
+		}
+		vending_weapon_upgrade_trigger = GetEntArray( "zombie_vending_upgrade", "targetname" );
+		for( i = 0; i < vending_weapon_upgrade_trigger.size; i ++ )
+		{
+			struct = SpawnStruct();
+			struct.location = vending_weapon_upgrade_trigger[i] get_waypoint_origin( "packapunch" );
+			struct.check_perk = false;
+			struct.perk_to_check = "specialty_weapupgrade";
+			struct.is_revive = false;
+			struct.is_chest = false;
+			struct.chest_to_check = undefined;
+			struct.fx_var = "vulture_perk_machine_glow_pack_a_punch";
+			struct.ent_num = vending_weapon_upgrade_trigger[i] GetEntityNumber();
+			structs[ structs.size ] = struct;
+		}
+		chests = GetEntArray( "treasure_chest_use", "targetname" );
+		for( i = 0; i < chests.size; i ++ )
+		{
+			struct = SpawnStruct();
+			struct.location = chests[i] get_waypoint_origin( "mysterybox" );
+			struct.check_perk = false;
+			struct.perk_to_check = undefined;
+			struct.is_revive = false;
+			struct.is_chest = true;
+			struct.chest_to_check = chests[i];
+			struct.fx_var = "vulture_perk_mystery_box_glow";
+			struct.ent_num = chests[i] GetEntityNumber();
+			structs[ structs.size ] = struct;
+		}
+
+		level.perk_vulture.vulture_vision_fx_list = structs;
+		while( true )
+		{
+			for( i = 0; i < structs.size; i ++ )
+			{
+				struct = structs[i];
+				players = GetPlayers();
+				for( p = 0; p < players.size; p ++ )
+				{
+					player = players[p];
+					if( !player HasPerk( level.VLT_PRK) )
+						continue;
+
+					iprintln("Player has vulture");
+					num = player GetEntityNumber();
+					is_visible = check_waypoint_visible( player, struct );
+					if( !IsDefined( struct.player_visible ) ) {
+						struct.player_visible = [];
+					}
+					
+					if( is_visible )
+					{
+						if( !is_true( struct.player_visible[ num ] ) )
+						{
+							struct.player_visible[ num ] = true;
+							create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
+						}
+					}
+					else
+					{
+						if( is_true( struct.player_visible[ num ] ) )
+						{
+							struct.player_visible[ num ] = false;
+							destroy_loop_fx_to_player( player, struct.ent_num, true );
+						}
+					}
+				}
+			}
+			wait 0.5;
+		}
+	}
+
+				//Utility
+				create_loop_fx_to_player( player, identifier, fx_var, origin, angles )
+				{
+					str_origin = string( origin[0] ) + "|" + string( origin[1] ) + "|" + string( origin[2] );
+					str_angles = string( angles[0] ) + "|" + string( angles[1] ) + "|" + string( angles[2] );
+					str_clientstate = "fx|looping|start|" + identifier + "|" + fx_var + "|" + str_origin + "|" + str_angles;
+					self send_message_to_csc( "client_side_fx", str_clientstate );
+				}
+
+				destroy_loop_fx_to_player( player, identifier, delete_fx_immediately )
+				{
+					str_delete_fx_immediately = bool_to_string( delete_fx_immediately );
+					str_clientstate = "fx|looping|stop|" + identifier + "|" + str_delete_fx_immediately;
+					self send_message_to_csc( "client_side_fx", str_clientstate );
+				}
+
+	setup_perk_machine_fx()
+	{
+		register_perk_machine_fx( "specialty_armorvest", "vulture_perk_machine_glow_juggernog" );
+		register_perk_machine_fx( "specialty_fastreload", "vulture_perk_machine_glow_speed" );
+		register_perk_machine_fx( "specialty_rof", "vulture_perk_machine_glow_doubletap" );
+		register_perk_machine_fx( "specialty_quickrevive", "vulture_perk_machine_glow_revive" );
+		register_perk_machine_fx( "specialty_flakjacket", "vulture_perk_machine_glow_phd_flopper" );
+		register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
+		register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
+		register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
+		//register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_whos_who" );
+		register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
+		register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
+		register_perk_machine_fx( "specialty_bulletaccuracy", "vulture_perk_machine_glow_widows_wine" );
+	}
+
+	register_perk_machine_fx( str_perk, str_fx_reference )
+	{
+		if( !IsDefined( level.perk_vulture.perk_machine_fx ) )
+		{
+			level.perk_vulture.perk_machine_fx = [];
+		}
+		if( !IsDefined( level.perk_vulture.perk_machine_fx[ str_perk ] ) )
+		{
+			level.perk_vulture.perk_machine_fx[ str_perk ] = str_fx_reference;
+		}
+	}
+
+	get_waypoint_origin( type )
+	{
+		origin = self.origin;
+		angles = ( 0, 0, 0 );
+		switch( type )
+		{
+			case "mysterybox":
+				origin = get_mystery_box_origin( self );
+				break;
+
+			case "perk":
+				origin = get_perk_machine_origin( self );
+				break;
+
+			case "packapunch":
+				origin = get_pack_a_punch_origin( self );
+				break;
+		}
+		location = [];
+		location[ "origin" ] = origin;
+		location[ "angles" ] = angles;
+		return location;
+	}
+
+		get_mystery_box_origin( trigger )
+		{
+			forward = AnglesToForward( trigger.chest_box.angles + ( 0, 90, 0 ) );
+			origin = trigger.chest_box.origin + vector_scale( forward, 10 );
+			return origin + ( 0, 0, 30 );
+		}
+
+		get_perk_machine_origin( trigger )
+		{
+			machine = undefined;
+			machines = GetEntArray( trigger.target, "targetname" );
+			machines = get_array_of_closest( trigger.origin, machines );
+			for( i = 0; i < machines.size; i ++ )
+			{
+				if( !IsDefined( machines[i].script_noteworthy ) || machines[i].script_noteworthy != "clip" )
+				{
+					machine = machines[i];
+					break;
+				}
+			}
+			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
+			origin = machine.origin + vector_scale( forward, 10 );
+			return origin + ( 0, 0, 50 );
+		}
+
+		get_pack_a_punch_origin( trigger )
+		{
+			machine = GetEnt( trigger.target, "targetname" );
+			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
+			origin = machine.origin + vector_scale( forward, 20 );
+			return origin + ( 0, 0, 40 );
+		}
+
+	check_waypoint_visible( player, struct )
+	{
+		has_perk = false;
+		if( struct.check_perk && IsDefined( struct.perk_to_check ) )
+		{
+			has_perk = player HasPerk( struct.perk_to_check );
+		}
+		is_empty_boxlocation = false;
+		if( struct.is_chest && IsDefined( struct.chest_to_check ) )
+		{
+			is_empty_boxlocation = !is_true( struct.chest_to_check.vulture_waypoint_visible );
+		}
+		custom_map_check = false;
+		if( IsDefined( level.vulture_perk_custom_map_check ) )
+		{
+			custom_map_check = [[ level.vulture_perk_custom_map_check ]]( struct );
+		}
+		return !has_perk && !is_empty_boxlocation && !custom_map_check;
+	}
+
+// */
+
+/* Watch Drops 
+// /
+
+vulture_perk_watch_mystery_box()
+{
+	wait_network_frame();
+	while( IsDefined( level.chests ) && level.chests.size > 0 && IsDefined( level.chest_index ) )
+	{
+		level.chests[ level.chest_index ].vulture_waypoint_visible = true;
+		flag_wait( "moving_chest_now" );
+		level.chests[ level.chest_index ].vulture_waypoint_visible = false;
+		flag_waitopen( "moving_chest_now" );
+	}
+}
+
+vulture_perk_watch_fire_sale()
+{
+	wait_network_frame();
+	while( IsDefined( level.chests ) && level.chests.size > 0 )
+	{
+		level waittill( "powerup fire sale" );
+		for( i = 0; i < level.chests.size; i ++ )
+		{
+			if( i != level.chest_index )
+			{
+				level.chests[i].vulture_waypoint_visible = true;
+			}
+		}
+		level waittill( "fire_sale_off" );
+		for( i = 0; i < level.chests.size; i ++ )
+		{
+			if( i != level.chest_index )
+			{
+				level.chests[i].vulture_waypoint_visible = false;
+			}
+		}
+	}
+}
+
+vulture_perk_watch_powerup_drops()
+{
+	while( true )
+	{
+		level waittill( "powerup_dropped", m_powerup );
+		m_powerup thread _powerup_drop_think();
+	}
+}
+
+_powerup_drop_think()
+{
+	e_temp = Spawn( "script_model", self.origin );
+	e_temp SetModel( "tag_origin" );
+	e_temp SetClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP );
+	self waittill_any( "powerup_timedout", "powerup_grabbed", "death" );
+	e_temp ClearClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP );
+	wait_network_frame();
+	wait_network_frame();
+	wait_network_frame();
+	e_temp Delete();
+}
+
+*/
+
+/*
 give_vulture_perk()
 {
 	if( !IsDefined( self.perk_vulture ) )
@@ -5427,7 +5751,7 @@ vulture_perk_watch_waypoints()
 				}
 			}
 		}
-		wait 0.05;
+		wait 0.5;
 	}
 }
 

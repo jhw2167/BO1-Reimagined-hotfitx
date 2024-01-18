@@ -16,7 +16,6 @@ main_start()
 	// registerSystem("hud", ::hud);
 	registerSystem("client_systems", ::client_systems_message_handler);
 	register_client_system("hud_anim_handler", ::hud_message_handler);
-
 	//level thread notetrack_think();
 }
 
@@ -459,16 +458,17 @@ hud_message_handler(clientnum, state)
 	}
 	else 
 	{
-		iprintlnbold(" state 1: " + state);
-		s = handle_client_perk_hud_updates( state );
+		s = handle_client_perk_hud_updates( clientnum, state );
 	}
 
 	if( s != undefined ) 
 	{
+		/*
 		iprintlnbold(s.menu_name);
 		iprintlnbold(s.item_name);
 		iprintlnbold(s.fade_type);
 		iprintlnbold(s.fade_time);
+		*/
 
 		AnimateUI( clientnum, s.menu_name, s.item_name, s.fade_type, s.fade_time );
 		s delete();
@@ -478,22 +478,19 @@ hud_message_handler(clientnum, state)
 	AnimateUI(clientnum, menu_name, item_name, fade_type, fade_time);
 }
 
-handle_client_perk_hud_updates( state )
+handle_client_perk_hud_updates( clientnum, state )
 {
-	iprintlnbold(" state 2: ");
 	if( IsSubStr( state, "hud_mule_wep" ) ) {
 		return player_handle_mulekick_message( state );
 	}
 	else if( IsSubStr( state, "stamina_ghost" ) ) {
 		return player_handle_stamina_ghost( state );
+	} else if( IsSubStr( state, "vulture_hud" ) ) {
+		player_handle_vulture_hud( clientnum, state );
 	}
-	else {
-		return undefined;
-	}
-
+	
+	return undefined;
 }
-
-
 
 
 
@@ -540,8 +537,6 @@ player_handle_mulekick_message( state )
 		s.fade_type = "fadeout";
 	}
 
-	iprintlnbold(" state 3: ");
-	iprintlnbold(s);
 	return s;
 }
 
@@ -567,3 +562,14 @@ player_handle_stamina_ghost ( state )
 
 
 //Vulture
+
+player_handle_vulture_hud( clientnum, state )
+{
+	if(state == "vulture_hud_on") {
+		iprintlnbold("vulture_hud_on");
+		clientscripts\_zombiemode::vulture_toggle( clientnum, "1" );
+	}
+	else if(state == "vulture_hud_off") {
+		clientscripts\_zombiemode::vulture_toggle( clientnum, "0" );
+	}
+}

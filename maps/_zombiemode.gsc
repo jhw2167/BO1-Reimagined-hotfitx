@@ -48,7 +48,7 @@ main()
 	//Overrides
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=30;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -7414,6 +7414,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	*/
 
+	//TEST:
+	if( attacker HasPerk( level.VLT_PRK) )
+	{
+		str_perk = level.ARRAY_VALID_PERKS[ RandomInt( 0, level.ARRAY_VALID_PERKS.size - 1 ) ];	
+		iprintln("Testing fx: " + str_perk);
+		iprintln("Perk Defined: " + level.perk_vulture.perk_machine_fx[ str_perk ]);
+		PlayFX( level.perk_vulture.perk_machine_fx[ str_perk ], self.origin );
+	}
 	
 	
 	if(weapon == "ray_gun_zm" )
