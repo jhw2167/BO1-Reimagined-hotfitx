@@ -31,7 +31,7 @@ notetrack_think()
 	{
 		level waittill( "notetrack", localclientnum, note );
 
-		//iprintlnbold(note);
+		//iprintlnboldbold(note);
 	}
 }
 
@@ -400,6 +400,7 @@ hud_message_handler(clientnum, state)
 	fade_type = "";
 	fade_time = 0;
 
+	s = undefined;
 	if(state == "hud_zone_name_in")
 	{
 		menu_name = "zone_name";
@@ -456,37 +457,45 @@ hud_message_handler(clientnum, state)
 		fade_type = "fadeout";
 		fade_time = 1000;
 	}
-	else if(state == "hud_mule_wep_in")
+	else 
 	{
-		menu_name = "mule_wep_indicator";
-		item_name = "mule_wep_indicator_image";
-		fade_type = "fadein";
-		fade_time = 250;
+		iprintlnbold(" state 1: " + state);
+		s = handle_client_perk_hud_updates( state );
 	}
-	else if(state == "hud_mule_wep_out")
+
+	if( s != undefined ) 
 	{
-		menu_name = "mule_wep_indicator";
-		item_name = "mule_wep_indicator_image";
-		fade_type = "fadeout";
-		fade_time = 250;
-	}
-	else if(state == "stamina_ghost_start")
-	{
-		menu_name = "stamina_ghost_indicator";
-		item_name = "stamina_ghost_indicator_image";
-		fade_type = "fadein";
-		fade_time = 250;
-	}
-	else if(state == "stamina_ghost_end")
-	{
-		menu_name = "stamina_ghost_indicator";
-		item_name = "stamina_ghost_indicator_image";
-		fade_type = "fadeout";
-		fade_time = 250;
+		iprintlnbold(s.menu_name);
+		iprintlnbold(s.item_name);
+		iprintlnbold(s.fade_type);
+		iprintlnbold(s.fade_time);
+
+		AnimateUI( clientnum, s.menu_name, s.item_name, s.fade_type, s.fade_time );
+		s delete();
+		return;
 	}
 
 	AnimateUI(clientnum, menu_name, item_name, fade_type, fade_time);
 }
+
+handle_client_perk_hud_updates( state )
+{
+	iprintlnbold(" state 2: ");
+	if( IsSubStr( state, "hud_mule_wep" ) ) {
+		return player_handle_mulekick_message( state );
+	}
+	else if( IsSubStr( state, "stamina_ghost" ) ) {
+		return player_handle_stamina_ghost( state );
+	}
+	else {
+		return undefined;
+	}
+
+}
+
+
+
+
 
 // Infinate client systems
 register_client_system(name, func)
@@ -507,3 +516,54 @@ client_systems_message_handler(clientnum, state, oldState)
 	if(isdefined(level.client_systems) && isdefined(level.client_systems[name]))
 		level thread [[level.client_systems[name]]](clientnum, message);
 }
+
+
+
+/*
+
+HANDLE PERK CLIENT MESSAGES
+
+*/
+
+//Mulekick
+player_handle_mulekick_message( state )
+{ 
+	s = SpawnStruct();
+	s.menu_name = "mule_wep_indicator";
+	s.item_name = "mule_wep_indicator_image";
+	s.fade_time = 250;
+
+	if(state == "hud_mule_wep_in") {
+		s.fade_type = "fadein";
+	}
+	else if(state == "hud_mule_wep_out") {		
+		s.fade_type = "fadeout";
+	}
+
+	iprintlnbold(" state 3: ");
+	iprintlnbold(s);
+	return s;
+}
+
+//Stamina
+
+player_handle_stamina_ghost ( state )
+{
+
+	s = SpawnStruct();
+	s.menu_name = "stamina_ghost_indicator";
+	s.item_name = "stamina_ghost_indicator_image";
+	s.fade_time = 250;
+
+	if(state == "stamina_ghost_start") {
+		s.fade_type = "fadein";
+	}
+	else if(state == "stamina_ghost_end") {
+		s.fade_type = "fadeout";
+	}
+
+	return s;
+}
+
+
+//Vulture

@@ -75,9 +75,70 @@ main()
 	//clientscripts\_zombiemode_weap_tazer_knuckles::init();
 	//clientscripts\_zombiemode_weap_thundergun::init();
 	level thread init_local_player_count();
+	level thread init_level_vars();
 	level thread clientscripts\_zombiemode_ffotd::main_end();
 	
 	//iprintlnbold("FINISHED zombiemode init csc");
+}
+
+init_level_vars()
+{
+
+	level.JUG_PRK = "specialty_armorvest";
+	level.QRV_PRK = "specialty_quickrevive";
+	level.SPD_PRK = "specialty_fastreload";
+	level.DBT_PRK = "specialty_rof";
+	level.STM_PRK = "specialty_endurance";
+	level.PHD_PRK = "specialty_flakjacket";
+	level.DST_PRK = "specialty_deadshot";
+	level.MUL_PRK = "specialty_additionalprimaryweapon";
+	level.ECH_PRK = "specialty_bulletdamage";
+	level.VLT_PRK = "specialty_altmelee";
+	level.WWN_PRK = "specialty_bulletaccuracy";
+
+	//Reimagined-Expanded -- Pro Perk Vars
+	level.JUG_PRO = "specialty_armorvest_upgrade";
+	level.QRV_PRO = "specialty_quickrevive_upgrade";
+	level.SPD_PRO = "specialty_fastreload_upgrade";
+	level.DBT_PRO = "specialty_rof_upgrade";
+	level.STM_PRO = "specialty_endurance_upgrade";
+	level.PHD_PRO = "specialty_flakjacket_upgrade";
+	level.DST_PRO = "specialty_deadshot_upgrade";
+	level.MUL_PRO = "specialty_additionalprimaryweapon_upgrade";
+	level.ECH_PRO = "specialty_bulletdamage_upgrade";
+	level.VLT_PRO = "specialty_altmelee_upgrade";
+	level.WWN_PRO = "specialty_bulletaccuracy_upgrade";
+
+	//PERK CONSTANTS
+	level.ARRAY_VALID_PERKS = array(
+		level.JUG_PRK,
+		level.QRV_PRK,
+		level.SPD_PRK,
+		level.DBT_PRK,
+		level.STM_PRK,
+		level.PHD_PRK,
+		level.DST_PRK,
+		level.MUL_PRK,
+		level.ECH_PRK,
+		level.VLT_PRK,
+		level.WWN_PRK
+	 );
+	 // "specialty_extraammo", 			//babyjugg
+
+	level.ARRAY_VALID_PRO_PERKS = array(
+		level.QRV_PRO,
+		level.JUG_PRO,
+		level.SPD_PRO,
+		level.DBT_PRO,
+		level.STM_PRO,
+		level.PHD_PRO,
+		level.DST_PRO,
+		level.MUL_PRO,
+		level.ECH_PRO,
+		level.VLT_PRO,
+		level.WWN_PRO
+	);
+
 }
 
 init_local_player_count()

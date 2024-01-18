@@ -3761,7 +3761,7 @@ watch_stamina_upgrade(perk_str)
 		self setMoveSpeedScale( self.moveSpeed - 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
-		iprintln("zombie visionset" + level.zombie_visionset);
+		//iprintln("zombie visionset" + level.zombie_visionset);
 		if( IsDefined( level.zombie_visionset ) )
 			self VisionSetNaked( level.zombie_visionset, 0.5 );
 		else
@@ -4019,9 +4019,9 @@ player_watch_electric_cherry()
 
 		if( self hasProPerk( level.ECH_PRO) )
 		{
-			perk_radius *= level.VALUE_CHERRY_PRO_SCALAR;
-			perk_dmg *= level.VALUE_CHERRY_PRO_SCALAR;
-			max_enemies *= level.VALUE_CHERRY_PRO_SCALAR;
+			perk_radius = int( perk_radius * level.VALUE_CHERRY_PRO_SCALAR);
+			perk_dmg = int( perk_dmg * level.VALUE_CHERRY_PRO_SCALAR );
+			max_enemies = int( max_enemies * level.VALUE_CHERRY_PRO_SCALAR );
 		}
 
 		self thread electric_cherry_reload_fx( efx_range, perk_radius );
@@ -4282,15 +4282,6 @@ init_vulture()
 	//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
 	//self PlaySound( "vulture_pickup" );
 	//self PlaySound( "vulture_money" );
-}
-
-add_additional_stink_locations_for_zone( str_zone, a_zones )
-{
-	if( !IsDefined( level.perk_vulture.zones_for_extra_stink_locations ) )
-	{
-		level.perk_vulture.zones_for_extra_stink_locations = [];
-	}
-	level.perk_vulture.zones_for_extra_stink_locations[ str_zone ] = a_zones;
 }
 
 give_vulture_perk()
@@ -5450,7 +5441,7 @@ setup_perk_machine_fx()
 	register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
 	register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
 	register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
-	register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_whos_who" );
+	//register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_whos_who" );
 	register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
 	register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
 	register_perk_machine_fx( "specialty_bulletaccuracy", "vulture_perk_machine_glow_widows_wine" );
@@ -5612,4 +5603,4 @@ watch_vulture_shader_glow()
 	}
 }
 
-*/
+// */

@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -541,19 +541,20 @@ reimagined_init_level()
 	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
 	
 
-	//Perk Effects
+	//PERK CONSTANTS
+
 	level.ARRAY_VALID_PERKS = array(
-	 "specialty_armorvest",
-	 "specialty_quickrevive",
-	 "specialty_fastreload",
-	 "specialty_rof", 
-	 "specialty_endurance", 
-	 "specialty_flakjacket", 
-	 "specialty_deadshot", 
-	 "specialty_additionalprimaryweapon", 	//Mule
-	 "specialty_bulletdamage", 				//cherry
-	 "specialty_altmelee", 					//Vulture
-	 "specialty_bulletaccuracy"					//Widows wine
+		level.JUG_PRK,
+		level.QRV_PRK,
+		level.SPD_PRK,
+		level.DBT_PRK,
+		level.STM_PRK,
+		level.PHD_PRK,
+		level.DST_PRK,
+		level.MUL_PRK,
+		level.ECH_PRK,
+		level.VLT_PRK,
+		level.WWN_PRK
 	 );
 	 // "specialty_extraammo", 			//babyjugg
 
@@ -570,6 +571,19 @@ reimagined_init_level()
 		level.VLT_PRO,
 		level.WWN_PRO
 	);
+
+	//CSC Perk HUD Info
+	level.HUD_ANIM_BASE_STRING_MUL = "hud_mule_wep";
+	level.HUD_ANIM_BASE_STRING_STMPRO = "stamina_ghost";
+	level.HUD_ANIM_BASE_STRING_VLT = "vulture_hud";
+
+	//CSC Perk Action Info
+	//level.ARRAY_HUD_ANIM_BASE_STRINGS[ level.VLT_PRK ] = "minor_drop";
+
+	/*	####################
+			PERK EFFECTS
+		####################
+	*/		
 
 	//Stamina
 	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 2s to sprint and activate ghost
@@ -613,15 +627,15 @@ reimagined_init_level()
 
 	//Cherry
 	level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME = 2;
-	level.VALUE_CHERRY_SHOCK_RANGE = 196;
+	level.VALUE_CHERRY_SHOCK_RANGE = 160;
 	level.VALUE_CHERRY_SHOCK_DMG = 32768;	//2^15
 	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 4;
-	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 16;
+	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 24;
 	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
 	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
 
 	level.VALUE_CHERRY_PRO_DEFENSE_COOLDOWN = 12;	//cooldown for cherry defense
-	level.VALUE_CHERRY_PRO_SCALAR = 2;	//scales range, damage, max enemies by 2
+	level.VALUE_CHERRY_PRO_SCALAR = 16/10;	//scales range, damage, max enemies by ~2
 
 	//Vulture
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;
@@ -772,7 +786,7 @@ wait_set_player_visionset()
 		self give_pro_perks( true );
 	}
 
-	////iprintln( "wait_set_player_visionset done");
+	//iprintln( "wait_set_player_visionset done");
 }
 
 //Reimagined-Expanded -- get zombies in provided range
