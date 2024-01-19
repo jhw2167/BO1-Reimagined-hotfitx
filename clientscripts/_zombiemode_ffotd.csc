@@ -566,7 +566,6 @@ player_handle_stamina_ghost ( state )
 player_handle_vulture_hud( clientnum, state )
 {
 	if(state == "vulture_hud_on") {
-		iprintlnbold("vulture_hud_on");
 		clientscripts\_zombiemode::vulture_toggle( clientnum, "1" );
 	}
 	else if(state == "vulture_hud_off") {

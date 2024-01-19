@@ -581,6 +581,7 @@ player_downed_penalty()
 //
 set_player_score_hud( init )
 {
+	iprintln( "set_player_score_hud()" );
 	num = self.entity_num;
 
 	score_diff = self.score - self.old_score;
@@ -687,6 +688,7 @@ score_highlight( scoring_player, score, value )
 {
 	self endon( "disconnect" );
 
+	iprintln( "score_highlight()" );
 	// Location from hud.menu
 	score_x = -103;
 	score_y = -100;
@@ -732,7 +734,7 @@ score_highlight( scoring_player, score, value )
 		y -= 5;
 	}
 
-	time = 0.7;
+	time = 1.0;
 	half_time = time * 0.5;
 	quarter_time = time * 0.25;
 
@@ -783,14 +785,14 @@ score_highlight( scoring_player, score, value )
 
 	// Move the hud
 	hud MoveOverTime( time );
-	hud.x -= 40;
+	hud.x -= RandomIntRange(30,50);
 	if(value < 1)
 	{
 		hud.y += RandomIntRange(5,25);
 	}
 	else
 	{
-		hud.y -= 5;
+		hud.y -= RandomIntRange(-15,15);;
 	}
 
 	wait( half_time );

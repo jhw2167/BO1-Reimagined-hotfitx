@@ -1806,14 +1806,17 @@ vending_trigger_think()
 {
 	self endon("death");
 
-	if(self.script_noteworthy == "specialty_longersprint")
-	{
+	
+	if(self.script_noteworthy == "specialty_longersprint") {
 		self.script_noteworthy = "specialty_endurance";
 	}
 
 	//self thread turn_cola_off();
 	perk = self.script_noteworthy;
 	solo = false;
+	if(self.script_noteworthy == "specialty_longersprint")
+		perk = "specialty_endurance";
+	
 	////iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
 	if ( IsDefined(perk) && perk == "specialty_extraammo" )
@@ -4283,8 +4286,8 @@ init_vulture()
 	//maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
 	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
 	level thread vulture_perk_watch_waypoints();
-	//level thread vulture_perk_watch_mystery_box();
-	//level thread vulture_perk_watch_fire_sale();
+	level thread vulture_perk_watch_mystery_box();
+	level thread vulture_perk_watch_fire_sale();
 	//level thread vulture_perk_watch_powerup_drops();
 	//level.exit_level_func = ::vulture_zombies_find_exit_point;
 	//level.perk_vulture.invalid_bonus_ammo_weapons = array( "time_bomb_zm", "time_bomb_detonator_zm" );
@@ -4389,11 +4392,9 @@ init_vulture()
 				for( p = 0; p < players.size; p ++ )
 				{
 					player = players[p];
-					if( !player HasPerk( level.VLT_PRK) )
-						continue;
-
 					num = player GetEntityNumber();
-					is_visible = check_waypoint_visible( player, struct );
+					is_visible = check_waypoint_visible( player, struct ) && player HasPerk( level.VLT_PRK);
+
 					if( !IsDefined( struct.player_visible ) ) {
 						struct.player_visible = [];
 					}
@@ -4443,7 +4444,7 @@ init_vulture()
 		register_perk_machine_fx( "specialty_rof", "vulture_perk_machine_glow_doubletap" );
 		register_perk_machine_fx( "specialty_quickrevive", "vulture_perk_machine_glow_revive" );
 		register_perk_machine_fx( "specialty_flakjacket", "vulture_perk_machine_glow_phd_flopper" );
-		register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
+		register_perk_machine_fx( "specialty_endurance", "vulture_perk_machine_glow_marathon" );
 		register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
 		register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
 		//register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_whos_who" );
@@ -4544,7 +4545,7 @@ init_vulture()
 // */
 
 /* Watch Drops 
-// /
+// */
 
 vulture_perk_watch_mystery_box()
 {
@@ -4604,7 +4605,7 @@ _powerup_drop_think()
 	e_temp Delete();
 }
 
-*/
+// /
 
 /*
 give_vulture_perk()

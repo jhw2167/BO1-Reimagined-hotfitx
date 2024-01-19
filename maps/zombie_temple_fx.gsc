@@ -5,7 +5,7 @@ main()
 {
 	precache_util_fx();
 	precache_scripted_fx();
-	precache_createfx_fx();
+	//precache_createfx_fx();
 	precache_creek_fx();
 	precache_fx_prop_anims();
 	maps\createfx\zombie_temple_fx::main();
@@ -107,6 +107,7 @@ reset_water_burst_fx()
 }
 precache_createfx_fx()
 {
+	
 	level._effect["fx_water_temple_geyser_ready"]		  = loadfx("env/water/fx_water_temple_geyser_ready");	
 	//level._effect["fx_fire_md"]							          = loadfx("env/fire/fx_fire_md");	
 	//level._effect["fx_fire_sm"]							          = loadfx("env/fire/fx_fire_sm");

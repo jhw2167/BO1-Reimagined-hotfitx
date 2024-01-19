@@ -167,6 +167,7 @@ init_blocker_fx()
 
 init_riser_fx()
 {
+	/*
 	if( IsDefined( level.riser_fx_on_client ) && level.riser_fx_on_client )
 	{
 		if( IsDefined( level.use_new_riser_water ) && level.use_new_riser_water )
@@ -178,6 +179,7 @@ init_riser_fx()
 		level._effect[ "rise_burst" ] = LoadFX( "maps/zombie/fx_mp_zombie_hand_dirt_burst" );
 		level._effect[ "rise_billow" ] = LoadFX( "maps/zombie/fx_mp_zombie_body_dirt_billowing" );
 		level._effect[ "rise_dust" ] = LoadFX( "maps/zombie/fx_mp_zombie_body_dust_falling" );
+
 		if( IsDefined( level.riser_type ) && level.riser_type == "snow" )
 		{
 			level._effect[ "rise_burst_snow" ] = LoadFX( "maps/zombie/fx_mp_zombie_hand_snow_burst" );
@@ -185,6 +187,7 @@ init_riser_fx()
 			level._effect[ "rise_dust_snow" ] = LoadFX( "maps/zombie/fx_mp_zombie_body_snow_falling" );
 		}
 	}
+	*/
 }
 
 //=========================================================================================================

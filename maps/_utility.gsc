@@ -5860,14 +5860,10 @@ string( num )
 
 bool_to_string( bool )
 {
-	if( bool )
-	{
-		return( "true" ); 
+	if( bool ) {
+		return"true" ; 
 	}
-	else
-	{
-		return( "false" ); 
-	}
+	return "false" ; 
 }
 
 /* 

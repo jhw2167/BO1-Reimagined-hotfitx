@@ -767,7 +767,7 @@ reimagined_init_player()
 
 	self.previous_zomb_attacked_by=0;
 
-	////iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
+	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
 
 wait_set_player_visionset()
@@ -909,7 +909,7 @@ watch_player_hellfire()
 
 	watch_hellfire_trigger()
 	{
-		////iprintln("watch_hellfire_trigger");
+		//iprintln("watch_hellfire_trigger");
 		self endon("weapon_switch");
 		self endon("reload_start");
 
@@ -1058,8 +1058,8 @@ track_players_ammo_count()
 	        }
 
 			weap = players[i] getcurrentweapon();
-			////iprintln("current weapon: " + weap);
-			////iprintlnbold(weap);
+			//iprintln("current weapon: " + weap);
+			//iprintlnbold(weap);
 		
 			//Excludes all Perk based 'weapons' so that you don't get low ammo spam.
 			if( !isDefined(weap) ||
@@ -1085,7 +1085,7 @@ track_players_ammo_count()
 			{
 				continue;
 			}
-			////iprintln("checking ammo for " + weap);
+			//iprintln("checking ammo for " + weap);
 			if ( players[i] GetAmmoCount( weap ) > 5)
 			{
 				continue;
@@ -1940,6 +1940,7 @@ init_client_flags()
 
 init_fx()
 {
+	/*
 	level._effect["wood_chunk_destory"]	 		= LoadFX( "impacts/fx_large_woodhit" );
 	level._effect["fx_zombie_bar_break"]		= LoadFX( "maps/zombie/fx_zombie_bar_break" );
 	level._effect["fx_zombie_bar_break_lite"]	= LoadFX( "maps/zombie/fx_zombie_bar_break_lite" );
@@ -1966,7 +1967,8 @@ init_fx()
 	level._effect["fall_burst"]					= LoadFX("maps/zombie/fx_mp_zombie_hand_dirt_burst");
 	level._effect["fall_billow"]				= LoadFX("maps/zombie/fx_mp_zombie_body_dirt_billowing");
 	level._effect["fall_dust"]					= LoadFX("maps/zombie/fx_mp_zombie_body_dust_falling");
-
+	*/
+	
 	// Flamethrower
 	//level._effect["character_fire_pain_sm"]     = LoadFX( "env/fire/fx_fire_player_sm_1sec" );
 	level._effect["character_fire_death_sm"]    = LoadFX( "env/fire/fx_fire_player_md" );
@@ -2746,7 +2748,7 @@ Laststand_points_penalty()
 
 	//While player not revived, all players lose points
 	if( !isdefined( self.bleedout_time ) ) {
-		////iprintln("Player not bleeding out");
+		//iprintln("Player not bleeding out");
 		return;
 	}
 
@@ -3082,7 +3084,7 @@ player_out_of_playable_area_monitor()
 			if ( !isdefined( level.player_out_of_playable_area_monitor_callback ) || self [[level.player_out_of_playable_area_monitor_callback]]() )
 			{
 /#
-				////iprintlnbold( "out of playable" );
+				//iprintlnbold( "out of playable" );
 				if ( isdefined( self isinmovemode( "ufo", "noclip" ) ) || is_true( level.disable_kill_thread ) || GetDvarInt( "zombie_cheat" ) > 0 )
 				{
 					wait( get_player_out_of_playable_area_monitor_wait_time() );
@@ -3612,7 +3614,7 @@ failsafe_revive_give_back_weapons()
 
 		// he's not reviving anyone but he still has revive stuff up, clean it all up
 /#
-////iprintlnbold( "FAILSAFE CLEANING UP REVIVE HUD AND GUN" );
+//iprintlnbold( "FAILSAFE CLEANING UP REVIVE HUD AND GUN" );
 #/
 		// pass in "none" since we have no idea what the weapon they should be showing is
 		self maps\_laststand::revive_give_back_weapons( "none" );
@@ -4628,7 +4630,7 @@ round_spawning()
 	}
 #/
 
-	////iprintln( "Round " + level.round_number + " starting" );
+	//iprintln( "Round " + level.round_number + " starting" );
 	ai_calculate_health( level.round_number );
 
 	//CODER MOD: TOMMY K
@@ -5389,7 +5391,7 @@ play_door_dialog()
 				players[i] maps\_zombiemode_audio::create_and_play_dialog( "general", "door_deny" );
 				wait(3);
 				self notify ("warning_dialog");
-				////iprintlnbold("warning_given");
+				//iprintlnbold("warning_given");
 			}
 		}
 	}
@@ -5855,6 +5857,7 @@ pre_round_think()
 		//Give all players 1000 points per round
 		players = GetPlayers();
 		for(i=0;i<players.size;i++) {
+			iprintln("Giving points: " + i);
 			players[i] maps\_zombiemode_score::add_to_player_score( level.starting_round * 1000);
 		}
 	}
@@ -5863,15 +5866,15 @@ pre_round_think()
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 
 	/*					*/
-	////iprintln("Apocalypse is: "+ level.apocalypse);
-	////iprintln("Alt Bosses is: "+ level.alt_bosses);
-	////iprintln("Expensive Perks is: "+ level.expensive_perks);
-	////iprintln("Tough Zombies is: "+ level.tough_zombies);
-	////iprintln("Zombie Types is: "+ level.types);
-	////iprintln("No Perks is: "+ level.total_perks);
-	////iprintln("BO2 Perks is: "+ level.bo2_perks);
-	////iprintln("Extra Drops is: "+ level.extra_drops);
-	////iprintln("No Bosses is: "+ level.no_bosses);
+	//iprintln("Apocalypse is: "+ level.apocalypse);
+	//iprintln("Alt Bosses is: "+ level.alt_bosses);
+	//iprintln("Expensive Perks is: "+ level.expensive_perks);
+	//iprintln("Tough Zombies is: "+ level.tough_zombies);
+	//iprintln("Zombie Types is: "+ level.types);
+	//iprintln("No Perks is: "+ level.total_perks);
+	//iprintln("BO2 Perks is: "+ level.bo2_perks);
+	//iprintln("Extra Drops is: "+ level.extra_drops);
+	//iprintln("No Bosses is: "+ level.no_bosses);
 	// */
 }
 
@@ -5912,7 +5915,7 @@ round_think()
 		
 		//Reimagined-Expanded
 		//continually delays round start until turned off
-		////iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
+		//iprintln("DVAR zomb_puase is: "+ GetDvar("zombie_pause"));
 		//also in moon think function
 		check_zombie_pause();
 		
@@ -6045,7 +6048,7 @@ ai_calculate_health( round_number )
 		if(i == exp_scale_rounds)	
 			rTenfactor=1;
 		health += ( base * rTenfactor * ( i/logFactor ) );
-		////iprintln(health);	
+		//iprintln(health);	
 	}
 
 	//Player zombie health multiplier
@@ -6064,7 +6067,7 @@ ai_calculate_health( round_number )
 	}
 	
 	//PRINT
-	////iprintln("Current health:  " + health);
+	//iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
 }
 
@@ -6221,7 +6224,7 @@ round_wait()
 		if( !IsDefined( level.sound_num ) )
 			level.sound_num = 0;
 
-		////iprintln("Siren sound" + level.sound_num);
+		//iprintln("Siren sound" + level.sound_num);
 	   	thread play_sound_2d( "amb_alarm_radar_station" );
 		//thread play_sound_2d( "zmb_defcon_alarm" );
 		//thread play_sound_2d( "nomans_warning" );
@@ -6910,7 +6913,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 
 	players = get_players();
 
-	////iprintln("health: " + self.health);
+	//iprintln("health: " + self.health);
 
 	//Reimagined-Expanded
 	//Raygun doesnt damage players anymore
@@ -6937,11 +6940,11 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		finalDamage = 75;
 	}
 
-	////iprintln("i: " + iDamage);
-	////iprintln("final: " + finalDamage);
+	//iprintln("i: " + iDamage);
+	//iprintln("final: " + finalDamage);
 
-	////iprintln(sMeansOfDeath);
-	////iprintln(finalDamage);
+	//iprintln(sMeansOfDeath);
+	//iprintln(finalDamage);
 
 	if( iDamage < self.health )
 	{
@@ -7165,7 +7168,7 @@ zombie_knockdown( wait_anim, upgraded )
 //		MUST return the value of the damage override
 //
 
-
+//damage function
 actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
 {
 	// WW (8/14/10) - define the owner of the monkey shot
@@ -7175,8 +7178,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 	
 	//Reimagined-Expanded-print
-	////iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
-	////iprintln("Mode type is: " + meansofdeath);
+	//iprintln( "***HIT :  Zombie health: "+self.health+",  dam:"+damage+", weapon:"+ weapon );
+	//iprintln("Mode type is: " + meansofdeath);
 
 	// Raven - snigl - Record what the blow gun hit
 	if( GetSubStr(weapon, 0, 8 ) == "blow_gun" && meansofdeath == "MOD_IMPACT" )
@@ -7230,21 +7233,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( meansofdeath == "" )
 		return damage;
 
-	////iprintln( meansofdeath );
-	////iprintln( "Anim name: " + self.animname );
+	//iprintln( meansofdeath );
+	//iprintln( "Anim name: " + self.animname );
 	old_damage = damage;
 	final_damage = damage;
 
 	if ( IsDefined( self.actor_damage_func ) )
 	{
 		final_damage = [[ self.actor_damage_func ]]( weapon, old_damage, attacker );
-		////iprintln( "Custom damage function: " + final_damage );
+		//iprintln( "Custom damage function: " + final_damage );
 	}
 
 	if ( IsDefined( self.actor_full_damage_func ) )
 	{
 		final_damage = [[ self.actor_full_damage_func ]]( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime );
-		////iprintln( " Full Custom damage function: " + final_damage );
+		//iprintln( " Full Custom damage function: " + final_damage );
 	}
 
 	// debug
@@ -7299,67 +7302,59 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	if(meansofdeath == "MOD_MELEE")
 	{
-		final_damage -= final_damage % 50; // fix for melee weapons doing 1-4 extra damage
+
+		final_damage = 200;	//base damage
 		
-		if(is_boss_zombie(self.animname) || !IsDefined(weapon)) {
-			return 200;
-		} else if( self.animname != "zombie") {
+		undefined_weapon = !IsDefined(weapon);
+		boss_zombie = is_boss_zombie(self.animname);
+
+		if(  undefined_weapon ) 
 			return final_damage;
-			//TO DO: add support for dogs and crawlers
-		} else if(IsDefined(weapon) && weapon == "knife_zm") 
-		{
-
-			//Reimagined-Expanded Push Zombies down with Knife
-			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
-			if( final_damage >= self.health ) {
-				return int( final_damage );
-			} else
-			{
-				self thread zombie_knockdown( wait_anim, false );
-				return int( final_damage );
-			}
-			
-		} else if ( IsDefined(weapon) && weapon == "upgraded_knife_zm" )
-		{
-			//not developed
-			self [[ self.thundergun_fling_func ]]( attacker );
-		}
 		
-		if( IsDefined(weapon) && weapon == "combat_knife_zm" && !is_boss_zombie(self.animname)) 
-		{
-			damage = int(self.maxhealth / level.round_number) + 100;
-			factor = 4;
-			if( level.round_number < 10 )
-				factor = 2;
-			else if( level.round_number < 15 )
-				factor = 5;
-
-			final_damage = int(self.maxhealth / factor ) + 10;
-			if(damage < final_damage)
-				return final_damage;
-			else
-				return damage;
-		}
-
 		hasUgradedKnife = ( attacker HasWeapon("bowie_knife_zm") ||
 							attacker HasWeapon("combat_bowie_knife_zm") ||
 							attacker HasWeapon("sickle_knife_zm") ||
 							attacker HasWeapon("combat_sickle_knife_zm") );
 		
 		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );
-		//if weapon is sickle or bowie	    && !is_boss_zombie(self.animname)
-		if( ( weapon == "combat_bowie_knife_zm" || weapon == "combat_sickle_knife_zm" || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
+
+		if( boss_zombie ) {
+			//skip pre processing for punch
+		}
+		else if( weapon == "knife_zm" ) 		//knife punch!
+		{
+			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
+			if( final_damage < self.health )
+				self thread zombie_knockdown( wait_anim, false );
+
+		}
+		else if ( weapon == "upgraded_knife_zm" ) //upgraded knife/punch
+		{
+			self [[ self.thundergun_fling_func ]]( attacker );
+		}
+		else if( weapon == "combat_knife_zm" ) //Reimagined, knife held as independent weapo
+		{
+
+			damage = int(self.maxhealth / level.round_number) + 100;
+			factor = 4;
+			if( level.round_number < 6 )
+				factor = 2;
+			
+			final_damage = int(self.maxhealth / factor ) + 10;
+			if(damage > final_damage)
+				final_damage = damage;
+
+		}
+		else if( ( weapon == "combat_bowie_knife_zm" || weapon == "combat_sickle_knife_zm" || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
 		{
 			final_damage = int(self.maxhealth / 3) + 10;
 			if( level.round_number < 12)
 				final_damage = int( self.maxhealth ) + 100;
-			else
-				final_damage = final_damage;
 		}
 
 		base_knife_damage = final_damage;
 
-
+		//Bonus for ballistic knife
 		if( isSubStr(weapon, "ballistic") )
 		{
 			
@@ -7390,23 +7385,26 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= 2;
 		}
 
+		if( (final_damage > self.health) && self HasPerk( level.VLT_PRK ) )
+			attacker thread maps\_zombiemode_score::add_to_player_score( level.VALUE_VULTURE_BONUS_MELEE_POINTS );
+
 		return final_damage;
 	}
 
 	//ORIGIN_
-	////iprintln("Origin: " + attacker.origin );
+	//iprintln("Origin: " + attacker.origin );
 	/*
-	////iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
-	////iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
-	////iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
-	////iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DBT_PRO));
-	////iprintln("Testing has Upp STM: " + attacker hasProPerk(level.STM_PRO));
-	////iprintln("Testing has Upp PHD: " + attacker hasProPerk(level.PHD_PRO));
-	////iprintln("Testing has Upp DST: " + attacker hasProPerk(level.DST_PRO));
-	////iprintln("Testing has Upp MUL: " + attacker hasProPerk(level.MUL_PRO));
-	////iprintln("Testing has Upp ECH: " + attacker hasProPerk(level.ECH_PRO));
-	////iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
-	////iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO)); 
+	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
+	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
+	//iprintln("Testing has Upp SPD: " + attacker hasProPerk(level.SPD_PRO));
+	//iprintln("Testing has Upp DTP: " + attacker hasProPerk(level.DBT_PRO));
+	//iprintln("Testing has Upp STM: " + attacker hasProPerk(level.STM_PRO));
+	//iprintln("Testing has Upp PHD: " + attacker hasProPerk(level.PHD_PRO));
+	//iprintln("Testing has Upp DST: " + attacker hasProPerk(level.DST_PRO));
+	//iprintln("Testing has Upp MUL: " + attacker hasProPerk(level.MUL_PRO));
+	//iprintln("Testing has Upp ECH: " + attacker hasProPerk(level.ECH_PRO));
+	//iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
+	//iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO)); 
 
 	iprintln("BA: " + attacker HasPerk("specialty_bulletaccuracy"));
 	iprintln("SA: " + attacker HasPerk("specialty_bulletaccuracy"));
@@ -7794,7 +7792,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 17500 * ( damage / 300);
 			break;
 		default:
-			////iprintln("default case for damage weapons");
+			//iprintln("default case for damage weapons");
 			break;
 			
 		}
@@ -8071,7 +8069,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = int(final_damage * 2);
 		}
 
-		////iprintln( "Final dmg after main perks: " + final_damage );
+		//iprintln( "Final dmg after main perks: " + final_damage );
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
 		if( attacker hasProPerk(level.DST_PRO) ) //&& WeaponClass(weapon) != "spread" ) 
@@ -8127,7 +8125,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args );
 
 		} else {
-			////iprintln("Marked: " + dbt_marked);
+			//iprintln("Marked: " + dbt_marked);
 			self.dbtap_marked = -1;
 		}
 
@@ -8178,11 +8176,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//	
 
 
-	////iprintln( "Final dmg for bullet guns: " + final_damage );
+	//iprintln( "Final dmg for bullet guns: " + final_damage );
 	
 	
-	////iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
-	////iprintln( "Mod 10: " + ((attacker GetWeaponAmmoStock(weapon)) % 10) );
+	//iprintln( "Get weaon ammo: " + (attacker GetWeaponAmmoClip(weapon)) );
+	//iprintln( "Mod 10: " + ((attacker GetWeaponAmmoStock(weapon)) % 10) );
 
 	//Classic Special Damage Multipliers (perks and conditions)
 	if(weapon == "molotov_zm")
@@ -8346,7 +8344,7 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 		self [[ self.actor_killed_override ]]( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime );
 	}
 
-	////iprintln(sWeapon);
+	//iprintln(sWeapon);
 
 }
 
