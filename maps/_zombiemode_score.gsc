@@ -581,7 +581,6 @@ player_downed_penalty()
 //
 set_player_score_hud( init )
 {
-	iprintln( "set_player_score_hud()" );
 	num = self.entity_num;
 
 	score_diff = self.score - self.old_score;
@@ -688,7 +687,6 @@ score_highlight( scoring_player, score, value )
 {
 	self endon( "disconnect" );
 
-	iprintln( "score_highlight()" );
 	// Location from hud.menu
 	score_x = -103;
 	score_y = -100;
@@ -751,7 +749,7 @@ score_highlight( scoring_player, score, value )
 	else if(IsDefined(self.positive_points_hud) && IsDefined(self.positive_points_hud[player_num]))
 	{
 		value = self.positive_points_hud_value[player_num];
-		//self.positive_points_hud[player_num] Destroy();
+		self.positive_points_hud[player_num] Destroy();
 	}
 
 	hud = self create_highlight_hud( x, y, value );
