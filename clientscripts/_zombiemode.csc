@@ -66,9 +66,9 @@ init_perk_fx()
 	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
 	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
 	
-	/*
-	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
-	level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
+	
+	//level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
+	//level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
 	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/fx_vulture_glow" );
 	level._effect[ "vulture_perk_machine_glow_doubletap" ] = LoadFX( "vulture/fx_vulture_double" );
 	level._effect[ "vulture_perk_machine_glow_juggernog" ] = LoadFX( "vulture/fx_vulture_jugg" );
@@ -84,12 +84,13 @@ init_perk_fx()
 	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/fx_vulture_widow" );
 	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "vulture/fx_vulture_deadshot" );
 	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
-	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
-	level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
+	
+	//level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
+	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
 	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
 	//level._effect[ "widows_wine_wrap" ] = LoadFX( "widows_wine/fx_widows_wine_zombie" );
 	//level._effect[ "widows_wine_exp_1p" ] = LoadFX( "widows_wine/fx_widows_wine_explode" );
-	*/
+	
 }
 
 init_level_vars()

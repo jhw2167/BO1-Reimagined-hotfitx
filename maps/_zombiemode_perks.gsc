@@ -4242,7 +4242,7 @@ end_game_turn_off_vulture_overlay()
 }
 
 init_vulture_assets()
-{	/*
+{	
 	PreCacheShader( "hud_vulture_aid_stink" );
 	PreCacheShader( "hud_vulture_aid_stink_outline" );
 	PreCacheModel( "bo2_p6_zm_perk_vulture_ammo" );
@@ -4266,9 +4266,9 @@ init_vulture_assets()
 	level._effect[ "vulture_perk_machine_glow_widows_wine" ] = LoadFX( "vulture/fx_vulture_widow" );
 	level._effect[ "vulture_perk_machine_glow_deadshot" ] = LoadFX( "vulture/fx_vulture_deadshot" );
 	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
-	level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
-	level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
-	*/
+	//level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
+	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
+	
 }
 
 init_vulture()
