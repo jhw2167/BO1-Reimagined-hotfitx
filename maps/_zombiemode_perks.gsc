@@ -4074,7 +4074,7 @@ player_watch_electric_cherry()
 		//Reload fx 
 		electric_cherry_reload_fx( range, perk_radius ) 
 		{
-			//self PlaySound( "cherry_explode" );	//"Explode" sound file
+			//self PlaySound( "cherry_explode" );	//"Explode" sound file, unused
 			self PlaySound( "zmb_cherry_explode" );
 		
 			//Nested for loop to create a 2x2 grid of fx
@@ -4287,13 +4287,7 @@ init_vulture()
 	level thread vulture_perk_watch_mystery_box();
 	level thread vulture_perk_watch_fire_sale();
 	//level thread vulture_perk_watch_powerup_drops(); /handled with zombies
-	
-	
-	//self PlaySound( "zmb_vulture_drop_pickup_money" );
-	//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
-	//self PlaySound( "vulture_pickup" );
-	//self PlaySound( "vulture_money" );
-	
+		
 }
 
 
@@ -4650,6 +4644,7 @@ zombie_watch_vulture_drop_bonus()
 		}
 		
 
+		waittill_all
 		drop waittill_any_or_timeout( level.VALUE_VULTURE_BONUS_DROP_TIME, "powerup_grabbed");
 		PlayFxOnTag( level._effect["powerup_grabbed_wave_solo"] , drop, "tag_origin" );
 		drop notify( "vulture_drop_done" );
@@ -4701,6 +4696,11 @@ zombie_watch_vulture_drop_bonus()
 					self SetWeaponAmmoStock( str_weapon_current, n_ammo_count_current + n_ammo_refunded );
 				}
 				self PlaySoundToPlayer( "zmb_vulture_drop_pickup_ammo", self );
+
+					//self PlaySound( "zmb_vulture_drop_pickup_money" );
+					//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
+					//self PlaySound( "vulture_pickup" );
+					//self PlaySound( "vulture_money" );
 			}
 		}
 
