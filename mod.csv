@@ -1,6 +1,7 @@
 
-//vision
+//misc
 rawfile,vision/zombie_blood.vision
+rawfile,shock/zombie_death.shock
 
 //ANIMSCRIPTS
 rawfile,animscripts/zombie_melee.gsc
@@ -173,24 +174,7 @@ fx,electric_cherry/fx_electric_cherry_shock
 fx,electric_cherry/fx_electric_cherry_shock_large
 
 
-//Vulture fx
-fx,vulture/fx_vulture_box
-fx,vulture/fx_vulture_cherry
-fx,vulture/fx_vulture_deadshot
-fx,vulture/fx_vulture_double
-fx,vulture/fx_vulture_glow
-fx,vulture/fx_vulture_jugg
-fx,vulture/fx_vulture_mule
-fx,vulture/fx_vulture_pap
-fx,vulture/fx_vulture_phd
-fx,vulture/fx_vulture_revive
-fx,vulture/fx_vulture_speed
-fx,vulture/fx_vulture_stamin
-fx,vulture/fx_vulture_vulture
-fx,vulture/fx_vulture_widow
-//fx,vulture/fx_vulture_powerup
-//fx,vulture/fx_vulture_rifle
-//fx,vulture/fx_vulture_skull
+
 
 
 //MATERIALS

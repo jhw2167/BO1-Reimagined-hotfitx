@@ -639,8 +639,13 @@ reimagined_init_level()
 
 	//Vulture
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;
-	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.15;
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 0.15;
+	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.025;
+	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
+
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 100;			//1-1000, 2.5% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
+	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 20;				//10 seconds
+	//level.count_vulture_fx_drops_round								//See pre-round
 
 
 	//Wine
@@ -5100,8 +5105,15 @@ round_pause( delay )
 	
 }
 
+//Reimagied-pre-round
 reimagined_expanded_round_start()
 {
+
+	//Reimagined-Expanded: Set per round variables
+	level.total_drops_round = 0;
+	level.count_vulture_fx_drops_round = 0;
+
+
 	if( level.tough_zombies )
 	{
 		if( level.round_number < 4 )
@@ -5187,8 +5199,6 @@ reimagined_expanded_round_start()
 			
 		
 	}
-
-	level.total_drops_round = 0;
 
 	//Increase max perks every 5 rounds after 15
 		if( level.round_number > 14 && level.round_number % 5 == 0 ){

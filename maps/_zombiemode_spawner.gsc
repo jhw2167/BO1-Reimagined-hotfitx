@@ -272,6 +272,9 @@ zombie_spawn_init( animname_set )
 		&& is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
 		)
 			self thread zombie_wait_determine_drop();
+
+		if( level.zombiemode_using_vulture_perk )
+			self thread maps\_zombiemode_perks::zombie_watch_vulture_drop_bonus();
 	}
 
 	if(IsDefined(level._zombie_custom_spawn_logic))

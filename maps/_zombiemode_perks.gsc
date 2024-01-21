@@ -3168,6 +3168,7 @@ perk_give_bottle_begin( perk )
 	return gun;
 }
 
+// UPGRADE PERK powerup_solo
 upgrade_perk_fx()
 {
 	weap = self GetCurrentWeapon();
@@ -3973,12 +3974,6 @@ player_watch_electric_cherry()
 
 }
 
-	/*
-		1. Player visual and sound efx in world
-		2. Gather closest zombies
-			- Damage and range based off reload ammo fraction
-		3. return
-	// */
 	electric_cherry_reload_attack( sequence, weapon )
 	{
 		self endon( "death" );
@@ -4215,6 +4210,7 @@ player_watch_electric_cherry()
 // Vulture Aid
 //=========================================================================================================
 
+
 //Self is player
 player_watch_vulture()
 {
@@ -4243,10 +4239,11 @@ end_game_turn_off_vulture_overlay()
 
 init_vulture_assets()
 {	
-	PreCacheShader( "hud_vulture_aid_stink" );
-	PreCacheShader( "hud_vulture_aid_stink_outline" );
 	PreCacheModel( "bo2_p6_zm_perk_vulture_ammo" );
 	PreCacheModel( "bo2_p6_zm_perk_vulture_points" );
+	/*
+	PreCacheShader( "hud_vulture_aid_stink" );
+	PreCacheShader( "hud_vulture_aid_stink_outline" );
 	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
 	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
 	//level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
@@ -4268,6 +4265,7 @@ init_vulture_assets()
 	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
 	//level._effect[ "vulture_perk_powerup_drop" ] = LoadFX( "vulture/fx_vulture_powerup" );
 	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
+	*/
 	
 }
 
@@ -4288,20 +4286,14 @@ init_vulture()
 	level thread vulture_perk_watch_waypoints();
 	level thread vulture_perk_watch_mystery_box();
 	level thread vulture_perk_watch_fire_sale();
-	//level thread vulture_perk_watch_powerup_drops();
-	//level.exit_level_func = ::vulture_zombies_find_exit_point;
-	//level.perk_vulture.invalid_bonus_ammo_weapons = array( "time_bomb_zm", "time_bomb_detonator_zm" );
-	if( !IsDefined( level.perk_vulture.func_zombies_find_valid_exit_locations ) )
-	{
-		//level.perk_vulture.func_zombies_find_valid_exit_locations = ::get_valid_exit_points_for_zombie;
-	}
-	//initialize_bonus_entity_pool();
-	//initialize_stink_entity_pool();
+	//level thread vulture_perk_watch_powerup_drops(); /handled with zombies
+	
 	
 	//self PlaySound( "zmb_vulture_drop_pickup_money" );
 	//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
 	//self PlaySound( "vulture_pickup" );
 	//self PlaySound( "vulture_money" );
+	
 }
 
 
@@ -4437,6 +4429,8 @@ init_vulture()
 					self send_message_to_csc( "client_side_fx", str_clientstate );
 				}
 
+
+
 	setup_perk_machine_fx()
 	{
 		register_perk_machine_fx( "specialty_armorvest", "vulture_perk_machine_glow_juggernog" );
@@ -4542,1389 +4536,179 @@ init_vulture()
 		return !has_perk && !is_empty_boxlocation && !custom_map_check;
 	}
 
-// */
+
+vulture_perk_watch_mystery_box()
+{
+	wait_network_frame();
+	while( IsDefined( level.chests ) && level.chests.size > 0 && IsDefined( level.chest_index ) )
+	{
+		level.chests[ level.chest_index ].vulture_waypoint_visible = true;
+		flag_wait( "moving_chest_now" );
+		level.chests[ level.chest_index ].vulture_waypoint_visible = false;
+		flag_waitopen( "moving_chest_now" );
+	}
+}
+
+vulture_perk_watch_fire_sale()
+{
+	wait_network_frame();
+	while( IsDefined( level.chests ) && level.chests.size > 0 )
+	{
+		level waittill( "powerup fire sale" );
+		for( i = 0; i < level.chests.size; i ++ )
+		{
+			if( i != level.chest_index )
+			{
+				level.chests[i].vulture_waypoint_visible = true;
+			}
+		}
+		level waittill( "fire_sale_off" );
+		for( i = 0; i < level.chests.size; i ++ )
+		{
+			if( i != level.chest_index )
+			{
+				level.chests[i].vulture_waypoint_visible = false;
+			}
+		}
+	}
+}
+
 
 /* Watch Drops 
 // */
 
-vulture_perk_watch_mystery_box()
+zombie_watch_vulture_drop_bonus()
 {
-	wait_network_frame();
-	while( IsDefined( level.chests ) && level.chests.size > 0 && IsDefined( level.chest_index ) )
-	{
-		level.chests[ level.chest_index ].vulture_waypoint_visible = true;
-		flag_wait( "moving_chest_now" );
-		level.chests[ level.chest_index ].vulture_waypoint_visible = false;
-		flag_waitopen( "moving_chest_now" );
-	}
+	self waittill("death");
+
+	//Expected drop rate is 1 green drop, 0.5 red drop, 0.5 blue drop per round, normalized by zombie total
+	rand = randomint(1000);	//Normalized to 1000, don't want to to deal with decimals
+
+	scaler = count_total_vulture_players();
+	ammo_rate = Int( ( level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE * scaler ) );
+	//blue_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
+	//red_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
+
+	//Apocalypse or extra drops
+	//iprintln("rand: " + rand + " ammo_rate: " + ammo_rate);
+	if( rand < ammo_rate )
+		level thread zombie_vulture_handle_drop( "bo2_p6_zm_perk_vulture_ammo", self.origin );
+
 }
 
-vulture_perk_watch_fire_sale()
-{
-	wait_network_frame();
-	while( IsDefined( level.chests ) && level.chests.size > 0 )
+
+	count_total_vulture_players()
 	{
-		level waittill( "powerup fire sale" );
-		for( i = 0; i < level.chests.size; i ++ )
+		total = 0;
+		players = GetPlayers();
+		for( i = 0; i < players.size; i++ )
 		{
-			if( i != level.chest_index )
-			{
-				level.chests[i].vulture_waypoint_visible = true;
+			if( players[i] HasPerk( level.VLT_PRK ) )
+				total++;
+		}
+
+		return total;
+	}
+
+	zombie_vulture_handle_drop( str_drop, origin )
+	{
+		delay = randomint( level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME );
+
+		wait(delay);
+
+		drop = Spawn( "script_model", origin + (0,0,40) );
+		drop SetModel( str_drop );
+		drop Show();
+
+		playable_area = getentarray("player_volume","script_noteworthy");
+		valid_drop = false;
+		for (i = 0; i < playable_area.size; i++)
+		{
+			if (drop IsTouching(playable_area[i])) {
+				valid_drop = true;
+				break;
 			}
 		}
-		level waittill( "fire_sale_off" );
-		for( i = 0; i < level.chests.size; i ++ )
+			
+		if(!valid_drop)
 		{
-			if( i != level.chest_index )
-			{
-				level.chests[i].vulture_waypoint_visible = false;
-			}
-		}
-	}
-}
-
-vulture_perk_watch_powerup_drops()
-{
-	while( true )
-	{
-		level waittill( "powerup_dropped", m_powerup );
-		m_powerup thread _powerup_drop_think();
-	}
-}
-
-_powerup_drop_think()
-{
-	e_temp = Spawn( "script_model", self.origin );
-	e_temp SetModel( "tag_origin" );
-	e_temp SetClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP );
-	self waittill_any( "powerup_timedout", "powerup_grabbed", "death" );
-	e_temp ClearClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP );
-	wait_network_frame();
-	wait_network_frame();
-	wait_network_frame();
-	e_temp Delete();
-}
-
-// /
-
-/*
-give_vulture_perk()
-{
-	if( !IsDefined( self.perk_vulture ) )
-	{
-		self.perk_vulture = SpawnStruct();
-	}
-	self.perk_vulture.active = true;
-	setClientSysState( "levelNotify", "vulture_active_1", self );
-	self thread _vulture_perk_think();
-}
-
-take_vulture_perk()
-{
-	if( IsDefined( self.perk_vulture ) && is_true( self.perk_vulture.active ) )
-	{
-		self.perk_vulture.active = false;
-		if( !self maps\_laststand::player_is_in_laststand() && !is_true( self.ignore_insta_kill ) )
-		{
-			self.ignoreme = false;
-		}
-		setClientSysState( "levelNotify", "vulture_active_0", self );
-		self.vulture_stink_value = 0;
-		self.vulture_glow_alpha = 0;
-		self notify( "vulture_perk_lost" );
-	}
-}
-
-vulture_perk_add_invalid_bonus_ammo_weapon( str_weapon )
-{
-	level.perk_vulture.invalid_bonus_ammo_weapons[ level.perk_vulture.invalid_bonus_ammo_weapons.size ] = str_weapon;
-}
-
-do_vulture_death( player )
-{
-	if( IsDefined( self ) )
-	{
-		self thread _do_vulture_death( player );
-	}
-}
-
-_do_vulture_death( player )
-{
-	if( should_do_vulture_drop( self.origin ) )
-	{
-		str_bonus = self get_vulture_drop_type();
-		str_identifier = "_" + self GetEntityNumber() + "_" + GetTime();
-		self thread vulture_drop_funcs( self.origin, player, str_identifier, str_bonus );
-	}
-}
-
-vulture_drop_funcs( v_origin, player, str_identifier, str_bonus )
-{
-	vulture_drop_count_increment();
-	switch( str_bonus )
-	{
-		case "ammo":
-			e_temp = player _vulture_drop_model( str_identifier, "p6_zm_perk_vulture_ammo", v_origin, ( 0, 0, 15 ) );
-			self thread check_vulture_drop_pickup( e_temp, player, str_identifier, str_bonus );
-			break;
-
-		case "points":
-			e_temp = player _vulture_drop_model( str_identifier, "p6_zm_perk_vulture_points", v_origin, ( 0, 0, 15 ) );
-			self thread check_vulture_drop_pickup( e_temp, player, str_identifier, str_bonus );
-			break;
-
-		case "stink":
-			self _drop_zombie_stink( level, str_identifier, str_bonus );
-			break;
-	}
-}
-
-_drop_zombie_stink( player, str_identifier, str_bonus )
-{
-	self clear_zombie_stink_fx();
-	e_temp = player zombie_drops_stink( self, str_identifier );
-	e_temp = player _vulture_spawn_fx( str_identifier, self.origin, str_bonus, e_temp );
-	clean_up_stink( e_temp );
-}
-
-zombie_drops_stink( ai_zombie, str_identifier )
-{
-	e_temp = ai_zombie.stink_ent;
-	if( IsDefined( e_temp ) )
-	{
-		e_temp thread delay_showing_vulture_ent( self, ai_zombie.origin );
-		level.perk_vulture.zombie_stink_array[ level.perk_vulture.zombie_stink_array.size ] = e_temp;
-		self delay_notify( str_identifier, 16 );
-	}
-	return e_temp;
-}
-
-delay_showing_vulture_ent( player, v_moveto_pos, str_model, func )
-{
-	self.drop_time = GetTime();
-	wait_network_frame();
-	wait_network_frame();
-	self.origin = v_moveto_pos;
-	wait_network_frame();
-	if( IsDefined( str_model ) )
-	{
-		self SetModel( str_model );
-	}
-	self Show();
-	if( IsPlayer( player ) )
-	{
-		self SetInvisibleToAll();
-		self SetVisibleToPlayer( player );
-	}
-	if( IsDefined( func ) )
-	{
-		self [[ func ]]( player );
-	}
-}
-
-clean_up_stink( e_temp )
-{
-	e_temp ClearClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_STINK_FX );
-	level.perk_vulture.zombie_stink_array = array_remove_nokeys( level.perk_vulture.zombie_stink_array, e_temp );
-	wait 4;
-	e_temp clear_stink_ent();
-}
-
-_delete_vulture_ent( n_delay )
-{
-	if( !IsDefined( n_delay ) )
-	{
-		n_delay = 0;
-	}
-	if( n_delay > 0 )
-	{
-		self Hide();
-		wait n_delay;
-	}
-	self clear_bonus_ent();
-}
-
-_vulture_drop_model( str_identifier, str_model, v_model_origin, v_offset )
-{
-	if( !IsDefined( v_offset ) )
-	{
-		v_offset = ( 0, 0, 0 );
-	}
-	if( !IsDefined( self.perk_vulture_models ) )
-	{
-		self.perk_vulture_models = [];
-	}
-	e_temp = get_unused_bonus_ent();
-	if( !IsDefined( e_temp ) )
-	{
-		self notify( str_identifier );
-		return;
-	}
-	e_temp thread delay_showing_vulture_ent( self, v_model_origin + v_offset, str_model, ::set_vulture_drop_fx );
-	self.perk_vulture_models[ self.perk_vulture_models.size ] = e_temp;
-	e_temp SetInvisibleToAll();
-	e_temp SetVisibleToPlayer( self );
-	e_temp thread _vulture_drop_model_thread( str_identifier, self );
-	return e_temp;
-}
-
-set_vulture_drop_fx( player )
-{
-	self thread play_vulture_perk_bonus_fx( player );
-}
-
-_vulture_drop_model_thread( str_identifier, player )
-{
-	self thread _vulture_model_blink_timeout( player );
-	player waittill_any( str_identifier, "death", "disconnect", "vulture_perk_lost" );
-	self notify( "stop_powerup_fx" );
-	n_delete_delay = 0.1;
-	if( IsDefined( self.picked_up ) && self.picked_up )
-	{
-		self _play_vulture_drop_pickup_fx( player );
-		n_delete_delay = 1;
-	}
-	if( IsDefined( player.perk_vulture_models ) )
-	{
-		player.perk_vulture_models = array_remove_nokeys( player.perk_vulture_models, self );
-		player.perk_vulture_models = remove_undefined_from_array( player.perk_vulture_models );
-	}
-	self _delete_vulture_ent( n_delete_delay );
-}
-
-_vulture_model_blink_timeout( player )
-{
-	self endon( "death" );
-	player endon( "death" );
-	player endon( "disconnect" );
-	self endon( "stop_vulture_behavior" );
-	b_show = true;
-	for( i = 0; i < 240; )
-	{
-		if( i < 120 )
-		{
-			n_multiplier = 120;
-		}
-		else if( i < 160 )
-		{
-			n_multiplier = 10;
-		}
-		else if( i < 200 )
-		{
-			n_multiplier = 5;
-		}
-		else
-		{
-			n_multiplier = 2;
-		}
-		if( b_show )
-		{
-			self Show();
-			self SetInvisibleToAll();
-			self SetVisibleToPlayer( player );
-		}
-		else
-		{
-			self Hide();
-		}
-		b_show = !b_show;
-		i += n_multiplier;
-		wait 0.05 * n_multiplier;
-	}
-}
-
-_vulture_spawn_fx( str_identifier, v_fx_origin, str_bonus, e_temp )
-{
-	b_delete = false;
-	if( !IsDefined( e_temp ) )
-	{
-		e_temp = get_unused_bonus_ent();
-		if( !IsDefined( e_temp ) )
-		{
-			self notify( str_identifier );
+			drop Delete();
 			return;
 		}
-		b_delete = true;
-	}
-	e_temp thread delay_showing_vulture_ent( self, v_fx_origin, "tag_origin", ::clientfield_set_vulture_stink_enabled );
-	if( IsPlayer( self ) )
-	{
-		self waittill_any( str_identifier, "death", "disconnect", "vulture_perk_lost" );
-	}
-	else
-	{
-		self waittill( str_identifier );
-	}
-	if( b_delete )
-	{
-		e_temp _delete_vulture_ent();
-	}
-	return e_temp;
-}
 
-clientfield_set_vulture_stink_enabled( player )
-{
-	self SetClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_STINK_FX );
-}
-
-should_do_vulture_drop( v_death_origin )
-{
-	b_is_inside_playable_area = check_point_in_active_zone( v_death_origin );
-	b_ents_are_available = get_unused_bonus_ent_count() > 0;
-	b_network_slots_available = level.perk_vulture.drop_slots_for_network < 5;
-	b_passed_roll = RandomInt( 100 ) > 35;
-	if( !is_true( self.is_stink_zombie ) )
-	{
-		return b_is_inside_playable_area && b_ents_are_available && b_network_slots_available && b_passed_roll;
-	}
-	return true;
-}
-
-get_vulture_drop_type()
-{
-	if( RandomInt( 2 ) )
-	{
-		str_bonus = "ammo";
-	}
-	else
-	{
-		str_bonus = "points";
-	}
-	if( is_true( self.is_stink_zombie ) )
-	{
-		str_bonus = "stink";
-	}
-	return str_bonus;
-}
-
-get_vulture_drop_duration( str_bonus )
-{
-	n_duration = 12;
-	if( str_bonus == "stink" )
-	{
-		n_duration = 16;
-	}
-	return n_duration;
-}
-
-check_vulture_drop_pickup( e_temp, player, str_identifier, str_bonus )
-{
-	if( !IsDefined( e_temp ) )
-	{
-		return;
-	}
-	player endon( "death" );
-	player endon( "disconnect" );
-	e_temp endon( "death" );
-	e_temp endon( "stop_vulture_behavior" );
-	wait_network_frame();
-	n_times_to_check = Int( get_vulture_drop_duration( str_bonus ) / 0.15 );
-	b_player_inside_radius = false;
-	e_temp.picked_up = false;
-	for( i = 0; i < n_times_to_check; i ++ )
-	{
-		b_player_inside_radius = DistanceSquared( e_temp.origin, player.origin ) < 1024;
-		if( b_player_inside_radius )
+		iprintln("In playable area");
+		level.count_vulture_fx_drops_round++;
+		players = GetPlayers();
+		for( i = 0; i < players.size; i++ ) 
 		{
-			e_temp.picked_up = true;
-			break;
-		}
-		wait 0.15;
-	}
-	player notify( str_identifier );
-	if( b_player_inside_radius )
-	{
-		player give_vulture_bonus( str_bonus );
-	}
-}
-
-_handle_zombie_stink( b_player_inside_radius )
-{
-	if( !IsDefined( self.perk_vulture.is_in_zombie_stink ) )
-	{
-		self.perk_vulture.is_in_zombie_stink = false;
-	}
-	b_in_stink_last_check = self.perk_vulture.is_in_zombie_stink;
-	self.perk_vulture.is_in_zombie_stink = b_player_inside_radius;
-	if( self.perk_vulture.is_in_zombie_stink )
-	{
-		n_current_time = GetTime();
-		if( !b_in_stink_last_check )
-		{
-			self.perk_vulture.stink_time_entered = n_current_time;
-			self toggle_stink_overlay( true );
-		}
-		b_should_ignore_player = false;
-		if( IsDefined( self.perk_vulture.stink_time_entered ) )
-		{
-			b_should_ignore_player = ( ( n_current_time - self.perk_vulture.stink_time_entered ) * 0.001 ) >= 0;
-		}
-		if( b_should_ignore_player )
-		{
-			self.ignoreme = true;
-		}
-		if( get_targetable_player_count() == 0 || !self are_any_players_in_adjacent_zone() )
-		{
-			if( b_should_ignore_player && !level.perk_vulture.use_exit_behavior )
-			{
-				level.perk_vulture.use_exit_behavior = true;
-				level.default_find_exit_position_override = ::vulture_perk_should_zombies_resume_find_flesh;
-				self thread vulture_zombies_find_exit_point();
+			if( players[i] HasPerk( level.VLT_PRK ) ) {
+				drop SetVisibleToPlayer( players[i] );
+				drop thread watch_player_vulture_drop_pickup( players[i] );
 			}
+			else
+				drop SetInvisibleToPlayer( players[i], true );
 		}
-	}
-	else
-	{
-		if( b_in_stink_last_check )
-		{
-			self.perk_vulture.stink_time_exit = GetTime();
-			self thread _zombies_reacquire_player_after_leaving_stink();
-		}
-	}
-}
+		
 
-get_targetable_player_count()
-{
-	n_targetable_player_count = 0;
-	players = GetPlayers();
-	for( i = 0; i < players.size; i ++ )
-	{
-		player = players[i];
-		if( !IsDefined( player.ignoreme ) || !player.ignoreme )
-		{
-			n_targetable_player_count ++;
-		}
-	}
-	return n_targetable_player_count;
-}
+		drop waittill_any_or_timeout( level.VALUE_VULTURE_BONUS_DROP_TIME, "powerup_grabbed");
+		PlayFxOnTag( level._effect["powerup_grabbed_wave_solo"] , drop, "tag_origin" );
+		drop notify( "vulture_drop_done" );
 
-are_any_players_in_adjacent_zone()
-{
-	b_players_in_adjacent_zone = false;
-	str_zone = self get_current_zone();
-	players = GetPlayers();
-	for( i = 0; i < players.size; i ++ )
-	{
-		player = players[i];
-		if( player != self )
+		wait( 2 );	//wait for players to cleanup fx, may need to be longer
+		drop Delete();
+
+	}
+		//Self is drop
+		watch_player_vulture_drop_pickup( player )
 		{
-			str_zone_compare = player get_current_zone();
-			if( is_in_array( level.zones[ str_zone ].adjacent_zones, str_zone_compare ) && IsDefined( level.zones[ str_zone ].adjacent_zones[ str_zone_compare ].is_connected ) && level.zones[ str_zone ].adjacent_zones[ str_zone_compare ].is_connected )
+			iprintln( "creating fx" );
+			create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
+			self vulture_drop_pickup( player );
+			destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
+			self SetInvisibleToPlayer( player, true );
+			self notify( "vuluture_player_fx_cleanup" );
+		}
+
+		//Self is drop
+		vulture_drop_pickup( player )
+		{
+			self endon( "vulture_drop_done" );
+			
+			while( player HasPerk( level.VLT_PRK ) ) 
 			{
-				b_players_in_adjacent_zone = true;
-				break;
-			}
-		}
-	}
-	return b_players_in_adjacent_zone;
-}
-
-toggle_stink_overlay( b_show_overlay )
-{
-	if( !IsDefined( self.vulture_stink_value ) )
-	{
-		self.vulture_stink_value = 0;
-	}
-	if( b_show_overlay )
-	{
-		self thread _ramp_up_stink_overlay();
-	}
-	else
-	{
-		self thread _ramp_down_stink_overlay();
-	}
-}
-
-_ramp_up_stink_overlay()
-{
-	self notify( "vulture_perk_stink_ramp_up_done" );
-	self endon( "vulture_perk_stink_ramp_up_done" );
-	self endon( "disconnect" );
-	self endon( "vulture_perk_lost" );
-	setClientSysState( "levelNotify", "vulture_stink_sound_1", self );
-	while( self.perk_vulture.is_in_zombie_stink )
-	{
-		self.vulture_stink_value ++;
-		if( self.vulture_stink_value > 32 )
-		{
-			self.vulture_stink_value = 32;
-		}
-		self.vulture_glow_alpha = self _get_disease_meter_fraction();
-		wait 0.25;
-	}
-}
-
-_get_disease_meter_fraction()
-{
-	return self.vulture_stink_value / 32;
-}
-
-_ramp_down_stink_overlay()
-{
-	self notify( "vulture_perk_stink_ramp_down_done" );
-	self endon( "vulture_perk_stink_ramp_down_done" );
-	self endon( "disconnect" );
-	self endon( "vulture_perk_lost" );
-	setClientSysState( "levelNotify", "vulture_stink_sound_0", self );
-	while( !self.perk_vulture.is_in_zombie_stink && self.vulture_stink_value > 0 )
-	{
-		self.vulture_stink_value -= 2;
-		if( self.vulture_stink_value < 0 )
-		{
-			self.vulture_stink_value = 0;
-		}
-		self.vulture_glow_alpha = self _get_disease_meter_fraction();
-		wait 0.25;
-	}
-}
-
-_zombies_reacquire_player_after_leaving_stink()
-{
-	self endon( "disconnect" );
-	self notify( "vulture_perk_stop_zombie_reacquire_player" );
-	self endon( "vulture_perk_stop_zombie_reacquire_player" );
-	self toggle_stink_overlay( false );
-	while( self.vulture_stink_value > 0 )
-	{
-		wait 0.25;
-	}
-	self.ignoreme = false;
-	level.perk_vulture.use_exit_behavior = false;
-}
-
-vulture_perk_should_zombies_resume_find_flesh()
-{
-	b_should_find_flesh = !is_player_in_zombie_stink();
-	return b_should_find_flesh;
-}
-
-is_player_in_zombie_stink()
-{
-	a_players = GetPlayers();
-	b_player_in_zombie_stink = false;
-	for( i = 0; i < a_players.size; i ++ )
-	{
-		if( IsDefined( a_players[i].perk_vulture ) && is_true( a_players[i].perk_vulture.is_in_zombie_stink ) )
-		{
-			b_player_in_zombie_stink = true;
-			break;
-		}
-	}
-	return b_player_in_zombie_stink;
-}
-
-give_vulture_bonus( str_bonus )
-{
-	switch( str_bonus )
-	{
-		case "ammo":
-			self give_bonus_ammo();
-			break;
-
-		case "points":
-			self give_bonus_points();
-			break;
-	}
-}
-
-give_bonus_ammo()
-{
-	str_weapon_current = self GetCurrentWeapon();
-	if( str_weapon_current != "none" )
-	{
-		if( is_valid_ammo_bonus_weapon( str_weapon_current ) )
-		{
-			n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
-			n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
-			n_ammo_refunded = clamp( Int( n_ammo_count_max * RandomFloatRange( 0, 0.025 ) ), 1, n_ammo_count_max );
-			b_is_custom_weapon = self handle_custom_weapon_refunds( str_weapon_current );
-			if( !b_is_custom_weapon )
-			{
-				self SetWeaponAmmoStock( str_weapon_current, n_ammo_count_current + n_ammo_refunded );
-			}
-		}
-		self PlaySoundToPlayer( "zmb_vulture_drop_pickup_ammo", self );
-	}
-}
-
-is_valid_ammo_bonus_weapon( str_weapon )
-{
-	if( str_weapon == "zombie_perk_bottle_jugg" || str_weapon == "zombie_knuckle_crack" )
-	{
-		return false;
-	}
-	if( is_placeable_mine( str_weapon ) || is_equipment( str_weapon ) )
-	{
-		return false;
-	}
-	if( is_in_array( level.perk_vulture.invalid_bonus_ammo_weapons, str_weapon ) )
-	{
-		return false;
-	}
-	if( maps\_zombiemode::is_weapon_expluded_from_mule_kick_return( str_weapon ) )
-	{
-		return false;
-	}
-	return true;
-}
-
-_play_vulture_drop_pickup_fx( player )
-{
-	play_oneshot_fx_to_player( player, "vulture_drop_picked_up", self.origin, self.angles );
-	play_oneshot_sound_to_player( player, "zmb_vulture_drop_pickup", self.origin );
-}
-
-give_bonus_points( v_fx_origin )
-{
-	n_multiplier = RandomIntRange( 1, 5 );
-	self maps\_zombiemode_score::player_add_points( "thundergun_fling", 5 * n_multiplier );
-	self PlaySoundToPlayer( "zmb_vulture_drop_pickup_money", self );
-}
-
-_vulture_perk_think()
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "vulture_perk_lost" );
-	while( true )
-	{
-		b_player_in_zombie_stink = false;
-		if( !IsDefined( level.perk_vulture.zombie_stink_array ) )
-		{
-			level.perk_vulture.zombie_stink_array = [];
-		}
-		if( level.perk_vulture.zombie_stink_array.size > 0 )
-		{
-			a_close_points = get_array_of_closest( self.origin, level.perk_vulture.zombie_stink_array, undefined, undefined, 300 );
-			if( a_close_points.size > 0 )
-			{
-				b_player_in_zombie_stink = self _is_player_in_zombie_stink( a_close_points );
-			}
-		}
-		self _handle_zombie_stink( b_player_in_zombie_stink );
-		wait RandomFloatRange( 0.25, 0.5 );
-	}
-}
-
-_is_player_in_zombie_stink( a_points )
-{
-	b_is_in_stink = false;
-	for( i = 0; i < a_points.size; i ++ )
-	{
-		if( DistanceSquared( a_points[i].origin, self.origin ) < 4900 )
-		{
-			b_is_in_stink = true;
-			break;
-		}
-	}
-	return b_is_in_stink;
-}
-
-vulture_drop_count_increment()
-{
-	level.perk_vulture.drop_slots_for_network ++;
-	level thread _decrement_network_slots_after_time();
-}
-
-_decrement_network_slots_after_time()
-{
-	wait 0.25;
-	level.perk_vulture.drop_slots_for_network --;
-}
-
-vulture_zombie_spawn_func()
-{
-	self endon( "death" );
-	self thread add_zombie_eye_glow();
-	self waittill( "completed_emerging_into_playable_area" );
-	if( self should_zombie_have_stink() )
-	{
-		self stink_zombie_array_add();
-	}
-}
-
-add_zombie_eye_glow()
-{
-	self endon( "death" );
-	wait 0.1;
-	if( self.animname != "zombie" || is_true( self.is_cloaker_zombie ) )
-	{
-		return;
-	}
-	if( IsDefined( self.script_string ) && self.script_string == "riser" )
-	{
-		self waittill( "risen" );
-	}
-	self SetClientFlag( level._ZOMBIE_ACTOR_FLAG_VULTURE_EYE_GLOW );
-}
-
-zombies_drop_stink_on_death()
-{
-	self ClearClientFlag( level._ZOMBIE_ACTOR_FLAG_VULTURE_EYE_GLOW );
-	if( IsDefined( self.attacker ) && IsPlayer( self.attacker ) && self.attacker HasPerk( "specialty_altmelee" ) )
-	{
-		self thread do_vulture_death( self.attacker );
-	}
-	else
-	{
-		if( is_true( self.is_stink_zombie ) && IsDefined( self.stink_ent ) )
-		{
-			str_identifier = "_" + self GetEntityNumber() + "_" + GetTime();
-			self thread _drop_zombie_stink( level, str_identifier, "stink" );
-		}
-	}
-}
-
-clear_zombie_stink_fx()
-{
-	self ClearClientFlag( level._ZOMBIE_ACTOR_FLAG_VULTURE_STINK_TRAIL_FX );
-}
-
-stink_zombie_array_add()
-{
-	if( get_unused_stink_ent_count() > 0 )
-	{
-		self.stink_ent = get_unused_stink_ent();
-		if( IsDefined( self.stink_ent ) )
-		{
-			self.stink_ent.owner = self;
-			wait_network_frame();
-			wait_network_frame();
-			self SetClientFlag( level._ZOMBIE_ACTOR_FLAG_VULTURE_STINK_TRAIL_FX );
-			level.perk_vulture.last_stink_zombie_spawned = GetTime();
-			self.is_stink_zombie = true;
-		}
-	}
-}
-
-should_zombie_have_stink()
-{
-	b_is_zombie = self.animname == "zombie";
-	b_cooldown_up = ( GetTime() - level.perk_vulture.last_stink_zombie_spawned ) > 12000;
-	b_roll_passed = RandomInt( 100 ) > 50;
-	b_stink_ent_available = get_unused_stink_ent_count() > 0;
-	return b_is_zombie && b_roll_passed && b_cooldown_up && b_stink_ent_available;
-}
-
-vulture_perk_watch_mystery_box()
-{
-	wait_network_frame();
-	while( IsDefined( level.chests ) && level.chests.size > 0 && IsDefined( level.chest_index ) )
-	{
-		level.chests[ level.chest_index ].vulture_waypoint_visible = true;
-		flag_wait( "moving_chest_now" );
-		level.chests[ level.chest_index ].vulture_waypoint_visible = false;
-		flag_waitopen( "moving_chest_now" );
-	}
-}
-
-vulture_perk_watch_fire_sale()
-{
-	wait_network_frame();
-	while( IsDefined( level.chests ) && level.chests.size > 0 )
-	{
-		level waittill( "powerup fire sale" );
-		for( i = 0; i < level.chests.size; i ++ )
-		{
-			if( i != level.chest_index )
-			{
-				level.chests[i].vulture_waypoint_visible = true;
-			}
-		}
-		level waittill( "fire_sale_off" );
-		for( i = 0; i < level.chests.size; i ++ )
-		{
-			if( i != level.chest_index )
-			{
-				level.chests[i].vulture_waypoint_visible = false;
-			}
-		}
-	}
-}
-
-vulture_perk_watch_powerup_drops()
-{
-	while( true )
-	{
-		level waittill( "powerup_dropped", m_powerup );
-		m_powerup thread _powerup_drop_think();
-	}
-}
-
-_powerup_drop_think()
-{
-	e_temp = Spawn( "script_model", self.origin );
-	e_temp SetModel( "tag_origin" );
-	e_temp SetClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP );
-	self waittill_any( "powerup_timedout", "powerup_grabbed", "death" );
-	e_temp ClearClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP );
-	wait_network_frame();
-	wait_network_frame();
-	wait_network_frame();
-	e_temp Delete();
-}
-
-vulture_zombies_find_exit_point()
-{
-	a_zombies = GetAISpeciesArray( "axis", "all" );
-	for( i = 0; i < a_zombies.size; i ++ )
-	{
-		a_zombies[i] thread zombie_goes_to_exit_location();
-	}
-}
-
-zombie_goes_to_exit_location()
-{
-	self endon( "death" );
-	if( self.ignoreme )
-	{
-		while( true )
-		{
-			b_passed_override = true;
-			if( IsDefined( level.default_find_exit_position_override ) )
-			{
-				b_passed_override = [[ level.default_find_exit_position_override ]]();
-			}
-			if( !flag( "wait_and_revive" ) && b_passed_override )
-			{
-				return;
-			}
-			if( !self.ignoreme )
-			{
-				break;
-			}
-			wait_network_frame();
-		}
-	}
-	s_goal = _get_zombie_exit_point();
-	self notify( "stop_find_flesh" );
-	self notify( "zombie_acquire_enemy" );
-	if( IsDefined( s_goal ) )
-	{
-		self SetGoalPos( s_goal.origin );
-	}
-	while( true )
-	{
-		b_passed_override = true;
-		if( IsDefined( level.default_find_exit_position_override ) )
-		{
-			b_passed_override = [[ level.default_find_exit_position_override ]]();
-		}
-		if( !flag( "wait_and_revive" ) && b_passed_override )
-		{
-			break;
-		}
-		else
-		{
-			wait 0.1;
-		}
-	}
-	self thread maps\_zombiemode_spawner::find_flesh();
-}
-
-_get_zombie_exit_point()
-{
-	player = GetPlayers()[0];
-	n_dot_best = 9999999;
-	a_exit_points = self [[ level.perk_vulture.func_zombies_find_valid_exit_locations ]]();
-	nd_best = undefined;
-	for( i = 0; i < a_exit_points.size; i ++ )
-	{
-		v_to_player = VectorNormalize( player.origin - self.origin );
-		v_to_goal = a_exit_points[i].origin - self.origin;
-		n_dot = VectorDot( v_to_player, v_to_goal );
-		if( n_dot < n_dot_best && DistanceSquared( player.origin, a_exit_points[i].origin ) > 360000 )
-		{
-			nd_best = a_exit_points[i];
-			n_dot_best = n_dot;
-		}
-	}
-	return nd_best;
-}
-
-get_valid_exit_points_for_zombie()
-{
-	a_exit_points = level.enemy_dog_locations;
-	if( IsDefined( level.perk_vulture.zones_for_extra_stink_locations ) && level.perk_vulture.zones_for_extra_stink_locations.size > 0 )
-	{
-		a_zones_with_extra_stink_locations = GetArrayKeys( level.perk_vulture.zones_for_extra_stink_locations );
-		for( j = 0; j < level.active_zone_names.size; j ++ )
-		{
-			zone = level.active_zone_names.size[j];
-			if( is_in_array( a_zones_with_extra_stink_locations, zone ) )
-			{
-				a_zones_temp = level.perk_vulture.zones_for_extra_stink_locations[ zone ];
-				for( i = 0; i < a_zones_temp.size; i ++ )
+				if( player IsTouching( self ) ) 
 				{
-					a_exit_points = array_combine( a_exit_points, get_zone_dog_locations( a_zones_temp[i] ) );
+					player thread vulture_drop_ammo_bonus();
+					self notify( "powerup_grabbed" );
+					return;
 				}
+				wait( 0.1 );
 			}
+
 		}
-	}
-	return a_exit_points;
-}
 
-get_zone_dog_locations( str_zone )
-{
-	a_dog_locations = [];
-	if( IsDefined( level.zones[ str_zone ] ) && IsDefined( level.zones[ str_zone ].dog_locations ) )
-	{
-		a_dog_locations = level.zones[ str_zone ].dog_locations;
-	}
-	return a_dog_locations;
-}
-
-initialize_bonus_entity_pool()
-{
-	level.perk_vulture.bonus_drop_ent_pool = [];
-	for( i = 0; i < 20; i ++ )
-	{
-		e_temp = Spawn( "script_model", ( 0, 0, 0 ) );
-		e_temp SetModel( "tag_origin" );
-		e_temp.targetname = "vulture_perk_bonus_pool_ent";
-		e_temp.in_use = false;
-		level.perk_vulture.bonus_drop_ent_pool[ level.perk_vulture.bonus_drop_ent_pool.size ] = e_temp;
-	}
-}
-
-get_unused_bonus_ent()
-{
-	e_found = undefined;
-	for( i = 0; i < level.perk_vulture.bonus_drop_ent_pool.size; i ++ )
-	{
-		if( !level.perk_vulture.bonus_drop_ent_pool[i].in_use )
+		vulture_drop_ammo_bonus()
 		{
-			e_found = level.perk_vulture.bonus_drop_ent_pool[i];
-			e_found.in_use = true;
-			break;
-		}
-	}
-	return e_found;
-}
-
-get_unused_bonus_ent_count()
-{
-	n_found = 0;
-	for( i = 0; i < level.perk_vulture.bonus_drop_ent_pool.size; i ++ )
-	{
-		if( !level.perk_vulture.bonus_drop_ent_pool[i].in_use )
-		{
-			n_found ++;
-		}
-	}
-	return n_found;
-}
-
-clear_bonus_ent()
-{
-	self notify( "stop_vulture_behavior" );
-	self notify( "stop_powerup_fx" );
-	self.in_use = false;
-	self SetModel( "tag_origin" );
-	self Hide();
-}
-
-initialize_stink_entity_pool()
-{
-	level.perk_vulture.stink_ent_pool = [];
-	for( i = 0; i < 4; i ++ )
-	{
-		e_temp = Spawn( "script_model", ( 0, 0, 0 ) );
-		e_temp SetModel( "tag_origin" );
-		e_temp.targetname = "vulture_perk_bonus_pool_ent";
-		e_temp.in_use = false;
-		level.perk_vulture.stink_ent_pool[ level.perk_vulture.stink_ent_pool.size ] = e_temp;
-	}
-}
-
-get_unused_stink_ent_count()
-{
-	n_found = 0;
-	for( i = 0; i < level.perk_vulture.stink_ent_pool.size; i ++ )
-	{
-		if( !level.perk_vulture.stink_ent_pool[i].in_use )
-		{
-			n_found ++;
-			continue;
-		}
-		else
-		{
-			if( !IsDefined( level.perk_vulture.stink_ent_pool[i].owner ) && !IsDefined( level.perk_vulture.stink_ent_pool[i].drop_time ) )
+			str_weapon_current = self GetCurrentWeapon();
+			if( str_weapon_current != "none" )
 			{
-				level.perk_vulture.stink_ent_pool[i] clear_stink_ent();
-				n_found ++;
+				if( is_valid_ammo_bonus_weapon( str_weapon_current ) )
+				{
+					n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
+					n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
+					ammo_fraction = level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION * RandomFloatRange( 0, 0.025 );
+					n_ammo_refunded = clamp( Int( n_ammo_count_max * ammo_fraction ), 1, n_ammo_count_max );
+					self SetWeaponAmmoStock( str_weapon_current, n_ammo_count_current + n_ammo_refunded );
+				}
+				self PlaySoundToPlayer( "zmb_vulture_drop_pickup_ammo", self );
 			}
 		}
-	}
-	return n_found;
-}
 
-get_unused_stink_ent()
-{
-	e_found = undefined;
-	for( i = 0; i < level.perk_vulture.stink_ent_pool.size; i ++ )
-	{
-		if( !level.perk_vulture.stink_ent_pool[i].in_use )
+		is_valid_ammo_bonus_weapon( weapon )
 		{
-			e_found = level.perk_vulture.stink_ent_pool[i];
-			e_found.in_use = true;
-			break;
+			//No explosives or bonus weapons, no knives
+
+			return true;
 		}
-	}
-	return e_found;
-}
 
-clear_stink_ent()
-{
-	self ClearClientFlag( level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_STINK_FX );
-	self notify( "stop_vulture_behavior" );
-	self.in_use = false;
-	self.drop_time = undefined;
-	self.owner = undefined;
-	self SetModel( "tag_origin" );
-	self Hide();
-}
-
-handle_custom_weapon_refunds( str_weapon )
-{
-	b_is_custom_weapon = false;
-	if( IsSubStr( str_weapon, "knife_ballistic" ) )
-	{
-		self _refund_oldest_ballistic_knife( str_weapon );
-		b_is_custom_weapon = true;
-	}
-	return b_is_custom_weapon;
-}
-
-_refund_oldest_ballistic_knife( str_weapon )
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "vulture_perk_lost" );
-	if( IsDefined( self.weaponobjectwatcherarray ) && self.weaponobjectwatcherarray.size > 0 )
-	{
-		s_found = undefined;
-		for( i = 0; i < self.weaponobjectwatcherarray.size; i ++ )
-		{
-			if( IsDefined( self.weaponobjectwatcherarray[i].weapon ) && self.weaponobjectwatcherarray[i].weapon == str_weapon )
-			{
-				s_found = self.weaponobjectwatcherarray[i];
-				break;
-			}
-		}
-		if( IsDefined( s_found ) )
-		{
-			if( IsDefined( s_found.objectarray ) && s_found.objectarray.size > 0 )
-			{
-				e_oldest = undefined;
-				for( i = 0; i < s_found.objectarray.size; i ++ )
-				{
-					if( IsDefined( s_found.objectarray[i] ) )
-					{
-						if( ( IsDefined( s_found.objectarray[i].retrievabletrigger ) && IsDefined( s_found.objectarray[i].retrievabletrigger.owner ) && s_found.objectarray[i].retrievabletrigger.owner != self ) || !IsDefined( s_found.objectarray[i].birthtime ) )
-						{
-							continue;
-						}
-						else
-						{
-							if( !IsDefined( e_oldest ) )
-							{
-								e_oldest = s_found.objectarray[i];
-							}
-							if( s_found.objectarray[i].birthtime < e_oldest.birthtime )
-							{
-								e_oldest = s_found.objectarray[i];
-							}
-						}
-					}
-				}
-				if( IsDefined( e_oldest ) )
-				{
-					self thread maps\_ballistic_knife::pick_up( str_weapon, e_oldest, e_oldest.retrievabletrigger );
-				}
-			}
-		}
-	}
-}
-
-vulture_perk_watch_waypoints()
-{
-	setup_perk_machine_fx();
-	flag_wait( "all_players_connected" );
-	wait 1;
-	structs = [];
-	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
-	weapon_spawns = array_combine( weapon_spawns, GetEntArray( "betty_purchase", "targetname" ) );
-	weapon_spawns = array_combine( weapon_spawns, GetEntArray( "tazer_upgrade", "targetname" ) );
-	weapon_spawns = array_combine( weapon_spawns, GetEntArray( "bowie_upgrade", "targetname" ) );
-	weapon_spawns = array_combine( weapon_spawns, GetEntArray( "claymore_purchase", "targetname" ) );
-	weapon_spawns = array_combine( weapon_spawns, GetEntArray( "sickle_upgrade", "targetname" ) );
-	weapon_spawns = array_combine( weapon_spawns, GetEntArray( "spikemore_purchase", "targetname" ) );
-	for( i = 0; i < weapon_spawns.size; i ++ )
-	{
-		model = GetEnt( weapon_spawns[i].target, "targetname" );
-		struct = SpawnStruct();
-		struct.location = weapon_spawns[i] get_waypoint_origin( "wallgun" );
-		struct.check_perk = false;
-		struct.perk_to_check = undefined;
-		struct.is_revive = false;
-		struct.is_chest = false;
-		struct.chest_to_check = undefined;
-		struct.fx_var = "vulture_perk_wallbuy_static";
-		struct.ent_num = model GetEntityNumber();
-		structs[ structs.size ] = struct;
-	}
-	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
-	for( i = 0; i < vending_triggers.size; i ++ )
-	{
-		perk = vending_triggers[i].script_noteworthy;
-		struct = SpawnStruct();
-		struct.location = vending_triggers[i] get_waypoint_origin( "perk" );
-		struct.check_perk = perk != "specialty_altmelee";
-		struct.perk_to_check = perk;
-		struct.is_revive = perk == "specialty_quickrevive";
-		struct.is_chest = false;
-		struct.chest_to_check = undefined;
-		struct.fx_var = level.perk_vulture.perk_machine_fx[ perk ];
-		struct.ent_num = vending_triggers[i] GetEntityNumber();
-		structs[ structs.size ] = struct;
-	}
-	vending_weapon_upgrade_trigger = GetEntArray( "zombie_vending_upgrade", "targetname" );
-	for( i = 0; i < vending_weapon_upgrade_trigger.size; i ++ )
-	{
-		struct = SpawnStruct();
-		struct.location = vending_weapon_upgrade_trigger[i] get_waypoint_origin( "packapunch" );
-		struct.check_perk = false;
-		struct.perk_to_check = "specialty_weapupgrade";
-		struct.is_revive = false;
-		struct.is_chest = false;
-		struct.chest_to_check = undefined;
-		struct.fx_var = "vulture_perk_machine_glow_pack_a_punch";
-		struct.ent_num = vending_weapon_upgrade_trigger[i] GetEntityNumber();
-		structs[ structs.size ] = struct;
-	}
-	chests = GetEntArray( "treasure_chest_use", "targetname" );
-	for( i = 0; i < chests.size; i ++ )
-	{
-		struct = SpawnStruct();
-		struct.location = chests[i] get_waypoint_origin( "mysterybox" );
-		struct.check_perk = false;
-		struct.perk_to_check = undefined;
-		struct.is_revive = false;
-		struct.is_chest = true;
-		struct.chest_to_check = chests[i];
-		struct.fx_var = "vulture_perk_mystery_box_glow";
-		struct.ent_num = chests[i] GetEntityNumber();
-		structs[ structs.size ] = struct;
-	}
-	level.perk_vulture.vulture_vision_fx_list = structs;
-	while( true )
-	{
-		for( i = 0; i < structs.size; i ++ )
-		{
-			struct = structs[i];
-			players = GetPlayers();
-			for( p = 0; p < players.size; p ++ )
-			{
-				player = players[p];
-				num = player GetEntityNumber();
-				is_visible = check_waypoint_visible( player, struct );
-				if( !IsDefined( struct.player_visible ) )
-				{
-					struct.player_visible = [];
-				}
-				if( IsDefined( player.perk_vulture ) && is_true( player.perk_vulture.active ) && is_visible )
-				{
-					if( !is_true( struct.player_visible[ num ] ) )
-					{
-						struct.player_visible[ num ] = true;
-						create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
-					}
-				}
-				else
-				{
-					if( is_true( struct.player_visible[ num ] ) )
-					{
-						struct.player_visible[ num ] = false;
-						destroy_loop_fx_to_player( player, struct.ent_num, true );
-					}
-				}
-			}
-		}
-		wait 0.5;
-	}
-}
-
-setup_perk_machine_fx()
-{
-	register_perk_machine_fx( "specialty_armorvest", "vulture_perk_machine_glow_juggernog" );
-	register_perk_machine_fx( "specialty_fastreload", "vulture_perk_machine_glow_speed" );
-	register_perk_machine_fx( "specialty_rof", "vulture_perk_machine_glow_doubletap" );
-	register_perk_machine_fx( "specialty_quickrevive", "vulture_perk_machine_glow_revive" );
-	register_perk_machine_fx( "specialty_flakjacket", "vulture_perk_machine_glow_phd_flopper" );
-	register_perk_machine_fx( "specialty_longersprint", "vulture_perk_machine_glow_marathon" );
-	register_perk_machine_fx( "specialty_deadshot", "vulture_perk_machine_glow_deadshot" );
-	register_perk_machine_fx( "specialty_additionalprimaryweapon", "vulture_perk_machine_glow_mule_kick" );
-	//register_perk_machine_fx( "specialty_extraammo", "vulture_perk_machine_glow_whos_who" );
-	register_perk_machine_fx( "specialty_bulletdamage", "vulture_perk_machine_glow_electric_cherry" );
-	register_perk_machine_fx( "specialty_altmelee", "vulture_perk_machine_glow_vulture" );
-	register_perk_machine_fx( "specialty_bulletaccuracy", "vulture_perk_machine_glow_widows_wine" );
-}
-
-register_perk_machine_fx( str_perk, str_fx_reference )
-{
-	if( !IsDefined( level.perk_vulture.perk_machine_fx ) )
-	{
-		level.perk_vulture.perk_machine_fx = [];
-	}
-	if( !IsDefined( level.perk_vulture.perk_machine_fx[ str_perk ] ) )
-	{
-		level.perk_vulture.perk_machine_fx[ str_perk ] = str_fx_reference;
-	}
-}
-
-get_waypoint_origin( type )
-{
-	origin = self.origin;
-	angles = ( 0, 0, 0 );
-	switch( type )
-	{
-		case "mysterybox":
-			origin = get_mystery_box_origin( self );
-			break;
-
-		case "perk":
-			origin = get_perk_machine_origin( self );
-			break;
-
-		case "packapunch":
-			origin = get_pack_a_punch_origin( self );
-			break;
-	}
-	location = [];
-	location[ "origin" ] = origin;
-	location[ "angles" ] = angles;
-	return location;
-}
-
-get_mystery_box_origin( trigger )
-{
-	forward = AnglesToForward( trigger.chest_box.angles + ( 0, 90, 0 ) );
-	origin = trigger.chest_box.origin + vector_scale( forward, 10 );
-	return origin + ( 0, 0, 30 );
-}
-
-get_perk_machine_origin( trigger )
-{
-	machine = undefined;
-	machines = GetEntArray( trigger.target, "targetname" );
-	machines = get_array_of_closest( trigger.origin, machines );
-	for( i = 0; i < machines.size; i ++ )
-	{
-		if( !IsDefined( machines[i].script_noteworthy ) || machines[i].script_noteworthy != "clip" )
-		{
-			machine = machines[i];
-			break;
-		}
-	}
-	forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
-	origin = machine.origin + vector_scale( forward, 10 );
-	return origin + ( 0, 0, 50 );
-}
-
-get_pack_a_punch_origin( trigger )
-{
-	machine = GetEnt( trigger.target, "targetname" );
-	forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
-	origin = machine.origin + vector_scale( forward, 20 );
-	return origin + ( 0, 0, 40 );
-}
-
-check_waypoint_visible( player, struct )
-{
-	has_perk = false;
-	if( struct.check_perk && IsDefined( struct.perk_to_check ) )
-	{
-		has_perk = player HasPerk( struct.perk_to_check );
-	}
-	solo_revive_gone = false;
-	if( struct.is_revive && flag( "solo_game" ) )
-	{
-		solo_revive_gone = flag( "solo_revive" );
-	}
-	is_empty_boxlocation = false;
-	if( struct.is_chest && IsDefined( struct.chest_to_check ) )
-	{
-		is_empty_boxlocation = !is_true( struct.chest_to_check.vulture_waypoint_visible );
-	}
-	custom_map_check = false;
-	if( IsDefined( level.vulture_perk_custom_map_check ) )
-	{
-		custom_map_check = [[ level.vulture_perk_custom_map_check ]]( struct );
-	}
-	return !has_perk && !solo_revive_gone && !is_empty_boxlocation && !custom_map_check;
-}
-
-play_vulture_perk_bonus_fx( player )
-{
-	play_oneshot_sound_to_player( player, "zmb_vulture_drop_spawn", self.origin );
-	create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
-	create_loop_sound_to_player( player, self GetEntityNumber(), "zmb_vulture_drop_loop", self.origin, 0 );
-	self waittill( "stop_powerup_fx" );
-	destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
-	destroy_loop_sound_to_player( player, self GetEntityNumber(), 0 );
-}
-
-watch_vulture_shader_glow()
-{
-	self endon( "disconnect" );
-	self.vulture_glow_alpha = 0;
-	hud_outline = NewClientHudElem( self );
-	hud_outline.foreground = true; 
-	hud_outline.sort = 2; 
-	hud_outline.hidewheninmenu = false; 
-	hud_outline.alignX = "left"; 
-	hud_outline.alignY = "bottom";
-	hud_outline.horzAlign = "user_left"; 
-	hud_outline.vertAlign = "user_bottom";
-	hud_outline.x = 0;
-	hud_outline.y = 0;
-	hud_outline.alpha = 1;
-	hud_outline SetShader( "hud_vulture_aid_stink_outline", 48, 48 );
-	hud_stink = NewClientHudElem( self );
-	hud_stink.foreground = true; 
-	hud_stink.sort = 2; 
-	hud_stink.hidewheninmenu = false; 
-	hud_stink.alignX = "left"; 
-	hud_stink.alignY = "bottom";
-	hud_stink.horzAlign = "user_left"; 
-	hud_stink.vertAlign = "user_bottom";
-	hud_stink.x = 0;
-	hud_stink.y = 0;
-	hud_stink.alpha = 1;
-	hud_stink SetShader( "hud_vulture_aid_stink", 48, 48 );
-	while( true )
-	{
-		if( IsDefined( self.perk_hud[ "specialty_altmelee" ] ) )
-		{
-			hud_outline.x = self.perk_hud[ "specialty_altmelee" ].x - 12;
-			hud_outline.y = self.perk_hud[ "specialty_altmelee" ].y + 12;
-			hud_outline.alpha = self.vulture_glow_alpha;
-			hud_stink.x = self.perk_hud[ "specialty_altmelee" ].x - 12;
-			hud_stink.y = self.perk_hud[ "specialty_altmelee" ].y - 24;
-			hud_stink.alpha = self.vulture_glow_alpha;
-		}
-		else
-		{
-			hud_outline.x = 0;
-			hud_outline.y = 0;
-			hud_outline.alpha = 0;
-			hud_stink.x = 0;
-			hud_stink.y = 0;
-			hud_stink.alpha = 0;
-		}
-		wait 0.05;
-	}
-}
-
-// */
+// /

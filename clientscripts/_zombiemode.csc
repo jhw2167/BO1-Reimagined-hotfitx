@@ -66,7 +66,7 @@ init_perk_fx()
 	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
 	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
 	
-	
+	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "misc/fx_zombie_powerup_solo_on" );
 	//level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
 	//level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
 	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/fx_vulture_glow" );
