@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -1943,7 +1943,7 @@ init_fx()
 	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
 	level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
 	level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
-	
+
 	/*
 	
 	level._effect["fx_zombie_bar_break"]		= LoadFX( "maps/zombie/fx_zombie_bar_break" );

@@ -6,8 +6,9 @@ init()
 	place_babyjug();
 
 	//place_extraammo();
-	//place_martyrdom();
+	place_martyrdom();
 	//place_chugabud();
+	//place_vulture();
 	place_mulekick();
 }
 
@@ -74,20 +75,20 @@ place_extraammo()
 	bump_trigger.targetname = "audio_bump_trigger";
 }
 
-place_chugabud()
+place_vulture()
 {
 	machine_origin = (951.3, -2273.8, 290.8);
 	machine_angles = (0, 135, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "p6_zm_vending_chugabud" );
-	perk.targetname = "vending_chugabud";
+	perk setModel( "bo2_zombie_vending_vultureaid" );
+	perk.targetname = "vending_vulture";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
-	perk_trigger.target = "vending_chugabud";
-	perk_trigger.script_noteworthy = "specialty_extraammo";
-	perk_trigger.script_sound = "mus_perks_whoswho_jingle";
-	perk_trigger.script_label = "mus_perks_whoswho_sting";
+	perk_trigger.target = "vending_vulture";
+	perk_trigger.script_noteworthy = "specialty_altmelee";
+	perk_trigger.script_sound = "mus_perks_vulture_jingle";
+	perk_trigger.script_label = "mus_perks_vulture_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
 	perk_clip SetModel( "collision_geo_64x64x256" );
