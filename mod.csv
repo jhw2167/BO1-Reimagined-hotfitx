@@ -154,33 +154,24 @@ sound,reimagined
 stringtable,weaponoptions.csv
 
 //FX
-fx,maps/zombie/grief/fx_grief_shock
-fx,weapon/meat/fx_meat_stink
-fx,weapon/meat/fx_meat_impact
-fx,misc/fx_zombie_powerup_on_red
-fx,misc/fx_zombie_powerup_red_grab
-fx,misc/fx_zombie_powerup_red_wave
-fx,misc/fx_zombie_eye_single
-fx,maps/zombie/fx_zmb_ent_stolen
-fx,maps/zombie/fx_zombie_auto_turret_light_ready
-fx,maps/zombie/fx_zombie_factory_marker
-fx,maps/zombie/fx_zombie_factory_marker_fl
-fx,maps/zombie/fx_zombie_packapunch
-fx,maps/zombie/fx_zombie_tesla_bolt_secondary
-fx,maps/zombie/fx_zombie_tesla_electric_bolt
-fx,maps/zombie/fx_zombie_tesla_shock_secondary
+//fx,misc/fx_zombie_powerup_on_red
+//fx,misc/fx_zombie_powerup_red_grab
+//fx,misc/fx_zombie_powerup_red_wave
+//fx,eyes/fx_zombie_eye_single_red
+//fx,eyes/fx_zombie_eye_single_purple
+
+fx,maps/zombie/fx_zombie_tesla_bolt_secondary	//tesla volt bounce, wpn efects
 fx,maps/zombie/fx_zombie_tesla_shock
 
+//weapon effects
 fx,explosions/fx_explosion_charge_large
-//fx,explosions/fx_default_explosion
-//fx,env/smoke/fx_grenade_smoke
 fx,env/fire/fx_fire_xlg_fuel
 fx,env/fire/fx_fire_player_torso_mp
 fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
 fx,weapon/freeze_gun/fx_exp_freezegun_impact
 fx,electric_cherry/fx_electric_cherry_shock
 fx,electric_cherry/fx_electric_cherry_shock_large
-//fx,trail/fx_trail_blood_streak
+
 
 //Vulture fx
 fx,vulture/fx_vulture_box
@@ -189,27 +180,17 @@ fx,vulture/fx_vulture_deadshot
 fx,vulture/fx_vulture_double
 fx,vulture/fx_vulture_glow
 fx,vulture/fx_vulture_jugg
-fx,vulture/fx_vulture_mist
-fx,vulture/fx_vulture_mist_disperse
-fx,vulture/fx_vulture_mist_oneshot
 fx,vulture/fx_vulture_mule
 fx,vulture/fx_vulture_pap
 fx,vulture/fx_vulture_phd
-fx,vulture/fx_vulture_powerup
 fx,vulture/fx_vulture_revive
-fx,vulture/fx_vulture_rifle
-fx,vulture/fx_vulture_skull
 fx,vulture/fx_vulture_speed
 fx,vulture/fx_vulture_stamin
-fx,vulture/fx_vulture_tomb
-fx,vulture/fx_vulture_tombstone
 fx,vulture/fx_vulture_vulture
-fx,vulture/fx_vulture_whoswho
 fx,vulture/fx_vulture_widow
-fx,vulture/fx_vulture_widowwine
-fx,vulture/fx_vulture_widow_old
-fx,vulture/fx_vulture_wunderfizz
-
+//fx,vulture/fx_vulture_powerup
+//fx,vulture/fx_vulture_rifle
+//fx,vulture/fx_vulture_skull
 
 
 //MATERIALS

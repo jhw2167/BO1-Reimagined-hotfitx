@@ -10,7 +10,7 @@ init()
 	register_perk_spawn( ( -749.4, -556.9, -7.6 ), ( 0, 360, 0 ) );
 	register_perk_spawn( ( -1352.9, -1437.2, -485 ), ( 0, 297.8, 0 ) );
 	level.perk_spawn_location = array_randomize( level.perk_spawn_location );
-	//place_martyrdom();	
+	place_martyrdom();	
 	//place_extraammo();	
 	//place_chugabud();	
 	place_mulekick();

@@ -49,14 +49,14 @@ main()
 	/* 									*/
 	level.zombie_ai_limit_override=5;	///
 	level.starting_round_override=10;	///
-	//level.starting_points_override=50000;	///
+	level.starting_points_override=50000;	///
 	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
-	level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.apocalypse_override=true;		///
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -121,7 +121,7 @@ main()
 	{
 		//Reimagined-Expanded - raised from 24 to 40
 		level.zombie_ai_limit = 45;
-		SetAILimit( 45 );//allows zombies to spawn in as some were just killed
+		SetAILimit( 32 );//allows zombies to spawn in as some were just killed
 	}
 
 	
@@ -1940,15 +1940,18 @@ init_client_flags()
 
 init_fx()
 {
+	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
+	level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
+	level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
+	
 	/*
-	level._effect["wood_chunk_destory"]	 		= LoadFX( "impacts/fx_large_woodhit" );
+	
 	level._effect["fx_zombie_bar_break"]		= LoadFX( "maps/zombie/fx_zombie_bar_break" );
 	level._effect["fx_zombie_bar_break_lite"]	= LoadFX( "maps/zombie/fx_zombie_bar_break_lite" );
 
 	level._effect["edge_fog"]			 		= LoadFX( "maps/zombie/fx_fog_zombie_amb" );
 	level._effect["chest_light"]		 		= LoadFX( "env/light/fx_ray_sun_sm_short" );
 
-	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
 
 	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
 	//Reimagined-Expanded - removed to avoid fx overload

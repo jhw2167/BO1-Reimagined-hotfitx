@@ -28,8 +28,29 @@ init()
 	// I'm putting this in here for now so that we can fit in the ffotd
 	//add player intersection tracker
 	level thread track_players_intersection_tracker();
+	level thread wait_zombie_eye_glow();
 }
 
+wait_zombie_eye_glow()
+{
+	level endon( "end_game" );
+
+	level.fx_eye_glow = "eye_glow";
+	flag_wait( "power_on" );		//or level waittill("juggernog_on");
+	level.fx_eye_glow = "eye_glow_purple";
+
+	zombies = GetAiSpeciesArray( "axis", "all" );
+	
+	for ( i = 0; i < zombies.size; i++ )
+	{
+		if ( isDefined( zombies[i].fx_eye_glow ) )
+		{
+			zombies[i].fx_eye_glow Delete();
+			zombies[i] thread zombie_eye_glow();
+		}
+	}
+
+}
 
 track_players_intersection_tracker()
 {
@@ -4823,22 +4844,25 @@ zombie_eye_glow()
 	{
 		if( self.animname == "zombie") 
 		{
+			fx = level.fx_eye_glow;
 			eye_glow = Spawn( "script_model", self GetTagOrigin( "J_EyeBall_LE" ) );
-			assert( IsDefined( eye_glow ) );
 
 			eye_glow.angles = self GetTagAngles( "J_EyeBall_LE" );
 			eye_glow SetModel( "tag_origin" );
 			eye_glow LinkTo( self, "J_EyeBall_LE" );
 
 			if( isDefined( self ) && isAlive( self ) ) {
+				//iprintln("tring to set eye glow " + fx );
 				self.fx_eye_glow = eye_glow;
-				network_safe_play_fx_on_tag( "zombie_fx", 2, level._effect["eye_glow"], self.fx_eye_glow, "tag_origin" );
+				network_safe_play_fx_on_tag( "zombie_fx", 2, level._effect[ fx ], self.fx_eye_glow, "tag_origin" );
+				self haseyes(1);
 			} else {
 				eye_glow delete();
+				self haseyes(0);
 			}
 		}
 
-		self haseyes(1);
+		
 	}
 }
 

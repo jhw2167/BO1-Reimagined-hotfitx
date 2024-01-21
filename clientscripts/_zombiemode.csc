@@ -16,7 +16,7 @@ main()
 	//init_blocker_fx();
 	//init_riser_fx();
 	init_perk_fx();
-	level._zombieCBFunc = ::on_zombie_spawn;
+	//level._zombieCBFunc = ::on_zombie_spawn;
 	level._playerCBFunc = ::on_player_spawn;
 	level._gibEventCBFunc = ::on_gib_event;
 	level thread ZPO_listener();
@@ -66,6 +66,7 @@ init_perk_fx()
 	//level._effect[ "vulture_perk_zombie_stink" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink" );
 	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
 	
+	/*
 	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
 	level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
 	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/fx_vulture_glow" );
@@ -88,6 +89,7 @@ init_perk_fx()
 	//level._effect[ "vulture_perk_zombie_eye_glow" ] = LoadFX( "vulture/fx_zombie_eye_vulture" );
 	//level._effect[ "widows_wine_wrap" ] = LoadFX( "widows_wine/fx_widows_wine_zombie" );
 	//level._effect[ "widows_wine_exp_1p" ] = LoadFX( "widows_wine/fx_widows_wine_explode" );
+	*/
 }
 
 init_level_vars()
