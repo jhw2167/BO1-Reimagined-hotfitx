@@ -6,7 +6,7 @@ init()
 	place_babyjug();
 
 	place_martyrdom();
-	//place_extraammo();
+	//place_wine();
 	place_mulekick();
 }
 
@@ -49,7 +49,7 @@ place_martyrdom()
 	bump_trigger.targetname = "audio_bump_trigger";
 }
 
-place_extraammo()
+place_wine()
 {
 	machine_origin = (209.4, 5392.3, 56.1);
 	machine_angles = (0, -90, 0);

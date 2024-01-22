@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -639,13 +639,40 @@ reimagined_init_level()
 
 	//Vulture
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;
-	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.025;
-	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
+	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.05;
+	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.075;
+	level.VALUE_VULTURE_MIN_AMMO_BONUS = 2;
+	level.VALUE_VULTURE_MAX_AMMO_BONUS = 10;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 100;			//1-1000, 2.5% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 500;			//1-1000, 2.5% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 20;				//10 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
+
+	level.ARRAY_VULTURE_INVALID_AMMO_WEAPONS = array(
+		"microwavegundw_upgraded_zm",
+		"microwavegundw_zm",
+		"tesla_gun_powerup_upgraded_zm",
+		"tesla_gun_powerup_zm",
+		"tesla_gun_upgraded_zm",
+		"tesla_gun_zm",
+		"thundergun_upgraded_zm",
+		"thundergun_zm",
+		"ray_gun_upgraded_zm",
+		"ray_gun_zm",
+		"starburst_ray_gun_zm",
+		"freezegun_upgraded_zm",
+		"freezegun_zm",
+		"shrink_ray_upgraded_zm",
+		"shrink_ray_zm",
+		"sniper_explosive_bolt_upgraded_zm",
+		"sniper_explosive_bolt_zm",
+		"m72_law_zm" , 
+		"china_lake_zm" ,
+		"explosivbe_bolt_upgraded_zm",
+		"humangun_zm",
+		"humangun_upgraded_zm"
+		);
 
 
 	//Wine

@@ -4643,8 +4643,6 @@ zombie_watch_vulture_drop_bonus()
 				drop SetInvisibleToPlayer( players[i], true );
 		}
 		
-
-		waittill_all
 		drop waittill_any_or_timeout( level.VALUE_VULTURE_BONUS_DROP_TIME, "powerup_grabbed");
 		PlayFxOnTag( level._effect["powerup_grabbed_wave_solo"] , drop, "tag_origin" );
 		drop notify( "vulture_drop_done" );
@@ -4656,12 +4654,10 @@ zombie_watch_vulture_drop_bonus()
 		//Self is drop
 		watch_player_vulture_drop_pickup( player )
 		{
-			iprintln( "creating fx" );
 			create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
 			self vulture_drop_pickup( player );
 			destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
 			self SetInvisibleToPlayer( player, true );
-			self notify( "vuluture_player_fx_cleanup" );
 		}
 
 		//Self is drop
@@ -4691,11 +4687,16 @@ zombie_watch_vulture_drop_bonus()
 				{
 					n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
 					n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
-					ammo_fraction = level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION * RandomFloatRange( 0, 0.025 );
+					ammo_fraction = RandomFloatRange( 0, level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION );
 					n_ammo_refunded = clamp( Int( n_ammo_count_max * ammo_fraction ), 1, n_ammo_count_max );
+					if( n_ammo_refunded < level.VALUE_VULTURE_MIN_AMMO_BONUS )
+						n_ammo_refunded = level.VALUE_VULTURE_MIN_AMMO_BONUS;
+					else if( n_ammo_refunded > level.VALUE_VULTURE_MAX_AMMO_BONUS )
+						n_ammo_refunded = level.VALUE_VULTURE_MAX_AMMO_BONUS;
+					
 					self SetWeaponAmmoStock( str_weapon_current, n_ammo_count_current + n_ammo_refunded );
 				}
-				self PlaySoundToPlayer( "zmb_vulture_drop_pickup_ammo", self );
+					self PlaySoundToPlayer( "zmb_vulture_drop_pickup_ammo", self );
 
 					//self PlaySound( "zmb_vulture_drop_pickup_money" );
 					//self PlaySound( "zmb_vulture_drop_pickup_ammo" );
@@ -4706,8 +4707,9 @@ zombie_watch_vulture_drop_bonus()
 
 		is_valid_ammo_bonus_weapon( weapon )
 		{
-			//No explosives or bonus weapons, no knives
-
+			if( is_in_array( level.ARRAY_VULTURE_INVALID_AMMO_WEAPONS, weapon ) )
+				return false;
+			
 			return true;
 		}
 
