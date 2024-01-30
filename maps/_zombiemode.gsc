@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -506,7 +506,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
-	level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = 6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_RED_DROP_RATE_RED = 6;		//between 0-1000)
 
 		if( isDefined(level.drop_rate_override) ) {
@@ -674,6 +674,21 @@ reimagined_init_level()
 		"humangun_upgraded_zm"
 		);
 
+	//Vulture HUD Values
+	level.VALUE_VULTURE_HUD_DIST_FAR = 1024;
+	level.VALUE_VULTURE_HUD_DIST_MED = 256;
+	level.VALUE_VULTURE_HUD_DIST_CLOSE = 128;
+	level.VALUE_VULTURE_HUD_DIST_CUTOFF = 64;
+
+	level.VALUE_VULTURE_HUD_DIM_FAR = 16;
+	level.VALUE_VULTURE_HUD_DIM_MED = 64;
+	level.VALUE_VULTURE_HUD_DIM_CLOSE = 128;
+
+	level.VALUE_VULTURE_HUD_ALPHA_FAR = 0.8;
+	level.VALUE_VULTURE_HUD_ALPHA_MED = 0.6;
+	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = 0.4;
+
+
 
 	//Wine
 
@@ -817,6 +832,9 @@ wait_set_player_visionset()
 	if( is_true(level.override_give_all_perks) ) {
 		self give_pro_perks( true );
 	}
+
+	//DEBUG AND TEST
+
 
 	//iprintln( "wait_set_player_visionset done");
 }
@@ -1922,6 +1940,7 @@ init_flags()
 
 	flag_init("insta_kill_round");
 	flag_init("round_restarting");
+	flag_init("enter_nml");
 }
 
 // Client flags registered here should be for global zombie systems, and should
@@ -7432,7 +7451,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//ORIGIN_
-	//iprintln("Origin: " + attacker.origin );
+	iprintln("Origin: " + attacker.origin );
 	/*
 	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));

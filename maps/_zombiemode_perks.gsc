@@ -256,6 +256,7 @@ default_vending_precaching()
 	{
 		PreCacheShader( "specialty_juggernaut_zombies" );
 		PreCacheShader( "specialty_juggernaut_zombies_pro" );
+		PreCacheShader( "gfx_fxt_zmb_jugg" );
 		PreCacheModel( "zombie_vending_jugg" );
 		PreCacheModel( "zombie_vending_jugg_on" );
 		PreCacheString( &"REIMAGINED_PERK_JUGGERNAUT" );
@@ -1541,7 +1542,7 @@ electric_perks_dialog()
 }
 
 
-/* convertPerkToShader( perk )
+convertPerkToShaderPro( perk )
 {
 	if (perk == "specialty_armorvest_upgrade")
 		return "specialty_juggernaut_zombies_pro";
@@ -1563,12 +1564,41 @@ electric_perks_dialog()
 		return "specialty_cherry_zombies_pro";
 	if (perk == "specialty_altmelee_upgrade")
 		return "specialty_vulture_zombies_pro";
-	if (perk == "specialty_bulletaccuracy_upgraded")
+	if (perk == "specialty_bulletaccuracy_upgrade")
 		return "specialty_widowswine_zombies_pro";
     
 return "UNKOWN";
-} 
+}
 
+convertPerkToShader( perk )
+{
+	if (perk == "specialty_armorvest")
+		return "specialty_juggernaut_zombies";
+	if (perk == "specialty_quickrevive")
+		return "specialty_quickrevive_zombies";
+	if (perk == "specialty_fastreload")
+		return "specialty_fastreload_zombies";
+	if (perk == "specialty_rof")
+		return "specialty_doubletap_zombies";
+	if (perk == "specialty_endurance")
+		return "specialty_marathon_zombies";
+	if (perk == "specialty_flakjacket")
+		return "specialty_divetonuke_zombies";
+	if (perk == "specialty_deadshot")
+		return "specialty_deadshot_zombies";
+	if (perk == "specialty_additionalprimaryweapon")
+		return "specialty_mulekick_zombies";
+	if (perk == "specialty_bulletdamaged")
+		return "specialty_cherry_zombies";
+	if (perk == "specialty_altmelee")
+		return "specialty_vulture_zombies";
+	if (perk == "specialty_bulletaccuracy")
+		return "specialty_widowswine_zombies";
+    
+return "UNKOWN";
+}
+
+/*
 hasProPerk( p )
 { return true; }
 
@@ -1702,7 +1732,6 @@ disableProPerk( perk, time )
 
 returnProPerk( perk )
 {
-	//here
 	len = "_upgrade".size;
 	base_perk = GetSubStr( perk, 0, perk.size - len );
 	self give_perk( base_perk );
@@ -1725,7 +1754,7 @@ removeProPerk( perk, removeOrDisableHud )
 	if( !self hasProPerk( perk ) ) 
 		return;
 
-	//here
+	
 	if( self hasProPerk( perk ) )
 	{
 		//Trigger notify pro perk + "_stop"
@@ -2931,7 +2960,6 @@ perk_hud_create( perk )
 
 	if( IsSubStr(perk , "upgrade") )
 	{
-		//here
 		basePerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
 		
 		if( self.PRO_PERKS_DISABLED[ perk ] ) {	
@@ -4241,6 +4269,8 @@ init_vulture_assets()
 {	
 	PreCacheModel( "bo2_p6_zm_perk_vulture_ammo" );
 	PreCacheModel( "bo2_p6_zm_perk_vulture_points" );
+
+	level._effect[ "vulture_glow" ] = LoadFX( "vulture/fx_vulture_glow" );
 	/*
 	PreCacheShader( "hud_vulture_aid_stink" );
 	PreCacheShader( "hud_vulture_aid_stink_outline" );
@@ -4248,7 +4278,6 @@ init_vulture_assets()
 	//level._effect[ "vulture_perk_zombie_stink_trail" ] = LoadFX( "vulture/fx_zm_vulture_perk_stink_trail" );
 	//level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
 	//level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
-	level._effect[ "vulture_perk_wallbuy_static" ] = LoadFX( "vulture/fx_vulture_glow" );
 	level._effect[ "vulture_perk_machine_glow_doubletap" ] = LoadFX( "vulture/fx_vulture_double" );
 	level._effect[ "vulture_perk_machine_glow_juggernog" ] = LoadFX( "vulture/fx_vulture_jugg" );
 	level._effect[ "vulture_perk_machine_glow_revive" ] = LoadFX( "vulture/fx_vulture_revive" );
@@ -4283,6 +4312,7 @@ init_vulture()
 	level.perk_vulture.use_exit_behavior = false;
 	//maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
 	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
+
 	level thread vulture_perk_watch_waypoints();
 	level thread vulture_perk_watch_mystery_box();
 	level thread vulture_perk_watch_fire_sale();
@@ -4293,7 +4323,6 @@ init_vulture()
 
 /* Waypoints 
 // */
-
 
 
 	vulture_perk_watch_waypoints()
@@ -4337,8 +4366,11 @@ init_vulture()
 			struct.chest_to_check = undefined;
 			struct.fx_var = level.perk_vulture.perk_machine_fx[ perk ];
 			struct.ent_num = vending_triggers[i] GetEntityNumber();
+			struct.script_model = Spawn( "script_model", struct.location[ "origin" ] );
+			struct.waypoint = undefined;
 			structs[ structs.size ] = struct;
 		}
+
 		vending_weapon_upgrade_trigger = GetEntArray( "zombie_vending_upgrade", "targetname" );
 		for( i = 0; i < vending_weapon_upgrade_trigger.size; i ++ )
 		{
@@ -4353,6 +4385,7 @@ init_vulture()
 			struct.ent_num = vending_weapon_upgrade_trigger[i] GetEntityNumber();
 			structs[ structs.size ] = struct;
 		}
+
 		chests = GetEntArray( "treasure_chest_use", "targetname" );
 		for( i = 0; i < chests.size; i ++ )
 		{
@@ -4390,7 +4423,10 @@ init_vulture()
 						if( !is_true( struct.player_visible[ num ] ) )
 						{
 							struct.player_visible[ num ] = true;
-							create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
+							if( IsDefined( struct.perk_to_check ) )
+								struct.waypoint = player create_individual_waypoint( struct );
+							else
+								create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
 						}
 					}
 					else
@@ -4398,30 +4434,58 @@ init_vulture()
 						if( is_true( struct.player_visible[ num ] ) )
 						{
 							struct.player_visible[ num ] = false;
-							destroy_loop_fx_to_player( player, struct.ent_num, true );
+							if( IsDefined( struct.waypoint ) )
+								struct.waypoint destroy_hud();
+							else
+								destroy_loop_fx_to_player( player, struct.ent_num, true );
 						}
 					}
 				}
 			}
 			wait 0.5;
 		}
+
+
 	}
 
-				//Utility
-				create_loop_fx_to_player( player, identifier, fx_var, origin, angles )
-				{
-					str_origin = string( origin[0] ) + "|" + string( origin[1] ) + "|" + string( origin[2] );
-					str_angles = string( angles[0] ) + "|" + string( angles[1] ) + "|" + string( angles[2] );
-					str_clientstate = "fx|looping|start|" + identifier + "|" + fx_var + "|" + str_origin + "|" + str_angles;
-					self send_message_to_csc( "client_side_fx", str_clientstate );
-				}
 
-				destroy_loop_fx_to_player( player, identifier, delete_fx_immediately )
-				{
-					str_delete_fx_immediately = bool_to_string( delete_fx_immediately );
-					str_clientstate = "fx|looping|stop|" + identifier + "|" + str_delete_fx_immediately;
-					self send_message_to_csc( "client_side_fx", str_clientstate );
-				}
+		//HERE
+		create_individual_waypoint( struct )
+		{
+			wp = NewClientHudElem(self);
+
+			//Uses pro perk shader
+			icon = convertPerkToShader( struct.perk_to_check );
+
+			wp setShader( icon, 64, 64 );
+			wp SetTargetEnt( struct.script_model );
+			wp setWaypoint( true, icon );
+			wp.alpha = 0.7;
+
+			return wp;
+		}
+
+		destroy_perk_waypoint()
+		{
+			//nothing
+		}
+
+			//Utility
+			create_loop_fx_to_player( player, identifier, fx_var, origin, angles )
+			{
+				str_origin = string( origin[0] ) + "|" + string( origin[1] ) + "|" + string( origin[2] );
+				str_angles = string( angles[0] ) + "|" + string( angles[1] ) + "|" + string( angles[2] );
+				str_clientstate = "fx|looping|start|" + identifier + "|" + fx_var + "|" + str_origin + "|" + str_angles;
+				self send_message_to_csc( "client_side_fx", str_clientstate );
+			}
+
+			destroy_loop_fx_to_player( player, identifier, delete_fx_immediately )
+			{
+				str_delete_fx_immediately = bool_to_string( delete_fx_immediately );
+				str_clientstate = "fx|looping|stop|" + identifier + "|" + str_delete_fx_immediately;
+				self send_message_to_csc( "client_side_fx", str_clientstate );
+			}
+
 
 
 
