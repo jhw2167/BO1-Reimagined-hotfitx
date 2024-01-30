@@ -4455,12 +4455,34 @@ init_vulture()
 			wp = NewClientHudElem(self);
 
 			//Uses pro perk shader
-			icon = convertPerkToShader( struct.perk_to_check );
+			icon = convertPerkToShader( struct.perk_to_check ) + "_pro";
 
 			wp setShader( icon, 64, 64 );
 			wp SetTargetEnt( struct.script_model );
 			wp setWaypoint( true, icon );
 			wp.alpha = 0.7;
+
+			/*
+			Write an algorithm using the constants
+			to increase the size of the waypoint based on the distance and
+			decrease the alpha based on the distance
+
+				level.VALUE_VULTURE_HUD_DIST_FAR = 1024;
+				level.VALUE_VULTURE_HUD_DIST_MED = 256;
+				level.VALUE_VULTURE_HUD_DIST_CLOSE = 128;
+				level.VALUE_VULTURE_HUD_DIST_CUTOFF = 64;
+
+				level.VALUE_VULTURE_HUD_DIM_FAR = 16;
+				level.VALUE_VULTURE_HUD_DIM_MED = 64;
+				level.VALUE_VULTURE_HUD_DIM_CLOSE = 128;
+
+				level.VALUE_VULTURE_HUD_ALPHA_FAR = 0.8;
+				level.VALUE_VULTURE_HUD_ALPHA_MED = 0.6;
+				level.VALUE_VULTURE_HUD_ALPHA_CLOSE = 0.4;
+			*/
+
+			
+
 
 			return wp;
 		}
