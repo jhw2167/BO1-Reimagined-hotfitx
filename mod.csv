@@ -299,35 +299,24 @@ material,mtl_zombie_vending_vent_power_off
 material,mtl_zombie_vending_vent_power_on
 
 //Vulture Material Glow
-material,gfx_fxt_zmb_jugg
-material,gfx_fxt_zmb_mule_kick
-material,gfx_fxt_zmb_perk_cherry
-material,gfx_fxt_zmb_perk_dbl_tap
-material,gfx_fxt_zmb_perk_deadshot
-material,gfx_fxt_zmb_perk_flopper
-material,gfx_fxt_zmb_perk_magic_box
-material,gfx_fxt_zmb_perk_pap
-material,gfx_fxt_zmb_perk_quickrevive
-material,gfx_fxt_zmb_perk_revive
-material,gfx_fxt_zmb_perk_rifle
-material,gfx_fxt_zmb_perk_skull
-material,gfx_fxt_zmb_perk_stamin
-material,gfx_fxt_zmb_perk_tomb
-material,gfx_fxt_zmb_perk_tombstone
-material,gfx_fxt_zmb_perk_vulture
-material,gfx_fxt_zmb_perk_whoswho
-material,gfx_fxt_zmb_perk_widow
-material,gfx_fxt_zmb_perk_widowswine
-material,gfx_fxt_zmb_perk_wunderfizz
-material,gfx_fxt_zmb_speed
-material,gfx_hud_ks_lit_glow
-material,gfx_lui_medal_glow
-material,gfx_widows_effect_0
-material,gfx_widows_effect_1
-material,gfx_widows_effect_2
-material,gfx_widows_effect_3
-material,gfx_widows_spiders
-material,gfx_widows_web
+material,specialty_glow_dbl_tap
+material,specialty_glow_deadshot
+material,specialty_glow_flopper
+material,specialty_glow_jugg
+material,specialty_glow_magic_box
+material,specialty_glow_mule_kick
+material,specialty_glow_pap
+material,specialty_glow_quickrevive
+material,specialty_glow_rifle
+material,specialty_glow_skull
+material,specialty_glow_speed
+material,specialty_glow_stamin
+material,specialty_glow_tombstone
+material,specialty_glow_vulture
+material,specialty_glow_whoswho
+material,specialty_glow_widow
+material,specialty_glow_wunderfizz
+material,specialty_nuke_zombies
 
 //Vulture Material Waypoints
 

@@ -252,11 +252,32 @@ default_vending_precaching()
 	PrecacheItem( "zombie_perk_bottle" );
 	PreCacheModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
 
+	/*
+	PreCacheShader( "specialty_glow_dbl_tap" );
+	PreCacheShader( "specialty_glow_deadshot" );
+	PreCacheShader( "specialty_glow_flopper" );
+	PreCacheShader( "specialty_glow_jugg" );
+	PreCacheShader( "specialty_glow_magic_box" );
+	PreCacheShader( "specialty_glow_mule_kick" );
+	PreCacheShader( "specialty_glow_pap" );
+	PreCacheShader( "specialty_glow_quickrevive" );
+	PreCacheShader( "specialty_glow_rifle" );
+	PreCacheShader( "specialty_glow_skull" );
+	PreCacheShader( "specialty_glow_speed" );
+	PreCacheShader( "specialty_glow_stamin" );
+	PreCacheShader( "specialty_glow_tombstone" );
+	PreCacheShader( "specialty_glow_vulture" );
+	PreCacheShader( "specialty_glow_whoswho" );
+	PreCacheShader( "specialty_glow_widow" );
+	PreCacheShader( "specialty_glow_wunderfizz" );
+	PreCacheShader( "specialty_nuke_zombies" );
+*/
+
 	if( is_true( level.zombiemode_using_juggernaut_perk ) )
 	{
 		PreCacheShader( "specialty_juggernaut_zombies" );
 		PreCacheShader( "specialty_juggernaut_zombies_pro" );
-		PreCacheShader( "gfx_fxt_zmb_jugg" );
+		PreCacheShader( "specialty_glow_jugg" );
 		PreCacheModel( "zombie_vending_jugg" );
 		PreCacheModel( "zombie_vending_jugg_on" );
 		PreCacheString( &"REIMAGINED_PERK_JUGGERNAUT" );
@@ -267,6 +288,7 @@ default_vending_precaching()
 	{
 		PreCacheShader( "specialty_fastreload_zombies" );
 		PreCacheShader( "specialty_fastreload_zombies_pro" );
+		PrecacheShader( "specialty_glow_speed" );
 		PreCacheModel( "zombie_vending_sleight" );
 		PreCacheModel( "zombie_vending_sleight_on" );
 		PreCacheString( &"REIMAGINED_PERK_FASTRELOAD" );
@@ -277,6 +299,7 @@ default_vending_precaching()
 	{
 		PreCacheShader( "specialty_doubletap_zombies" );
 		PreCacheShader( "specialty_doubletap_zombies_pro" );
+		PrecacheShader( "specialty_glow_dbl_tap" );
 		PreCacheModel( "zombie_vending_doubletap" );
 		PreCacheModel( "zombie_vending_doubletap_on" );
 		PreCacheString( &"REIMAGINED_PERK_DOUBLETAP" );
@@ -287,6 +310,7 @@ default_vending_precaching()
 	{
 		PreCacheShader( "specialty_quickrevive_zombies" );
 		PreCacheShader( "specialty_quickrevive_zombies_pro" );
+
 		PreCacheModel( "zombie_vending_revive" );
 		PreCacheModel( "zombie_vending_revive_on" );
 		PreCacheString( &"REIMAGINED_PERK_QUICKREVIVE" );
@@ -1573,11 +1597,13 @@ return "UNKOWN";
 convertPerkToShader( perk )
 {
 	if (perk == "specialty_armorvest")
-		return "specialty_juggernaut_zombies";
+		return "specialty_glow_jugg";
+		//return "specialty_juggernaut_zombies";
 	if (perk == "specialty_quickrevive")
 		return "specialty_quickrevive_zombies";
 	if (perk == "specialty_fastreload")
-		return "specialty_fastreload_zombies";
+		return "specialty_glow_speed";
+		//return "specialty_fastreload_zombies";
 	if (perk == "specialty_rof")
 		return "specialty_doubletap_zombies";
 	if (perk == "specialty_endurance")
@@ -4455,12 +4481,13 @@ init_vulture()
 			wp = NewClientHudElem(self);
 
 			//Uses pro perk shader
-			icon = convertPerkToShader( struct.perk_to_check ) + "_pro";
+			icon = convertPerkToShader( struct.perk_to_check );// + "_pro";
 
 			wp setShader( icon, 64, 64 );
 			wp SetTargetEnt( struct.script_model );
 			wp setWaypoint( true, icon );
 			wp.alpha = 0.7;
+			wp.color = ( 1, .7, .1 );
 
 			/*
 			Write an algorithm using the constants
@@ -4716,7 +4743,6 @@ zombie_watch_vulture_drop_bonus()
 			return;
 		}
 
-		iprintln("In playable area");
 		level.count_vulture_fx_drops_round++;
 		players = GetPlayers();
 		for( i = 0; i < players.size; i++ ) 
