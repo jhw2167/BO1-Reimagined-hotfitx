@@ -173,7 +173,8 @@ fx,weapon/freeze_gun/fx_exp_freezegun_impact
 fx,electric_cherry/fx_electric_cherry_shock
 fx,electric_cherry/fx_electric_cherry_shock_large
 
-
+//vulture
+fx,vulture/fx_vulture_glow
 
 
 

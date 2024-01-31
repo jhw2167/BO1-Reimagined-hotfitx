@@ -675,20 +675,23 @@ reimagined_init_level()
 		);
 
 	//Vulture HUD Values
-	level.VALUE_VULTURE_HUD_DIST_FAR = 1024;
-	level.VALUE_VULTURE_HUD_DIST_MED = 256;
-	level.VALUE_VULTURE_HUD_DIST_CLOSE = 128;
-	level.VALUE_VULTURE_HUD_DIST_CUTOFF = 64;
+	level.VALUE_VULTURE_HUD_DIST_VERY_FAR = 2048;
+	level.VALUE_VULTURE_HUD_DIST_FAR = 1640;
+	level.VALUE_VULTURE_HUD_DIST_MED = 1024;
+	level.VALUE_VULTURE_HUD_DIST_CLOSE = 256;
+	level.VALUE_VULTURE_HUD_DIST_CUTOFF = 128;
 
+	level.VALUE_VULTURE_HUD_DIM_VERY_FAR = 16;
 	level.VALUE_VULTURE_HUD_DIM_FAR = 16;
 	level.VALUE_VULTURE_HUD_DIM_MED = 64;
 	level.VALUE_VULTURE_HUD_DIM_CLOSE = 128;
 
-	level.VALUE_VULTURE_HUD_ALPHA_FAR = 0.8;
-	level.VALUE_VULTURE_HUD_ALPHA_MED = 0.6;
-	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = 0.4;
+	level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR = 1;
+	level.VALUE_VULTURE_HUD_ALPHA_FAR = 0.6;
+	level.VALUE_VULTURE_HUD_ALPHA_MED = 0.4;
+	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = 0.2;
 
-
+	level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET = 20;
 
 	//Wine
 
@@ -800,6 +803,8 @@ reimagined_init_player()
 	//Perk Values
 	self.cherry_sequence = 0;
 	self.cherry_defense = true;
+
+	self.vulture_had_perk = false;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;
@@ -842,6 +847,10 @@ wait_set_player_visionset()
 //Reimagined-Expanded -- get zombies in provided range
 checkDist( a, b, distance)
 {
+	vars_defined = isDefined(a) && isDefined(b) && isDefined(distance);
+	if(!vars_defined)
+		return false;
+
 	if( DistanceSquared( a, b ) < distance * distance )
 		return true;
 	else
@@ -5886,21 +5895,24 @@ setApocalypseOptions()
 	//Not Implemented - coerce to false
 	level.extra_drops = false;
 
-
-	level.max_perks = level.total_perks;
 	if(level.apocalypse) 
-	{
-		level.max_perks = 5;
+	{		
 		level.starting_round = 1;
 		level.server_cheats=false;
+		level.total_perks = 5;
 
 	} else if( level.server_cheats > 0) {
 		level.server_cheats=true;
 		level.total_perks = 100;
 	}
 
-	if(IsDefined(level.server_cheats_override))
+	if(IsDefined(level.server_cheats_override)) {
 		level.server_cheats = true;
+		level.total_perks = 100;
+	}
+
+	level.max_perks = level.total_perks;
+		
 }
 
 //Reimagined-Expanded

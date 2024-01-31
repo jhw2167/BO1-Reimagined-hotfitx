@@ -1566,7 +1566,7 @@ electric_perks_dialog()
 }
 
 
-convertPerkToShaderPro( perk )
+convertProPerkToShaderPro( perk )
 {
 	if (perk == "specialty_armorvest_upgrade")
 		return "specialty_juggernaut_zombies_pro";
@@ -1597,13 +1597,11 @@ return "UNKOWN";
 convertPerkToShader( perk )
 {
 	if (perk == "specialty_armorvest")
-		return "specialty_glow_jugg";
-		//return "specialty_juggernaut_zombies";
+		return "specialty_juggernaut_zombies";
 	if (perk == "specialty_quickrevive")
 		return "specialty_quickrevive_zombies";
 	if (perk == "specialty_fastreload")
-		return "specialty_glow_speed";
-		//return "specialty_fastreload_zombies";
+		return "specialty_fastreload_zombies";
 	if (perk == "specialty_rof")
 		return "specialty_doubletap_zombies";
 	if (perk == "specialty_endurance")
@@ -4269,6 +4267,8 @@ player_watch_electric_cherry()
 player_watch_vulture()
 {
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_on");
+	self.vulture_had_perk = true; //turned off after vulture_destroy_waypoints();
+
 	while( self HasPerk( level.VLT_PRK ) )	{
 		//wait
 		wait(0.1);
@@ -4295,6 +4295,11 @@ init_vulture_assets()
 {	
 	PreCacheModel( "bo2_p6_zm_perk_vulture_ammo" );
 	PreCacheModel( "bo2_p6_zm_perk_vulture_points" );
+
+	PreCacheShader( "specialty_glow_rifle" );
+	PreCacheShader( "specialty_glow_magic_box" );
+	PreCacheShader( "specialty_glow_pap" );	
+	PreCacheShader( "specialty_glow_skull" );
 
 	level._effect[ "vulture_glow" ] = LoadFX( "vulture/fx_vulture_glow" );
 	/*
@@ -4375,8 +4380,10 @@ init_vulture()
 			struct.is_revive = false;
 			struct.is_chest = false;
 			struct.chest_to_check = undefined;
-			struct.fx_var = "vulture_perk_wallbuy_static";
+			struct.fx_var = "vulture_glow";
 			struct.ent_num = model GetEntityNumber();
+			struct.player_waypoint = [];
+			struct.waypoint_name = "specialty_glow_rifle";
 			structs[ structs.size ] = struct;
 		}
 		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
@@ -4385,15 +4392,19 @@ init_vulture()
 			perk = vending_triggers[i].script_noteworthy;
 			struct = SpawnStruct();
 			struct.location = vending_triggers[i] get_waypoint_origin( "perk" );
+			struct.origin = struct.location[ "origin" ];
+			struct.angles = struct.location[ "angles" ];
 			struct.check_perk = perk != "specialty_altmelee";
 			struct.perk_to_check = perk;
 			struct.is_revive = perk == "specialty_quickrevive";
 			struct.is_chest = false;
 			struct.chest_to_check = undefined;
-			struct.fx_var = level.perk_vulture.perk_machine_fx[ perk ];
+			struct.fx_var = "vulture_glow";
 			struct.ent_num = vending_triggers[i] GetEntityNumber();
 			struct.script_model = Spawn( "script_model", struct.location[ "origin" ] );
-			struct.waypoint = undefined;
+			struct.waypoint_name = convertPerkToShader( perk );
+			struct.player_waypoint = [];
+
 			structs[ structs.size ] = struct;
 		}
 
@@ -4402,13 +4413,18 @@ init_vulture()
 		{
 			struct = SpawnStruct();
 			struct.location = vending_weapon_upgrade_trigger[i] get_waypoint_origin( "packapunch" );
+			struct.origin = struct.location[ "origin" ];
+			struct.angles = struct.location[ "angles" ];
 			struct.check_perk = false;
 			struct.perk_to_check = "specialty_weapupgrade";
 			struct.is_revive = false;
 			struct.is_chest = false;
 			struct.chest_to_check = undefined;
-			struct.fx_var = "vulture_perk_machine_glow_pack_a_punch";
+			struct.fx_var = "vulture_glow";
 			struct.ent_num = vending_weapon_upgrade_trigger[i] GetEntityNumber();
+			struct.waypoint_name = "specialty_glow_pap";
+			struct.player_waypoint = [];
+
 			structs[ structs.size ] = struct;
 		}
 
@@ -4417,106 +4433,147 @@ init_vulture()
 		{
 			struct = SpawnStruct();
 			struct.location = chests[i] get_waypoint_origin( "mysterybox" );
+			struct.origin = struct.location[ "origin" ];
+			struct.angles = struct.location[ "angles" ];
 			struct.check_perk = false;
 			struct.perk_to_check = undefined;
 			struct.is_revive = false;
 			struct.is_chest = true;
 			struct.chest_to_check = chests[i];
-			struct.fx_var = "vulture_perk_mystery_box_glow";
+			struct.fx_var = "vulture_glow";
 			struct.ent_num = chests[i] GetEntityNumber();
+			struct.waypoint_name = "specialty_glow_magic_box";
+			struct.player_waypoint = [];
+
 			structs[ structs.size ] = struct;
 		}
 
 		level.perk_vulture.vulture_vision_fx_list = structs;
 		while( true )
 		{
-			for( i = 0; i < structs.size; i ++ )
+			players = GetPlayers();
+			for( p = 0; p < players.size; p ++ )
 			{
-				struct = structs[i];
-				players = GetPlayers();
-				for( p = 0; p < players.size; p ++ )
+				player = players[p];
+				num = player GetEntityNumber();
+				
+				if( player HasPerk( level.VLT_PRK ) ) {
+					iprintln( "Player has vulture" );
+				} else if( player.vulture_had_perk ) {
+					player.vulture_had_perk = false;
+				} else {
+					continue;
+				}
+				
+				for( i = 0; i < structs.size; i ++ )	
 				{
-					player = players[p];
-					num = player GetEntityNumber();
-					is_visible = check_waypoint_visible( player, struct ) && player HasPerk( level.VLT_PRK);
+					struct = structs[i];
 
-					if( !IsDefined( struct.player_visible ) ) {
-						struct.player_visible = [];
-					}
-
+					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, struct );
 					if( is_visible )
 					{
-						if( !is_true( struct.player_visible[ num ] ) )
+						if( !isDefined( struct.player_waypoint[ num ] ) )
 						{
-							struct.player_visible[ num ] = true;
-							if( IsDefined( struct.perk_to_check ) )
-								struct.waypoint = player create_individual_waypoint( struct );
-							else
-								create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
+							struct.player_waypoint[ num ] = player create_individual_waypoint( struct );
+							create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
 						}
 					}
 					else
 					{
-						if( is_true( struct.player_visible[ num ] ) )
+						if( isDefined( struct.player_waypoint[ num ] ) )
 						{
-							struct.player_visible[ num ] = false;
-							if( IsDefined( struct.waypoint ) )
-								struct.waypoint destroy_hud();
-							else
-								destroy_loop_fx_to_player( player, struct.ent_num, true );
+							struct.player_waypoint[ num ] destroy_hud();
+							struct.player_waypoint[ num ] = undefined;
+							destroy_loop_fx_to_player( player, struct.ent_num, true );		
 						}
 					}
 				}
-			}
-			wait 0.5;
-		}
+				//End Players FOR
 
+			} //End Waypoints FOR
+			wait 2;
+		}
+		//END WHILE
 
 	}
 
 
+		//Reimagined-Expanded - currently not used 
+		/*
+		convertPerkToGlow( perk )
+		{
+			struct = SpawnStruct();
+			if (perk == "specialty_armorvest") {
+				struct.glow = "specialty_glow_jugg";
+				struct.color = ( 1, .7, .1 );
+			} 
+			if (perk == "specialty_quickrevive")
+				return "specialty_quickrevive_zombies";
+			if (perk == "specialty_fastreload")
+				return "specialty_glow_speed";
+			if (perk == "specialty_rof")
+				return "specialty_doubletap_zombies";
+			if (perk == "specialty_endurance")
+				return "specialty_marathon_zombies";
+			if (perk == "specialty_flakjacket")
+				return "specialty_divetonuke_zombies";
+			if (perk == "specialty_deadshot")
+				return "specialty_deadshot_zombies";
+			if (perk == "specialty_additionalprimaryweapon")
+				return "specialty_mulekick_zombies";
+			if (perk == "specialty_bulletdamaged")
+				return "specialty_cherry_zombies";
+			if (perk == "specialty_altmelee")
+				return "specialty_vulture_zombies";
+			if (perk == "specialty_bulletaccuracy")
+				return "specialty_widowswine_zombies";
+			
+		return struct;
+		}
+		*/
+
 		//HERE
+		//Self is player with vulture
 		create_individual_waypoint( struct )
 		{
 			wp = NewClientHudElem(self);
 
+			playerLoc = self.origin;
+			perkLoc = struct.origin;
+
+			dims = level.VALUE_VULTURE_HUD_DIM_VERY_FAR;
+			alpha = level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR;
+
+			inShortRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_CLOSE );
+			inMedRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_MED );
+			inFarRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_FAR );
+
+			if( struct.perk_to_check == level.JUG_PRK )
+				iprintln( "Short range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inShortRange );
+			//iprintln( "Med range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inMedRange );
+			//iprintln( "Far range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inFarRange );
+
+			if( inShortRange ) {
+				dims = level.VALUE_VULTURE_HUD_DIM_CLOSE;
+				alpha = level.VALUE_VULTURE_HUD_ALPHA_CLOSE;
+			} else if( inMedRange ) {
+				dims = level.VALUE_VULTURE_HUD_DIM_MED;
+				alpha = level.VALUE_VULTURE_HUD_ALPHA_MED;
+			} else if( inFarRange ) {
+				dims = level.VALUE_VULTURE_HUD_DIM_FAR;
+				alpha = level.VALUE_VULTURE_HUD_ALPHA_FAR;
+			}
+
 			//Uses pro perk shader
-			icon = convertPerkToShader( struct.perk_to_check );// + "_pro";
+			//icon = convertPerkToShader( struct.perk_to_check ) + "_pro";
+			//icon = convertPerkToGlow( struct.perk_to_check );	- undeveloped
 
-			wp setShader( icon, 64, 64 );
+			wp setShader( struct.waypoint_name, dims, dims );
 			wp SetTargetEnt( struct.script_model );
-			wp setWaypoint( true, icon );
-			wp.alpha = 0.7;
-			wp.color = ( 1, .7, .1 );
-
-			/*
-			Write an algorithm using the constants
-			to increase the size of the waypoint based on the distance and
-			decrease the alpha based on the distance
-
-				level.VALUE_VULTURE_HUD_DIST_FAR = 1024;
-				level.VALUE_VULTURE_HUD_DIST_MED = 256;
-				level.VALUE_VULTURE_HUD_DIST_CLOSE = 128;
-				level.VALUE_VULTURE_HUD_DIST_CUTOFF = 64;
-
-				level.VALUE_VULTURE_HUD_DIM_FAR = 16;
-				level.VALUE_VULTURE_HUD_DIM_MED = 64;
-				level.VALUE_VULTURE_HUD_DIM_CLOSE = 128;
-
-				level.VALUE_VULTURE_HUD_ALPHA_FAR = 0.8;
-				level.VALUE_VULTURE_HUD_ALPHA_MED = 0.6;
-				level.VALUE_VULTURE_HUD_ALPHA_CLOSE = 0.4;
-			*/
-
-			
-
+			wp setWaypoint( true, struct.waypoint_name );
+			wp.alpha = alpha;
 
 			return wp;
-		}
-
-		destroy_perk_waypoint()
-		{
-			//nothing
 		}
 
 			//Utility
@@ -4593,7 +4650,7 @@ init_vulture()
 		get_mystery_box_origin( trigger )
 		{
 			forward = AnglesToForward( trigger.chest_box.angles + ( 0, 90, 0 ) );
-			origin = trigger.chest_box.origin + vector_scale( forward, 10 );
+			origin = trigger.chest_box.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 			return origin + ( 0, 0, 30 );
 		}
 
@@ -4611,7 +4668,7 @@ init_vulture()
 				}
 			}
 			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
-			origin = machine.origin + vector_scale( forward, 10 );
+			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 			return origin + ( 0, 0, 50 );
 		}
 
@@ -4619,28 +4676,30 @@ init_vulture()
 		{
 			machine = GetEnt( trigger.target, "targetname" );
 			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
-			origin = machine.origin + vector_scale( forward, 20 );
+			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 			return origin + ( 0, 0, 40 );
 		}
 
 	check_waypoint_visible( player, struct )
 	{
-		has_perk = false;
-		if( struct.check_perk && IsDefined( struct.perk_to_check ) )
-		{
-			has_perk = player HasPerk( struct.perk_to_check );
-		}
-		is_empty_boxlocation = false;
+		if( !IsDefined( player.origin ) || !IsDefined( struct.origin ) )
+			return false;
+
+		/* CHECK DISTANCE CUTOFFS */
+
+		cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
+		cutoffFar = !checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR );
+		if( cutoffClose || cutoffFar )
+			return false;
+
+
+		/* CHECK EMPTY BOX LOC */
+
 		if( struct.is_chest && IsDefined( struct.chest_to_check ) )
-		{
-			is_empty_boxlocation = !is_true( struct.chest_to_check.vulture_waypoint_visible );
-		}
-		custom_map_check = false;
-		if( IsDefined( level.vulture_perk_custom_map_check ) )
-		{
-			custom_map_check = [[ level.vulture_perk_custom_map_check ]]( struct );
-		}
-		return !has_perk && !is_empty_boxlocation && !custom_map_check;
+			return is_true( struct.chest_to_check.vulture_waypoint_visible );
+		
+	
+		return true;
 	}
 
 

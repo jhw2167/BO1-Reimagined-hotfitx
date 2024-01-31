@@ -480,12 +480,16 @@ hud_message_handler(clientnum, state)
 
 handle_client_perk_hud_updates( clientnum, state )
 {
-	if( IsSubStr( state, "hud_mule_wep" ) ) {
+	if( IsSubStr( state, "perk_slot" ) ) {
+		return player_handle_perk_slots( state );
+	}
+	else if( IsSubStr( state, "hud_mule_wep" ) ) {
 		return player_handle_mulekick_message( state );
 	}
 	else if( IsSubStr( state, "stamina_ghost" ) ) {
 		return player_handle_stamina_ghost( state );
-	} else if( IsSubStr( state, "vulture_hud" ) ) {
+	} 
+	else if( IsSubStr( state, "vulture_hud" ) ) {
 		player_handle_vulture_hud( clientnum, state );
 	}
 	
@@ -521,6 +525,14 @@ client_systems_message_handler(clientnum, state, oldState)
 HANDLE PERK CLIENT MESSAGES
 
 */
+
+//Perk Slots
+player_handle_perk_slots( state )
+{
+	//Don't know if I need this
+	return undefined;
+}
+
 
 //Mulekick
 player_handle_mulekick_message( state )
