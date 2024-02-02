@@ -175,6 +175,8 @@ fx,electric_cherry/fx_electric_cherry_shock_large
 
 //vulture
 fx,vulture/fx_vulture_glow
+fx,vulture/fx_vulture_box
+fx,vulture/fx_vulture_skull
 
 
 
@@ -318,9 +320,6 @@ material,specialty_glow_whoswho
 material,specialty_glow_widow
 material,specialty_glow_wunderfizz
 material,specialty_nuke_zombies
-
-//Vulture Material Waypoints
-
 
 
 //Drop Icons

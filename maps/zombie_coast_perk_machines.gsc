@@ -5,10 +5,10 @@ init()
 {		
 	place_babyjug();
 
-	//place_extraammo();
+	place_extraammo();
 	place_martyrdom();
 	//place_chugabud();
-	//place_vulture();
+	place_vulture();
 	place_mulekick();
 }
 

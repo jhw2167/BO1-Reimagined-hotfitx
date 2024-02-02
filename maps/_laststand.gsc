@@ -163,7 +163,10 @@ PlayerLastStand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 	// bleed out timer
 	self thread laststand_bleedout( GetDvarFloat( #"player_lastStandBleedoutTime" ) );
 
+	
 	self notify( "player_downed" );
+	level notify( "player_downed");
+
 	self thread refire_player_downed();
 }
 

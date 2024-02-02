@@ -373,7 +373,7 @@ default_vending_precaching()
 		PreCacheModel( "p6_zm_vending_electric_cherry_on" );
 		PreCacheString( &"REIMAGINED_PERK_CHERRY" );
 		//level._effect[ "electriccherry_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
-		level._effect[ "electriccherry_light" ] = level._effect[ "additionalprimaryweapon_light" ];
+		level._effect[ "electriccherry_light" ] = level._effect[ "doubletap_light" ];
 		level thread turn_electriccherry_on();
 	}
 	if( is_true( level.zombiemode_using_vulture_perk ) )
@@ -383,7 +383,7 @@ default_vending_precaching()
 		PreCacheModel( "bo2_zombie_vending_vultureaid" );
 		PreCacheModel( "bo2_zombie_vending_vultureaid_on" );
 		PreCacheString( &"REIMAGINED_PERK_VULTURE" );
-		level._effect[ "vulture_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
+		level._effect[ "vulture_light" ] = level._effect["jugger_light"];
 		level thread turn_vulture_on();
 	}
 	if( is_true( level.zombiemode_using_widowswine_perk ) )
@@ -393,7 +393,7 @@ default_vending_precaching()
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_off" );
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_on" );
 		PreCacheString( &"REIMAGINED_PERK_WIDOWSWINE" );
-		level._effect[ "widow_light" ] = LoadFX( "misc/fx_zombie_cola_jugg_on" );
+		level._effect[ "widow_light" ] = level._effect["jugger_light"];
 		level thread turn_widowswine_on();
 	}
 	if( is_true( level.zombiemode_using_bandolier_perk ) )
@@ -1493,6 +1493,10 @@ turn_vulture_on()
 		machine[i] thread perk_fx( "vulture_light" );
 	}
 	level notify( "specialty_altmelee_power_on" );
+
+	player = GetPlayers()[0];
+	//gun = player perk_give_bottle_begin( level.VLT_PRK );
+	//machine thread give_perk_think(player, gun, level.VLT_PRK , 0);
 }
 
 turn_widowswine_on()
@@ -1612,7 +1616,7 @@ convertPerkToShader( perk )
 		return "specialty_deadshot_zombies";
 	if (perk == "specialty_additionalprimaryweapon")
 		return "specialty_mulekick_zombies";
-	if (perk == "specialty_bulletdamaged")
+	if (perk == "specialty_bulletdamage")
 		return "specialty_cherry_zombies";
 	if (perk == "specialty_altmelee")
 		return "specialty_vulture_zombies";
@@ -4268,14 +4272,94 @@ player_watch_vulture()
 {
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_on");
 	self.vulture_had_perk = true; //turned off after vulture_destroy_waypoints();
+	self thread player_create_vulture_vision_weapon();
+	self thread player_create_vulture_vision_box_glow();
 
 	while( self HasPerk( level.VLT_PRK ) )	{
 		//wait
 		wait(0.1);
 	}
 
+	self notify( level.VLT_PRK + "_stop" );
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_off");
 }
+
+//Self is player
+	player_create_vulture_vision_weapon()
+	{
+		structs = level.perk_vulture_waypoint_structs;
+		for( i = 0; i < structs.size; i++ )
+		{
+			struct = structs[i];
+			if( is_true( struct.is_weapon ) )
+				create_loop_fx_to_player( self, struct.ent_num, struct.fx_var, struct.origin, struct.angles );
+		}
+
+		self waittill( level.VLT_PRK + "_stop" );
+
+		for( i = 0; i < structs.size; i++ )
+		{
+			struct = structs[i];
+			if( is_true( struct.is_weapon ) )
+				destroy_loop_fx_to_player( self, struct.ent_num, true );
+		}
+		
+	}
+
+	//*
+	player_create_vulture_vision_box_glow()
+	{
+		structs = level.perk_vulture_waypoint_structs;
+		while( 1 )
+		{
+			//Create fx where box is
+					
+			for( i = 0; i < structs.size; i++ )
+			{
+				struct = structs[i];
+				if( is_true( struct.chest_to_check ) && check_waypoint_visible( self, struct ) ) 
+				{
+					create_loop_fx_to_player( self, struct.ent_num, struct.fx_var, struct.origin, struct.angles );
+					struct.fx_created = true;
+				}
+					
+			}
+			
+			//Wait for firesale or box moved event
+			event = level waittill_any_return( "powerup fire sale", "fire_sale_off", "moving_chest_now", "player_downed" );
+			
+			//Destroy fx
+			for( i = 0; i < structs.size; i++ )
+			{
+				struct = structs[i];
+				if( is_true( struct.chest_to_check ) && is_true( struct.fx_created ) )
+					destroy_loop_fx_to_player( self, struct.ent_num, true );
+			}
+
+			
+			//Handle player downed
+			if( event == "player_downed" )
+			{
+				if( !self maps\_laststand::player_is_in_laststand() )
+					continue;
+			
+				
+				self waittill_any( "player_revived", "disconnect", "bled_out", "death" );
+
+				if( !(self HasPerk( level.VLT_PRK )) )
+					break;
+			}
+
+			
+			level waittill_any( "powerup fire sale", "fire_sale_off", "moving_chest_done" );
+			
+			wait 5;
+		}
+
+		//Destroy any existing fx
+		
+	}
+	// */
 
 
 vulture_player_connect_callback()
@@ -4302,6 +4386,10 @@ init_vulture_assets()
 	PreCacheShader( "specialty_glow_skull" );
 
 	level._effect[ "vulture_glow" ] = LoadFX( "vulture/fx_vulture_glow" );
+	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
+	level._effect[ "vulture_skull" ] = LoadFX( "vulture/fx_vulture_skull" );
+	//level._effect[ "vulture_perk_bonus_drop" ] = level._effect["powerup_on_solo"]; //used in clientscript
+
 	/*
 	PreCacheShader( "hud_vulture_aid_stink" );
 	PreCacheShader( "hud_vulture_aid_stink_outline" );
@@ -4344,27 +4432,27 @@ init_vulture()
 	//maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
 	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
 
+	level waittill( "all_players_connected" );
 	level thread vulture_perk_watch_waypoints();
 	level thread vulture_perk_watch_mystery_box();
 	level thread vulture_perk_watch_fire_sale();
+	level thread vulture_perk_watch_pap_move();
 	//level thread vulture_perk_watch_powerup_drops(); /handled with zombies
 		
 }
 
 
-/* Waypoints 
-// */
-
+/* Waypoints */
+ 
 
 	vulture_perk_watch_waypoints()
 	{
 		setup_perk_machine_fx();
-		flag_wait( "all_players_connected" );
 		wait 1;
 		structs = [];
 		weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
 		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "betty_purchase", "targetname" ) );
-		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "tazer_upgrade", "targetname" ) );
+		//weapon_spawns = array_combine( weapon_spawns, GetEntArray( "tazer_upgrade", "targetname" ) );
 		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "bowie_upgrade", "targetname" ) );
 		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "claymore_purchase", "targetname" ) );
 		weapon_spawns = array_combine( weapon_spawns, GetEntArray( "sickle_upgrade", "targetname" ) );
@@ -4375,6 +4463,9 @@ init_vulture()
 			model = GetEnt( weapon_spawns[i].target, "targetname" );
 			struct = SpawnStruct();
 			struct.location = weapon_spawns[i] get_waypoint_origin( "wallgun" );
+			struct.origin = struct.location[ "origin" ];
+			struct.angles = struct.location[ "angles" ];
+			struct.is_weapon = true;
 			struct.check_perk = false;
 			struct.perk_to_check = undefined;
 			struct.is_revive = false;
@@ -4382,8 +4473,10 @@ init_vulture()
 			struct.chest_to_check = undefined;
 			struct.fx_var = "vulture_glow";
 			struct.ent_num = model GetEntityNumber();
+			struct.script_model = Spawn( "script_model", struct.origin );
 			struct.player_waypoint = [];
 			struct.waypoint_name = "specialty_glow_rifle";
+
 			structs[ structs.size ] = struct;
 		}
 		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
@@ -4401,8 +4494,8 @@ init_vulture()
 			struct.chest_to_check = undefined;
 			struct.fx_var = "vulture_glow";
 			struct.ent_num = vending_triggers[i] GetEntityNumber();
-			struct.script_model = Spawn( "script_model", struct.location[ "origin" ] );
-			struct.waypoint_name = convertPerkToShader( perk );
+			struct.script_model = Spawn( "script_model", struct.origin );
+			struct.waypoint_name = convertPerkToShader( perk ) + "_pro";
 			struct.player_waypoint = [];
 
 			structs[ structs.size ] = struct;
@@ -4422,11 +4515,40 @@ init_vulture()
 			struct.chest_to_check = undefined;
 			struct.fx_var = "vulture_glow";
 			struct.ent_num = vending_weapon_upgrade_trigger[i] GetEntityNumber();
+			struct.script_model = Spawn( "script_model", struct.origin );
 			struct.waypoint_name = "specialty_glow_pap";
 			struct.player_waypoint = [];
 
 			structs[ structs.size ] = struct;
 		}
+
+			//For multiple PAP locations, do a little more work
+			pap_locations = getstructarray("pap_location","targetname");
+			if( IsDefined(pap_locations) && pap_locations.size > 0 )
+			{
+				structs[ structs.size - 1].using_pap_locations = true;	//Default PaP vending will not be valid waypoint
+				iprintln("PAP Locations: " + pap_locations.size);
+				for( i = 0; i < pap_locations.size; i++ )
+				{
+					struct = SpawnStruct();
+					struct.location = pap_locations[i] get_waypoint_origin( "pap_location" );
+					struct.origin = struct.location[ "origin" ];
+					struct.angles = struct.location[ "angles" ];
+					struct.original_struct = pap_locations[i];
+					struct.check_perk = false;
+					struct.perk_to_check = "specialty_weapupgrade_location";
+					struct.is_revive = false;
+					struct.is_chest = false;
+					struct.chest_to_check = undefined;
+					struct.fx_var = "vulture_glow";
+					struct.ent_num = 0;	//not an entity
+					struct.script_model = Spawn( "script_model", struct.origin );
+					struct.waypoint_name = "specialty_glow_pap";
+					struct.player_waypoint = [];
+
+					structs[ structs.size ] = struct;
+				}
+			}
 
 		chests = GetEntArray( "treasure_chest_use", "targetname" );
 		for( i = 0; i < chests.size; i ++ )
@@ -4440,15 +4562,16 @@ init_vulture()
 			struct.is_revive = false;
 			struct.is_chest = true;
 			struct.chest_to_check = chests[i];
-			struct.fx_var = "vulture_glow";
+			struct.fx_var = "vulture_perk_mystery_box_glow";
 			struct.ent_num = chests[i] GetEntityNumber();
+			struct.script_model = Spawn( "script_model", struct.origin );
 			struct.waypoint_name = "specialty_glow_magic_box";
 			struct.player_waypoint = [];
 
 			structs[ structs.size ] = struct;
 		}
 
-		level.perk_vulture.vulture_vision_fx_list = structs;
+		level.perk_vulture_waypoint_structs = structs;
 		while( true )
 		{
 			players = GetPlayers();
@@ -4457,45 +4580,46 @@ init_vulture()
 				player = players[p];
 				num = player GetEntityNumber();
 				
-				if( player HasPerk( level.VLT_PRK ) ) {
-					iprintln( "Player has vulture" );
-				} else if( player.vulture_had_perk ) {
-					player.vulture_had_perk = false;
-				} else {
-					continue;
-				}
-				
+				//HERE
 				for( i = 0; i < structs.size; i ++ )	
 				{
 					struct = structs[i];
+					if( isDefined( struct.chest_to_check ) )	//box is handled seperately		
+						continue;
 
 					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, struct );
+
 					if( is_visible )
 					{
-						if( !isDefined( struct.player_waypoint[ num ] ) )
-						{
-							struct.player_waypoint[ num ] = player create_individual_waypoint( struct );
-							create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.location[ "origin" ], struct.location[ "angles" ] );
-						}
-					}
-					else
-					{
 						if( isDefined( struct.player_waypoint[ num ] ) )
-						{
-							struct.player_waypoint[ num ] destroy_hud();
-							struct.player_waypoint[ num ] = undefined;
-							destroy_loop_fx_to_player( player, struct.ent_num, true );		
-						}
+							continue;
+
+						struct.player_waypoint[ num ] = create_individual_waypoint( player, struct );
+						//create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.origin, struct.angles );
 					}
+					else if( isDefined( struct.player_waypoint[ num ] ) )
+					{
+						destroy_individual_waypoint( struct.player_waypoint[ num ], is_visible );
+						//destroy_loop_fx_to_player( player, struct.ent_num, true );		
+					}
+
 				}
 				//End Players FOR
 
 			} //End Waypoints FOR
-			wait 2;
+			wait 0.1;
 		}
 		//END WHILE
 
 	}
+
+
+		destroy_individual_waypoint( wp, is_visible )
+		{		
+			if( !IsDefined( wp ) )
+				return;
+			wp Destroy();
+		}
 
 
 		//Reimagined-Expanded - currently not used 
@@ -4534,11 +4658,20 @@ init_vulture()
 
 		//HERE
 		//Self is player with vulture
-		create_individual_waypoint( struct )
+		create_individual_waypoint( player, struct )
 		{
-			wp = NewClientHudElem(self);
+			wp = NewClientHudElem( player );
 
-			playerLoc = self.origin;
+			//Uses pro perk shader
+			icon = struct.waypoint_name;
+			wp SetTargetEnt( struct.script_model );
+			//wp.alpha = level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR;
+			wp.hidewheninmenu = true;
+			wp.alpha = .5;
+			wp setWaypoint( true, icon);
+			
+			/*
+			playerLoc = player.origin;
 			perkLoc = struct.origin;
 
 			dims = level.VALUE_VULTURE_HUD_DIM_VERY_FAR;
@@ -4548,8 +4681,8 @@ init_vulture()
 			inMedRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_MED );
 			inFarRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_FAR );
 
-			if( struct.perk_to_check == level.JUG_PRK )
-				iprintln( "Short range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inShortRange );
+			//if( struct.perk_to_check == level.JUG_PRK )
+			//iprintln( "Short range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inShortRange );
 			//iprintln( "Med range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inMedRange );
 			//iprintln( "Far range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inFarRange );
 
@@ -4564,14 +4697,16 @@ init_vulture()
 				alpha = level.VALUE_VULTURE_HUD_ALPHA_FAR;
 			}
 
-			//Uses pro perk shader
-			//icon = convertPerkToShader( struct.perk_to_check ) + "_pro";
-			//icon = convertPerkToGlow( struct.perk_to_check );	- undeveloped
-
-			wp setShader( struct.waypoint_name, dims, dims );
-			wp SetTargetEnt( struct.script_model );
-			wp setWaypoint( true, struct.waypoint_name );
+			icon = convertPerkToGlow( struct.perk_to_check );	//undeveloped
+			
+			
+			wp = create_simple_hud(player);
 			wp.alpha = alpha;
+			wp.x = x;
+			wp.y = y;
+
+			wp setShader( icon, dims, dims );
+			// */
 
 			return wp;
 		}
@@ -4593,7 +4728,7 @@ init_vulture()
 			}
 
 
-
+	//Stop condensing my methods
 
 	setup_perk_machine_fx()
 	{
@@ -4640,6 +4775,10 @@ init_vulture()
 			case "packapunch":
 				origin = get_pack_a_punch_origin( self );
 				break;
+
+			case "pap_location":
+				origin = get_origin_from_pap_location( self );
+				break;
 		}
 		location = [];
 		location[ "origin" ] = origin;
@@ -4680,28 +4819,130 @@ init_vulture()
 			return origin + ( 0, 0, 40 );
 		}
 
+		get_origin_from_pap_location( location )
+		{
+			forward = AnglesToForward( location.angles );
+			origin = location.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
+			return origin - ( 0, 0, 20 );
+		}
+
+	//Check Waypoint visibuity
 	check_waypoint_visible( player, struct )
 	{
+		
+		if( !IsDefined( player ) || !IsDefined( struct ) )
+			return false;
+
 		if( !IsDefined( player.origin ) || !IsDefined( struct.origin ) )
 			return false;
 
 		/* CHECK DISTANCE CUTOFFS */
 
+		is_visible = false;
+		if( is_true( struct.is_weapon ) )		//WEAPON
+		{
+			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_MED ) )
+				is_visible = true;
+		} 
+		else if( is_true( struct.is_chest ) )	//BOX
+		{
+			if( IsDefined( struct.chest_to_check ) )
+				return is_true( struct.chest_to_check.vulture_waypoint_visible );	
+				//let box be visible despite distance
+		} 
+		else if( isDefined(struct.perk_to_check) )
+		{
+			/* Determine if Perk or PAP is in Playable Area */
+
+			playable_area = getentarray("player_volume","script_noteworthy");
+			perk_is_somewhere = false;
+			for( i = 0; i < playable_area.size; i++ ) {
+				if( !struct.script_model IsTouching(playable_area[i]) )
+					perk_is_somewhere = true;
+			}
+
+			if( !perk_is_somewhere )
+				return false;
+			/* ##############				############## */
+
+
+
+			/* Determine if PAP is at this spot */
+			if( struct.perk_to_check == "specialty_weapupgrade_location" )
+			{
+				
+				if( !IsDefined( level.vulture_track_current_pap_spot ))
+					return false;
+
+				in_range = checkDist( struct.original_struct.origin, level.vulture_track_current_pap_spot, 100 );
+				if( !in_range )
+					return false;		
+
+			}
+			else if( struct.perk_to_check == "specialty_weapupgrade" )
+			{
+				if( is_true( struct.using_pap_locations ))
+					return false;
+			}
+
+			/* ##############				############## */
+
+
+			//Only show perks within VERY_FAR range and IF player is looking in their direction
+			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
+			{
+				//Calculate if perk is in player's view
+				//view_angles = player GetTagAngles( "tag_flash" );
+				view_angles = player GetPlayerAngles();
+				forwardAngles = AnglesToForward( view_angles );
+
+				//Perk needs to be within a wide cone from this players view
+				view_pos = player GetTagOrigin( "tag_flash" ) - player GetPlayerViewHeight();
+				normal = VectorNormalize( struct.origin - view_pos );	
+
+				dot = VectorDot( forwardAngles, normal );
+
+				if( dot > level.THRESHOLD_VULTURE_FOV_HUD_DOT )
+					is_visible = true;
+				
+			}
+		}
+			
 		cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
 		cutoffFar = !checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR );
+
 		if( cutoffClose || cutoffFar )
 			return false;
-
-
-		/* CHECK EMPTY BOX LOC */
-
-		if( struct.is_chest && IsDefined( struct.chest_to_check ) )
-			return is_true( struct.chest_to_check.vulture_waypoint_visible );
 		
-	
-		return true;
+		//iprintln("Returning is_visible: " + struct.ent_num + "  " + is_visible);
+		return is_visible;
 	}
 
+vulture_perk_watch_pap_move()
+{
+	wait_network_frame();
+	while( 1 ) 
+	{
+		while( !IsDefined( level.pap_moving) ||  ! level.pap_moving ) { //Pap is either still or not available
+			wait 1;
+		}
+
+		while( is_true( level.pap_moving ) ) {
+			wait 1;
+		}
+		
+		vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
+		for(i=0; i<vending_weapon_upgrade_trigger.size; i++ )
+		{
+			perk = getent(vending_weapon_upgrade_trigger[i].target, "targetname");
+			if(isDefined(perk))
+			{
+				level.vulture_track_current_pap_spot = perk.origin;
+			}
+		}
+		
+	}
+}
 
 vulture_perk_watch_mystery_box()
 {
@@ -4747,7 +4988,6 @@ zombie_watch_vulture_drop_bonus()
 {
 	self waittill("death");
 
-	//Expected drop rate is 1 green drop, 0.5 red drop, 0.5 blue drop per round, normalized by zombie total
 	rand = randomint(1000);	//Normalized to 1000, don't want to to deal with decimals
 
 	scaler = count_total_vulture_players();

@@ -2089,6 +2089,7 @@ treasure_chest_move( player_vox )
 
 	flag_clear("moving_chest_now");
 	self.chest_origin.chest_moving = false;
+	level notify("moving_chest_done");
 }
 
 treasure_chest_fly_away(up, no_sound)
@@ -2688,6 +2689,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 		if( level.chest_accessed < level.chest_min_move_usage )
 		{
 			chance_of_joker = -1;
+			chance_of_joker = 70;
 		}
 		else
 		{
@@ -2789,6 +2791,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 
 			self.chest_moving = true;
 			flag_set("moving_chest_now");
+			level notify("moving_chest_now");
 			level.chest_accessed = 0;
 
 			//allow power weapon to be accessed.

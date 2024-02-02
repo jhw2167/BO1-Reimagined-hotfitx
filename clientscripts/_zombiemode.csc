@@ -68,13 +68,11 @@ init_perk_fx()
 	
 	level._effect[ "vulture_glow" ] = LoadFX( "vulture/fx_vulture_glow" );
 	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "misc/fx_zombie_powerup_solo_on" );
-	
-	level._effect[ "vulture_perk_bonus_drop" ] = LoadFX( "vulture/fx_zombie_powerup_vulture" );
-	level._effect[ "vulture_drop_picked_up" ] = LoadFX( "misc/fx_zombie_powerup_grab" );
+	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
+	level._effect[ "vulture_skull" ] = LoadFX( "vulture/fx_vulture_skull" );
 	
 	//level._effect[ "widows_wine_wrap" ] = LoadFX( "widows_wine/fx_widows_wine_zombie" );
 	//level._effect[ "widows_wine_exp_1p" ] = LoadFX( "widows_wine/fx_widows_wine_explode" );
-	
 }
 
 init_level_vars()

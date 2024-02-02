@@ -675,23 +675,24 @@ reimagined_init_level()
 		);
 
 	//Vulture HUD Values
-	level.VALUE_VULTURE_HUD_DIST_VERY_FAR = 2048;
-	level.VALUE_VULTURE_HUD_DIST_FAR = 1640;
-	level.VALUE_VULTURE_HUD_DIST_MED = 1024;
+	level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR = 3072;
+	level.VALUE_VULTURE_HUD_DIST_FAR = 1024;
+	level.VALUE_VULTURE_HUD_DIST_MED = 512;
 	level.VALUE_VULTURE_HUD_DIST_CLOSE = 256;
-	level.VALUE_VULTURE_HUD_DIST_CUTOFF = 128;
+	level.VALUE_VULTURE_HUD_DIST_CUTOFF = 192;
 
 	level.VALUE_VULTURE_HUD_DIM_VERY_FAR = 16;
 	level.VALUE_VULTURE_HUD_DIM_FAR = 16;
 	level.VALUE_VULTURE_HUD_DIM_MED = 64;
 	level.VALUE_VULTURE_HUD_DIM_CLOSE = 128;
 
-	level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR = 1;
-	level.VALUE_VULTURE_HUD_ALPHA_FAR = 0.6;
-	level.VALUE_VULTURE_HUD_ALPHA_MED = 0.4;
-	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = 0.2;
+	level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR = .35;
+	level.VALUE_VULTURE_HUD_ALPHA_FAR = .4;
+	level.VALUE_VULTURE_HUD_ALPHA_MED = .3;
+	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = .2;
 
 	level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET = 20;
+	level.THRESHOLD_VULTURE_FOV_HUD_DOT = .5;
 
 	//Wine
 
@@ -737,6 +738,9 @@ reimagined_init_level()
 	level.respawn_queue_locked = false;
 	level.respawn_queue_num = 0;
 	level.respawn_queue_unlocks_num = 0;
+
+	//Real Time Perk Variables
+	level.vulture_track_current_pap_spot = undefined;	//undefined when not in map
 
 	//Maps
 
@@ -848,8 +852,11 @@ wait_set_player_visionset()
 checkDist( a, b, distance)
 {
 	vars_defined = isDefined(a) && isDefined(b) && isDefined(distance);
-	if(!vars_defined)
+	if(!vars_defined) {
+		iprintln("checkDist: called on undefineds");
 		return false;
+	}	
+		
 
 	if( DistanceSquared( a, b ) < distance * distance )
 		return true;
@@ -2004,18 +2011,20 @@ init_fx()
 	level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
 	level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
 
+	//Gives CSC error if not included
+	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
+	level._effect["headshot_nochunks"] 			= LoadFX( "misc/fx_zombie_bloodsplat" );
+	level._effect["chest_light"]		 		= LoadFX( "env/light/fx_ray_sun_sm_short" );
+
 	/*
 	
 	level._effect["fx_zombie_bar_break"]		= LoadFX( "maps/zombie/fx_zombie_bar_break" );
 	level._effect["fx_zombie_bar_break_lite"]	= LoadFX( "maps/zombie/fx_zombie_bar_break_lite" );
 
 	level._effect["edge_fog"]			 		= LoadFX( "maps/zombie/fx_fog_zombie_amb" );
-	level._effect["chest_light"]		 		= LoadFX( "env/light/fx_ray_sun_sm_short" );
 
 
-	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
 	//Reimagined-Expanded - removed to avoid fx overload
-	//level._effect["headshot_nochunks"] 			= LoadFX( "misc/fx_zombie_bloodsplat" );
 	//level._effect["bloodspurt"] 				= LoadFX( "misc/fx_zombie_bloodspurt" );
 	//level._effect["tesla_head_light"]			= LoadFX( "maps/zombie/fx_zombie_tesla_neck_spurt");
 
