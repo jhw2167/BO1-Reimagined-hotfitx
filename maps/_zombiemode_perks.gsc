@@ -1588,7 +1588,7 @@ convertProPerkToShaderPro( perk )
 		return "specialty_deadshot_zombies_pro";
 	if (perk == "specialty_additionalprimaryweapon_upgrade")
 		return "specialty_mulekick_zombies_pro";
-	if (perk == "specialty_bulletdamage_upgraded")
+	if (perk == "specialty_bulletdamage_upgrade")
 		return "specialty_cherry_zombies_pro";
 	if (perk == "specialty_altmelee_upgrade")
 		return "specialty_vulture_zombies_pro";
@@ -2882,9 +2882,100 @@ perk_think( perk )
 	self notify( "perk_lost" );
 }
 
+manage_ui_perk_hud( perk, on )
+{
+	total_perks = self.purchased_perks.size;
+
+	if( on )
+	{
+		perk_num = total_perks;
+		if( IsSubStr( perk, "_upgrade" ) ) 
+		{
+			//Loop through purchased perks to find base perk
+			base_perk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
+			for( i=0; i < total_perks; i++ ) 
+			{
+				if( self.purchased_perks[i] == base_perk ) {
+					perk_num = i;
+					break;
+				}
+			}
+
+		} 
+
+		self.purchased_perks[ perk_num ] = perk;
+
+		ui_perk_hud_activate( perk, perk_num );
+	}	
+	else
+	{
+		//Loop through purchased perks to find base perk
+		base_perk = perk;
+		for( i=0; i < total_perks; i++ ) 
+		{
+			ui_perk_hud_remove( i );
+
+			if( self.purchased_perks[i] == base_perk ) {
+				perk_num = i;
+				continue;
+			}
+			
+			ui_perk_hud_activate( self.purchased_perks[i], i );
+		}
+
+	}
+		
+	
+}
+
+ui_perk_hud_activate( perk, perk_num )
+{
+	msg = "perk_slot_";
+
+	if( IsSubStr( perk, "_upgrade" ) ) 
+	{
+		shader = convertProPerkToShaderPro( perk );
+	}
+	else 
+	{
+		shader = convertPerkToShader( perk );
+	}
+
+	//Add leading 0 to perk number
+	if( perk_num < 10 )
+		msg += "0";
+	msg += perk_num;
+	perk_key = msg;
+
+	msg += "_on";
+	iprintln( "manage_ui_perk_hud: " + msg );
+	self SetClientDvar(perk_key, shader);
+	self send_message_to_csc("hud_anim_handler", msg);
+}
+
+ui_perk_hud_remove( perk_num )
+{
+	msg = "perk_slot_";
+
+	if( perk_num < 10 )
+		msg += "0";
+	msg += perk_num;
+	perk_key = msg;
+
+	msg += "_off";
+	iprintln( "manage_ui_perk_hud: " + msg );
+	self send_message_to_csc("hud_anim_handler", msg);
+	self SetClientDvar(perk_key, "");
+}
 
 perk_hud_create( perk )
 {
+
+	self manage_ui_perk_hud( perk, true );
+	a = 1;
+	if( a==1 )
+		return;
+
 	if ( !IsDefined( self.perk_hud ) )
 	{
 		self.perk_hud = [];
@@ -3031,9 +3122,10 @@ perk_hud_create( perk )
 
 perk_hud_destroy( perk )
 {
-	self.perk_hud_num = array_remove_nokeys(self.perk_hud_num, perk);
-	self.perk_hud[ perk ] destroy_hud();
-	self.perk_hud[ perk ] = undefined;
+	self manage_ui_perk_hud( perk, false );
+	//self.perk_hud_num = array_remove_nokeys(self.perk_hud_num, perk);
+	//self.perk_hud[ perk ] destroy_hud();
+	//self.perk_hud[ perk ] = undefined;
 }
 
 perk_hud_flash(damage)

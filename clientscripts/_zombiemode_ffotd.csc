@@ -529,8 +529,22 @@ HANDLE PERK CLIENT MESSAGES
 //Perk Slots
 player_handle_perk_slots( state )
 {
-	//Don't know if I need this
-	return undefined;
+	s = SpawnStruct();
+	s.menu_name = "perk_slots";
+	s.item_name = GetSubStr( state, 0, 12); //Get "perk_slot_01"
+	iprintlnbold(s.item_name);
+	s.fade_time = 250;
+	//material name must be set as DVAR
+
+	//If state contains "in" then fade in, else fade out
+	if( IsSubStr( state, "on" ) ) {
+		s.fade_type = "fadein";
+	}
+	else if( IsSubStr( state, "off" ) ) {
+		s.fade_type = "fadeout";
+	}
+
+	return s;
 }
 
 

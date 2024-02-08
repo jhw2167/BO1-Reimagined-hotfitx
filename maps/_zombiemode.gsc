@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=32;	//*/
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -762,6 +762,8 @@ reimagined_init_level()
 reimagined_init_player()
 {
 	//init-player
+
+	self.purchased_perks = [];
 
 	//Standard Perks
 	self UnsetPerk("specialty_armorvest");
@@ -2669,6 +2671,23 @@ onPlayerConnect_clientDvars()
 
 	//Fog Off
 	self SetClientDvar("r_fog_settings", 0);
+
+	//Reimagined-Expanded, player perks
+	self SetClientDvar("perk_slot_00", "");
+	self SetClientDvar("perk_slot_01", "");
+	self SetClientDvar("perk_slot_02", "");
+	self SetClientDvar("perk_slot_03", "");
+	self SetClientDvar("perk_slot_04", "");
+	self SetClientDvar("perk_slot_05", "");
+	self SetClientDvar("perk_slot_06", "");
+	self SetClientDvar("perk_slot_07", "");
+	self SetClientDvar("perk_slot_08", "");
+	self SetClientDvar("perk_slot_09", "");
+	self SetClientDvar("perk_slot_10", "");
+	self SetClientDvar("perk_slot_11", "");
+	self SetClientDvar("perk_slot_12", "");
+	self SetClientDvar("perk_slot_13", "");
+	self SetClientDvar("perk_slot_14", "");
 }
 
 
