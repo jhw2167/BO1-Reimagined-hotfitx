@@ -1739,78 +1739,102 @@ addProPerk( perk )
 }
 
 
-disableProPerk( perk, time ) 
+disablePerk( perk, time ) 
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
-		////iprintln("disableProPerk: self or self.PRO_PERKS is undefined");
+		////iprintln("disablePerk: self or self.PRO_PERKS is undefined");
 		return;
 	}
 
-	if( !self hasProPerk( perk ) ) 
+	proPerk = false;
+	base_perk = perk;
+	if( IsSubStr( perk, "_upgrade" ) )
+	{
+		proPerk = true;
+		len = "_upgrade".size;
+		base_perk = GetSubStr( perk, 0, perk.size - len );
+	}
+
+	if( !proPerk && !self HasPerk( base_perk ) )
 		return;
 
-	self removeProPerk( perk, "DISABLE" );
-	self.PRO_PERKS_DISABLED[ perk ] = true;
+	if( proPerk && !self hasProPerk( perk ) ) 
+		return;
+
+	self removePerk( perk, "DISABLE" );
 
 	wait( time );
 
-	self returnProPerk( perk );
-	self.PRO_PERKS_DISABLED[ perk ] = false;
+	self returnPerk( perk );
+	
 }
 
-returnProPerk( perk )
+returnPerk( perk )
 {
-	len = "_upgrade".size;
-	base_perk = GetSubStr( perk, 0, perk.size - len );
+	proPerk = false;
+	base_perk = perk;
+	if( IsSubStr( perk, "_upgrade" ) )
+	{
+		proPerk = true;
+		len = "_upgrade".size;
+		base_perk = GetSubStr( perk, 0, perk.size - len );
+	}
+	
 	self give_perk( base_perk );
-	self give_perk( perk );
+	if( proPerk )
+		self give_perk( perk );
+
+	self.PERKS_DISABLED[ base_perk ] = false;
+	self.PERKS_DISABLED[ perk ] = false;
 }
 
-removeProPerk( perk, removeOrDisableHud )
+removePerk( perk, removeOrDisableHud )
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
-		////iprintln("removeProPerk: self or self.PRO_PERKS is undefined");
+		////iprintln("removePerk: self or self.PRO_PERKS is undefined");
 		return;
 	}
+
 
 	if( !IsDefined( removeOrDisableHud) )
 		removeOrDisableHud = "REMOVE";
 
-	len = "_upgrade".size;
-	base_perk = GetSubStr( perk, 0, perk.size - len );
+	perk_disabled = ( removeOrDisableHud == "DISABLE" );
+	base_perk = perk;
+	pro_perk = false;
 
-	if( !self hasProPerk( perk ) ) 
-		return;
-
-	
 	if( self hasProPerk( perk ) )
 	{
+		pro_perk = true;
+		len = "_upgrade".size;
+		base_perk = GetSubStr( perk, 0, perk.size - len );
+
+		if( perk_disabled )
+		{
+			self.PERKS_DISABLED[ perk ] = true;
+			self manage_ui_perk_hud_interface( "disable", perk );
+		}
+			
 		//Trigger notify pro perk + "_stop"
 		self notify( perk + "_stop" );
-
-		//Remove Pro Perk Shader
-		if( removeOrDisableHud == "REMOVE" )
-			self perk_hud_destroy( perk );
-		else if( removeOrDisableHud == "DISABLE" ) {
-			hud  = self.perk_hud[ base_perk ];
-			hud FadeOverTime(.5);
-			hud.alpha = 0.5;
-			self.perk_hud[ base_perk ] = hud;
-		}
 			
 		//Set player pro perk to false
 		self.PRO_PERKS[perk] = false;
 	}
+
 	//Unset base perk and reset stats by calling perk_think
-	
 	if (self HasPerk( base_perk ))
 	{
-		self thread perk_think( base_perk );
+
+		if( perk_disabled ) {
+			self.PERKS_DISABLED[ base_perk ] = true;
+		}
+		
 		wait(0.1);
 		self notify( base_perk + "_stop" );
 	}
 
-	self update_perk_hud();
+	//self update_perk_hud();
 }
 
 
@@ -1857,7 +1881,7 @@ player_print_msg(msg) {
 
 disableSpeed( wait_time ) {
 		wait(wait_time);
-		self disableProPerk( level.SPD_PRO, 30 );
+		self disablePerk( level.SPD_PRO, 30 );
 }
 
 vending_trigger_think()
@@ -2241,7 +2265,7 @@ vending_trigger_think()
 			continue;
 		}
 		
-		if( player.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
+		if( player.PERKS_DISABLED[ perk + "_upgrade"] )
 		{
 			wait( 0.1 );
 			continue;
@@ -2746,7 +2770,7 @@ check_player_has_perk(perk)
 				{
 					self SetInvisibleToPlayer(players[i], true);
 				} 
-				else if( players[i].PRO_PERKS_DISABLED[ perk + "_upgrade"] ) 
+				else if( players[i].PERKS_DISABLED[ perk + "_upgrade"] ) 
 				{
 					self SetInvisibleToPlayer(players[i], true);
 				}
@@ -2867,7 +2891,7 @@ perk_think( perk )
 	}
 
 	//Reimagined-Expanded - don't destroy perk hud if pro perk is only disabled
-	if( !self.PRO_PERKS_DISABLED[ perk + "_upgrade" ] )
+	if( !self.PERKS_DISABLED[ perk + "_upgrade" ] )
 		self perk_hud_destroy( perk );
 
 	self.perk_purchased = undefined;
@@ -2882,17 +2906,44 @@ perk_think( perk )
 	self notify( "perk_lost" );
 }
 
-manage_ui_perk_hud( perk, on )
+manage_ui_perk_hud_interface( command, perk )
+{
+	queue_num = self.perk_hud_queue_num;
+	while( self.perk_hud_queue_locked  || queue_num < self.perk_hud_queue_unlocks_num) 
+	{
+		wait 0.05;
+	}
+
+	self.perk_hud_queue_locked = true;
+	self.perk_hud_queue_num++;
+
+	iprintln(" EXECUTE UI PERK HUD: " + command + " " + perk + " " + self.perk_hud_queue_num);	
+	self manage_ui_perk_hud( command, perk );
+
+	self.perk_hud_queue_unlocks_num++;
+	self.perk_hud_queue_locked = false;
+}
+
+manage_ui_perk_hud( command, perk )
 {
 	total_perks = self.purchased_perks.size;
 
-	if( on )
+	if( command == "add" || command == "upgrade")
 	{
-		perk_num = total_perks;
-		if( IsSubStr( perk, "_upgrade" ) ) 
-		{
+		if( self.PERKS_DISABLED[ perk ] )
+			command = "enable";
+	}
+
+	switch( command )
+	{
+		case "add":
+			self.purchased_perks[ total_perks ] = perk;
+			break;
+
+		case "upgrade":
 			//Loop through purchased perks to find base perk
 			base_perk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
+			perk_num = total_perks;
 			for( i=0; i < total_perks; i++ ) 
 			{
 				if( self.purchased_perks[i] == base_perk ) {
@@ -2900,37 +2951,67 @@ manage_ui_perk_hud( perk, on )
 					break;
 				}
 			}
+			
+			self.purchased_perks[ perk_num ] = perk;
+			break;
 
-		} 
-
-		self.purchased_perks[ perk_num ] = perk;
-
-		ui_perk_hud_activate( perk, perk_num );
-	}	
-	else
-	{
-		//Loop through purchased perks to find base perk
-		base_perk = perk;
-		for( i=0; i < total_perks; i++ ) 
-		{
-			ui_perk_hud_remove( i );
-
-			if( self.purchased_perks[i] == base_perk ) {
-				perk_num = i;
-				continue;
+		case "remove":
+			perk_num = -1;
+			for( i=0; i < total_perks; i++ ) 
+			{
+				if( self.purchased_perks[i] == perk ) {
+					perk_num = i;
+					break;
+				}
 			}
 			
-			ui_perk_hud_activate( self.purchased_perks[i], i );
-		}
+			for( i=perk_num; i < level.VALUE_MAX_AVAILABLE_PERKS; i++ ) 
+			{
+				self.purchased_perks[i] = self.purchased_perks[i+1];
+				if( i == total_perks )
+				{
+					self.purchased_perks[i] = undefined;
+					break;
+				}
+					
+			}
+			break;
+
+		case "disable":
+			self.PERKS_DISABLED[ perk ] = true;
+			break;
+
+		case "enable":
+			//handled elsewhere, dont want to ad more perks to UI
+			break;
 
 	}
-		
+
+	base = "perk_slot_";
+	
+	//Update Perk Hud after each change
+	for( i=0; i < level.VALUE_MAX_AVAILABLE_PERKS; i++ ) 
+	{
+		perk_key = base;
+		if( i < 10 )
+			perk_key += "0";
+		perk_key += i;
+
+		self ui_perk_hud_remove( perk_key );
+
+		if( !IsDefined( self.purchased_perks[i] ) )
+			break; //No more perks to update
+
+		if( self.PERKS_DISABLED[ self.purchased_perks[i] ] )
+			self ui_perk_hud_disable( self.purchased_perks[i], perk_key );
+		else
+			self ui_perk_hud_activate( self.purchased_perks[i], perk_key );
+	}
 	
 }
 
-ui_perk_hud_activate( perk, perk_num )
+ui_perk_hud_activate( perk, perk_key )
 {
-	msg = "perk_slot_";
 
 	if( IsSubStr( perk, "_upgrade" ) ) 
 	{
@@ -2941,37 +3022,51 @@ ui_perk_hud_activate( perk, perk_num )
 		shader = convertPerkToShader( perk );
 	}
 
-	//Add leading 0 to perk number
-	if( perk_num < 10 )
-		msg += "0";
-	msg += perk_num;
-	perk_key = msg;
-
-	msg += "_on";
-	iprintln( "manage_ui_perk_hud: " + msg );
+	client_msg = perk_key + "_on";
+	
 	self SetClientDvar(perk_key, shader);
-	self send_message_to_csc("hud_anim_handler", msg);
+	self send_message_to_csc("hud_anim_handler", client_msg);
 }
 
-ui_perk_hud_remove( perk_num )
+ui_perk_hud_remove( perk_key )
 {
-	msg = "perk_slot_";
 
-	if( perk_num < 10 )
-		msg += "0";
-	msg += perk_num;
-	perk_key = msg;
+	client_msg = perk_key + "_off";
 
-	msg += "_off";
-	iprintln( "manage_ui_perk_hud: " + msg );
-	self send_message_to_csc("hud_anim_handler", msg);
-	self SetClientDvar(perk_key, "");
+	self SetClientDvar(perk_key, "");	//Too much fading in and out
+	self send_message_to_csc("hud_anim_handler", client_msg);
+}
+
+ui_perk_hud_disable( perk, perk_key )
+{
+	if( IsSubStr( perk, "_upgrade" ) ) 
+	{
+		shader = convertProPerkToShaderPro( perk );
+	}
+	else 
+	{
+		shader = convertPerkToShader( perk );
+	}
+
+	client_msg = perk_key + "_fade";
+
+	self SetClientDvar(perk_key, shader);
+	self send_message_to_csc("hud_anim_handler", client_msg);
 }
 
 perk_hud_create( perk )
 {
 
-	self manage_ui_perk_hud( perk, true );
+	//test if perk contains "_upgrade" and if it does, remove it
+	if( IsSubStr( perk, "_upgrade" ) )
+	{
+		self manage_ui_perk_hud_interface( "upgrade", perk );	
+	}
+	else 
+	{
+		self manage_ui_perk_hud_interface( "add", perk );
+	}
+
 	a = 1;
 	if( a==1 )
 		return;
@@ -3081,7 +3176,7 @@ perk_hud_create( perk )
 	{
 		basePerk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
 		
-		if( self.PRO_PERKS_DISABLED[ perk ] ) {	
+		if( self.PERKS_DISABLED[ perk ] ) {	
 			//Reenable disabled pro perk
 			self.perk_hud[ basePerk ].alpha = 1;
 		} else {
@@ -3093,7 +3188,7 @@ perk_hud_create( perk )
 		return;
 	}
 
-	if( self.PRO_PERKS_DISABLED[ perk + "_upgrade"] )
+	if( self.PERKS_DISABLED[ perk + "_upgrade"] )
 		return;
 	
 	////iprintln("shader: " + shader);
@@ -3122,7 +3217,10 @@ perk_hud_create( perk )
 
 perk_hud_destroy( perk )
 {
-	self manage_ui_perk_hud( perk, false );
+	if( self.PERKS_DISABLED[ perk ] )
+		self manage_ui_perk_hud_interface( "disable", perk );
+	else
+		self manage_ui_perk_hud_interface( "remove", perk );
 	//self.perk_hud_num = array_remove_nokeys(self.perk_hud_num, perk);
 	//self.perk_hud[ perk ] destroy_hud();
 	//self.perk_hud[ perk ] = undefined;

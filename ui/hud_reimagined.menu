@@ -321,6 +321,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -341,6 +347,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state
@@ -369,6 +381,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -389,6 +407,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state
@@ -417,6 +441,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -437,6 +467,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state
@@ -465,6 +501,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -485,6 +527,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state
@@ -513,6 +561,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -533,6 +587,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state
@@ -561,6 +621,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -581,6 +647,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state
@@ -609,6 +681,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -633,6 +711,12 @@
 
 			state
 			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
+			}
+
+			state
+			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
@@ -653,6 +737,12 @@
 			{
 				name			"fadein"
 				forecolor 		1 1 1 1
+			}
+
+			state
+			{
+				name 			"faded"
+				forecolor 		1 1 1 0.65
 			}
 
 			state

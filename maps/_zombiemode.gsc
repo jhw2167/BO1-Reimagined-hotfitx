@@ -360,6 +360,7 @@ reimagined_init_player_depedent_values()
 reimagined_init_level()
 {
 	//init-level
+	level.VALUE_MAX_AVAILABLE_PERKS = 15;
 
 
 	//Zombie Values
@@ -764,6 +765,9 @@ reimagined_init_player()
 	//init-player
 
 	self.purchased_perks = [];
+	self.perk_hud_queue_num = 0;
+	self.perk_hud_queue_unlocks_num = 0;
+	self.perk_hud_queue_locked = false;
 
 	//Standard Perks
 	self UnsetPerk("specialty_armorvest");
@@ -792,20 +796,35 @@ reimagined_init_player()
 	self.PRO_PERKS[ level.VLT_PRO ] = false;
 	self.PRO_PERKS[ level.WWN_PRO ] = false;
 
-	self.PRO_PERKS_DISABLED = [];
-	self.PRO_PERKS_DISABLED[ level.JUG_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.QRV_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.SPD_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.DBT_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.STM_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.PHD_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.DST_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.MUL_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.ECH_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.VLT_PRO ] = false;
-	self.PRO_PERKS_DISABLED[ level.WWN_PRO ] = false;
+	self.PERKS_DISABLED = [];
+	self.PERKS_DISABLED[ level.JUG_PRK ] = false;
+	self.PERKS_DISABLED[ level.QRV_PRK ] = false;
+	self.PERKS_DISABLED[ level.SPD_PRK ] = false;
+	self.PERKS_DISABLED[ level.DBT_PRK ] = false;
+	self.PERKS_DISABLED[ level.STM_PRK ] = false;
+	self.PERKS_DISABLED[ level.PHD_PRK ] = false;
+	self.PERKS_DISABLED[ level.DST_PRK ] = false;
+	self.PERKS_DISABLED[ level.MUL_PRK ] = false;
+	self.PERKS_DISABLED[ level.ECH_PRK ] = false;
+	self.PERKS_DISABLED[ level.VLT_PRK ] = false;
+	self.PERKS_DISABLED[ level.WWN_PRK ] = false;
+
+	self.PERKS_DISABLED[ level.JUG_PRO ] = false;
+	self.PERKS_DISABLED[ level.QRV_PRO ] = false;
+	self.PERKS_DISABLED[ level.SPD_PRO ] = false;
+	self.PERKS_DISABLED[ level.DBT_PRO ] = false;
+	self.PERKS_DISABLED[ level.STM_PRO ] = false;
+	self.PERKS_DISABLED[ level.PHD_PRO ] = false;
+	self.PERKS_DISABLED[ level.DST_PRO ] = false;
+	self.PERKS_DISABLED[ level.MUL_PRO ] = false;
+	self.PERKS_DISABLED[ level.ECH_PRO ] = false;
+	self.PERKS_DISABLED[ level.VLT_PRO ] = false;
+	self.PERKS_DISABLED[ level.WWN_PRO ] = false;
 
 	
+	//Zombies
+	self.previous_zomb_attacked_by=0;
+
 	//Perk Values
 	self.cherry_sequence = 0;
 	self.cherry_defense = true;
@@ -820,13 +839,12 @@ reimagined_init_player()
 	//Items and drops
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
 
-	//Misc	
+	//Threads
 	self thread wait_set_player_visionset();
-
-	self.previous_zomb_attacked_by=0;
 
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
+
 
 wait_set_player_visionset()
 {
@@ -842,6 +860,14 @@ wait_set_player_visionset()
 	//Overide give perks
 	if( is_true(level.override_give_all_perks) ) {
 		self give_pro_perks( true );
+	}
+
+	wait( 10 );
+
+	//Test zombiemode_perks disablePerk function
+	for(i=0;i<level.ARRAY_VALID_PERKS.size;i++) {
+		self thread maps\_zombiemode_perks::disablePerk( level.ARRAY_VALID_PRO_PERKS[i], 10 );
+		wait 1;
 	}
 
 	//DEBUG AND TEST
@@ -4323,16 +4349,16 @@ give_pro_perks( overrideToGiveAll )
 	{
 		if(self hasProPerk( level.ARRAY_VALID_PRO_PERKS[i]) || overrideToGiveAll)
 			pro_perks[pro_perks.size] = level.ARRAY_VALID_PRO_PERKS[i];
-		
+
 	}
 
 	//Remove all perks from player now
 	for(i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++) {
-		self maps\_zombiemode_perks::removeProPerk(level.ARRAY_VALID_PRO_PERKS[i]);
+		self maps\_zombiemode_perks::removePerk(level.ARRAY_VALID_PRO_PERKS[i]);
 	}
 	
 	for(i = 0; i < pro_perks.size; i++) {
-		self maps\_zombiemode_perks::returnProPerk( pro_perks[i] );
+		self maps\_zombiemode_perks::returnPerk( pro_perks[i] );
 		wait(0.5);
 	}
 }

@@ -532,16 +532,20 @@ player_handle_perk_slots( state )
 	s = SpawnStruct();
 	s.menu_name = "perk_slots";
 	s.item_name = GetSubStr( state, 0, 12); //Get "perk_slot_01"
-	iprintlnbold(s.item_name);
 	s.fade_time = 250;
 	//material name must be set as DVAR
 
+	//iprintlnbold("State: " + state);
+	//iprintlnbold("Perk Slot: " + s.item_name);
 	//If state contains "in" then fade in, else fade out
-	if( IsSubStr( state, "on" ) ) {
+	if( IsSubStr( state, "_on" ) ) {
 		s.fade_type = "fadein";
 	}
-	else if( IsSubStr( state, "off" ) ) {
+	else if( IsSubStr( state, "_off" ) ) {
 		s.fade_type = "fadeout";
+	}
+	else if( IsSubStr( state, "_fade" ) ) {
+		s.fade_type = "faded";
 	}
 
 	return s;

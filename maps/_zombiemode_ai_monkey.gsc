@@ -3021,7 +3021,7 @@ monkey_perk_lost( perk )
 {
 	pro_perk = perk + "_upgrade";
 	if( self hasProPerk( pro_perk ) ) {
-		self maps\_zombiemode_perks::disableProPerk( pro_perk, level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME );
+		self maps\_zombiemode_perks::disablePerk( pro_perk, level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME );
 		return;
 	}
 
