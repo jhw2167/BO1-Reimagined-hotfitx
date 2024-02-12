@@ -831,6 +831,7 @@ reimagined_init_player()
 	self.cherry_defense = true;
 
 	self.vulture_had_perk = false;
+	self.vulture_vison_toggle = true;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;

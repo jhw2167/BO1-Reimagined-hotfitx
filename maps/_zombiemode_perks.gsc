@@ -4467,6 +4467,7 @@ player_watch_vulture()
 {
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_on");
 	self.vulture_had_perk = true; //turned off after vulture_destroy_waypoints();
+	self thread player_watch_vulture_toggle();
 	self thread player_create_vulture_vision_weapon();
 	self thread player_create_vulture_vision_box_glow();
 
@@ -4480,6 +4481,7 @@ player_watch_vulture()
 }
 
 //Self is player
+
 	player_create_vulture_vision_weapon()
 	{
 		structs = level.perk_vulture_waypoint_structs;
@@ -4555,6 +4557,25 @@ player_watch_vulture()
 		
 	}
 	// */
+
+	player_watch_vulture_toggle()
+	{
+		self endon( "disconnect" );
+		self endon( level.VLT_PRK + "_stop" );
+
+		while( 1 )
+		{
+			if( self ADSButtonPressed() && self MeleeButtonPressed() )
+			{
+				iprintln( "Vulture Vision Toggled" );
+				self.vulture_vison_toggle = !self.vulture_vison_toggle;	
+				wait( 1 );
+			}
+			
+				
+			wait( 0.1 );
+		}
+	}
 
 
 vulture_player_connect_callback()
@@ -5221,6 +5242,8 @@ init_vulture()
 
 	check_waypoint_visible( player, struct )
 	{	
+		if( !player.vulture_vison_toggle )
+			return false;
 		
 		if( !IsDefined( player ) || !IsDefined( struct ) )
 			return false;
