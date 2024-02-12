@@ -1639,6 +1639,10 @@ is_boss_zombie( animname ) {
 	return maps\_zombiemode::is_boss_zombie( animname );
 }
 
+is_special_zombie( animname ) {
+	return maps\_zombiemode::is_special_zombie( animname );
+}
+
 
 hasProPerk( perk )
 {
@@ -1783,9 +1787,6 @@ returnPerk( perk )
 	self give_perk( base_perk );
 	if( proPerk )
 		self give_perk( perk );
-
-	self.PERKS_DISABLED[ base_perk ] = false;
-	self.PERKS_DISABLED[ perk ] = false;
 }
 
 removePerk( perk, removeOrDisableHud )
@@ -2917,7 +2918,7 @@ manage_ui_perk_hud_interface( command, perk )
 	self.perk_hud_queue_locked = true;
 	self.perk_hud_queue_num++;
 
-	iprintln(" EXECUTE UI PERK HUD: " + command + " " + perk + " " + self.perk_hud_queue_num);	
+	//iprintln(" EXECUTE UI PERK HUD: " + command + " " + perk + " " + self.perk_hud_queue_num);	
 	self manage_ui_perk_hud( command, perk );
 
 	self.perk_hud_queue_unlocks_num++;
@@ -2928,12 +2929,12 @@ manage_ui_perk_hud( command, perk )
 {
 	total_perks = self.purchased_perks.size;
 
-	if( command == "add" || command == "upgrade")
+	if( command == "add" || command == "upgrade" )
 	{
 		if( self.PERKS_DISABLED[ perk ] )
 			command = "enable";
 	}
-
+	
 	switch( command )
 	{
 		case "add":
@@ -2983,6 +2984,10 @@ manage_ui_perk_hud( command, perk )
 
 		case "enable":
 			//handled elsewhere, dont want to ad more perks to UI
+			self.PERKS_DISABLED[ perk ] = false;
+			break;
+
+		default:
 			break;
 
 	}
@@ -4574,6 +4579,7 @@ init_vulture_assets()
 	PreCacheShader( "specialty_glow_magic_box" );
 	PreCacheShader( "specialty_glow_pap" );	
 	PreCacheShader( "specialty_glow_skull" );
+	PreCacheShader( "specialty_glow_wunderfizz" );
 
 	level._effect[ "vulture_glow" ] = LoadFX( "vulture/fx_vulture_glow" );
 	level._effect[ "vulture_perk_mystery_box_glow" ] = LoadFX( "vulture/fx_vulture_box" );
@@ -4623,6 +4629,7 @@ init_vulture()
 	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
 
 	level waittill( "all_players_connected" );
+	level thread vulture_watch_powerup_waypoints();
 	level thread vulture_perk_watch_waypoints();
 	level thread vulture_perk_watch_mystery_box();
 	level thread vulture_perk_watch_fire_sale();
@@ -4717,7 +4724,6 @@ init_vulture()
 			if( IsDefined(pap_locations) && pap_locations.size > 0 )
 			{
 				structs[ structs.size - 1].using_pap_locations = true;	//Default PaP vending will not be valid waypoint
-				iprintln("PAP Locations: " + pap_locations.size);
 				for( i = 0; i < pap_locations.size; i++ )
 				{
 					struct = SpawnStruct();
@@ -4770,7 +4776,7 @@ init_vulture()
 				player = players[p];
 				num = player GetEntityNumber();
 				
-				//HERE
+				
 				for( i = 0; i < structs.size; i ++ )	
 				{
 					struct = structs[i];
@@ -4794,20 +4800,253 @@ init_vulture()
 					}
 
 				}
-				//End Players FOR
+				//End Structs FOR
 
-			} //End Waypoints FOR
+				//Add waypoints to boss or special zombies
+				if( player HasPerk( level.VLT_PRK ) )
+				{
+					zombies = GetAiSpeciesArray( "axis", "all" );
+					special_zombies = [];
+					standard_zombies = [];
+					for( i = 0; i < zombies.size; i++ )
+					{
+						zombie = zombies[i];
+						if( !isDefined( zombie ) )
+							continue;
+						else if( is_boss_zombie( zombie.animname ) || is_special_zombie( zombie.animname ) )
+							special_zombies[ special_zombies.size ] = zombie;
+						else if ( is_in_array( level.ARRAY_VALID_STANDARD_ZOMBIES, zombie.animname ) )
+							standard_zombies[ standard_zombies.size ] = zombie;
+					
+					}
+
+					player player_vulture_zombie_boss_waypoints( special_zombies );
+
+					player player_vulture_zombie_normal_fx( standard_zombies );
+
+					/* Waypoints for powerup drops */
+					for( i = 0; i < level.vulture_track_current_powerups.size; i++ )
+					{
+						powerup = level.vulture_track_current_powerups[i];
+						//iprintln( "Checking powerup in array" + powerup );
+						
+						is_visible = check_waypoint_visible( player, powerup );
+
+						if( is_visible )
+						{
+							if( isDefined( powerup.player_waypoints[ num ] ) )
+								continue;
+
+							powerup.player_waypoints[ num ] = create_individual_waypoint( player, powerup );
+						}
+						else if ( isDefined( powerup.player_waypoints[ num ] ) )
+						{
+							iprintln( "Destroy Waypoint" + powerup );
+							destroy_individual_waypoint( powerup.player_waypoints[ num ], is_visible );
+						}
+					}
+
+				}
+
+			} //End Players FOR
 			wait 0.1;
+			//wait 2;
 		}
 		//END WHILE
 
 	}
+
+		/* 
+		Handle boss/special zombies waypoints - HERE
+		// */
+
+		player_vulture_zombie_boss_waypoints( specials )
+		{
+			for( i = 0; i < specials.size; i++ )
+			{
+				zombie = specials[i];
+				if( !isDefined( zombie )  || IsDefined( zombie.vulture_waypoint ) )
+					continue;
+
+				self thread handle_player_vulture_zombie_boss_waypoint( zombie );
+			
+			}
+		}
+		
+
+			//HERE
+			//Self is player, individual zombie waypoint handler
+			handle_player_vulture_zombie_boss_waypoint( zombie )
+			{
+				//create a waypoint for the zombie
+				keep_waypoint = self HasPerk( level.VLT_PRK ) && check_waypoint_visible( self, zombie );
+				if( !keep_waypoint )
+					return;
+
+				wp = NewClientHudElem( self );
+				icon = "specialty_glow_skull";
+				//icon = "specialty_instakill_zombies";
+				
+				model = Spawn( "script_model", zombie GetTagOrigin( "j_SpineLower") );
+				model linkto( zombie, "j_SpineLower" ); //, ( 0, 0, 15 ) );
+
+				wp SetTargetEnt( model );
+				wp.hidewheninmenu = true;
+				wp.alpha = 0.5;
+				wp setWaypoint( true, icon);
+				wp.color = ( 1, 0, 0); //red for boss zombies
+				zombie.vulture_waypoint = wp;
+				
+				
+				while( keep_waypoint )
+				{
+					keep_waypoint = self HasPerk( level.VLT_PRK ) && check_waypoint_visible( self, zombie );
+					wait 0.1;
+				}
+
+				zombie.vulture_waypoint Destroy();
+				model Delete();
+			}
+
+
+		player_vulture_zombie_normal_fx( zombies )
+		{
+			if( zombies.size > 3) 
+				return;
+
+			for( i = 0; i < zombies.size; i++ )
+			{
+				zombie = zombies[i];
+				if( !isDefined( zombie )  || IsDefined( zombie.vulture_waypoint ) )
+					continue;
+
+				self thread handle_player_vulture_zombie_fx( zombie );
+			
+			}
+		}
+			
+		
+		handle_player_vulture_zombie_fx( zombie )
+		{
+
+			//create a waypoint for the zombie
+			keep_waypoint = self HasPerk( level.VLT_PRK ) && check_waypoint_visible( self, zombie );
+			if( !keep_waypoint )
+				return;
+
+			fx = "vulture_skull";
+			zombie.vulture_waypoint = zombie GetEntityNumber();
+			//PlayFXOnTag( level._effect[ "vulture_skull" ], zombie, "j_SpineLower" );
+			//PlayFxOnTag( level._effect[ "vulture_skull" ], model, "tag_origin" );
+
+			while( keep_waypoint )
+			{
+				create_loop_fx_to_player( self, zombie GetEntityNumber(), "vulture_skull", zombie GetTagOrigin( "j_SpineLower" ) , zombie.angles );
+				
+				wait 0.1;
+
+				destroy_loop_fx_to_player( self, zombie GetEntityNumber(), true );
+
+				keep_waypoint = self HasPerk( level.VLT_PRK ) 
+					&& check_waypoint_visible( self, zombie )
+					&& level.zombie_total <= 3;
+			}
+
+			zombie.vulture_waypoint = undefined;
+		}
+
+		// */
+
+		/* Handle zombie powerup drop waypoints */
+
+		vulture_watch_powerup_waypoints()
+		{
+			while(1)
+			{
+				powerup_notif = level waittill_any_return( "powerup_dropped" );
+				//all_powerups = GetEntArray( "powerup", "classname" );
+				all_powerups = GetEntArray( "script_model", "classname" );
+				
+				index = -1;
+				for( i = 0; i < all_powerups.size; i++ )
+				{
+					model = all_powerups[i];
+					if( IsDefined( model.powerup_name ) && model.powerup_name == powerup_notif.powerup_name )
+					{
+						//Check existing vulture powerups to cross check against duplicates, use GetEntitNumber() to check
+						entity_exists = false;
+						for( j = 0; j < level.vulture_track_current_powerups.size; j++ )
+						{
+							if( level.vulture_track_current_powerups[j].original_entity_number == model GetEntityNumber() )
+							{
+								entity_exists = true;
+								break;
+							}
+						}
+
+						if( entity_exists )
+						{
+							continue;
+						}
+						else
+						{
+							index = i;
+							break;
+						}
+
+					}
+				}
+
+				if( index == -1 )
+					continue;	
+					
+				powerup = SpawnStruct();
+				powerup.origin 					= all_powerups[index].origin;
+				powerup.original_entity_number 	= all_powerups[index] GetEntityNumber();
+				powerup.name 					= all_powerups[index].powerup_name;
+
+				powerup.script_model = Spawn( "script_model", powerup.origin );
+				powerup.script_model linkto( powerup, "tag_origin", (0, 0, 10) );
+				//powerup.waypoint_name = "specialty_doublepoints_zombies";
+				powerup.waypoint_name = "specialty_instakill_zombies";
+				powerup.is_active_powerup = true;
+
+				size = level.vulture_track_current_powerups.size;
+				level.vulture_track_current_powerups[ size ] = powerup;
+				all_powerups[index] thread vulture_watch_powerup_expiration( size );
+			}
+			
+		}
+
+		
+		vulture_watch_powerup_expiration( index )
+		{
+			level endon( "vulture_powerup_reshuffle" ); 
+
+			self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
+			iprintln( "POWERUP EXPIRED" );
+			level.vulture_track_current_powerups[ index ].is_active_powerup = false;
+			//level thread vulture_powerup_reshuffle( index );
+			//level notify( "vulture_powerup_reshuffle" );
+		}
+
+		vulture_powerup_reshuffle( index )
+		{
+			for( i = 0; i < level.vulture_track_current_powerups.size; i++ ) 
+			{
+				if( i <= index )
+					continue;
+				level.vulture_track_current_powerups[i-1] = level.vulture_track_current_powerups[i];
+				level.vulture_track_current_powerups[i-1] vulture_watch_powerup_expiration( i-1 );
+			}
+		}
 
 
 		destroy_individual_waypoint( wp, is_visible )
 		{		
 			if( !IsDefined( wp ) )
 				return;
+
 			wp Destroy();
 		}
 
@@ -4846,7 +5085,7 @@ init_vulture()
 		}
 		*/
 
-		//HERE
+
 		//Self is player with vulture
 		create_individual_waypoint( player, struct )
 		{
@@ -4859,44 +5098,6 @@ init_vulture()
 			wp.hidewheninmenu = true;
 			wp.alpha = .5;
 			wp setWaypoint( true, icon);
-			
-			/*
-			playerLoc = player.origin;
-			perkLoc = struct.origin;
-
-			dims = level.VALUE_VULTURE_HUD_DIM_VERY_FAR;
-			alpha = level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR;
-
-			inShortRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_CLOSE );
-			inMedRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_MED );
-			inFarRange = checkDist( playerLoc, perkLoc, level.VALUE_VULTURE_HUD_DIST_FAR );
-
-			//if( struct.perk_to_check == level.JUG_PRK )
-			//iprintln( "Short range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inShortRange );
-			//iprintln( "Med range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inMedRange );
-			//iprintln( "Far range: ( player: " + playerLoc + " perk: " + perkLoc + " ) Result: " + inFarRange );
-
-			if( inShortRange ) {
-				dims = level.VALUE_VULTURE_HUD_DIM_CLOSE;
-				alpha = level.VALUE_VULTURE_HUD_ALPHA_CLOSE;
-			} else if( inMedRange ) {
-				dims = level.VALUE_VULTURE_HUD_DIM_MED;
-				alpha = level.VALUE_VULTURE_HUD_ALPHA_MED;
-			} else if( inFarRange ) {
-				dims = level.VALUE_VULTURE_HUD_DIM_FAR;
-				alpha = level.VALUE_VULTURE_HUD_ALPHA_FAR;
-			}
-
-			icon = convertPerkToGlow( struct.perk_to_check );	//undeveloped
-			
-			
-			wp = create_simple_hud(player);
-			wp.alpha = alpha;
-			wp.x = x;
-			wp.y = y;
-
-			wp setShader( icon, dims, dims );
-			// */
 
 			return wp;
 		}
@@ -5017,8 +5218,9 @@ init_vulture()
 		}
 
 	//Check Waypoint visibuity
+
 	check_waypoint_visible( player, struct )
-	{
+	{	
 		
 		if( !IsDefined( player ) || !IsDefined( struct ) )
 			return false;
@@ -5044,18 +5246,10 @@ init_vulture()
 		{
 			/* Determine if Perk or PAP is in Playable Area */
 
-			playable_area = getentarray("player_volume","script_noteworthy");
-			perk_is_somewhere = false;
-			for( i = 0; i < playable_area.size; i++ ) {
-				if( !struct.script_model IsTouching(playable_area[i]) )
-					perk_is_somewhere = true;
-			}
-
-			if( !perk_is_somewhere )
+			inPlayableArea = checkObjectInPlayableArea( struct.script_model );
+			if( !inPlayableArea )
 				return false;
-			/* ##############				############## */
-
-
+			
 
 			/* Determine if PAP is at this spot */
 			if( struct.perk_to_check == "specialty_weapupgrade_location" )
@@ -5081,22 +5275,52 @@ init_vulture()
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
 			{
-				//Calculate if perk is in player's view
-				//view_angles = player GetTagAngles( "tag_flash" );
-				view_angles = player GetPlayerAngles();
-				forwardAngles = AnglesToForward( view_angles );
-
-				//Perk needs to be within a wide cone from this players view
-				view_pos = player GetTagOrigin( "tag_flash" ) - player GetPlayerViewHeight();
-				normal = VectorNormalize( struct.origin - view_pos );	
-
-				dot = VectorDot( forwardAngles, normal );
-
-				if( dot > level.THRESHOLD_VULTURE_FOV_HUD_DOT )
-					is_visible = true;
-				
+				is_visible = checkPlayerLookingAtObject( player, struct );
 			}
+
+		} 
+		else if( IsDefined( struct.animname ) )	//struct could be a zombie
+		{
+			//Check for bosses/zombies who are no longer with us
+			if( !IsAlive( struct ) )
+				return false;
+
+			inPlayableArea = checkObjectInPlayableArea( struct );
+			if( !inPlayableArea )
+				return false;
+
+			cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
+			
+			if( struct.animname == "monkey" || struct.animname == "monkey_zombie"  )
+			{
+				cutoffFar = !checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_FAR );
+
+				return !cutoffFar;
+			}
+				
+			looking_at = checkPlayerLookingAtObject( player, struct );
+
+			if( !cutoffClose && looking_at )
+				return true;
+				
+			return false;
+		} 
+		else if( is_true( struct.is_active_powerup ) )
+		{
+			
+			inPlayableArea = checkObjectInPlayableArea( struct );
+			if( !inPlayableArea )
+				return false;
+
+			cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
+
+			if( cutoffClose )
+				return false;
+
+			return true;
 		}
+
+		
 			
 		cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
 		cutoffFar = !checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR );
@@ -5106,6 +5330,38 @@ init_vulture()
 		
 		//iprintln("Returning is_visible: " + struct.ent_num + "  " + is_visible);
 		return is_visible;
+	}
+
+	//Utility Function to determine if player is towards object
+	checkPlayerLookingAtObject( player, object )
+	{
+		//Calculate if perk is in player's view
+		//view_angles = player GetTagAngles( "tag_flash" );
+		view_angles = player GetPlayerAngles();
+		forwardAngles = AnglesToForward( view_angles );
+
+		//Perk needs to be within a wide cone from this players view
+		view_pos = player GetTagOrigin( "tag_flash" ) - player GetPlayerViewHeight();
+		normal = VectorNormalize( object.origin - view_pos );	
+
+		dot = VectorDot( forwardAngles, normal );
+
+		if( dot > level.THRESHOLD_VULTURE_FOV_HUD_DOT )
+			return true;
+
+		return false;
+	}
+
+	checkObjectInPlayableArea( object )
+	{
+		playable_area = getentarray("player_volume","script_noteworthy");
+		for (i = 0; i < playable_area.size; i++)
+		{
+			if (object IsTouching(playable_area[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 vulture_perk_watch_pap_move()
@@ -5290,6 +5546,7 @@ zombie_watch_vulture_drop_bonus()
 					n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
 					ammo_fraction = RandomFloatRange( 0, level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION );
 					n_ammo_refunded = clamp( Int( n_ammo_count_max * ammo_fraction ), 1, n_ammo_count_max );
+
 					if( n_ammo_refunded < level.VALUE_VULTURE_MIN_AMMO_BONUS )
 						n_ammo_refunded = level.VALUE_VULTURE_MIN_AMMO_BONUS;
 					else if( n_ammo_refunded > level.VALUE_VULTURE_MAX_AMMO_BONUS )

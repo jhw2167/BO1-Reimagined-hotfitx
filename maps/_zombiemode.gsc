@@ -47,14 +47,14 @@ main()
 
 	//Overrides
 	/* 									*/
-	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=10;	///
+	level.zombie_ai_limit_override=20;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
-	//level.drop_rate_override=10;		/// //Rate = Expected drops per round
+	//level.drop_rate_override=100;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=32;	//*/
+	level.calculate_amount_override=20;	//*/
 	//level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -464,7 +464,7 @@ reimagined_init_level()
 		
 
 	//Zombie values
-	level.ARRAY_VALID_EFFECT_ZOMBIES = array( "zombie", "quad_zombie", "zombie_dog" );
+	level.ARRAY_VALID_STANDARD_ZOMBIES = array( "zombie", "quad_zombie", "zombie_dog" );
 
 	level.VALUE_HORDE_SIZE = 100; 			/// none in early rounds
 	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
@@ -645,9 +645,9 @@ reimagined_init_level()
 	level.VALUE_VULTURE_MIN_AMMO_BONUS = 2;
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 10;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 500;			//1-1000, 2.5% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 50;			//1-1000, 2.5% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
-	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 20;				//10 seconds
+	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
 
 	level.ARRAY_VULTURE_INVALID_AMMO_WEAPONS = array(
@@ -742,6 +742,7 @@ reimagined_init_level()
 
 	//Real Time Perk Variables
 	level.vulture_track_current_pap_spot = undefined;	//undefined when not in map
+	level.vulture_track_current_powerups = [];
 
 	//Maps
 
@@ -865,10 +866,12 @@ wait_set_player_visionset()
 	wait( 10 );
 
 	//Test zombiemode_perks disablePerk function
+	/*
 	for(i=0;i<level.ARRAY_VALID_PERKS.size;i++) {
 		self thread maps\_zombiemode_perks::disablePerk( level.ARRAY_VALID_PRO_PERKS[i], 10 );
 		wait 1;
 	}
+	*/
 
 	//DEBUG AND TEST
 
@@ -7517,7 +7520,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//ORIGIN_
-	iprintln("Origin: " + attacker.origin );
+	//iprintln("Origin: " + attacker.origin );
 	/*
 	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
@@ -8355,12 +8358,27 @@ hasProPerk( perk )
 
 is_boss_zombie( animname )
 {
-	return (animname == "thief_zombie"
+	return (
+	   animname == "thief_zombie"
 	|| animname == "director_zombie" 
 	|| animname == "astro_zombie" 
 	|| animname == "bo2_zm_mech" 
 	|| animname == "kf2_scrake" 
-	|| animname == "bo1_simianaut" );
+	|| animname == "bo1_simianaut" 
+	);
+}
+
+is_special_zombie( animname )
+{
+	return 
+	(  
+	   animname == "monkey"
+	|| animname == "monkey_zombie" 
+	|| animname == "napalm_zombie"
+	|| animname == "sonic_zombie" 
+	//|| animname == "kf2_scrake" 
+	//|| animname == "bo1_simianaut" 
+	);
 }
 
 is_headshot( sWeapon, sHitLoc, sMeansOfDeath )

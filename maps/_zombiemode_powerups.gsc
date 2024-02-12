@@ -486,7 +486,7 @@ get_next_powerup( drop_color )
 
 	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
-		iprintln( "get_next_powerup: " + level.zombie_powerup_array[i] );
+		//iprintln( "get_next_powerup: " + level.zombie_powerup_array[i] );
 	}
 	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
@@ -819,7 +819,8 @@ powerup_drop(drop_point, player, zombie)
 	// Otherwise, multiple threads could attempt to drop powerups.
 
 	level.powerup_drop_count++;
-	powerup = maps\_zombiemode_net::network_safe_spawn( "powerup", 1, "script_model", drop_point + (0,0,40));
+	origin = drop_point + (0,0,40);
+	powerup = maps\_zombiemode_net::network_safe_spawn( "powerup", 1, "script_model", origin);
 
 	// Never drop unless in the playable area
 	valid_drop = false;
@@ -861,7 +862,7 @@ powerup_drop(drop_point, player, zombie)
 
 	//Color of the drop comes from zombiemode_spawner .hasDrop
 	powerup powerup_setup( undefined, zombie.hasDrop );
-
+	
 	if( !isDefined( powerup.powerup_name ) ) {
 		powerup delete();
 		return;

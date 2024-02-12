@@ -2689,7 +2689,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 		if( level.chest_accessed < level.chest_min_move_usage )
 		{
 			chance_of_joker = -1;
-			chance_of_joker = 70;
+			//chance_of_joker = 70; Reimagined-Expanded, make chst move instantly
 		}
 		else
 		{
