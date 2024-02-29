@@ -74,7 +74,7 @@ thread_enable_dog_rounds()
 {
 	//Reimagined-Expanded - Have to wait or "no bosses" won't be set yet
 	flag_wait("all_players_connected");
-
+	
 	if( level.no_bosses ) {
 		level.dog_rounds_enabled = false;
 		return;
@@ -148,7 +148,6 @@ dog_round_spawning()
 	level thread dog_round_aftermath();
 	players = get_players();
 	array_thread( players, ::play_dog_round );
-	wait(5);
 
 	max = players.size * 8;
 
@@ -161,6 +160,8 @@ dog_round_spawning()
 	//Reimagined-Expanded, intergrating dog rounds with normal rounds
 	level.zombie_dog_total = max;
 	level.zombie_total += max;
+	
+	
 
 	dog_health_increase();
 
@@ -191,6 +192,7 @@ dog_round_spawning()
 				ai.favoriteenemy = favorite_enemy;
 				spawn_loc thread dog_spawn_fx( ai, spawn_loc );
 				level.zombie_dog_total--;
+				level.zombie_total--;
 				count++;
 			}
 		}
@@ -204,6 +206,7 @@ dog_round_spawning()
 			{
 				ai.favoriteenemy = favorite_enemy;
 				spawn_point thread dog_spawn_fx( ai );
+				level.zombie_total--;
 				level.zombie_dog_total--;
 				count++;
 
@@ -426,6 +429,7 @@ dog_round_tracker()
 	old_spawn_func = level.round_spawn_func;
 	old_wait_func  = level.round_wait_func;
 
+	level.next_dog_round = 6;
 	while ( 1 )
 	{
 		

@@ -50,11 +50,11 @@ main()
 	level.zombie_ai_limit_override=20;	///
 	level.starting_round_override=5;	///
 	level.starting_points_override=50000;	///
-	//level.drop_rate_override=100;		/// //Rate = Expected drops per round
+	level.drop_rate_override=200;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=20;	//*/
+	//level.calculate_amount_override=20;	//*/
 	//level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -280,10 +280,6 @@ post_all_players_connected()
 		level thread round_start();
 	}
 	level thread players_playing();
-	if ( IsDefined( level.crawlers_enabled ) && level.crawlers_enabled == 1 && !level.no_bosses )
-	{
-		level thread crawler_round_tracker();
-	}
 
 	//chrisp - adding spawning vo
 	//level thread spawn_vo();
@@ -644,6 +640,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.075;
 	level.VALUE_VULTURE_MIN_AMMO_BONUS = 2;
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 10;
+	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
 	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 50;			//1-1000, 2.5% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
@@ -5028,8 +5025,10 @@ ai_calculate_amount()
 		level.max_zombie_func = ::default_max_zombie_func;
 	}
 
-	if( IsDefined(level.calculate_amount_override) ) {
-		level.zombie_round_total = level.calculate_amount_override;
+	if( IsDefined(level.calculate_amount_override) ) 
+	{
+		if( level.calculate_amount_override < level.zombie_round_total)
+			level.zombie_round_total = level.calculate_amount_override;
 	}
 
 	level.zombie_total += level.zombie_round_total; //Reimagined-Expanded: Add zombies to the total in apocalypse mode
@@ -6087,12 +6086,22 @@ round_think()
 
 round_spawn_wrapper_func()
 {
-	
+	//If its a special round, call zombie spawning function too in apocalypse mode
+	specialRound = level.dog_intermission 
+				|| level.monkey_intermission 
+				|| level.thief_intermission 
+				|| flag("thief_round") 
+				|| flag("monkey_round") 
+				|| flag("dog_round") 
+				|| flag( "crawler_round" )
+				|| flag( "dog_round_spawning" );
+				
+				 // || flag("enter_nml");
+
+	iprintln("Special Round: " + specialRound);
 	level thread [[level.round_spawn_func]]();
 
-	//If its a special round, call zombie spawning function too in apocalypse mode
-	specialround = level.dog_intermission || level.monkey_intermission || level.thief_intermission || flag("thief_round") || flag("monkey_round") || flag("dog_round"); // || flag("enter_nml");
-	if( level.apocalypse && specialround )
+	if( level.apocalypse && specialRound )
 	{
 		level thread [[level.zombie_spawn_func]]();
 	}
@@ -6363,7 +6372,7 @@ round_wait()
 
 	//Reimagined-Epanded
 	//We don't care about dog rounds, dogs and zombies/mokeys etc come at once
-	while( get_enemy_count() > 0 || level.zombie_total > 0 || level.intermission )
+	while( level.zombie_total > 0 || get_enemy_count() > 0 )
 	{
 		if( flag( "end_round_wait" ) )
 		{
@@ -9772,81 +9781,7 @@ check_to_kill_near_origin(player1, player2)
 
 
 //
-crawler_round_tracker()
-{
-	level.crawler_round_count = 1;
 
-	level.next_crawler_round = 4;
-
-	sav_func = level.round_spawn_func;
-	while ( 1 )
-	{
-		level waittill ( "between_round_over" );
-
-/#
-			if( GetDvarInt( #"force_crawlers" ) > 0 )
-			{
-				next_crawler_round = level.round_number;
-			}
-#/
-
-			if ( level.round_number == level.next_crawler_round )
-			{
-				sav_func = level.round_spawn_func;
-				crawler_round_start();
-				level.round_spawn_func = ::round_spawning;
-
-				if ( IsDefined( level.next_dog_round ) )
-				{
-					level.next_crawler_round = level.next_dog_round + randomintrange( 2, 3 );
-				}
-				else
-				{
-					level.next_crawler_round = randomintrange( 4, 6 );
-				}
-			}
-			else if ( flag( "crawler_round" ) )
-			{
-				crawler_round_stop();
-
-				// Don't trample over the round_spawn_func setting
-				if ( IsDefined( level.next_dog_round ) &&
-					 level.next_dog_round == level.round_number )
-				{
-					level.round_spawn_func = sav_func;
-				}
-
-				level.crawler_round_count += 1;
-			}
-	}
-}
-
-
-crawler_round_start()
-{
-	flag_set( "crawler_round" );
-	if(!IsDefined (level.crawlerround_nomusic))
-	{
-		level.crawlerround_nomusic = 0;
-	}
-	level.crawlerround_nomusic = 1;
-	level notify( "crawler_round_starting" );
-	clientnotify( "crawler_start" );
-}
-
-
-crawler_round_stop()
-{
-	flag_clear( "crawler_round" );
-
-	if(!IsDefined (level.crawlerround_nomusic))
-	{
-		level.crawlerround_nomusic = 0;
-	}
-	level.crawlerround_nomusic = 0;
-	level notify( "crawler_round_ending" );
-	clientnotify( "crawler_stop" );
-}
 
 default_exit_level()
 {

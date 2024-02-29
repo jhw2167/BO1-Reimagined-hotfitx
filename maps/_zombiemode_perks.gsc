@@ -2487,8 +2487,7 @@ give_perk( perk, bought )
 			return;
 		}
 
-		player = GetPlayers()[ self GetEntityNumber() ];
-		player addProPerk( perk );
+		self addProPerk( perk );
 	} else
 	{
 		self SetPerk( perk );
@@ -2566,7 +2565,7 @@ give_perk( perk, bought )
 		self thread unsave_additional_weapon_on_bleedout();
 	}
 
-	iprintln("Giving Perk: " + perk);
+	//iprintln("Giving Perk: " + perk);
 	if(perk == level.ECH_PRK)
 	{
 		self thread player_watch_electric_cherry();
@@ -4523,7 +4522,12 @@ player_watch_vulture()
 			}
 			
 			//Wait for firesale or box moved event
-			event = level waittill_any_return( "powerup fire sale", "fire_sale_off", "moving_chest_now", "player_downed" );
+			vision_toggle_event = "vulture_vision_toggle" + self GetEntityNumber();
+			event = level waittill_any_return( "powerup fire sale",
+											 "fire_sale_off",
+											 "moving_chest_now",
+											 "player_downed",
+											vision_toggle_event );
 			
 			//Destroy fx
 			for( i = 0; i < structs.size; i++ )
@@ -4533,6 +4537,15 @@ player_watch_vulture()
 					destroy_loop_fx_to_player( self, struct.ent_num, true );
 			}
 
+			if( event == vision_toggle_event )
+			{
+				level waittill( vision_toggle_event );
+
+				if( !(self HasPerk( level.VLT_PRK )) )
+					break;
+
+				continue;
+			}
 			
 			//Handle player downed
 			if( event == "player_downed" )
@@ -4567,7 +4580,9 @@ player_watch_vulture()
 		{
 			if( self ADSButtonPressed() && self MeleeButtonPressed() )
 			{
-				iprintln( "Vulture Vision Toggled" );
+				//iprintln( "Vulture Vision Toggled" );
+				vulture_vision_toggle_event = "vulture_vision_toggle" + self GetEntityNumber();
+				level notify( vulture_vision_toggle_event );
 				self.vulture_vison_toggle = !self.vulture_vison_toggle;	
 				wait( 1 );
 			}
@@ -5045,7 +5060,7 @@ init_vulture()
 			level endon( "vulture_powerup_reshuffle" ); 
 
 			self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
-			iprintln( "POWERUP EXPIRED" );
+			
 			level.vulture_track_current_powerups[ index ].is_active_powerup = false;
 			//level thread vulture_powerup_reshuffle( index );
 			//level notify( "vulture_powerup_reshuffle" );
@@ -5117,7 +5132,12 @@ init_vulture()
 			wp SetTargetEnt( struct.script_model );
 			//wp.alpha = level.VALUE_VULTURE_HUD_ALPHA_VERY_FAR;
 			wp.hidewheninmenu = true;
-			wp.alpha = .5;
+			
+			if( is_true(struct.is_active_powerup) )
+				wp.alpha = 1;
+			else 
+				wp.alpha = .5;
+
 			wp setWaypoint( true, icon);
 
 			return wp;
@@ -5574,8 +5594,18 @@ zombie_watch_vulture_drop_bonus()
 						n_ammo_refunded = level.VALUE_VULTURE_MIN_AMMO_BONUS;
 					else if( n_ammo_refunded > level.VALUE_VULTURE_MAX_AMMO_BONUS )
 						n_ammo_refunded = level.VALUE_VULTURE_MAX_AMMO_BONUS;
+
+					if( self hasProPerk( self.VLT_PRO ) )
+						n_ammo_refunded *= level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS;
+
+					stock_ammo = n_ammo_count_current + n_ammo_refunded;
+					iprintln( "ref ammo: " + n_ammo_refunded);
+					iprintln( "stock: " + stock_ammo);
+
+					if( stock_ammo > n_ammo_count_max )
+						stock_ammo = n_ammo_count_max;
 					
-					self SetWeaponAmmoStock( str_weapon_current, n_ammo_count_current + n_ammo_refunded );
+					self SetWeaponAmmoStock( str_weapon_current, stock_ammo );
 				}
 					self PlaySoundToPlayer( "zmb_vulture_drop_pickup_ammo", self );
 
