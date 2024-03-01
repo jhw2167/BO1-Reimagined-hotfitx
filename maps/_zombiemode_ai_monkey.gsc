@@ -688,6 +688,7 @@ monkey_pack_man_setup_perks()
 			}
 			zone_enabled = check_point_in_active_zone( org );
 
+	
 			if ( players[j] HasPerk( perk ) && zone_enabled )
 			{
 				level.monkey_perks[ level.monkey_perks.size ] = vending_triggers[i];
@@ -873,6 +874,7 @@ monkey_pack_set_machine()
 		return;
 	}
 
+	//The perk script model and perk trigger both have "targetname" "vending_doubletap", or whatever, we want to assign the machine to the monkeys
 	targets = getentarray( self.perk.target, "targetname" );
 	for ( j = 0; j < targets.size; j++ )
 	{
@@ -1381,6 +1383,9 @@ monkey_zombie_update()
 
 	while( true )
 	{
+		//iprintln( "monkey follow player " + self GetEntityNumber() + "  " + self.following_player );
+		//iprintln( "monkey state " + self GetEntityNumber() + "  " + self.state );
+		//iprintln( "monkey perk " + self GetEntityNumber() + "  " + self.perk );
 		if ( isDefined( self.custom_think ) && self.custom_think )
 		{
 			wait_network_frame();
@@ -1394,8 +1399,11 @@ monkey_zombie_update()
 		else if ( isDefined( self.perk ) )
 		{
 			self thread monkey_zombie_destroy_perk();
-			self waittill( "stop_perk_attack" );
-			//self waittill_any( "next_perk", "stop_perk_attack" );
+			//self waittill( "stop_perk_attack" );
+			//iprintln( "monkey doing perk things " + self GetEntityNumber() );
+			self waittill_any_or_timeout( 60,  "next_perk", "stop_perk_attack" );
+			//iprintln( "monkey stopping perk attack " + self GetEntityNumber() );
+			self.perk = undefined;
 			wait_network_frame();
 			continue;
 		}
@@ -1410,7 +1418,7 @@ monkey_zombie_update()
 			self.following_player = true;
 			self monkey_zombie_set_state( "charge_player" );
 		}
-		wait( 1 );
+		wait( 2 );
 	}
 }
 
@@ -1420,6 +1428,13 @@ monkey_zombie_update()
 monkey_zombie_get_perk_pos()
 {
 	points = getstructarray( self.pack.machine.target, "targetname" );
+
+	iprintln( "Points size " + points.size );
+	for ( i = 0; i < points.size; i++ )
+	{
+		iprintln( "checking " + points[i] );
+	}
+
 	for ( i = 0; i < points.size; i++ )
 	{
 		if ( isdefined( self.pack.attack[i] ) )
@@ -1931,6 +1946,11 @@ monkey_zombie_destroy_perk()
 			//self thread monkey_zombie_watch_machine_damage();
 			self thread monkey_zombie_attack_perk();
 		}
+	}
+
+	if( !isdefined( self.perk ) || !IsDefined( self.attack ) )
+	{
+		self notify( "stop_perk_attack" );
 	}
 }
 

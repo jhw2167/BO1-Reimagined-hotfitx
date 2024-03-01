@@ -1475,6 +1475,11 @@ turn_electriccherry_on()
 		machine[i] SetModel( "p6_zm_vending_electric_cherry_on" );
 		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
 		machine[i] PlaySound( "zmb_perks_power_on" );
+		//Determine offset that is "in front" of the machine in a 3D worldspace, r=7
+		r=7;
+		angles = machine[i].angles; 
+		//offset = (r*cos(angles[2]), r*sin(angles[2]), 0);
+			
 		machine[i] thread perk_fx( "electriccherry_light" );
 	}
 	level notify( "specialty_bulletdamage_power_on" );
@@ -1516,10 +1521,33 @@ turn_widowswine_on()
 
 //
 //
-perk_fx( fx )
+perk_fx( fx, offset )
 {
-	wait(3);
+	//wait(3);
+
+	
+	if( self.targetname == "vending_vulture" || 
+		self.targetname == "vending_electriccherry" )
+	{
+		iprintln("Tag Origin: ");
+		iprintln(self GetTagOrigin("origin"));
+		iprintln("Self origin: ");
+		iprintln(self.origin);
+
+	}
+	//model = Spawn( "script_model", self, "tag_origin" );
+
 	playfxontag( level._effect[ fx ], self, "tag_origin" );
+	//playfx( level._effect[ fx ],  self.origin, "tag_origin" );
+	//playfx( level._effect[ fx ],  model.origin, "tag_origin" );
+
+	off_event = self.targetname + "_off";
+	moved_event = self.targetname + "_moved";
+
+	waittill_any( off_event, moved_event );
+	iprintln("model delete");
+
+	//model Delete();
 }
 
 
@@ -4026,6 +4054,8 @@ watch_stamina_upgrade(perk_str)
 
 	checkDist(a, b, distance )
 	{
+		if( !IsDefined( a ) || !IsDefined( b ) )
+			iprintln("checkDist fir distance: " + distance);
 		return maps\_zombiemode::checkDist( a, b, distance );
 	}
 
@@ -5599,8 +5629,6 @@ zombie_watch_vulture_drop_bonus()
 						n_ammo_refunded *= level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS;
 
 					stock_ammo = n_ammo_count_current + n_ammo_refunded;
-					iprintln( "ref ammo: " + n_ammo_refunded);
-					iprintln( "stock: " + stock_ammo);
 
 					if( stock_ammo > n_ammo_count_max )
 						stock_ammo = n_ammo_count_max;

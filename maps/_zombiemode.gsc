@@ -54,9 +54,9 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=20;	//*/
+	level.calculate_amount_override=5;	//*/
 	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -690,7 +690,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = .2;
 
 	level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET = 20;
-	level.THRESHOLD_VULTURE_FOV_HUD_DOT = .5;
+	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.8;
 
 	//Wine
 
@@ -6098,7 +6098,6 @@ round_spawn_wrapper_func()
 				
 				 // || flag("enter_nml");
 
-	iprintln("Special Round: " + specialRound);
 	level thread [[level.round_spawn_func]]();
 
 	if( level.apocalypse && specialRound )

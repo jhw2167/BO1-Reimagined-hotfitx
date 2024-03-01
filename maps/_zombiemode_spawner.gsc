@@ -37,7 +37,7 @@ wait_zombie_eye_glow()
 
 	level.fx_eye_glow = "eye_glow";
 	flag_wait( "power_on" );		//or level waittill("juggernog_on");
-	level.fx_eye_glow = "eye_glow_purple";
+	//level.fx_eye_glow = "eye_glow_purple";
 
 	zombies = GetAiSpeciesArray( "axis", "all" );
 	

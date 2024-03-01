@@ -8,7 +8,7 @@ init()
 	//place_doubletap();
 	place_deadshot();
 	place_martyrdom();
-	//place_extraammo();
+	place_extraammo();
 	//place_chugabud();	//swapped with vultures
 	place_vulture();	//vulture
 	place_mulekick();
@@ -56,7 +56,7 @@ place_doubletap()
 place_deadshot()
 {
 	machine_origin = (-1531.9, 887.6, -133.0);
-	machine_angles = (0, -180, 0);
+	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "zombie_vending_ads" );
@@ -75,12 +75,41 @@ place_deadshot()
 	bump_trigger.script_activated = 1;
 	bump_trigger.script_sound = "fly_bump_bottle";
 	bump_trigger.targetname = "audio_bump_trigger";
+
+	level.zombie_deadshot_machine_monkey_angles = (0, 270, 0);
+	level.zombie_deadshot_machine_monkey_origins = [];
+
+	level.zombie_deadshot_machine_monkey_origins[0] = machine_origin + (32, 24, 5);
+	level.zombie_deadshot_machine_monkey_origins[1] = machine_origin + (0, 30, 5);
+	level.zombie_deadshot_machine_monkey_origins[2] = machine_origin + (-29.5, 24, 5);
+	
+
+	perk.target = "vending_deadshot_monkey_structs";
+	for ( i = 0; i < level.zombie_deadshot_machine_monkey_origins.size; i++ )
+	{
+		machine_monkey_struct = SpawnStruct();
+		machine_monkey_struct.origin = level.zombie_deadshot_machine_monkey_origins[i];
+		machine_monkey_struct.angles = level.zombie_deadshot_machine_monkey_angles;
+		machine_monkey_struct.script_int = i + 1;
+		machine_monkey_struct.script_notetworthy = "cosmo_monkey_deadshot";
+		machine_monkey_struct.targetname = "vending_deadshot_monkey_structs";
+
+		if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
+		{
+			level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
+		}
+
+		size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
+		level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
+	}
+
+
 }
 
 place_martyrdom()
 {
 	machine_origin = (58.9087, -886.359, -165.875);
-	machine_angles = (0, -180, 0);
+	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "p6_zm_vending_electric_cherry_off" );
@@ -99,12 +128,40 @@ place_martyrdom()
 	bump_trigger.script_activated = 1;
 	bump_trigger.script_sound = "fly_bump_bottle";
 	bump_trigger.targetname = "audio_bump_trigger";
+
+	level.zombie_cherry_machine_monkey_angles = (0, 270, 0);
+	level.zombie_cherry_machine_monkey_origins = [];
+
+	level.zombie_cherry_machine_monkey_origins[0] = machine_origin + (29, 24, 5);
+	level.zombie_cherry_machine_monkey_origins[1] = machine_origin + (0, 42, 1);
+	level.zombie_cherry_machine_monkey_origins[2] = machine_origin + (-31.5, 24, 5);
+	
+
+	perk.target = "vending_cherry_monkey_structs";
+	for ( i = 0; i < level.zombie_cherry_machine_monkey_origins.size; i++ )
+	{
+		machine_monkey_struct = SpawnStruct();
+		machine_monkey_struct.origin = level.zombie_cherry_machine_monkey_origins[i];
+		machine_monkey_struct.angles = level.zombie_cherry_machine_monkey_angles;
+		machine_monkey_struct.script_int = i + 1;
+		machine_monkey_struct.script_notetworthy = "cosmo_monkey_cherry";
+		machine_monkey_struct.targetname = "vending_cherry_monkey_structs";
+
+		if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
+		{
+			level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
+		}
+
+		size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
+		level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
+	}
+
 }
 
 place_extraammo()
 {
 	machine_origin = (1387.1, 16.4, -343.2);	
-	machine_angles = (0, -180, 0);
+	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "bo3_p7_zm_vending_widows_wine_off" );
@@ -123,12 +180,39 @@ place_extraammo()
 	bump_trigger.script_activated = 1;
 	bump_trigger.script_sound = "fly_bump_bottle";
 	bump_trigger.targetname = "audio_bump_trigger";
+
+	level.zombie_wine_machine_monkey_angles = (0, 270, 0);
+	level.zombie_wine_machine_monkey_origins = [];
+
+	level.zombie_wine_machine_monkey_origins[0] = machine_origin + (32, 40, 5);
+	level.zombie_wine_machine_monkey_origins[1] = machine_origin + (0, 40, 5);
+	level.zombie_wine_machine_monkey_origins[2] = machine_origin + (-29.5, 40, 5);
+	
+
+	perk.target = "vending_wine_monkey_structs";
+	for ( i = 0; i < level.zombie_wine_machine_monkey_origins.size; i++ )
+	{
+		machine_monkey_struct = SpawnStruct();
+		machine_monkey_struct.origin = level.zombie_wine_machine_monkey_origins[i];
+		machine_monkey_struct.angles = level.zombie_wine_machine_monkey_angles;
+		machine_monkey_struct.script_int = i + 1;
+		machine_monkey_struct.script_notetworthy = "cosmo_monkey_wine";
+		machine_monkey_struct.targetname = "vending_wine_monkey_structs";
+
+		if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
+		{
+			level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
+		}
+
+		size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
+		level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
+	}
 }
 
 place_vulture()
 {
 	machine_origin = (627.7, -1825.6, -134.5);
-	machine_angles = (0, 260, 0);
+	machine_angles = (0, 270, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "bo2_zombie_vending_vultureaid" );
@@ -147,6 +231,34 @@ place_vulture()
 	bump_trigger.script_activated = 1;
 	bump_trigger.script_sound = "fly_bump_bottle";
 	bump_trigger.targetname = "audio_bump_trigger";
+
+	level.zombie_vulture_machine_monkey_angles = (0, 0, 0);
+	level.zombie_vulture_machine_monkey_origins = [];
+
+	
+	level.zombie_vulture_machine_monkey_origins[0] = machine_origin + (-35, 8, -2);
+	level.zombie_vulture_machine_monkey_origins[1] = machine_origin + (-35, 0, 2);
+	level.zombie_vulture_machine_monkey_origins[2] = machine_origin + (-35, -8, 7);
+	
+
+	perk.target = "vending_vulture_monkey_structs";
+	for ( i = 0; i < level.zombie_vulture_machine_monkey_origins.size; i++ )
+	{
+		machine_monkey_struct = SpawnStruct();
+		machine_monkey_struct.origin = level.zombie_vulture_machine_monkey_origins[i];
+		machine_monkey_struct.angles = level.zombie_vulture_machine_monkey_angles;
+		machine_monkey_struct.script_int = i + 1;
+		machine_monkey_struct.script_notetworthy = "cosmo_monkey_vulture";
+		machine_monkey_struct.targetname = "vending_vulture_monkey_structs";
+
+		if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
+		{
+			level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
+		}
+
+		size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
+		level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
+	}
 }
 
 place_mulekick()
@@ -171,4 +283,32 @@ place_mulekick()
 	bump_trigger.script_activated = 1;
 	bump_trigger.script_sound = "fly_bump_bottle";
 	bump_trigger.targetname = "audio_bump_trigger";
+
+	level.zombie_additionalprimaryweapon_machine_monkey_angles = (0, 0, 0);
+	level.zombie_additionalprimaryweapon_machine_monkey_origins = [];
+
+	level.zombie_additionalprimaryweapon_machine_monkey_origins = [];
+	level.zombie_additionalprimaryweapon_machine_monkey_origins[0] = (398.8, 1398.6, 60);
+	level.zombie_additionalprimaryweapon_machine_monkey_origins[1] = (380.8, 1358.6, 60);
+	level.zombie_additionalprimaryweapon_machine_monkey_origins[2] = (398.8, 1318.6, 60);
+	
+
+	perk.target = "vending_additionalprimaryweapon_monkey_structs";
+	for ( i = 0; i < level.zombie_additionalprimaryweapon_machine_monkey_origins.size; i++ )
+	{
+		machine_monkey_struct = SpawnStruct();
+		machine_monkey_struct.origin = level.zombie_additionalprimaryweapon_machine_monkey_origins[i];
+		machine_monkey_struct.angles = level.zombie_additionalprimaryweapon_machine_monkey_angles;
+		machine_monkey_struct.script_int = i + 1;
+		machine_monkey_struct.script_notetworthy = "cosmo_monkey_additionalprimaryweapon";
+		machine_monkey_struct.targetname = "vending_additionalprimaryweapon_monkey_structs";
+
+		if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
+		{
+			level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
+		}
+
+		size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
+		level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
+	}
 }

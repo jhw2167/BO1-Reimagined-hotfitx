@@ -429,7 +429,7 @@ dog_round_tracker()
 	old_spawn_func = level.round_spawn_func;
 	old_wait_func  = level.round_wait_func;
 
-	level.next_dog_round = 6;
+	//level.next_dog_round = 6; debug
 	while ( 1 )
 	{
 		
