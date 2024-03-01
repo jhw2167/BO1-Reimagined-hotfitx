@@ -1476,11 +1476,12 @@ turn_electriccherry_on()
 		machine[i] Vibrate( ( 0, -100, 0 ), 0.3, 0.4, 3 );
 		machine[i] PlaySound( "zmb_perks_power_on" );
 		//Determine offset that is "in front" of the machine in a 3D worldspace, r=7
-		r=7;
+		r=15;
+		z=-20;
 		angles = machine[i].angles; 
-		//offset = (r*cos(angles[2]), r*sin(angles[2]), 0);
+		offset = (r*sin(angles[1]), r*cos(angles[1]), z);
 			
-		machine[i] thread perk_fx( "electriccherry_light" );
+		machine[i] thread perk_fx( "electriccherry_light", offset );
 	}
 	level notify( "specialty_bulletdamage_power_on" );
 }
@@ -1525,29 +1526,27 @@ perk_fx( fx, offset )
 {
 	//wait(3);
 
-	
-	if( self.targetname == "vending_vulture" || 
-		self.targetname == "vending_electriccherry" )
-	{
-		iprintln("Tag Origin: ");
-		iprintln(self GetTagOrigin("origin"));
-		iprintln("Self origin: ");
-		iprintln(self.origin);
 
-	}
-	//model = Spawn( "script_model", self, "tag_origin" );
-
-	playfxontag( level._effect[ fx ], self, "tag_origin" );
+	//playfxontag( level._effect[ fx ], self, "tag_origin" );
 	//playfx( level._effect[ fx ],  self.origin, "tag_origin" );
-	//playfx( level._effect[ fx ],  model.origin, "tag_origin" );
+	if( !isdefined( offset ) )
+	{
+		offset = (0,0,0);
+	}
+	
+	model = Spawn( "script_model", self.origin + offset );
+	model.angles = self.angles;
+	model setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+	model Hide();
+	playfxontag( level._effect[ fx ], model, "tag_origin" );
 
 	off_event = self.targetname + "_off";
 	moved_event = self.targetname + "_moved";
 
 	waittill_any( off_event, moved_event );
-	iprintln("model delete");
 
-	//model Delete();
+	model delete();
+
 }
 
 
