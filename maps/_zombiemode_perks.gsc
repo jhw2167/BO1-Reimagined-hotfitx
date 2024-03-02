@@ -1524,11 +1524,10 @@ turn_widowswine_on()
 //
 perk_fx( fx, offset )
 {
-	//wait(3);
+	wait(3);
 
 
 	//playfxontag( level._effect[ fx ], self, "tag_origin" );
-	//playfx( level._effect[ fx ],  self.origin, "tag_origin" );
 	if( !isdefined( offset ) )
 	{
 		offset = (0,0,0);
@@ -1537,6 +1536,7 @@ perk_fx( fx, offset )
 	model = Spawn( "script_model", self.origin + offset );
 	model.angles = self.angles;
 	model setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+	model NotSolid();
 	model Hide();
 	playfxontag( level._effect[ fx ], model, "tag_origin" );
 
@@ -1769,7 +1769,7 @@ addProPerk( perk )
 	////iprintln( " ADD PRO PERK : " + perk);
 }
 
-
+//disableProPerk
 disablePerk( perk, time ) 
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
@@ -1842,15 +1842,17 @@ removePerk( perk, removeOrDisableHud )
 			self.PERKS_DISABLED[ perk ] = true;
 			self manage_ui_perk_hud_interface( "disable", perk );
 		}
-			
-		//Trigger notify pro perk + "_stop"
-		self notify( perk + "_stop" );
-			
+
 		//Set player pro perk to false
 		self.PRO_PERKS[perk] = false;
+
+		//Trigger notify pro perk + "_stop"
+		self notify( perk + "_stop" );
+		self notify( base_perk + "_stop" );
+			
 	}
 
-	//Unset base perk and reset stats by calling perk_think
+	//Unset base perk and reset stats by calling perk_think via notify
 	if (self HasPerk( base_perk ))
 	{
 
@@ -2836,23 +2838,27 @@ perk_think( perk )
 	}
 #/
 
+	//If upgraded perk, return immediately
+	if( IsSubStr( perk, "_upgrade" ) )
+	{
+		return;
+	}
+
 	perk_str = perk + "_stop";
-	result = self waittill_any_return( "fake_death", "death", "player_downed", perk_str );
+	proPerk = perk + "_upgrade";
+	proPerk_str = proPerk + "_stop";
 
 	//Reimagined-Expanded perkapunch
-	if( self hasProPerk( perk + "_upgrade" ) )
+	result = self waittill_any_return( "fake_death", "death", "player_downed", perk_str, proPerk_str );
+	proPerkAvailable = self hasProPerk( proPerk ) && !self.PERKS_DISABLED[ proPerk ];
+
+	while( proPerkAvailable && result != proPerk_str )
 	{
-		wait_network_frame();
-		self update_perk_hud();
-		self waittill( perk + "_stop" );
-		for( i=0; i < level.ARRAY_VALID_PRO_PERKS.size; i++) 
-		{
-			if( level.ARRAY_VALID_PRO_PERKS[i] == perk ) {
-				perk = level.ARRAY_VALID_PERKS[i];	//Get base perk name to remove
-				break;
-			}
-		}
+		result = self waittill_any_return( "fake_death", "death", "player_downed", perk_str, proPerk_str );
+		proPerkAvailable = self hasProPerk( proPerk ) && !self.PERKS_DISABLED[ proPerk ];
 	}
+	//iprintln( "Perk Think: " + result );
+
 
 	//always notify the perk stop string so we know to end perk specific stuff
 	if(result != perk_str)
@@ -2954,6 +2960,7 @@ manage_ui_perk_hud_interface( command, perk )
 manage_ui_perk_hud( command, perk )
 {
 	total_perks = self.purchased_perks.size;
+	reset_all = false;
 
 	if( command == "add" || command == "upgrade" )
 	{
@@ -3002,15 +3009,26 @@ manage_ui_perk_hud( command, perk )
 				}
 					
 			}
+			reset_all = true;
 			break;
 
 		case "disable":
 			self.PERKS_DISABLED[ perk ] = true;
+			reset_all = true;
 			break;
 
 		case "enable":
-			//handled elsewhere, dont want to ad more perks to UI
+			//handled elsewhere, dont want to add more perks to UI
 			self.PERKS_DISABLED[ perk ] = false;
+			break;
+
+		case "flash_start":
+			self.PERKS_FLASHING[ perk ] = true;
+			break;
+
+		case "flash_end":
+			self.PERKS_FLASHING[ perk ] = false;
+			reset_all = true;
 			break;
 
 		default:
@@ -3028,15 +3046,27 @@ manage_ui_perk_hud( command, perk )
 			perk_key += "0";
 		perk_key += i;
 
-		self ui_perk_hud_remove( perk_key );
+		if( reset_all ) 
+		{
+			self notify( perk_key + "_flash_stop" );
+			self ui_perk_hud_remove( perk_key );
+		}
+		
 
 		if( !IsDefined( self.purchased_perks[i] ) )
 			break; //No more perks to update
+
+		if( self.PERKS_FLASHING[ self.purchased_perks[i] ] ) {
+			self thread ui_perk_hud_start_flash( self.purchased_perks[i], perk_key );
+			continue;
+		}
+			
 
 		if( self.PERKS_DISABLED[ self.purchased_perks[i] ] )
 			self ui_perk_hud_disable( self.purchased_perks[i], perk_key );
 		else
 			self ui_perk_hud_activate( self.purchased_perks[i], perk_key );
+			
 	}
 	
 }
@@ -3084,6 +3114,40 @@ ui_perk_hud_disable( perk, perk_key )
 	self SetClientDvar(perk_key, shader);
 	self send_message_to_csc("hud_anim_handler", client_msg);
 }
+
+//HERE
+ui_perk_hud_start_flash( perk, perk_key )
+{
+	client_msg_flash = perk_key + "_off"; //_FLASH
+	//client_msg_flash = perk_key + "_fade"; //_FLASH
+	client_msg_normal = perk_key + "_on";
+
+	self thread player_watch_ui_perk_hud_stop_flash( perk, perk_key + "_flash" );
+
+	base_perk = perk;
+	if( IsSubStr( perk, "_upgrade" ) ) 
+	{
+		base_perk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
+	}
+
+	self thread perk_flash_audio( base_perk );
+
+	while( self.PERKS_FLASHING[ perk ] )
+	{
+		self send_message_to_csc("hud_anim_handler", client_msg_flash);
+		self perk_flash_audio( base_perk );
+		wait( 0.8 );
+		self send_message_to_csc("hud_anim_handler", client_msg_normal);
+		wait( 0.8 );
+	}
+}
+
+player_watch_ui_perk_hud_stop_flash( perk, perk_key )
+{
+	self waittill_any( "perk_lost", perk_key + "_stop");
+	self.PERKS_FLASHING[ perk ] = false;
+}
+
 
 perk_hud_create( perk )
 {
@@ -3293,14 +3357,17 @@ perk_flash_audio( perk )
             break;
 
         case "specialty_flakjacket":
+		case "specialty_bulletdamage":
             alias = "zmb_hud_flash_phd";
             break;
 
         case "specialty_deadshot":
+		case "specialty_bulletaccuracy":
             alias = "zmb_hud_flash_deadshot";
             break;
 
         case "specialty_additionalprimaryweapon":
+		case "specialty_altmelee":
             alias = "zmb_hud_flash_additionalprimaryweapon";
             break;
     }
@@ -3309,36 +3376,56 @@ perk_flash_audio( perk )
         self PlayLocalSound( alias );
 }
 
+//Reimagined-Expanded, refactored
 perk_hud_start_flash( perk, damage )
 {
-	if ( self HasPerk( perk ) && isdefined( self.perk_hud ) )
+
+	if ( self HasPerk( perk ) )
 	{
-		hud = self.perk_hud[perk];
-		if ( isdefined( hud ) )
+		proPerk = perk + "_upgrade";
+
+		if( self.PERKS_FLASHING[ perk ] || self.PERKS_FLASHING[ proPerk ] ) 
 		{
-			if ( !is_true( hud.flash ) )
-			{
-				hud thread perk_hud_flash(damage);
-				self thread perk_flash_audio( perk );
-			}
+			return;
+		}
+		
+		
+		if( self hasProPerk( proPerk ) ) 
+		{
+			self manage_ui_perk_hud_interface( "flash_start", proPerk );
+		}
+		else
+		{
+			self manage_ui_perk_hud_interface( "flash_start", perk );
 		}
 	}
 }
 
 perk_hud_stop_flash( perk, taken )
 {
-	if ( self HasPerk( perk ) && isdefined( self.perk_hud ) )
+	if( !IsDefined( taken ) )
+		taken = false;
+
+	if ( self HasPerk( perk ) )
 	{
-		hud = self.perk_hud[perk];
-		if ( isdefined( hud ) )
+		proPerk = perk + "_upgrade";
+		if( self hasProPerk( proPerk ) && self.PERKS_FLASHING[ proPerk ] ) 
 		{
-			hud.flash = undefined;
-			if ( isdefined( taken ) )
-			{
-				hud notify( "stop_flash_perk" );
-			}
+
+			self manage_ui_perk_hud_interface( "flash_end", proPerk );
+			if( taken )
+				self thread disablePerk( proPerk, level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME );
+				
+		}
+		else if( self.PERKS_FLASHING[ perk ] )
+		{
+			self manage_ui_perk_hud_interface( "flash_end", perk );
+
+			if( taken )
+				self removePerk( perk );
 		}
 	}
+
 }
 
 perk_give_bottle_begin( perk )
@@ -4310,7 +4397,7 @@ player_watch_electric_cherry()
 		
 		for( i = 0; i < a_zombies.size; i ++ )
 		{
-			if( a_zombies[i].marked_for_tesla )
+			if( is_true(a_zombies[i].marked_for_tesla) )
 				continue;
 
 			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
@@ -4384,7 +4471,7 @@ player_watch_electric_cherry()
 			self endon( "death" );
 			tag = "J_SpineUpper";
 			fx = "fx_electric_cherry_shock";
-			if( self.isdog )
+			if( is_true(self.isdog) )
 			{
 				tag = "J_Spine1";
 			}
@@ -4402,10 +4489,15 @@ player_watch_electric_cherry()
 			self endon( "death" );
 			tag = "J_SpineUpper";
 			fx = "fx_electric_cherry_shock";
-			if( self.isdog )
+			if( is_true( self.isdog ) )
 			{
 				tag = "J_Spine1";
 			}
+			else if( self.animname == "monkey_zombie" )
+			{
+				self animscripted( "tesla_death", self.origin, self.angles, level._zombie_tesla_death["monkey_zombie"][0] );
+			}
+
 			self PlaySound( "zmb_elec_jib_zombie" );
 			network_safe_play_fx_on_tag( "tesla_shock_fx", 2, level._effect[ fx ], self, tag );
 		}
@@ -4495,8 +4587,9 @@ player_watch_vulture()
 {
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_on");
 	self.vulture_had_perk = true; //turned off after vulture_destroy_waypoints();
-	self thread player_watch_vulture_toggle();
-	self thread player_create_vulture_vision_weapon();
+	self thread player_watch_vulture_stop( "vulture_vision_toggle" );
+	self thread player_watch_vulture_toggle( "vulture_vision_toggle" );
+	self thread player_create_vulture_vision_weapons();
 	self thread player_create_vulture_vision_box_glow();
 
 	while( self HasPerk( level.VLT_PRK ) )	{
@@ -4510,7 +4603,7 @@ player_watch_vulture()
 
 //Self is player
 
-	player_create_vulture_vision_weapon()
+	player_create_vulture_vision_weapons()
 	{
 		structs = level.perk_vulture_waypoint_structs;
 		for( i = 0; i < structs.size; i++ )
@@ -4537,6 +4630,9 @@ player_watch_vulture()
 		structs = level.perk_vulture_waypoint_structs;
 		while( 1 )
 		{
+			if( !(self HasPerk( level.VLT_PRK )) )
+				break;
+
 			//Create fx where box is
 					
 			for( i = 0; i < structs.size; i++ )
@@ -4556,7 +4652,7 @@ player_watch_vulture()
 											 "fire_sale_off",
 											 "moving_chest_now",
 											 "player_downed",
-											vision_toggle_event );
+											 vision_toggle_event );
 			
 			//Destroy fx
 			for( i = 0; i < structs.size; i++ )
@@ -4568,10 +4664,10 @@ player_watch_vulture()
 
 			if( event == vision_toggle_event )
 			{
-				level waittill( vision_toggle_event );
-
 				if( !(self HasPerk( level.VLT_PRK )) )
 					break;
+
+				level waittill( vision_toggle_event );
 
 				continue;
 			}
@@ -4588,11 +4684,14 @@ player_watch_vulture()
 				if( !(self HasPerk( level.VLT_PRK )) )
 					break;
 			}
-
 			
-			level waittill_any( "powerup fire sale", "fire_sale_off", "moving_chest_done" );
+			event = level waittill_any_return( 	 "powerup fire sale",
+												 "fire_sale_off",
+												 "moving_chest_done",
+											 	 vision_toggle_event
+												);
 			
-			wait 5;
+			wait 1;
 		}
 
 		//Destroy any existing fx
@@ -4600,7 +4699,7 @@ player_watch_vulture()
 	}
 	// */
 
-	player_watch_vulture_toggle()
+	player_watch_vulture_toggle( level_notify_str )
 	{
 		self endon( "disconnect" );
 		self endon( level.VLT_PRK + "_stop" );
@@ -4610,7 +4709,7 @@ player_watch_vulture()
 			if( self ADSButtonPressed() && self MeleeButtonPressed() )
 			{
 				//iprintln( "Vulture Vision Toggled" );
-				vulture_vision_toggle_event = "vulture_vision_toggle" + self GetEntityNumber();
+				vulture_vision_toggle_event = level_notify_str + self GetEntityNumber();
 				level notify( vulture_vision_toggle_event );
 				self.vulture_vison_toggle = !self.vulture_vison_toggle;	
 				wait( 1 );
@@ -4619,6 +4718,16 @@ player_watch_vulture()
 				
 			wait( 0.1 );
 		}
+	}
+
+	player_watch_vulture_stop( level_notify_str )
+	{
+		VULTURE_STOP = level.VLT_PRK + "_stop";
+		VULTURE_PRO_STOP = level.VLT_PRO + "_stop";
+
+		event = self waittill_any_return( 	VULTURE_STOP, VULTURE_PRO_STOP );
+
+		level notify( level_notify_str + self GetEntityNumber() );
 	}
 
 
@@ -4922,7 +5031,7 @@ init_vulture()
 	}
 
 		/* 
-		Handle boss/special zombies waypoints - HERE
+		Handle boss/special zombies waypoints
 		// */
 
 		player_vulture_zombie_boss_waypoints( specials )
@@ -4939,7 +5048,6 @@ init_vulture()
 		}
 		
 
-			//HERE
 			//Self is player, individual zombie waypoint handler
 			handle_player_vulture_zombie_boss_waypoint( zombie )
 			{
@@ -5292,7 +5400,19 @@ init_vulture()
 	check_waypoint_visible( player, struct )
 	{	
 		if( !player.vulture_vison_toggle )
-			return false;
+		{
+			is_weapon = is_true( struct.is_weapon );
+			is_chest = is_true( struct.is_chest );
+			is_perk = IsDefined( struct.perk_to_check );
+			is_active_powerup = is_true( struct.is_active_powerup );
+			is_zombie = IsDefined( struct.animname );
+
+			//Turn off vision for chest, weapon, perks if vision toggled
+			if( is_weapon || is_chest || is_perk )
+				return false;
+
+		}
+			
 		
 		if( !IsDefined( player ) || !IsDefined( struct ) )
 			return false;
@@ -5340,7 +5460,6 @@ init_vulture()
 				if( is_true( struct.using_pap_locations ))
 					return false;
 			}
-
 			/* ##############				############## */
 
 

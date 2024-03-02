@@ -322,7 +322,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		0.5 0.5 0.5 0.5
 			}
 
 			state
@@ -330,6 +330,7 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
 		}
 
 		itemDef
@@ -352,7 +353,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -382,7 +383,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -412,7 +413,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -442,7 +443,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -472,7 +473,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -502,7 +503,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -532,7 +533,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -562,7 +563,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -592,7 +593,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -622,7 +623,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -652,7 +653,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -682,7 +683,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -712,7 +713,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -742,7 +743,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.65
+				forecolor 		1 1 1 0.4
 			}
 
 			state

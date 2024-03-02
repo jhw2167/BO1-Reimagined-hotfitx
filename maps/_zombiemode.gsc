@@ -54,7 +54,7 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=5;	//*/
+	level.calculate_amount_override=1;	//*/
 	//level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -740,6 +740,7 @@ reimagined_init_level()
 	//Real Time Perk Variables
 	level.vulture_track_current_pap_spot = undefined;	//undefined when not in map
 	level.vulture_track_current_powerups = [];
+	level.vulture_is_upgraded_drop = false;				//When player has upgraded vulture, drop time extended
 
 	//Maps
 
@@ -818,6 +819,31 @@ reimagined_init_player()
 	self.PERKS_DISABLED[ level.ECH_PRO ] = false;
 	self.PERKS_DISABLED[ level.VLT_PRO ] = false;
 	self.PERKS_DISABLED[ level.WWN_PRO ] = false;
+
+	self.PERKS_FLASHING = [];
+	self.PERKS_FLASHING[ level.JUG_PRK ] = false;
+	self.PERKS_FLASHING[ level.QRV_PRK ] = false;
+	self.PERKS_FLASHING[ level.SPD_PRK ] = false;
+	self.PERKS_FLASHING[ level.DBT_PRK ] = false;
+	self.PERKS_FLASHING[ level.STM_PRK ] = false;
+	self.PERKS_FLASHING[ level.PHD_PRK ] = false;
+	self.PERKS_FLASHING[ level.DST_PRK ] = false;
+	self.PERKS_FLASHING[ level.MUL_PRK ] = false;
+	self.PERKS_FLASHING[ level.ECH_PRK ] = false;
+	self.PERKS_FLASHING[ level.VLT_PRK ] = false;
+	self.PERKS_FLASHING[ level.WWN_PRK ] = false;
+
+	self.PERKS_FLASHING[ level.JUG_PRO ] = false;
+	self.PERKS_FLASHING[ level.QRV_PRO ] = false;
+	self.PERKS_FLASHING[ level.SPD_PRO ] = false;
+	self.PERKS_FLASHING[ level.DBT_PRO ] = false;
+	self.PERKS_FLASHING[ level.STM_PRO ] = false;
+	self.PERKS_FLASHING[ level.PHD_PRO ] = false;
+	self.PERKS_FLASHING[ level.DST_PRO ] = false;
+	self.PERKS_FLASHING[ level.MUL_PRO ] = false;
+	self.PERKS_FLASHING[ level.ECH_PRO ] = false;
+	self.PERKS_FLASHING[ level.VLT_PRO ] = false;
+	self.PERKS_FLASHING[ level.WWN_PRO ] = false;
 
 	
 	//Zombies

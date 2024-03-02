@@ -133,7 +133,7 @@ place_martyrdom()
 	level.zombie_cherry_machine_monkey_origins = [];
 
 	level.zombie_cherry_machine_monkey_origins[0] = machine_origin + (29, 24, 5);
-	level.zombie_cherry_machine_monkey_origins[1] = machine_origin + (0, 42, 1);
+	level.zombie_cherry_machine_monkey_origins[1] = machine_origin + (0, 34, 1);
 	level.zombie_cherry_machine_monkey_origins[2] = machine_origin + (-31.5, 24, 5);
 	
 

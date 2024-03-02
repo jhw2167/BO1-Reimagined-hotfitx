@@ -532,7 +532,7 @@ player_handle_perk_slots( state )
 	s = SpawnStruct();
 	s.menu_name = "perk_slots";
 	s.item_name = GetSubStr( state, 0, 12); //Get "perk_slot_01"
-	s.fade_time = 250;
+	s.fade_time = 1000;
 	//material name must be set as DVAR
 
 	//iprintlnbold("State: " + state);
@@ -550,6 +550,7 @@ player_handle_perk_slots( state )
 
 	return s;
 }
+
 
 
 //Mulekick

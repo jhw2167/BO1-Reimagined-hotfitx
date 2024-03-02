@@ -1468,6 +1468,12 @@ powerup_grab()
 				}
 				else
 				{
+					//Reimagined-Expanded - Vulture upgraded drops
+					if( players[i] maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
+						level.vulture_is_upgraded_drop = true;
+					else
+						level.vulture_is_upgraded_drop = false;
+	
 					switch (self.powerup_name)
 					{
 					case "nuke":
@@ -1675,22 +1681,33 @@ start_fire_sale( item )
 	
 	level thread maps\_zombiemode_audio::do_announcer_playvox( level.devil_vox["powerup"]["fire_sale_short"] );
 
+	powerup_time = 30;
+	players = get_players();
+	for(i = 0; i < players.size; i++)
+	{
+		if( players[i] maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
+		{
+			powerup_time = 45;
+		}
+	}
+	
+
 	players = get_players();
 	if(level.zombie_vars["zombie_powerup_fire_sale_on"])
 	{
-		level.zombie_vars["zombie_powerup_fire_sale_time"] += 30;
+		level.zombie_vars["zombie_powerup_fire_sale_time"] += powerup_time;
 		for(i = 0; i < players.size; i++)
 		{
-			players[i].zombie_vars["zombie_powerup_fire_sale_time"] += 30;
+			players[i].zombie_vars["zombie_powerup_fire_sale_time"] += powerup_time;
 		}
 	}
 	else
 	{
 		level notify("fire_sale_on");
-		level.zombie_vars["zombie_powerup_fire_sale_time"] = 30;
+		level.zombie_vars["zombie_powerup_fire_sale_time"] = powerup_time;
 		for(i = 0; i < players.size; i++)
 		{
-			players[i].zombie_vars["zombie_powerup_fire_sale_time"] = 30;
+			players[i].zombie_vars["zombie_powerup_fire_sale_time"] = powerup_time;
 		}
 	}
     
@@ -1742,21 +1759,31 @@ start_bonfire_sale( item )
 	temp_ent playloopsound ("zmb_double_point_loop");
 	level thread delete_on_bonfire_sale(temp_ent);
 
+	powerup_time = 30;
+	players = get_players();
+	for(i = 0; i < players.size; i++)
+	{
+		if( players[i] maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
+		{
+			powerup_time = 45;
+		}
+	}
+
 	players = get_players();
 	if(level.zombie_vars["zombie_powerup_bonfire_sale_on"])
 	{
-		level.zombie_vars["zombie_powerup_bonfire_sale_time"] += 30;
+		level.zombie_vars["zombie_powerup_bonfire_sale_time"] += powerup_time;
 		for(i = 0; i < players.size; i++)
 		{
-			players[i].zombie_vars["zombie_powerup_bonfire_sale_time"] += 30;
+			players[i].zombie_vars["zombie_powerup_bonfire_sale_time"] += powerup_time;
 		}
 	}
 	else
 	{
-		level.zombie_vars["zombie_powerup_bonfire_sale_time"] = 30;
+		level.zombie_vars["zombie_powerup_bonfire_sale_time"] = powerup_time;
 		for(i = 0; i < players.size; i++)
 		{
-			players[i].zombie_vars["zombie_powerup_bonfire_sale_time"] = 30;
+			players[i].zombie_vars["zombie_powerup_bonfire_sale_time"] = powerup_time;
 		}
 	}
 
@@ -2184,6 +2211,9 @@ nuke_flash_player()
 double_points_powerup( drop_item, player )
 {
 	players = get_players();
+	upgraded = false;
+
+
 	for(i = 0; i < players.size; i++)
 	{
 		if(level.gamemode != "survival" && players[i].vsteam != player.vsteam)
@@ -2206,10 +2236,6 @@ double_points_powerup_player( drop_item )
 	self notify ("powerup points scaled");
 	self endon ("powerup points scaled");
 	self endon("disconnect");
-
-	//	players = get_players();
-	//	array_thread(level,::point_doubler_on_hud, drop_item);
-	//self thread point_doubler_on_hud( drop_item );
 
 	self thread powerup_shader_on_hud( drop_item, "zombie_powerup_point_doubler_on", "zombie_powerup_point_doubler_time", "zmb_points_loop_off", "zmb_double_point_loop" );
 
@@ -2409,16 +2435,21 @@ insta_kill_on_hud( drop_item )
 {
 	self endon ("disconnect");
 
+	powerup_time = 30;
+	if( self maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
+	{
+		powerup_time = 45;
+	}
 	// check to see if this is on or not
 	if ( self.zombie_vars["zombie_powerup_insta_kill_on"] )
 	{
 		// reset the time and keep going
-		self.zombie_vars["zombie_powerup_insta_kill_time"] += 30;
+		self.zombie_vars["zombie_powerup_insta_kill_time"] += powerup_time;
 		return;
 	}
 	else
 	{
-		self.zombie_vars["zombie_powerup_insta_kill_time"] = 30;
+		self.zombie_vars["zombie_powerup_insta_kill_time"] = powerup_time;
 	}
 
 	self.zombie_vars["zombie_powerup_insta_kill_on"] = true;
@@ -2488,28 +2519,25 @@ point_doubler_on_hud( drop_item )
 {
 	self endon ("disconnect");
 
+	powerup_time = 30;
+	if( self maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
+	{
+		powerup_time = 45;
+	}
+
 	// check to see if this is on or not
 	if ( self.zombie_vars["zombie_powerup_point_doubler_on"] )
 	{
 		// reset the time and keep going
-		self.zombie_vars["zombie_powerup_point_doubler_time"] += 30;
+		self.zombie_vars["zombie_powerup_point_doubler_time"] += powerup_time;
 		return;
 	}
 	else
 	{
-		self.zombie_vars["zombie_powerup_point_doubler_time"] = 30;
+		self.zombie_vars["zombie_powerup_point_doubler_time"] = powerup_time;
 	}
 
 	self.zombie_vars["zombie_powerup_point_doubler_on"] = true;
-	//level.powerup_hud_array[0] = true;
-	// set up the hudelem
-	//hudelem = maps\_hud_util::createFontString( "objective", 2 );
-	//hudelem maps\_hud_util::setPoint( "TOP", undefined, 0, level.zombie_vars["zombie_timer_offset"] );
-	//hudelem.sort = 0.5;
-	//hudelem.alpha = 0;
-	//hudelem fadeovertime( 0.5 );
-	//hudelem.alpha = 1;
-	//hudelem.label = drop_item.hint;
 
 	// set time remaining for point doubler
 	self thread time_remaining_on_point_doubler_powerup();
@@ -2520,7 +2548,6 @@ point_doubler_on_hud( drop_item )
 
 time_remaining_on_point_doubler_powerup()
 {
-	//self setvalue( level.zombie_vars["zombie_powerup_point_doubler_time"] );
 	temp_ent = undefined;
 	players = get_players();
 	if(self == players[0])
@@ -2537,7 +2564,6 @@ time_remaining_on_point_doubler_powerup()
 	{
 		wait 0.1;
 		self.zombie_vars["zombie_powerup_point_doubler_time"] = self.zombie_vars["zombie_powerup_point_doubler_time"] - 0.1;
-		//self setvalue( level.zombie_vars["zombie_powerup_point_doubler_time"] );
 	}
 
 	// turn off the timer
@@ -2555,6 +2581,7 @@ time_remaining_on_point_doubler_powerup()
 	if(IsDefined(temp_ent))
 		temp_ent delete();
 }
+
 toggle_bonfire_sale_on()
 {
 	level endon ("powerup bonfire sale");
@@ -3781,6 +3808,8 @@ powerup_shader_on_hud( item, powerup_on_var, powerup_time_var, sound, loop_sound
 	if(!IsDefined(time))
 	{
 		time = 30;
+		if( level.vulture_is_upgraded_drop)
+			time = 45;
 	}
 
 	// check to see if this is on or not

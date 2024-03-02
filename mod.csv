@@ -470,6 +470,10 @@ xanim,ai_zombie_afterlife_stun_c
 xanim,ai_zombie_afterlife_stun_d
 xanim,ai_zombie_afterlife_stun_e
 
+xanim,ai_zombie_quad_death_tesla
+xanim,ai_zombie_quad_death_tesla_2
+xanim,ai_zombie_quad_death_tesla_3
+xanim,ai_zombie_quad_death_tesla_4
 
 //PLAYER ANIMS
 rawfile,mp/playeranim.script

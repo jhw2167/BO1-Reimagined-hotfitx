@@ -311,6 +311,11 @@ init_monkey_zombie_anims()
 	level.scr_anim["monkey_zombie"]["crawl_sprint2"] 	= %ai_zombie_crawl_sprint_1;
 	level.scr_anim["monkey_zombie"]["crawl_sprint3"] 	= %ai_zombie_crawl_sprint_2;
 
+	level.scr_anim["monkey_zombie"]["death_tesla1"] 	= %ai_zombie_quad_death_tesla;
+	level.scr_anim["monkey_zombie"]["death_tesla2"] 	= %ai_zombie_quad_death_tesla_2;
+	level.scr_anim["monkey_zombie"]["death_tesla3"] 	= %ai_zombie_quad_death_tesla_3;
+	level.scr_anim["monkey_zombie"]["death_tesla4"] 	= %ai_zombie_quad_death_tesla_4;
+
 	if( !isDefined( level._zombie_melee ) )
 	{
 		level._zombie_melee = [];
@@ -789,17 +794,20 @@ monkey_pack_update_perk()
 
 	while ( 1 )
 	{
-		if ( !isdefined( self.perk ) || self.monkeys.size == 0 )
+		if ( !isdefined( self.perk ) )
 		{
 			break;
 		}
 
+		//iprintln( "Watching monkey pack updates: " +  self.machine.monkey_health );
 		// machine is destroyed, move on
 		if ( self.machine.monkey_health == 0 )
 		{
 			monkey_print( "pack destroyed " + self.machine.targetname );
 
-			self monkey_pack_take_perk();
+			//self monkey_pack_take_perk();
+			self.perk.targeted = 0;
+			monkey_pack_stop_flash(self.perk.script_noteworthy, true );
 
 			// need to wait for the perk to actually be taken from the player
 			wait_network_frame();
@@ -821,7 +829,36 @@ monkey_pack_update_perk()
 			}
 		}
 
-		wait_network_frame();
+		//for all monkeys in the pack
+		if( IsDefined( self.perk ))
+		{
+			stop_flashing = true;
+			for ( i = 0; i < self.monkeys.size; i++ )
+			{
+				m = self.monkeys[i];
+				if( isdefined( m ) && m.state == "attack_perk" )
+				{
+					stop_flashing = false;
+					break;
+				}
+			}
+
+
+			if ( stop_flashing )
+			{
+				//iprintln("Stop Flash: " + 1 );
+				monkey_pack_stop_flash( self.perk.script_noteworthy, false );
+			}
+
+			if ( self.monkeys.size == 0 )
+			{
+				//iprintln("Stop Flash: " + 2 );
+				monkey_pack_stop_flash( self.perk.script_noteworthy, false );
+				break;
+			}
+		}
+		
+		wait( 0.2 );
 	}
 }
 
@@ -969,8 +1006,8 @@ monkey_pack_update_enemy()
 			self.enemy = players[ player_idx ];
 		}
 
-		//wait( 0.2 );
-		wait( 1 );
+		wait( 0.2 );
+		//wait( 1 );
 	}
 }
 
@@ -1400,10 +1437,9 @@ monkey_zombie_update()
 		{
 			self thread monkey_zombie_destroy_perk();
 			//self waittill( "stop_perk_attack" );
-			//iprintln( "monkey doing perk things " + self GetEntityNumber() );
-			self waittill_any_or_timeout( 60,  "next_perk", "stop_perk_attack" );
-			//iprintln( "monkey stopping perk attack " + self GetEntityNumber() );
-			self.perk = undefined;
+			
+			self waittill_any( "next_perk", "stop_perk_attack" );
+			
 			wait_network_frame();
 			continue;
 		}
@@ -1418,7 +1454,8 @@ monkey_zombie_update()
 			self.following_player = true;
 			self monkey_zombie_set_state( "charge_player" );
 		}
-		wait( 2 );
+
+		wait( 0.5 );
 	}
 }
 
@@ -1428,12 +1465,6 @@ monkey_zombie_update()
 monkey_zombie_get_perk_pos()
 {
 	points = getstructarray( self.pack.machine.target, "targetname" );
-
-	iprintln( "Points size " + points.size );
-	for ( i = 0; i < points.size; i++ )
-	{
-		iprintln( "checking " + points[i] );
-	}
 
 	for ( i = 0; i < points.size; i++ )
 	{
@@ -3072,10 +3103,10 @@ monkey_pack_flash_perk( perk, damage )
 		return;
 	}
 
-	players = getplayers();
+	players = get_players();
 	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] maps\_zombiemode_perks::perk_hud_start_flash( perk, damage );
+		players[i] thread maps\_zombiemode_perks::perk_hud_start_flash( perk, damage );
 	}
 }
 
@@ -3084,10 +3115,11 @@ monkey_pack_flash_perk( perk, damage )
 //-----------------------------------------------------------------
 monkey_pack_stop_flash( perk, taken )
 {
-	players = getplayers();
+
+	players = get_players();
 	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] maps\_zombiemode_perks::perk_hud_stop_flash( perk, taken );
+		players[i] thread maps\_zombiemode_perks::perk_hud_stop_flash( perk, taken );
 	}
 }
 
