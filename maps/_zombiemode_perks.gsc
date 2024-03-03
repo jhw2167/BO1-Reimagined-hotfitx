@@ -3023,6 +3023,10 @@ manage_ui_perk_hud( command, perk )
 			break;
 
 		case "flash_start":
+
+			if( self.PERKS_FLASHING[ perk ] )
+				return;
+
 			self.PERKS_FLASHING[ perk ] = true;
 			break;
 
@@ -3048,7 +3052,14 @@ manage_ui_perk_hud( command, perk )
 
 		if( reset_all ) 
 		{
-			self notify( perk_key + "_flash_stop" );
+
+			if( self.PERKS_FLASHING[ self.purchased_perks[i] ]) 
+			{
+				self notify( perk_key + "_flash_stop" );
+				wait( 0.1 );
+				self.PERKS_FLASHING[ self.purchased_perks[i] ] = true;
+			}
+
 			self ui_perk_hud_remove( perk_key );
 		}
 		
@@ -3109,7 +3120,8 @@ ui_perk_hud_disable( perk, perk_key )
 		shader = convertPerkToShader( perk );
 	}
 
-	client_msg = perk_key + "_fade";
+	//client_msg = perk_key + "_fade";
+	client_msg = perk_key + "_dark";
 
 	self SetClientDvar(perk_key, shader);
 	self send_message_to_csc("hud_anim_handler", client_msg);
@@ -3118,9 +3130,13 @@ ui_perk_hud_disable( perk, perk_key )
 //HERE
 ui_perk_hud_start_flash( perk, perk_key )
 {
-	client_msg_flash = perk_key + "_off"; //_FLASH
-	//client_msg_flash = perk_key + "_fade"; //_FLASH
+	//client_msg_flash = perk_key + "_off"; //_FLASH
+	client_msg_flash = perk_key + "_fade"; //_FLASH
+	//client_msg_flash = perk_key + "_dark"; //_FLASH
 	client_msg_normal = perk_key + "_on";
+
+	queue_num = self.perk_hud_queue_num;
+	iprintln(" starting flash with queue num, " + queue_num + "  perk  " + perk);
 
 	self thread player_watch_ui_perk_hud_stop_flash( perk, perk_key + "_flash" );
 
@@ -3130,16 +3146,35 @@ ui_perk_hud_start_flash( perk, perk_key )
 		base_perk = GetSubStr( perk, 0, perk.size - 8); //remove "_upgrade"
 	}
 
-	self thread perk_flash_audio( base_perk );
-
-	while( self.PERKS_FLASHING[ perk ] )
+	keepFlashing = self.PERKS_FLASHING[ perk ];
+	ANIM_TIME = 0.8;
+	while( keepFlashing )
 	{
 		self send_message_to_csc("hud_anim_handler", client_msg_flash);
 		self perk_flash_audio( base_perk );
-		wait( 0.8 );
+
+		time =0;
+		while( time < ANIM_TIME )
+		{
+			time += 0.1;
+			wait( 0.1 );
+			if( !self.PERKS_FLASHING[ perk ] )
+				return;
+		}
+
 		self send_message_to_csc("hud_anim_handler", client_msg_normal);
-		wait( 0.8 );
+
+		time =0;
+		while( time < ANIM_TIME )
+		{
+			time += 0.1;
+			wait( 0.1 );
+			if( !self.PERKS_FLASHING[ perk ] )
+				return;
+		}
 	}
+
+	iprintln("terminating flash with queue num, " + queue_num + "  perk  " + perk);
 }
 
 player_watch_ui_perk_hud_stop_flash( perk, perk_key )

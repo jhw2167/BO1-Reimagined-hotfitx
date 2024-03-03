@@ -304,33 +304,38 @@
 
 		itemDef
 		{
-			name			"perk_slot_00"
-			type			ITEM_TYPE_IMAGE
-			rect			4 -92 24 24 HORIZONTAL_ALIGN_USER_LEFT VERTICAL_ALIGN_USER_BOTTOM
-			forecolor		1 1 1 0
+			name            "perk_slot_00"
+			type            ITEM_TYPE_IMAGE
+			rect            4 -92 24 24 HORIZONTAL_ALIGN_USER_LEFT VERTICAL_ALIGN_USER_BOTTOM
+			forecolor       1 1 1 0
 			exp             material(dvarString("perk_slot_00"))
-		    style      		WINDOW_STYLE_SHADER
-		    visible     	When(dvarString("perk_slot_00") != "")
+			style           WINDOW_STYLE_SHADER
+			visible         When(dvarString("perk_slot_00") != "")
 			decoration
 
 			state
 			{
-				name			"fadein"
-				forecolor 		1 1 1 1
+				name        "fadein"
+				forecolor   1 1 1 1
 			}
 
 			state
 			{
-				name 			"faded"
-				forecolor 		0.5 0.5 0.5 0.5
+				name        "faded"
+				forecolor   1 1 1 0.5
 			}
 
 			state
 			{
-				name 			"fadeout"
-				forecolor 		1 1 1 0
+				name        "fadeout"
+				forecolor   1 1 1 0
 			}
 
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -361,8 +366,16 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
+		//Generate perk slots up to 02-14
+		
 		itemDef
 		{
 			name			"perk_slot_02"
@@ -390,6 +403,12 @@
 			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
 			}
 		}
 
@@ -421,6 +440,12 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -450,6 +475,12 @@
 			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
 			}
 		}
 
@@ -481,6 +512,12 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -510,6 +547,12 @@
 			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
 			}
 		}
 
@@ -541,6 +584,12 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -570,6 +619,12 @@
 			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
 			}
 		}
 
@@ -601,6 +656,12 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -630,6 +691,12 @@
 			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
 			}
 		}
 
@@ -661,6 +728,12 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -690,6 +763,12 @@
 			{
 				name 			"fadeout"
 				forecolor 		1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
 			}
 		}
 
@@ -721,6 +800,12 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
 
 		itemDef
@@ -743,7 +828,7 @@
 			state
 			{
 				name 			"faded"
-				forecolor 		1 1 1 0.4
+				forecolor 		1 1 1 0.5
 			}
 
 			state
@@ -751,7 +836,16 @@
 				name 			"fadeout"
 				forecolor 		1 1 1 0
 			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
 		}
+
+		
+
 
 	}
 
