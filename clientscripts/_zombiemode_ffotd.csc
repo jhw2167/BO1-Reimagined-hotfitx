@@ -461,7 +461,7 @@ hud_message_handler(clientnum, state)
 		s = handle_client_perk_hud_updates( clientnum, state );
 	}
 
-	if( s != undefined ) 
+	if( isDefined( s ) )
 	{
 		/*
 		iprintlnbold(s.menu_name);
@@ -471,7 +471,6 @@ hud_message_handler(clientnum, state)
 		*/
 
 		AnimateUI( clientnum, s.menu_name, s.item_name, s.fade_type, s.fade_time );
-		s delete();
 		return;
 	}
 

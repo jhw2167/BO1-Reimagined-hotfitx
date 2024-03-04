@@ -82,7 +82,7 @@ init_no_mans_land()
 	level.NML_MIN_REACTION_DIST_SQ    = 32*32;	  // minimum distance from the player to be able to react
 	level.NML_MAX_REACTION_DIST_SQ	  = 2400*2400;// maximum distance from the player to be able to react
 
-	level.nml_start_perk = GetDvar("nml_start_perk");
+	level.nml_perk = GetDvar("nml_start_perk");
 }
 
 //******************************************************************************
@@ -912,6 +912,7 @@ perk_machine_show_selected( perk_index, moving )
 			perk_machines_hide( 1, 0, moving );
 		break;
 	}
+
 }
 
 
@@ -962,11 +963,11 @@ perk_machine_arrival_update()
 		{
 			//host can choose which perk initally spawns from game settings
 			level.first_perk = false;
-			if(level.nml_start_perk == "random")
+			if(level.nml_perk == "random")
 			{
 				perk_index = randomintrange( 0, 2 );
 			}
-			else if(level.nml_start_perk == "speed")
+			else if(level.nml_perk == "speed")
 			{
 				perk_index = 0;
 			}
@@ -980,6 +981,7 @@ perk_machine_arrival_update()
 			if(level.last_perk_index == 0)
 			{
 				perk_index = 1;
+				
 			}
 			else
 			{
@@ -987,9 +989,12 @@ perk_machine_arrival_update()
 			}
 		}
 
+		level.nml_perk = level.ARRAY_MOON_VALID_NML_PERKS[ perk_index ];
+		iprintln("Perk Index: " + perk_index + " - " + level.nml_perk);
+
 		level.last_perk_index = perk_index;
 		perk_machine_show_selected( perk_index, false );
-
+		level notify( "zombie_vending_moved" );
 	}
 }
 

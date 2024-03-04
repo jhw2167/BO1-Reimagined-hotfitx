@@ -1297,6 +1297,7 @@ turn_jugger_on()
 
 	level waittill("juggernog_on");
 
+	//iprintln("Juggernog_on");
 	//Reimagined-Expanded
 	level notify("divetonuke_on");
 	level notify("marathon_on");
@@ -1491,6 +1492,7 @@ turn_vulture_on()
 	init_vulture();
 	machine = GetEntArray( "vending_vulture", "targetname" );
 	level waittill( "vulture_on" );
+
 	for( i = 0; i < machine.size; i ++ )
 	{
 		machine[i] SetModel( "bo2_zombie_vending_vultureaid_on" );
@@ -1543,7 +1545,7 @@ perk_fx( fx, offset )
 	off_event = self.targetname + "_off";
 	moved_event = self.targetname + "_moved";
 
-	waittill_any( off_event, moved_event );
+	level waittill_any( off_event, moved_event );
 
 	model delete();
 
@@ -1831,25 +1833,34 @@ removePerk( perk, removeOrDisableHud )
 	base_perk = perk;
 	pro_perk = false;
 
-	if( self hasProPerk( perk ) )
+	if( IsSubStr( perk, "_upgrade" ) )
 	{
-		pro_perk = true;
+		proPerk = true;
 		len = "_upgrade".size;
 		base_perk = GetSubStr( perk, 0, perk.size - len );
 
-		if( perk_disabled )
+		if( !self hasProPerk( perk ) )
 		{
-			self.PERKS_DISABLED[ perk ] = true;
-			self manage_ui_perk_hud_interface( "disable", perk );
+			//nothing
 		}
+		else
+		{
 
-		//Set player pro perk to false
-		self.PRO_PERKS[perk] = false;
+			if( perk_disabled )
+			{
+				self.PERKS_DISABLED[ perk ] = true;
+				self manage_ui_perk_hud_interface( "disable", perk );
+			}
 
-		//Trigger notify pro perk + "_stop"
-		self notify( perk + "_stop" );
-		self notify( base_perk + "_stop" );
+			//Set player pro perk to false
+			self.PRO_PERKS[perk] = false;
+
+			//Trigger notify pro perk + "_stop"
+			self notify( perk + "_stop" );
+			self notify( base_perk + "_stop" );
 			
+		}
+				
 	}
 
 	//Unset base perk and reset stats by calling perk_think via notify
@@ -3127,16 +3138,13 @@ ui_perk_hud_disable( perk, perk_key )
 	self send_message_to_csc("hud_anim_handler", client_msg);
 }
 
-//HERE
 ui_perk_hud_start_flash( perk, perk_key )
 {
 	//client_msg_flash = perk_key + "_off"; //_FLASH
 	client_msg_flash = perk_key + "_fade"; //_FLASH
-	//client_msg_flash = perk_key + "_dark"; //_FLASH
 	client_msg_normal = perk_key + "_on";
 
 	queue_num = self.perk_hud_queue_num;
-	iprintln(" starting flash with queue num, " + queue_num + "  perk  " + perk);
 
 	self thread player_watch_ui_perk_hud_stop_flash( perk, perk_key + "_flash" );
 
@@ -3174,7 +3182,6 @@ ui_perk_hud_start_flash( perk, perk_key )
 		}
 	}
 
-	iprintln("terminating flash with queue num, " + queue_num + "  perk  " + perk);
 }
 
 player_watch_ui_perk_hud_stop_flash( perk, perk_key )
@@ -4166,7 +4173,9 @@ watch_stamina_upgrade(perk_str)
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
 		//iprintln("zombie visionset" + level.zombie_visionset);
-		if( IsDefined( level.zombie_visionset ) )
+		if( IsDefined( level.set_custom_visionset_func ) )
+			[[ level.set_custom_visionset_func ]]( self );
+		else if( IsDefined( level.zombie_visionset ) )
 			self VisionSetNaked( level.zombie_visionset, 0.5 );
 		else
 			self VisionSetNaked( "undefined", 0.5 );
@@ -4640,7 +4649,7 @@ player_watch_vulture()
 
 	player_create_vulture_vision_weapons()
 	{
-		structs = level.perk_vulture_waypoint_structs;
+		structs = level.vulture_waypoint_structs;
 		for( i = 0; i < structs.size; i++ )
 		{
 			struct = structs[i];
@@ -4662,7 +4671,7 @@ player_watch_vulture()
 	//*
 	player_create_vulture_vision_box_glow()
 	{
-		structs = level.perk_vulture_waypoint_structs;
+		structs = level.vulture_waypoint_structs;
 		while( 1 )
 		{
 			if( !(self HasPerk( level.VLT_PRK )) )
@@ -4673,7 +4682,7 @@ player_watch_vulture()
 			for( i = 0; i < structs.size; i++ )
 			{
 				struct = structs[i];
-				if( is_true( struct.chest_to_check ) && check_waypoint_visible( self, struct ) ) 
+				if( IsDefined( struct.chest_to_check ) && check_waypoint_visible( self, struct ) ) 
 				{
 					create_loop_fx_to_player( self, struct.ent_num, struct.fx_var, struct.origin, struct.angles );
 					struct.fx_created = true;
@@ -4890,6 +4899,7 @@ init_vulture()
 		{
 			perk = vending_triggers[i].script_noteworthy;
 			struct = SpawnStruct();
+			struct.perk = perk;
 			struct.location = vending_triggers[i] get_waypoint_origin( "perk" );
 			struct.origin = struct.location[ "origin" ];
 			struct.angles = struct.location[ "angles" ];
@@ -4906,6 +4916,28 @@ init_vulture()
 
 			structs[ structs.size ] = struct;
 		}
+
+		if( is_true( level.moon_startmap ) )
+		{
+			//This is just moon case, may need more fine tuning for shino
+			for( i = 0; i < structs.size; i++ )
+			{
+				struct = structs[i];
+				if( IsDefined(struct.perk ) )
+					continue;
+
+				//Add Jugg
+				struct.perk = level.JUG_PRK;
+				structs[ structs.size ] = struct;
+
+				//Add speed
+				struct.perk = level.SPD_PRK;
+				structs[ structs.size ] = struct;
+				
+			}
+		}
+
+		level thread vulture_perk_watch_perks_move();
 
 		vending_weapon_upgrade_trigger = GetEntArray( "zombie_vending_upgrade", "targetname" );
 		for( i = 0; i < vending_weapon_upgrade_trigger.size; i ++ )
@@ -4976,10 +5008,17 @@ init_vulture()
 			structs[ structs.size ] = struct;
 		}
 
-		level.perk_vulture_waypoint_structs = structs;
+		level.vulture_waypoint_structs = structs;
 		while( true )
 		{
 			players = GetPlayers();
+			if( level.vulture_waypoint_structs_update ) 
+			{
+				structs = vulture_update_waypoint_structs();
+				level.vulture_waypoint_structs_update = false;
+			}
+				
+
 			for( p = 0; p < players.size; p ++ )
 			{
 				player = players[p];
@@ -5050,7 +5089,6 @@ init_vulture()
 						}
 						else if ( isDefined( powerup.player_waypoints[ num ] ) )
 						{
-							iprintln( "Destroy Waypoint" + powerup );
 							destroy_individual_waypoint( powerup.player_waypoints[ num ], is_visible );
 						}
 					}
@@ -5064,6 +5102,19 @@ init_vulture()
 		//END WHILE
 
 	}
+
+	vulture_update_waypoint_structs( new_vulture_structs )
+	{
+		if( isDefined( new_vulture_structs ) )
+		{
+			level.vulture_waypoint_structs = new_vulture_structs;
+			level.vulture_waypoint_structs_update = true;
+		}
+			
+		return level.vulture_waypoint_structs;
+	}
+
+	// */
 
 		/* 
 		Handle boss/special zombies waypoints
@@ -5412,7 +5463,32 @@ init_vulture()
 			}
 			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
 			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
+
 			return origin + ( 0, 0, 50 );
+		}
+
+		check_map_specific_perk_movements( perk , origin )
+		{
+			if( !IsDefined( perk ) )
+				return false;
+
+
+			switch ( Tolower( GetDvar( #"mapname" ) ) )
+			{
+				case "zombie_moon":
+					if( is_in_array( level.ARRAY_MOON_VALID_NML_PERKS, perk) )
+					{
+						if( perk != level.nml_perk )
+							return false;
+					}
+					
+				break;
+
+				default:
+					return true;
+			}
+
+			return true;
 		}
 
 		get_pack_a_punch_origin( trigger )
@@ -5496,12 +5572,16 @@ init_vulture()
 					return false;
 			}
 			/* ##############				############## */
-
-
+			
+			if( IsDefined( struct.perk ) )
+				is_visible = check_map_specific_perk_movements( struct.perk, struct.origin );
+			else
+				is_visible = true;
+			
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
 			{
-				is_visible = checkPlayerLookingAtObject( player, struct );
+				is_visible = checkPlayerLookingAtObject( player, struct ) && is_visible;
 			}
 
 		} 
@@ -5616,6 +5696,39 @@ vulture_perk_watch_pap_move()
 	}
 }
 
+vulture_perk_watch_perks_move()
+{
+
+	//HERE
+	while( 1 ) 
+	{
+		level waittill_any( "zombie_vending_off", "zombie_vending_moved" );
+		structs = vulture_update_waypoint_structs();
+
+		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+		for( i = 0; i < vending_triggers.size; i ++ )
+		{
+			perk = vending_triggers[i].script_noteworthy;
+
+			//Search through existing structs and match on perk
+			for( j = 0; j < structs.size; j++ )
+			{
+				if( structs[j].perk == perk )
+				{
+					structs[j].location = vending_triggers[i] get_waypoint_origin( "perk" );
+					structs[j].origin = structs[j].location[ "origin" ];
+					structs[j].angles = structs[j].location[ "angles" ];
+					break;
+
+				}
+
+			}
+		}
+		
+		vulture_update_waypoint_structs( structs );
+	}
+}
+
 vulture_perk_watch_mystery_box()
 {
 	wait_network_frame();
@@ -5664,6 +5777,11 @@ zombie_watch_vulture_drop_bonus()
 
 	scaler = count_total_vulture_players();
 	ammo_rate = Int( ( level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE * scaler ) );
+
+	if( flag( "enter_nml" ) )
+	{
+		ammo_rate = 0;
+	}
 	//blue_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
 	//red_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
 

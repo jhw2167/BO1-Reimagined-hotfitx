@@ -163,6 +163,7 @@ main()
 	}
 
 	level thread vision_set_init();
+	level.set_custom_visionset_func = ::moon_set_custom_visionset;
 	level thread init_zombie_airlocks();
 	level thread setup_water_physics();
 
@@ -858,6 +859,27 @@ vision_set_init()
 		players[i] VisionSetNaked("zombie_moonHanger18", 0.5);
 	}
 }
+
+moon_set_custom_visionset( player )
+{
+	in_nml = player checkPlayerOnMoon();
+	if ( in_nml )
+	{
+		player VisionSetNaked("zombie_moonHanger18", 0.5);
+	}
+	else
+	{
+		player VisionSetNaked("zombie_moonInterior", 0.5);
+	}
+
+}
+
+	checkPlayerOnMoon()
+	{
+		//If player is within 2000 units of PAP, set vision to moonHanger
+		pap_loc = GetEnt( "zombie_vending_upgrade", "targetname" ).origin;
+		return maps\_zombiemode::checkDist( self.origin, pap_loc, 2000 );
+	}
 
 //-------------------------------------------------------------------------------
 // DCS 051011: special moon round think function to allow starting in No mans Land.
@@ -1606,6 +1628,8 @@ wait_for_power()
 	master_switch playsound("zmb_switch_flip");
 
 	// Set Perk Machine Notifys
+	level notify("juggernog_on");
+	wait_network_frame();
 	level notify("revive_on");
 	wait_network_frame();
 	level notify("doubletap_on");

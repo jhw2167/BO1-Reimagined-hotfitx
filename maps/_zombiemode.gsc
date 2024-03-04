@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=1;	//*/
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -738,9 +738,16 @@ reimagined_init_level()
 	level.respawn_queue_unlocks_num = 0;
 
 	//Real Time Perk Variables
+	level.vulture_using_perk_variable_locations = false;
 	level.vulture_track_current_pap_spot = undefined;	//undefined when not in map
 	level.vulture_track_current_powerups = [];
 	level.vulture_is_upgraded_drop = false;				//When player has upgraded vulture, drop time extended
+	level.vulture_waypoint_structs = [];
+	level.vulture_waypoint_structs_update = false;
+
+
+	//MISC
+	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
 	//Maps
 
@@ -756,6 +763,38 @@ reimagined_init_level()
 	if( level.no_bosses ) {
 		level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 100000; //No special zombies
 	}
+
+	//Moon
+	level.ARRAY_MOON_VALID_NML_PERKS = array( level.SPD_PRK, level.JUG_PRK );
+
+
+	//Map Specific values
+
+	switch (Tolower(GetDvar(#"mapname")))
+{
+    case "zombie_cod5_prototype":
+        break;
+    case "zombie_cod5_asylum":
+        break;
+    case "zombie_cod5_sumpf":
+        break;
+    case "zombie_cod5_factory":
+        break;
+    case "zombie_theater":
+        break;
+    case "zombie_pentagon":
+        break;
+    case "zombie_cosmodrome":
+        break;
+    case "zombie_coast":
+        break;
+    case "zombie_temple":
+        break;
+    case "zombie_moon":
+		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
+        break;
+}
+
 
 }
 
