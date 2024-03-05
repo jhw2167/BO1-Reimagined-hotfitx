@@ -184,6 +184,44 @@
 			visible				1
 			decoration
 		}
+
+
+		itemDef
+		{
+			name        "perk_bar_00"
+			type        ITEM_TYPE_IMAGE
+			rect		68 3 10 10
+			forecolor   1 1 1 0
+			exp         material(dvarString("perk_bar_00"))
+			style       WINDOW_STYLE_SHADER
+			visible     When(dvarString("perk_bar_00") != "")
+			decoration
+
+			state
+			{
+				name        "fadein"
+				forecolor   1 1 1 1
+			}
+
+			state
+			{
+				name        "faded"
+				forecolor   1 1 1 0.5
+			}
+
+			state
+			{
+				name        "fadeout"
+				forecolor   1 1 1 0
+			}
+
+			state
+			{
+				name        "dark"
+				forecolor   0.5 0.5 0.5 1
+			}
+		}
+
 	}
 
 	menuDef
@@ -293,7 +331,6 @@
 			decoration
 		}
 	}
-	
 
 
 	menuDef
@@ -302,6 +339,7 @@
 		rect            0 0 0 0
 		fullscreen      0
 		visible         1
+
 
 		itemDef
 		{
@@ -856,20 +894,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	menuDef
 	{
 		name				"mule_wep_indicator"
@@ -1060,4 +1084,5 @@
 			decoration
 		}
 	}
+
 }

@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=3;	//*/
 	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -2763,6 +2763,13 @@ onPlayerConnect_clientDvars()
 	//Fog Off
 	self SetClientDvar("r_fog_settings", 0);
 
+	//Reimagined-Expanded, baby perks go over health bar
+	self SetClientDvar("perk_bar_00", "");
+	self SetClientDvar("perk_bar_01", "");
+	self SetClientDvar("perk_bar_02", "");
+	self SetClientDvar("perk_bar_03", "");
+
+
 	//Reimagined-Expanded, player perks
 	self SetClientDvar("perk_slot_00", "");
 	self SetClientDvar("perk_slot_01", "");
@@ -3826,6 +3833,7 @@ spawnSpectator()
 	self endon( "spawned_spectator" );
 	self notify( "spawned" );
 	self notify( "end_respawn" );
+
 
 	if( level.intermission )
 	{

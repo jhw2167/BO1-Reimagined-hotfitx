@@ -1313,8 +1313,8 @@ init_vulture()
 	level.vulture_status = [];
 	for(i = 0; i < 4; i++) { level.vulture_status[i] = 0; }
 
-	add_level_notify_callback( "vulture_active_1", ::vulture_toggle, "1" );
-	add_level_notify_callback( "vulture_active_0", ::vulture_toggle, "0" );
+	//add_level_notify_callback( "vulture_active_1", ::vulture_toggle, "1" );
+	//add_level_notify_callback( "vulture_active_0", ::vulture_toggle, "0" );
 	//add_level_notify_callback( "vulture_stink_sound_1", ::sndvulturestink, "1" );
 	//add_level_notify_callback( "vulture_stink_sound_0", ::sndvulturestink, "0" );
 	level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP = 12;
@@ -1403,27 +1403,41 @@ _player_has_vulture( localclientnumber )
 
 vulture_zombie_powerup_fx( localclientnumber, set, newEnt )
 {
-	if( level.vulture_status[ localclientnumber ] > 1 )
+	if( set )
 	{
-		ent_num = self GetEntityNumber();
-		level.vulture_powerup_zombies[ localclientnumber ][ ent_num ] = 
-			PlayFXOnTag( localclientnumber, level._effect["powerup_on"], self, "j_SpineLower" );
-		self thread vulture_zombie_end_powerup_fx( localclientnumber );
+		iprintlnbold("flag_set " + localclientnumber );
+
+		if( level.vulture_status[ localclientnumber ] > 1 )
+		{
+			ent_num = self GetEntityNumber();
+			level.vulture_powerup_zombies[ localclientnumber ][ ent_num ] = 
+				PlayFXOnTag( localclientnumber, level._effect["powerup_on"], self, "j_SpineLower" );
+			self thread vulture_zombie_end_powerup_fx( localclientnumber );
+		}
 	}
+	else
+	{
+		iprintlnbold("flag_cleared " + localclientnumber );
+	}
+	
 
 }
 
+//HERE
 vulture_zombie_end_powerup_fx( client_num )
 {
 	player_has_vulture_pro = level.vulture_status[ client_num ] > 1;
 	while( player_has_vulture_pro && IsAlive( self ) )
 	{
-		wait 0.5;
-		player_has_vulture_pro = level.vulture_status[ client_num ] > 1;
+		wait 2;
+		player_has_vulture_pro = (level.vulture_status[ client_num ] > 1 );
+		iprintlnbold("vulture_zombie_end_powerup_fx " + player_has_vulture_pro );
+		iprintlnbold("vulture_status " + level.vulture_status[ client_num ] );
 	}
 
 	DeleteFX( client_num, level.vulture_powerup_zombies[ client_num ][ self GetEntityNumber() ], true );
 	level.vulture_powerup_zombies[ client_num ][ self GetEntityNumber() ] = undefined;
+	iprintlnbold("vulture_zombie_end_powerup_fx - fx deleted " );
 }
 
 //=========================================================================================================

@@ -458,6 +458,7 @@ hud_message_handler(clientnum, state)
 	}
 	else 
 	{
+		//iprintlnbold("HUD: " + state);
 		s = handle_client_perk_hud_updates( clientnum, state );
 	}
 
@@ -479,8 +480,13 @@ hud_message_handler(clientnum, state)
 
 handle_client_perk_hud_updates( clientnum, state )
 {
+	
+
 	if( IsSubStr( state, "perk_slot" ) ) {
 		return player_handle_perk_slots( state );
+	}
+	else if( IsSubStr( state, "perk_bar" ) ) {
+		return player_handle_perk_bar( state );
 	}
 	else if( IsSubStr( state, "hud_mule_wep" ) ) {
 		return player_handle_mulekick_message( state );
@@ -524,6 +530,35 @@ client_systems_message_handler(clientnum, state, oldState)
 HANDLE PERK CLIENT MESSAGES
 
 */
+
+//Perk bar overlayed on health bar
+player_handle_perk_bar( state )
+{
+	iprintlnbold("updating perk_bar " + state);
+	s = SpawnStruct();
+	s.menu_name = "health_bar";				//goes over health_bar
+	s.item_name = GetSubStr( state, 0, 11); //Get "perk_slot_01"
+	s.fade_time = 200;
+	//material name must be set as DVAR
+
+	//iprintlnbold("State: " + state);
+	iprintlnbold("Perk Slot: " + s.item_name);
+	//If state contains "in" then fade in, else fade out
+	if( IsSubStr( state, "_on" ) ) {
+		s.fade_type = "fadein";
+	}
+	else if( IsSubStr( state, "_off" ) ) {
+		s.fade_type = "fadeout";
+	}
+	else if( IsSubStr( state, "_fade" ) ) {
+		s.fade_type = "faded";
+	}
+	else if( IsSubStr( state, "_dark" ) ) {
+		s.fade_type = "dark";
+	}
+
+	return s;
+}
 
 //Perk Slots
 player_handle_perk_slots( state )

@@ -423,6 +423,8 @@ Laststand_Bleedout( delay )
 
 	level notify("bleed_out", self GetEntityNumber());
 
+	self SetClientDvar("perk_bar_00", "" );	//remove perma-perks from bar on bleedout
+
 	if (isdefined(level.is_zombie_level ) && level.is_zombie_level)
 	{
 		self [[level.player_becomes_zombie]]();

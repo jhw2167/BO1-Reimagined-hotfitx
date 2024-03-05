@@ -349,11 +349,10 @@ zombie_on_death()
 {
 	self waittill_any("death", "zombie_delete" );
 
-	if( isDefined( self.hasDrop ) )
-	{
-		maps\_zombiemode_perks::vulture_pro_powerup_zombie_glow( self GetEntityNumber(), true );
+	if( isDefined( self.hasDrop ) ) {
+		//cleanup handled in clienscripts
 	}
-
+		
 	if( isDefined( self.fx_eye_glow ) )
 		self.fx_eye_glow Delete();
 	
@@ -425,9 +424,8 @@ zombie_determine_drop()
 		if( self.hasDrop == "GREEN" || self.hasDrop == "BLUE" || self.hasDrop == "RED" ) 
 		{
 			self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
-			//self setclientflag(8);
-			//wait 0.5;
-			//self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+			wait 0.5;
+			self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 			//zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
 			//zombie_drop_model LinkTo( self, "j_SpineLower" );
 

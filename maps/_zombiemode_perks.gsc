@@ -2033,6 +2033,8 @@ vending_trigger_think()
 			wait (.2);
 			player thread maps\_gameskill::event_heart_beat( "none" , 0 );
 			player.preMaxHealth = 140;
+			player SetClientDvar("perk_bar_00", convertPerkToShader( level.JUG_PRK ) );
+			player send_message_to_csc( "hud_anim_handler", "perk_bar_00_on" );
 			////iprintln("player max health: " + player.preMaxHealth);
 			if(player.maxHealth < 140)
 			{
@@ -4784,11 +4786,36 @@ player_watch_vulture()
 watch_vulture_upgrade( perk_str )
 {
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_pro");
+
+	//Reactivate zombies that have drops
+	thread vulture_activate_zombie_powerup_glow();
+
+	self thread test_disable_vulture();
 	self waittill( perk_str );
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_off");
 }
+
+test_disable_vulture()
+{
+	wait( 5 );
+	disablePerk( level.VLT_PRO, 10 );
+}
 	
- 
+ vulture_activate_zombie_powerup_glow()
+ {
+	//Get all zombies
+	zombies = GetAISpeciesArray( "axis", "all" );
+	for( i = 0; i < zombies.size; i++ ) 
+	{
+		if( IsDefined( zombies[i].hasDrop) )
+		{
+			zombies[i] setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+			wait_network_frame();
+			zombies[i] clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+		}
+	
+	}
+ }
 
 end_game_turn_off_vulture_overlay()
 {
@@ -4843,10 +4870,6 @@ init_vulture_assets()
 init_vulture()
 {
 	init_vulture_assets();
-	level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_POWERUP_DROP = 12;
-	level._ZOMBIE_SCRIPTMOVER_FLAG_VULTURE_STINK_FX = 13;
-	level._ZOMBIE_ACTOR_FLAG_VULTURE_STINK_TRAIL_FX = 3;
-	level._ZOMBIE_ACTOR_FLAG_VULTURE_EYE_GLOW = 4;
 	level.perk_vulture = SpawnStruct();
 	level.perk_vulture.zombie_stink_array = [];
 	level.perk_vulture.drop_slots_for_network = 0;
@@ -5391,36 +5414,7 @@ init_vulture()
 				self send_message_to_csc( "client_side_fx", str_clientstate );
 			}
 
-			create_onTag_fx_to_player( fx_var, ent_num )
-			{
-				iprintln( "Creating onTag fx for " + ent_num );
-				str_clientstate = "fx|onTag|start|" + ent_num + "|" + fx_var;
-				self send_message_to_csc( "client_side_fx", str_clientstate );
-			}
-
-			destroy_onTag_fx_to_player( ent_num )
-			{
-				str_clientstate = "fx|onTag|end|" + ent_num;
-				self send_message_to_csc( "client_side_fx", str_clientstate );
-			}
-
-	vulture_pro_powerup_zombie_glow( ent_num, to_delete )
-	{
-		//for all players
-		players = get_players();
-		for( i = 0; i < players.size; i++ )
-		{
-			if( players[i] hasProPerk(level.VLT_PRO) )
-			{
-				if( is_true(to_delete) )
-					players[i] destroy_onTag_fx_to_player( ent_num );
-				else
-					players[i] create_onTag_fx_to_player( "powerup_on", ent_num );
-			}
-		}
-
-	}
-
+			
 
 	//Stop condensing my methods
 
