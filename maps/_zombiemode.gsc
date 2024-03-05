@@ -48,13 +48,13 @@ main()
 	//Overrides
 	/* 									*/
 	level.zombie_ai_limit_override=20;	///
-	level.starting_round_override=5;	///
+	level.starting_round_override=10;	///
 	level.starting_points_override=50000;	///
 	level.drop_rate_override=200;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=1;	//*/
+	level.calculate_amount_override=3;	//*/
 	//level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -2074,10 +2074,6 @@ init_client_flags()
 		level._ZOMBIE_SCRIPTMOVER_FLAG_BOARD_HORIZONTAL_FX	= 14;
 		level._ZOMBIE_SCRIPTMOVER_FLAG_BOARD_VERTICAL_FX	= 13;
 	}
-	if(is_true(level.use_clientside_rock_tearin_fx))
-	{
-		level._ZOMBIE_SCRIPTMOVER_FLAG_ROCK_FX	= 12;
-	}
 
 	// Client flags for the player
 	level._ZOMBIE_PLAYER_FLAG_CLOAK_WEAPON = 14;
@@ -2096,6 +2092,9 @@ init_client_flags()
 			level._ZOMBIE_ACTOR_ZOMBIE_RISER_LOWG_FX = 7;
 		}
 	}
+
+	//Reimagined-Expanded - we finally get into client flags
+	level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP = 12;
 
 }
 
@@ -3109,6 +3108,10 @@ onPlayerSpawned()
 				self thread fall_velocity_check();
 
 				self thread player_gravity_fix();
+
+				mapname = Tolower(GetDvar(#"mapname"));
+				if( mapname == "zombie_cod5_factory")
+					wait( 8 ); // wait for the intro to finish
 
 				self thread health_bar_hud();
 
@@ -4427,6 +4430,10 @@ give_pro_perks( overrideToGiveAll )
 		self maps\_zombiemode_perks::returnPerk( pro_perks[i] );
 		wait(0.5);
 	}
+
+	wait(15);
+
+	self maps\_zombiemode_perks::disablePerk( level.VLT_PRO, 10 );
 }
 
 spectator_respawn()

@@ -349,8 +349,10 @@ zombie_on_death()
 {
 	self waittill_any("death", "zombie_delete" );
 
-	if( isDefined( self.zombie_drop_model ) )
-		self.zombie_drop_model Delete();
+	if( isDefined( self.hasDrop ) )
+	{
+		maps\_zombiemode_perks::vulture_pro_powerup_zombie_glow( self GetEntityNumber(), true );
+	}
 
 	if( isDefined( self.fx_eye_glow ) )
 		self.fx_eye_glow Delete();
@@ -422,11 +424,16 @@ zombie_determine_drop()
 			
 		if( self.hasDrop == "GREEN" || self.hasDrop == "BLUE" || self.hasDrop == "RED" ) 
 		{
-			////iprintln("Zombie drop: " + self.hasDrop);
-			self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
-			self.zombie_drop_model setModel( "tag_origin" );
-			self.zombie_drop_model LinkTo( self, "tag_origin" );
+			self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+			//self setclientflag(8);
+			//wait 0.5;
+			//self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+			//zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
+			//zombie_drop_model LinkTo( self, "j_SpineLower" );
 
+
+			//self.zombie_drop_model = zombie_drop_model;
+			//maps\_zombiemode_perks::vulture_pro_powerup_zombie_glow( self GetEntityNumber() );
 			//This needs to be in client csc for Vulture aid Pro, not for all to see
 			// -- PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
 			//PlayFXOnTag( level._effect["powerup_on"], self, "J_SpineLower" ); - this wont get deleted

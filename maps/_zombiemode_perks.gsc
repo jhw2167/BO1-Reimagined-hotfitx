@@ -1763,8 +1763,11 @@ addProPerk( perk )
 	}	
 	if (perk == "specialty_bulletdamage_upgrade")
 		self.PRO_PERKS[ level.ECH_PRO ] = true;
-	if (perk == "specialty_altmelee_upgrade")
+	if (perk == "specialty_altmelee_upgrade") {
 		self.PRO_PERKS[ level.VLT_PRO ] = true;
+		self giveVultureUpgrade();
+	}
+		
 	if (perk == "specialty_bulletaccuracy_upgrade")
 		self.PRO_PERKS[ level.WWN_PRO ] = true;
 
@@ -1913,6 +1916,9 @@ givePhdUpgrade() {
 	self thread watch_phd_upgrade(level.PHD_PRO + "_stop");
 }
 
+giveVultureUpgrade() {
+	self thread watch_vulture_upgrade(level.VLT_PRO + "_stop");
+}
 
 player_print_msg(msg) {
 	flag_wait( "all_players_connected" );
@@ -4775,11 +4781,14 @@ player_watch_vulture()
 	}
 
 
-vulture_player_connect_callback()
+watch_vulture_upgrade( perk_str )
 {
-	//self thread end_game_turn_off_vulture_overlay();
-	//self thread watch_vulture_shader_glow();
+	self send_message_to_csc("hud_anim_handler", "vulture_hud_pro");
+	self waittill( perk_str );
+	self send_message_to_csc("hud_anim_handler", "vulture_hud_off");
 }
+	
+ 
 
 end_game_turn_off_vulture_overlay()
 {
@@ -5381,6 +5390,36 @@ init_vulture()
 				str_clientstate = "fx|looping|stop|" + identifier + "|" + str_delete_fx_immediately;
 				self send_message_to_csc( "client_side_fx", str_clientstate );
 			}
+
+			create_onTag_fx_to_player( fx_var, ent_num )
+			{
+				iprintln( "Creating onTag fx for " + ent_num );
+				str_clientstate = "fx|onTag|start|" + ent_num + "|" + fx_var;
+				self send_message_to_csc( "client_side_fx", str_clientstate );
+			}
+
+			destroy_onTag_fx_to_player( ent_num )
+			{
+				str_clientstate = "fx|onTag|end|" + ent_num;
+				self send_message_to_csc( "client_side_fx", str_clientstate );
+			}
+
+	vulture_pro_powerup_zombie_glow( ent_num, to_delete )
+	{
+		//for all players
+		players = get_players();
+		for( i = 0; i < players.size; i++ )
+		{
+			if( players[i] hasProPerk(level.VLT_PRO) )
+			{
+				if( is_true(to_delete) )
+					players[i] destroy_onTag_fx_to_player( ent_num );
+				else
+					players[i] create_onTag_fx_to_player( "powerup_on", ent_num );
+			}
+		}
+
+	}
 
 
 	//Stop condensing my methods
