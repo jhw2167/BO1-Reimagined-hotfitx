@@ -235,6 +235,9 @@ zombie_spawn_init( animname_set )
 	self.respawn_zombie = false;
 	self.marked_for_freeze=false;
 	self.marked_for_tesla=false;
+	self.marked_for_poison=false;
+	self.widows_posion_bullet_count = 0;
+
 	if(self.animname == "zombie" ) 
 	{
 		//Check respawn queue

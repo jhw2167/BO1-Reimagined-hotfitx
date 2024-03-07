@@ -1509,7 +1509,7 @@ turn_vulture_on()
 
 turn_widowswine_on()
 {
-	//init_widows_wine();
+	init_widows_wine();
 	machine = GetEntArray( "vending_widowswine", "targetname" );
 	level waittill( "widowswine_on" );
 	for( i = 0; i < machine.size; i ++ )
@@ -5970,6 +5970,15 @@ zombie_watch_vulture_drop_bonus()
 
 /*	 Init and Entry Methods	 */
 
+init_widows_wine()
+{
+	level._effect[ "fx_acidgat_explode" ] = LoadFX( "acidgat/fx_acidgat_explode" );
+	//level._effect[ "fx_acidgat_explode_ug" ] = LoadFX( "acidgat/fx_acidgat_explode_ug" );
+	//level._effect[ "fx_acidgat_marker" ] = LoadFX( "acidgat/fx_acidgat_marker" );
+	//level._effect[ "fx_acidgat_view" ] = LoadFX( "acidgat/fx_acidgat_view" );
+	//level._effect[ "fx_acidgat_zombiesplash" ] = LoadFX( "acidgat/fx_acidgat_zombiesplash" );
+}
+
 player_watch_widowswine()
 {
 	self thread player_watch_widows_warning();
@@ -5993,7 +6002,7 @@ player_watch_widows_warning()
 		if( self HasPerk( level.WWN_PRK ) )
 		{
 
-			no_warning = self maps\_laststand::player_is_in_laststand();
+			no_warning = self maps\_laststand::player_is_in_laststand() || self.widows_cancel_warning;
 
 			if( no_warning ) 
 			{
@@ -6018,17 +6027,6 @@ player_watch_widows_warning()
 				if( !( self player_widows_check_zomb_behind( zombies[i] ) ) )
 					continue;
 
-				count_zombs_behind++;
-
-				if( count_zombs_behind >= level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING )
-				{ 
-					//iprintln("count zombs behind");
-					self thread player_widows_cancel_warning_on_turn();
-					self thread player_widows_create_heavy_warning();
-					count_zombs_behind = 0;
-					wait( 0.25 );
-					continue;
-				}
 
 				if( is_true( zombies[i].wine_triggered_player_warning[ player_num ] ) )	{
 					//iprintln("already triggered behind");
@@ -6036,7 +6034,18 @@ player_watch_widows_warning()
 					wait( 0.01 );
 					continue;
 				}
-					
+
+				count_zombs_behind++;
+
+				if( count_zombs_behind >= level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING )
+				{ 
+					//iprintln("count zombs behind");
+					self thread player_widows_cancel_warning_on_turn();
+					self thread player_widows_create_heavy_warning();
+					count_zombs_behind = -3;
+					wait( 0.25 );
+					continue;
+				}			
 				
 				zombies[i].wine_triggered_player_warning[ player_num ] = true;
 				self thread player_widows_cancel_warning_on_turn();
@@ -6058,24 +6067,24 @@ player_watch_widows_warning()
 }
 
 //Utilit and implementation methods
+//line
 
 	zombie_widows_delay_repeat_warning( player_num )
 	{
 		self endon( "death" );
-		wait( 3 );
+		wait( level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN );
 		self.wine_triggered_player_warning[ player_num ] = false;
 	}
 
 	player_widows_cancel_warning_on_turn()
 	{
-		self endon( "widows_cancel_warning" );
 		self endon( "death" );
 
 		forward_view_angles = self GetPlayerAngles();
 		forward_view_dir = self GetWeaponForwardDir();
 		
 		initial_dir = forward_view_dir[1];
-		turn_threshold = 0;					//Looks like they use radians
+		turn_threshold = 0.2;					//Looks like they use radians
 
 		while ( 1 )
 		{
@@ -6083,12 +6092,16 @@ player_watch_widows_warning()
 			dir = self GetWeaponForwardDir();
 			dot = VectorDot( forward_view_dir, dir );
 
-			if( dot < turn_threshold ) //anything at least 90 degrees or more returns <0
+			if( dot <= turn_threshold ) //anything at least 90 degrees or more returns <0
 				break;
 			wait( 0.01 );
 		}
 
+		iprintln("cancel widows on turn");
 		self notify( "widows_cancel_warning" );
+		self.widows_cancel_warning = true;
+		wait( level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN );
+		self.widows_cancel_warning = false;
 	}
 
 	player_widows_check_zomb_behind( zomb )
@@ -6106,20 +6119,18 @@ player_watch_widows_warning()
 	//Create hud elem for widows
 	player_widows_create_heavy_warning()
 	{
-		iprintln("Creating heavy warning");
 		self notify( "widows_cancel_warning" );
-		self playLocalSound("chr_breathing_hurt");
-		
-		//playerFOV = self GetDvar("cg_fovscale");
-		//iprintln("Player FOV: " + playerFOV);
-		//self SetClientDvar( "cg_fovscale", 0.2 * playerFOV );
+		level.widows_cancel_warning = true;
+		wait( 0.1 );
+		level.widows_cancel_warning = false;
+
+		self playsound("chr_breathing_better");
 
 		overlay = newClientHudElem( self );
 		overlay.x = 0;
 		overlay.y = 0;
-		//overlay setshader( "overlay_low_health", 1280, 960 );
 		overlay setshader( "overlay_low_health", 640, 480 );
-		//overlay setshader( "overlay_low_health", 320, 240 );
+		
 		overlay.alignX = "left";
 		overlay.alignY = "top";
 		overlay.horzAlign = "fullscreen";
@@ -6130,8 +6141,6 @@ player_watch_widows_warning()
 		overlay.alpha = startAlpha;
 		overlay.color = ( 0.5, 0, 0.9 );
 		
-		//self SetClientDvar( "cg_fovscale", playerFOV );
-		self playsound("chr_breathing_better");
 		self player_widows_handle_warning_fade( 0.5, 2, startAlpha, endAlpha, overlay );
 		
 		overlay Destroy();
@@ -6169,7 +6178,6 @@ player_watch_widows_warning()
 
 	player_widows_create_big_warning( zomb )
 	{
-		iprintln("Creating widows big warning");
 
 		//dir = self player_widows_calc_angle_behind_player( zomb );
 		dir = "center";
@@ -6202,14 +6210,9 @@ player_watch_widows_warning()
 			right_normal = VectorNormalize( zomb_origin - right_vector );
 			//left_normal = VectorNormalize(  left_vector - zomb_origin);
 			//right_normal = VectorNormalize( right_vector - zomb_origin);
-			iprintln("Left Normal: " + left_normal);
-			iprintln("Right Normal: " + right_normal);
-
+			
 			left_dot = VectorDot( left_angles, left_normal );
 			right_dot = VectorDot( right_angles, right_normal );
-
-			iprintln("Left Dot: " + left_dot);
-			iprintln("Right Dot: " + right_dot);
 
 			if( left_dot > 0 )
 				dir = "left";
@@ -6220,24 +6223,20 @@ player_watch_widows_warning()
 		}
 		
 		overlay = NewClientHudElem( self );
-		overlay setshader( "overlay_low_health_compass", 800, 600 );
+		overlay setshader( "overlay_low_health_compass", 600, 500 );
 
 		overlay.x = 0;
 		overlay.y = 0;
 		
 		overlay.alignX = "center";
 		overlay.horzAlign = "user_center";
-		offset=200;
+		offset=300;
 		switch( dir )
 		{
 			case "left":
-				//overlay.alignX = "left";
-				//overlay.horzAlign = "user_left";
 				overlay.x -= offset;
 				break;
 			case "right":
-				//overlay.alignX = "right";
-				//overlay.horzAlign = "user_right";
 				overlay.x += offset;
 				break;
 			default:
@@ -6249,39 +6248,19 @@ player_watch_widows_warning()
 		overlay.alignY = "bottom";
 		overlay.vertAlign = "user_bottom";
 
-		/*
-		overlay.alignX = "center";	//works but just pushes to the left
-		overlay.alignY = "bottom";
-		overlay.horzAlign = "user_center";
-		overlay.vertAlign = "user_bottom";
-		*/
-
-		//overlay.x += 0;
-		//overlay.y -= 40;
-		overlay.y += 225;		//move down off screen
+		overlay.y += 200;		//move down off screen
 
 		overlay.alpha = 1;
 		startAlpha = 1;
-		endAlpha = 0.5;
+		endAlpha = 0.8;
 		overlay.color = ( 0.4, 0, 0.9 );
-		iprintln("Created Shader: ");
 
 		self player_widows_handle_warning_fade( 0.5, 1, startAlpha, endAlpha, overlay );
 
 		overlay Destroy();
 	}
 
-		watch_place_bottle(origin)
-	{
-		machine_angles = (0, 135, 0);
-		bottle = Spawn( "script_model", origin );
-		bottle.angles = machine_angles;
-		bottle SetModel("zombie_vending_nuke");
-		//bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
-
-		wait(5);
-		bottle Delete();
-	}
+//Widows warning heler methods
 
 		player_widows_calc_angle_behind_player( zomb )
 		{
@@ -6326,11 +6305,11 @@ player_watch_widows_warning()
 		//Utility method for helping fade time
 		player_widows_handle_warning_fade( wait_time, fade_time, startAlpha, endAlpha, overlay )
 		{
-			self endon( "widows_cancel_warning" );
+			//self endon( "widows_cancel_warning" );
 			self endon( "death" );
 
 			time = 0;
-			while( 1 )
+			while( !self.widows_cancel_warning )
 			{
 				time += 0.05;
 				wait( 0.05 );
@@ -6338,9 +6317,12 @@ player_watch_widows_warning()
 					break;
 			}
 
+			if( self.widows_cancel_warning )
+				return;
+
 			time = 0;
 			slope = (endAlpha - startAlpha) / fade_time;
-			while( 1 )
+			while( !self.widows_cancel_warning )
 			{
 				time += 0.05;
 				overlay.alpha = startAlpha - slope;
@@ -6349,8 +6331,61 @@ player_watch_widows_warning()
 					break;
 			}
 
-
 		}
+
+//End handle HUD warnings
 
 
 /*	 Handle Widows Poison damage */
+
+
+player_zombie_handle_widows_poison( zombie )
+{
+	fraction = level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION;
+	MAX_TIME = level.THRESHOLD_WIDOWS_POISON_MAX_TIME;
+	if( self hasProPerk( self.WWN_PRO ) ) {
+		fraction = level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION;
+		MAX_TIME = level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME;
+	}
+
+	min_health = fraction * zombie.maxhealth;
+	time = MAX_TIME;
+	interval = 0.25;	//4 poison ticks a second
+	dmg = (zombie.health - min_health) / (MAX_TIME / interval);
+	
+	keepPoison = (zombie.health > min_health) && (time > 0);
+	poison_spots = array_randomize( level.ARRAY_WIDOWS_VALID_POISON_POINTS );
+
+	fx_count = 16;
+	count = 0;
+
+	while( keepPoison )
+	{
+		wait( interval );
+		zombie doDamage( dmg, zombie.origin, self );
+		time -= interval;
+		keepPoison = (zombie.health > min_health) && (time > 0);
+
+		if( (count % fx_count) == 0 )
+		{
+			PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
+			//zombie thread zombie_handle_widows_poison_fx( poison_spots[ Int(count / fx_count) ] );
+		}
+		count++;
+	}
+
+	zombie.marked_for_poison = false;
+}
+
+//Handle widows poison fx
+
+	zombie_handle_widows_poison_fx( spot )
+	{
+		self endon( "death" );
+
+		while( self.marked_for_poison )
+		{
+			PlayFxOnTag( level._effect[ "fx_acidgat_marker" ], self, spot );
+			wait( 0.25 );
+		}
+	}
