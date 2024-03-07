@@ -190,7 +190,7 @@
 		{
 			name        "perk_bar_00"
 			type        ITEM_TYPE_IMAGE
-			rect		68 3 10 10
+			rect		67 2.35 9.5 9.5
 			forecolor   1 1 1 0
 			exp         material(dvarString("perk_bar_00"))
 			style       WINDOW_STYLE_SHADER

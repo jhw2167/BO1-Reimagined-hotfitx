@@ -54,9 +54,9 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=3;	//*/
+	level.calculate_amount_override=2;	//*/
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -504,7 +504,7 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6;		//between 0-1000)	
-	level.VALUE_ZOMBIE_RED_DROP_RATE_RED = 6;		//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 
 		if( isDefined(level.drop_rate_override) ) {
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = level.drop_rate_override*10;
@@ -693,6 +693,14 @@ reimagined_init_level()
 	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.8;
 
 	//Wine
+	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 768;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 512;
+	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 364;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST = 128;
+	level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT = -0.2;
+
+	level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING = 3;
+	level.VALUE_WIDOWS_PLAYER_FOV_SHRINK = 120;
 
 	
 	//Bullet Effects
@@ -894,6 +902,8 @@ reimagined_init_player()
 
 	self.vulture_had_perk = false;
 	self.vulture_vison_toggle = true;
+
+	self.widows_cancel_warning = false;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;
@@ -4416,7 +4426,12 @@ spectators_respawn()
 give_pro_perks( overrideToGiveAll )
 {
 	if( is_true( overrideToGiveAll ) )
+	{
 		level.max_perks = 20;
+		self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		return;
+	}
+		
 	else
 		overrideToGiveAll = false;
 

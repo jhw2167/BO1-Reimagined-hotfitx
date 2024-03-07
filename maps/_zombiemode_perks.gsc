@@ -2626,7 +2626,7 @@ give_perk( perk, bought )
 
 	if(perk == level.WWN_PRK)
 	{
-		//self thread player_watch_widowswine();
+		self thread player_watch_widowswine();
 	}
 
 
@@ -4392,6 +4392,8 @@ player_watch_electric_cherry()
 
 }
 
+//Stop Condenscing methods
+
 	electric_cherry_reload_attack( sequence, weapon )
 	{
 		self endon( "death" );
@@ -5494,6 +5496,9 @@ init_vulture()
 					break;
 				}
 			}
+			if( !IsDefined( machine.angles ) )
+				return level.VALUE_BASE_ORIGIN;
+
 			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
 			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 
@@ -5614,7 +5619,7 @@ init_vulture()
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
 			{
-				is_visible = checkPlayerLookingAtObject( player, struct ) && is_visible;
+				is_visible = checkPlayerLookingAtObject( player, struct, level.THRESHOLD_VULTURE_FOV_HUD_DOT ) && is_visible;
 			}
 
 		} 
@@ -5637,7 +5642,7 @@ init_vulture()
 				return !cutoffFar;
 			}
 				
-			looking_at = checkPlayerLookingAtObject( player, struct );
+			looking_at = checkPlayerLookingAtObject( player, struct, level.THRESHOLD_VULTURE_FOV_HUD_DOT );
 
 			if( !cutoffClose && looking_at )
 				return true;
@@ -5672,7 +5677,7 @@ init_vulture()
 	}
 
 	//Utility Function to determine if player is towards object
-	checkPlayerLookingAtObject( player, object )
+	checkPlayerLookingAtObject( player, object, fov_threshold )
 	{
 		//Calculate if perk is in player's view
 		//view_angles = player GetTagAngles( "tag_flash" );
@@ -5685,7 +5690,7 @@ init_vulture()
 
 		dot = VectorDot( forwardAngles, normal );
 
-		if( dot > level.THRESHOLD_VULTURE_FOV_HUD_DOT )
+		if( dot > fov_threshold )
 			return true;
 
 		return false;
@@ -5798,9 +5803,7 @@ vulture_perk_watch_fire_sale()
 	}
 }
 
-
-/* Watch Drops 
-// */
+/* Vulture Perk - Drop bonuses */
 
 zombie_watch_vulture_drop_bonus()
 {
@@ -5825,6 +5828,7 @@ zombie_watch_vulture_drop_bonus()
 
 }
 
+//Zombie vulture drop helper methods
 
 	count_total_vulture_players()
 	{
@@ -5957,3 +5961,396 @@ zombie_watch_vulture_drop_bonus()
 		}
 
 // /
+
+
+//=========================================================================================================
+// Widows Wine
+//=========================================================================================================
+
+
+/*	 Init and Entry Methods	 */
+
+player_watch_widowswine()
+{
+	self thread player_watch_widows_warning();
+}
+
+
+
+/*	 Handle Zombie close HUD  */
+/*
+level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 128;
+
+*/
+
+player_watch_widows_warning()
+{
+	player_num = self GetEntityNumber();
+
+	while(1)
+	{
+		
+		if( self HasPerk( level.WWN_PRK ) )
+		{
+
+			no_warning = self maps\_laststand::player_is_in_laststand();
+
+			if( no_warning ) 
+			{
+				self notify( "widows_cancel_warning" );
+				wait 0.1;
+				continue;
+			}
+					
+			threshold_dist = level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST;
+			zombies = get_array_of_closest( self.origin, GetAiSpeciesArray( "axis", "all" ), undefined, undefined, threshold_dist );
+			count_zombs_behind = 0;
+			
+			for( i = 0; i < zombies.size; i++ )
+			{
+								
+				if( !isDefined( zombies[i] ) )
+					continue;
+
+				if( !IsDefined( zombies[i].wine_triggered_player_warning ) )
+					zombies[i].wine_triggered_player_warning = [];
+
+				if( !( self player_widows_check_zomb_behind( zombies[i] ) ) )
+					continue;
+
+				count_zombs_behind++;
+
+				if( count_zombs_behind >= level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING )
+				{ 
+					//iprintln("count zombs behind");
+					self thread player_widows_cancel_warning_on_turn();
+					self thread player_widows_create_heavy_warning();
+					count_zombs_behind = 0;
+					wait( 0.25 );
+					continue;
+				}
+
+				if( is_true( zombies[i].wine_triggered_player_warning[ player_num ] ) )	{
+					//iprintln("already triggered behind");
+					//wait 1;
+					wait( 0.01 );
+					continue;
+				}
+					
+				
+				zombies[i].wine_triggered_player_warning[ player_num ] = true;
+				self thread player_widows_cancel_warning_on_turn();
+				//iprintln("Trigger new warning");
+				self thread player_widows_create_warning( zombies[i] );
+				zombies[i] thread zombie_widows_delay_repeat_warning( player_num );
+
+				//wait 1;
+				wait( 0.01 );
+			}
+		}
+		else
+		{
+			break;
+		}
+	
+		wait(0.5);
+	}
+}
+
+//Utilit and implementation methods
+
+	zombie_widows_delay_repeat_warning( player_num )
+	{
+		self endon( "death" );
+		wait( 3 );
+		self.wine_triggered_player_warning[ player_num ] = false;
+	}
+
+	player_widows_cancel_warning_on_turn()
+	{
+		self endon( "widows_cancel_warning" );
+		self endon( "death" );
+
+		forward_view_angles = self GetPlayerAngles();
+		forward_view_dir = self GetWeaponForwardDir();
+		
+		initial_dir = forward_view_dir[1];
+		turn_threshold = 0;					//Looks like they use radians
+
+		while ( 1 )
+		{
+			//dir = self GetPlayerAngles();
+			dir = self GetWeaponForwardDir();
+			dot = VectorDot( forward_view_dir, dir );
+
+			if( dot < turn_threshold ) //anything at least 90 degrees or more returns <0
+				break;
+			wait( 0.01 );
+		}
+
+		self notify( "widows_cancel_warning" );
+	}
+
+	player_widows_check_zomb_behind( zomb )
+	{
+		view_pos = self GetWeaponMuzzlePoint();
+		origin = zomb GetCentroid();
+		forward_view_angles = self GetWeaponForwardDir();
+
+		normal = VectorNormalize( origin - view_pos );
+		dot = VectorDot( forward_view_angles, normal );
+
+		return ( level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT > dot ); //means zombie is behind us
+	}
+
+	//Create hud elem for widows
+	player_widows_create_heavy_warning()
+	{
+		iprintln("Creating heavy warning");
+		self notify( "widows_cancel_warning" );
+		self playLocalSound("chr_breathing_hurt");
+		
+		//playerFOV = self GetDvar("cg_fovscale");
+		//iprintln("Player FOV: " + playerFOV);
+		//self SetClientDvar( "cg_fovscale", 0.2 * playerFOV );
+
+		overlay = newClientHudElem( self );
+		overlay.x = 0;
+		overlay.y = 0;
+		//overlay setshader( "overlay_low_health", 1280, 960 );
+		overlay setshader( "overlay_low_health", 640, 480 );
+		//overlay setshader( "overlay_low_health", 320, 240 );
+		overlay.alignX = "left";
+		overlay.alignY = "top";
+		overlay.horzAlign = "fullscreen";
+		overlay.vertAlign = "fullscreen";
+		
+		startAlpha = 1;
+		endAlpha = 0.5;
+		overlay.alpha = startAlpha;
+		overlay.color = ( 0.5, 0, 0.9 );
+		
+		//self SetClientDvar( "cg_fovscale", playerFOV );
+		self playsound("chr_breathing_better");
+		self player_widows_handle_warning_fade( 0.5, 2, startAlpha, endAlpha, overlay );
+		
+		overlay Destroy();
+	}
+
+	player_widows_create_warning( zomb )
+	{
+		//iprintln("Creating widows warning");
+		self player_widows_create_big_warning( zomb );
+		if( true )
+			return;
+		overlay = NewClientHudElem( self );
+		overlay setshader( "overlay_low_health_compass", 200, 75 );
+
+		overlay.x = 0;
+		overlay.y = 0;
+		
+		overlay.alignX = "center";	//works but just pushes to the left
+		overlay.alignY = "bottom";
+		overlay.horzAlign = "user_center";
+		overlay.vertAlign = "user_bottom";
+
+		//overlay.x += 0;
+		overlay.y -= 40;
+
+		startAlpha = 1;
+		endAlpha = 1;
+		overlay.alpha = startAlpha;
+		overlay.color = ( 0.4, 0, 0.9 );
+
+		self player_widows_handle_warning_fade( 0.5, 2, startAlpha, endAlpha, overlay );
+		
+		overlay Destroy();
+	}
+
+	player_widows_create_big_warning( zomb )
+	{
+		iprintln("Creating widows big warning");
+
+		//dir = self player_widows_calc_angle_behind_player( zomb );
+		dir = "center";
+		inner_radius = level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST;
+
+		zomb_origin = zomb.origin;
+		zomb_centroid = zomb GetCentroid();
+		origin = self.origin;
+		view_pos = self GetWeaponMuzzlePoint();
+
+		if( checkDist( origin, zomb_origin, level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST ) )
+		{
+			dir = "center";
+		}
+		else
+		{
+			player_angles = self GetPlayerAngles();
+			right_angles = AnglesToRight( player_angles );
+			left_angles = right_angles * -1;
+			//iprintln("Right Angles: " + right_angles);
+			//iprintln("Left Angles: " + left_angles);
+
+			right_vector = vector_scale( right_angles, inner_radius );
+			left_vector = vector_scale( left_angles, inner_radius );
+			//watch_place_bottle(right_vector);
+			//iprintln("Right Vector: " + right_vector);
+			//iprintln("Left Vector: " + left_vector);
+
+			left_normal = VectorNormalize( zomb_origin - left_vector );
+			right_normal = VectorNormalize( zomb_origin - right_vector );
+			//left_normal = VectorNormalize(  left_vector - zomb_origin);
+			//right_normal = VectorNormalize( right_vector - zomb_origin);
+			iprintln("Left Normal: " + left_normal);
+			iprintln("Right Normal: " + right_normal);
+
+			left_dot = VectorDot( left_angles, left_normal );
+			right_dot = VectorDot( right_angles, right_normal );
+
+			iprintln("Left Dot: " + left_dot);
+			iprintln("Right Dot: " + right_dot);
+
+			if( left_dot > 0 )
+				dir = "left";
+			else if( right_dot > 0)
+				dir = "right";
+			else
+				dir = "center";
+		}
+		
+		overlay = NewClientHudElem( self );
+		overlay setshader( "overlay_low_health_compass", 800, 600 );
+
+		overlay.x = 0;
+		overlay.y = 0;
+		
+		overlay.alignX = "center";
+		overlay.horzAlign = "user_center";
+		offset=200;
+		switch( dir )
+		{
+			case "left":
+				//overlay.alignX = "left";
+				//overlay.horzAlign = "user_left";
+				overlay.x -= offset;
+				break;
+			case "right":
+				//overlay.alignX = "right";
+				//overlay.horzAlign = "user_right";
+				overlay.x += offset;
+				break;
+			default:
+				overlay.alignX = "center";
+				overlay.horzAlign = "user_center";
+				break;
+		}
+				
+		overlay.alignY = "bottom";
+		overlay.vertAlign = "user_bottom";
+
+		/*
+		overlay.alignX = "center";	//works but just pushes to the left
+		overlay.alignY = "bottom";
+		overlay.horzAlign = "user_center";
+		overlay.vertAlign = "user_bottom";
+		*/
+
+		//overlay.x += 0;
+		//overlay.y -= 40;
+		overlay.y += 225;		//move down off screen
+
+		overlay.alpha = 1;
+		startAlpha = 1;
+		endAlpha = 0.5;
+		overlay.color = ( 0.4, 0, 0.9 );
+		iprintln("Created Shader: ");
+
+		self player_widows_handle_warning_fade( 0.5, 1, startAlpha, endAlpha, overlay );
+
+		overlay Destroy();
+	}
+
+		watch_place_bottle(origin)
+	{
+		machine_angles = (0, 135, 0);
+		bottle = Spawn( "script_model", origin );
+		bottle.angles = machine_angles;
+		bottle SetModel("zombie_vending_nuke");
+		//bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+
+		wait(5);
+		bottle Delete();
+	}
+
+		player_widows_calc_angle_behind_player( zomb )
+		{
+			zomb_origin = zomb GetCentroid();
+			view_pos = self GetWeaponMuzzlePoint();
+			
+			angle_offset = 30;
+			forward_dir = self GetWeaponForwardDir();
+			forward_angles = VectorToAngles( forward_dir );
+
+			arctan = atan( forward_dir[1] / forward_dir[0] );
+			iprintln("Arctan: " + arctan);
+			iprintln("Angles: " + forward_angles);
+
+			//left-vector, 30deg from forward
+			left_angle = arcTan - angle_offset;
+			iprintln("Left Angle: " + left_angle);
+			left_vector = ( cos( left_angle ), sin( left_angle ), 0 );
+			iprintln("Left Vector: ");
+			iprintln( left_vector );
+
+			right_angle = arcTan + angle_offset;
+			iprintln("Right Angle: " + right_angle);
+			right_vector = ( cos( right_angle ), sin( right_angle ), 0 );
+			
+			iprintln("zomb_origin: ");
+			iprintln( zomb_origin );
+			iprintln("view_pos: ");
+			iprintln( view_pos );
+			normal = VectorNormalize( zomb_origin - view_pos );
+			iprintln("Normal: " + normal); 
+			//iprintln( normal );
+
+			//if zombie is "in front of" left vector, then it's to the left
+			is_left = VectorDot( left_vector, normal ) > 0;
+			is_right = VectorDot( right_vector, normal ) > 0;
+
+			iprintln("Is Left: " + is_left + "  Is Right: " + is_right);
+
+		}
+
+		//Utility method for helping fade time
+		player_widows_handle_warning_fade( wait_time, fade_time, startAlpha, endAlpha, overlay )
+		{
+			self endon( "widows_cancel_warning" );
+			self endon( "death" );
+
+			time = 0;
+			while( 1 )
+			{
+				time += 0.05;
+				wait( 0.05 );
+				if (time > wait_time)
+					break;
+			}
+
+			time = 0;
+			slope = (endAlpha - startAlpha) / fade_time;
+			while( 1 )
+			{
+				time += 0.05;
+				overlay.alpha = startAlpha - slope;
+				wait( 0.05 );
+				if (time > fade_time)
+					break;
+			}
+
+
+		}
+
+
+/*	 Handle Widows Poison damage */

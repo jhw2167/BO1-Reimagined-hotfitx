@@ -1849,6 +1849,11 @@ bar_repair_bend_right( bar_bend_right, chunk )
 // need to add this to the boards
 zombie_boardtear_offset_fx_horizontle( chunk, node )
 {
+	//Reimagined-Expanded, cant afford board fx:
+	if( true )
+	{
+		return;
+	}
 	// DCS 090110: fx for breaking out glass or wall.
 	if ( IsDefined( chunk.script_parameters ) && ( chunk.script_parameters == "repair_board"  || chunk.script_parameters == "board") )
 	{
@@ -1896,7 +1901,6 @@ zombie_boardtear_offset_fx_horizontle( chunk, node )
 			chunk setclientflag(level._ZOMBIE_SCRIPTMOVER_FLAG_ROCK_FX);
 		}
 	}
-
 	else
 	{
 		if(isDefined(level.use_clientside_board_fx))

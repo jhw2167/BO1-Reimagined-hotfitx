@@ -9,7 +9,7 @@ init()
 	place_deadshot();	
 	place_marathon();		
 	place_martyrdom();	
-	place_extraammo();	
+	place_extraammo();
 	//place_chugabud();	
 	place_mulekick();
 	place_vulture();	

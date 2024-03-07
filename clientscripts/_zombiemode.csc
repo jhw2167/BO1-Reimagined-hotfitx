@@ -1405,8 +1405,6 @@ vulture_zombie_powerup_fx( localclientnumber, set, newEnt )
 {
 	if( set )
 	{
-		iprintlnbold("flag_set " + localclientnumber );
-
 		if( level.vulture_status[ localclientnumber ] > 1 )
 		{
 			ent_num = self GetEntityNumber();
@@ -1415,12 +1413,7 @@ vulture_zombie_powerup_fx( localclientnumber, set, newEnt )
 			self thread vulture_zombie_end_powerup_fx( localclientnumber );
 		}
 	}
-	else
-	{
-		iprintlnbold("flag_cleared " + localclientnumber );
-	}
 	
-
 }
 
 //HERE
@@ -1429,15 +1422,12 @@ vulture_zombie_end_powerup_fx( client_num )
 	player_has_vulture_pro = level.vulture_status[ client_num ] > 1;
 	while( player_has_vulture_pro && IsAlive( self ) )
 	{
-		wait 2;
+		wait 0.5;
 		player_has_vulture_pro = (level.vulture_status[ client_num ] > 1 );
-		iprintlnbold("vulture_zombie_end_powerup_fx " + player_has_vulture_pro );
-		iprintlnbold("vulture_status " + level.vulture_status[ client_num ] );
 	}
 
 	DeleteFX( client_num, level.vulture_powerup_zombies[ client_num ][ self GetEntityNumber() ], true );
 	level.vulture_powerup_zombies[ client_num ][ self GetEntityNumber() ] = undefined;
-	iprintlnbold("vulture_zombie_end_powerup_fx - fx deleted " );
 }
 
 //=========================================================================================================

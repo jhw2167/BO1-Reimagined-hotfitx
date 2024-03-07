@@ -534,7 +534,6 @@ HANDLE PERK CLIENT MESSAGES
 //Perk bar overlayed on health bar
 player_handle_perk_bar( state )
 {
-	iprintlnbold("updating perk_bar " + state);
 	s = SpawnStruct();
 	s.menu_name = "health_bar";				//goes over health_bar
 	s.item_name = GetSubStr( state, 0, 11); //Get "perk_slot_01"
@@ -542,7 +541,7 @@ player_handle_perk_bar( state )
 	//material name must be set as DVAR
 
 	//iprintlnbold("State: " + state);
-	iprintlnbold("Perk Slot: " + s.item_name);
+	//iprintlnbold("Perk Slot: " + s.item_name);
 	//If state contains "in" then fade in, else fade out
 	if( IsSubStr( state, "_on" ) ) {
 		s.fade_type = "fadein";

@@ -1313,6 +1313,7 @@ playerHealthRegen()
 			if( self player_flag( "player_has_red_flashing_overlay" ) )
 			{
 				player_flag_clear( "player_has_red_flashing_overlay" );
+				self notify( "widows_cancel_warning" );
 				level notify( "take_cover_done" );
 			}
 
