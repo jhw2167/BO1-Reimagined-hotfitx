@@ -47,14 +47,14 @@ main()
 
 	//Overrides
 	/* 									*/
-	level.zombie_ai_limit_override=20;	///
+	level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=10;	///
 	level.starting_points_override=50000;	///
 	level.drop_rate_override=200;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	//*/
+	level.calculate_amount_override=20;	//*/
 	//level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -8437,7 +8437,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//Widows Wine posion damage
-		if( attacker HasPerk( level.WWN ))
+		if( attacker HasPerk( level.WWN_PRK ))
 		{
 			valid_zomb = is_in_array(level.ARRAY_WIDOWS_VALID_POISON_ZOMBIES, self.animname) && !is_true(self.marked_for_poison);
 			if( valid_zomb ) 

@@ -6010,8 +6010,11 @@ watch_widowswine_upgrade( stop_str )
 
 player_give_wine_grenades()
 {
-	self giveweapon( "bo3_zm_widows_grenade", level.VALUE_WIDOWS_GRENADE_MAX );
+	self giveweapon( "bo3_zm_widows_grenade" );
 	self set_player_tactical_grenade( "bo3_zm_widows_grenade" );
+	self SetWeaponAmmoClip( "bo3_zm_widows_grenade", level.VALUE_WIDOWS_GRENADE_MAX );
+
+	iprintln("Gave widows wine grenades " + self GetWeaponAmmoClip( "bo3_zm_widows_grenade" ) );
 
 	self SetClientDvar("tactical_grenade_icon", "vending_widows_grenade_icon");
 	self SetClientDvar("tactical_grenade_amount", level.VALUE_WIDOWS_GRENADE_MAX);
@@ -6391,7 +6394,8 @@ player_zombie_handle_widows_poison( zombie )
 		MAX_TIME = level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME;
 	}
 
-	min_health = fraction * zombie.maxhealth;
+	//min_health = fraction * zombie.maxhealth;
+	min_health = 0;
 	time = MAX_TIME;
 	interval = 0.25;	//4 poison ticks a second
 	dmg = (zombie.health - min_health) / (MAX_TIME / interval);

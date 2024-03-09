@@ -182,6 +182,7 @@ fx,vulture/fx_vulture_skull
 
 //Wine
 fx,widowswine/fx_widows_wine_zombie
+fx,widowswine/fx_widows_wine_explode
 fx,acidgat/fx_acidgat_explode
 //fx,acidgat/fx_acidgat_explode_ug
 //fx,acidgat/fx_acidgat_marker
