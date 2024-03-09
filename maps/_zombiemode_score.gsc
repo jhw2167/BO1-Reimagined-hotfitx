@@ -78,36 +78,10 @@ player_add_points( event, mod, hit_location, zombie)
 			////iprintln("animname: " + zombie.animname);
 			////iprintln("respawn: " + zombie.respawn_zombie);		
 
-			if(level.apocalypse) 
-			{
-				if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW )
-				{
-					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW;
-				}
-				else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED ) 
-				{
-					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_MED;
-				}
-				else
-				{
-					player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
-				}
-
-				player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
-				
-				//No points for shooting zombie if it respawned
-				if( IsDefined( zombie ) && ( zombie.animname == "zombie") )
-				{
-					if ( zombie.respawn_zombie )
-						multiplier = 0;
-				}				
-				////iprintln("Points after multiplier: " + player_points);
-			}
-			else //Regular zombies!
-			{
-				player_points = level.zombie_vars["zombie_score_damage_light"];
-			}
+			player_points = zombie_calculate_damage_points( level.apocalypse, zombie );
+			player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
 			
+
 			break;
 
 		case "rebuild_board":
@@ -170,6 +144,38 @@ player_add_points( event, mod, hit_location, zombie)
 
 //	self thread play_killstreak_vo();
 }
+
+	zombie_calculate_damage_points( isApocalypseMode, zombie )
+	{
+		player_points = level.zombie_vars["zombie_score_damage_light"];
+
+		if( isApocalypseMode ) 
+		{
+			if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW )
+			{
+				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW;
+			}
+			else if (level.round_number < level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED ) 
+			{
+				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_MED;
+			}
+			else
+			{
+				player_points = level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH;
+			}
+
+			//No points for shooting zombie if it respawned
+			if( IsDefined( zombie ) && ( is_in_array( level.ARRAY_VALID_DESPAWN_ZOMBIES, zombie.animname ) ) )
+			{
+				if ( zombie.respawn_zombie )
+					return 0;
+			}				
+			////iprintln("Points after multiplier: " + player_points);
+
+		}
+
+		return player_points;
+	}
 
 //Reimagined-Expanded
 weapon_points_multiplier( weapon, mod ) 

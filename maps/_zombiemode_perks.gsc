@@ -388,6 +388,13 @@ default_vending_precaching()
 	}
 	if( is_true( level.zombiemode_using_widowswine_perk ) )
 	{
+		PreCacheModel( "bo3_t7_ww_grenade_world" );
+		PreCacheModel( "bo3_t7_ww_grenade_view" );
+
+		PrecacheShader( "vending_widows_grenade_icon" );
+		PrecacheShader( "t7_semtex_ww" );
+		register_tactical_grenade_for_level( "bo3_zm_widows_grenade" );
+
 		PreCacheShader( "specialty_widowswine_zombies" );
 		PreCacheShader( "specialty_widowswine_zombies_pro" );
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_off" );
@@ -1768,8 +1775,10 @@ addProPerk( perk )
 		self giveVultureUpgrade();
 	}
 		
-	if (perk == "specialty_bulletaccuracy_upgrade")
+	if (perk == "specialty_bulletaccuracy_upgrade") {
 		self.PRO_PERKS[ level.WWN_PRO ] = true;
+		self giveWidowswineUpgrade();
+	}
 
 	////iprintln( " ADD PRO PERK : " + perk);
 }
@@ -1919,6 +1928,11 @@ givePhdUpgrade() {
 giveVultureUpgrade() {
 	self thread watch_vulture_upgrade(level.VLT_PRO + "_stop");
 }
+
+giveWidowswineUpgrade() {
+	self thread watch_widowswine_upgrade(level.WWN_PRO + "_stop");
+}
+
 
 player_print_msg(msg) {
 	flag_wait( "all_players_connected" );
@@ -5977,6 +5991,9 @@ init_widows_wine()
 	//level._effect[ "fx_acidgat_marker" ] = LoadFX( "acidgat/fx_acidgat_marker" );
 	//level._effect[ "fx_acidgat_view" ] = LoadFX( "acidgat/fx_acidgat_view" );
 	//level._effect[ "fx_acidgat_zombiesplash" ] = LoadFX( "acidgat/fx_acidgat_zombiesplash" );
+
+	level._effect[ "fx_widows_wine_explode" ] = LoadFX( "widowswine/fx_widows_wine_explode" );
+	level._effect[ "fx_widows_wine_zombie" ] = LoadFX( "widowswine/fx_widows_wine_zombie" );
 }
 
 player_watch_widowswine()
@@ -5984,8 +6001,22 @@ player_watch_widowswine()
 	self thread player_watch_widows_warning();
 }
 
+watch_widowswine_upgrade( stop_str )
+{
+	iprintln("watch_widowswine_upgrade");
+	self thread player_give_wine_grenades();
+	self waittill( stop_str );
+}
 
+player_give_wine_grenades()
+{
+	self giveweapon( "bo3_zm_widows_grenade", level.VALUE_WIDOWS_GRENADE_MAX );
+	self set_player_tactical_grenade( "bo3_zm_widows_grenade" );
 
+	self SetClientDvar("tactical_grenade_icon", "vending_widows_grenade_icon");
+	self SetClientDvar("tactical_grenade_amount", level.VALUE_WIDOWS_GRENADE_MAX);
+}
+	
 /*	 Handle Zombie close HUD  */
 /*
 level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 128;
@@ -6024,9 +6055,10 @@ player_watch_widows_warning()
 				if( !IsDefined( zombies[i].wine_triggered_player_warning ) )
 					zombies[i].wine_triggered_player_warning = [];
 
-				if( !( self player_widows_check_zomb_behind( zombies[i] ) ) )
+				vertical_diff = self.origin[2] - zombies[i].origin[2];
+				diff = level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_VERTICAL_CUTOFF;
+				if( vertical_diff > diff || vertical_diff < diff*-1 )
 					continue;
-
 
 				if( is_true( zombies[i].wine_triggered_player_warning[ player_num ] ) )	{
 					//iprintln("already triggered behind");
@@ -6035,15 +6067,20 @@ player_watch_widows_warning()
 					continue;
 				}
 
-				count_zombs_behind++;
+				if( !( self player_widows_check_zomb_behind( zombies[i] ) ) )
+					continue;
 
-				if( count_zombs_behind >= level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING )
+
+				count_zombs_behind++;
+				heavy_warning = count_zombs_behind >= level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING;
+				if( heavy_warning && !self.widows_heavy_warning_cooldown )
 				{ 
 					//iprintln("count zombs behind");
 					self thread player_widows_cancel_warning_on_turn();
 					self thread player_widows_create_heavy_warning();
-					count_zombs_behind = -3;
-					wait( 0.25 );
+					//count_zombs_behind -= -3;
+					self thread player_widows_heavy_warning_cooldown();
+					wait( 0.01 );
 					continue;
 				}			
 				
@@ -6069,10 +6106,17 @@ player_watch_widows_warning()
 //Utilit and implementation methods
 //line
 
+	player_widows_heavy_warning_cooldown()
+	{
+		self.widows_heavy_warning_cooldown = true;
+		wait( level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_HEAVY_COOLDOWN );
+		self.widows_heavy_warning_cooldown = false;
+	}
+
 	zombie_widows_delay_repeat_warning( player_num )
 	{
 		self endon( "death" );
-		wait( level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN );
+		wait( level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN );
 		self.wine_triggered_player_warning[ player_num ] = false;
 	}
 
@@ -6097,10 +6141,9 @@ player_watch_widows_warning()
 			wait( 0.01 );
 		}
 
-		iprintln("cancel widows on turn");
 		self notify( "widows_cancel_warning" );
 		self.widows_cancel_warning = true;
-		wait( level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN );
+		wait( level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN );
 		self.widows_cancel_warning = false;
 	}
 
@@ -6119,7 +6162,7 @@ player_watch_widows_warning()
 	//Create hud elem for widows
 	player_widows_create_heavy_warning()
 	{
-		self notify( "widows_cancel_warning" );
+		//self notify( "widows_cancel_warning" );
 		level.widows_cancel_warning = true;
 		wait( 0.1 );
 		level.widows_cancel_warning = false;
@@ -6356,20 +6399,33 @@ player_zombie_handle_widows_poison( zombie )
 	keepPoison = (zombie.health > min_health) && (time > 0);
 	poison_spots = array_randomize( level.ARRAY_WIDOWS_VALID_POISON_POINTS );
 
-	fx_count = 16;
+	points_per_tick = maps\_zombiemode_score::zombie_calculate_damage_points( level.apocalypse, zombie );
+	ticks_to_reach_max = level.THRESHOLD_WIDOWS_MAX_POISON_POINTS / points_per_tick;
+	max_ticks = MAX_TIME / interval;
+
+	points_count = Int( max_ticks / ticks_to_reach_max );	//Every 1/4 of the way, give points
+	fx_count = 8;											//Every 4 seconds, play fx
 	count = 0;
 
 	while( keepPoison )
 	{
 		wait( interval );
-		zombie doDamage( dmg, zombie.origin, self );
+		if( (count % points_count) == 0 )
+			zombie doDamage( dmg, zombie.origin, self );
+		else
+			zombie doDamage( dmg, zombie.origin, undefined );
+		
 		time -= interval;
 		keepPoison = (zombie.health > min_health) && (time > 0);
 
 		if( (count % fx_count) == 0 )
 		{
-			PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
-			//zombie thread zombie_handle_widows_poison_fx( poison_spots[ Int(count / fx_count) ] );
+			//PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
+			PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], zombie, "tag_origin" );
+			//PlayFxOnTag( level._effect[ "fx_widows_wine_zombie" ], zombie, "tag_origin" );
+			self playlocalsound( "mx_widows_explode" );
+			self PlaySound( "mx_widows_explode" );
+			zombie thread zombie_handle_widows_poison_fx();
 		}
 		count++;
 	}
@@ -6379,13 +6435,29 @@ player_zombie_handle_widows_poison( zombie )
 
 //Handle widows poison fx
 
-	zombie_handle_widows_poison_fx( spot )
+	
+	zombie_handle_widows_poison_fx( )
 	{
-		self endon( "death" );
+		scale = 50;
+		forward = vector_scale( AnglesToForward( self.angles ), scale );
+		iprintln("Forward: " + forward);
 
-		while( self.marked_for_poison )
+		model = Spawn( "script_model", self.origin + forward );
+		model SetModel( "tag_origin" );
+		//model LinkTo( self, "tag_origin", forward );
+		model LinkTo( self, "tag_origin" );
+		
+		condition = self.marked_for_poison && IsAlive( self );
+		time = 4;
+		interval = 0.25;
+		PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], model, "tag_origin" );
+		while( condition )
 		{
-			PlayFxOnTag( level._effect[ "fx_acidgat_marker" ], self, spot );
-			wait( 0.25 );
+			condition = self.marked_for_poison && IsAlive( self ) && time > 0;
+			wait( interval );
+			time -= interval;
 		}
+
+		model Delete();
 	}
+	

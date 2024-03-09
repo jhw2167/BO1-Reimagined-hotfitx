@@ -308,6 +308,7 @@ init_weapons()
 
  	add_zombie_weapon( "zombie_black_hole_bomb",		undefined,								&"ZOMBIE_WEAPON_SATCHEL_2000", 			2000,	"gersh",			"",		undefined );
  	add_zombie_weapon( "zombie_nesting_dolls",		undefined,								&"ZOMBIE_WEAPON_NESTING_DOLLS", 		2000,	"dolls",	"",		undefined );
+	add_zombie_weapon( "bo3_zm_widows_grenade",		undefined,								&"REIMAGINED_WINE_GRENADES", 		2000,	"webnades",	"",		undefined );
 
  	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
  	add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
@@ -4068,6 +4069,8 @@ init_includes()
  	include_weapon("stoner63_zm");
  	//include_weapon("psg1_zm");
  	include_weapon("ppsh_zm");
+	
+	include_weapon("bo3_zm_widows_grenade", false);
  	include_weapon("falling_hands_zm", false);
 
  	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");

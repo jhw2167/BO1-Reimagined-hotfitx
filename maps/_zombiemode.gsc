@@ -54,9 +54,9 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=20;	//*/
+	level.calculate_amount_override=2;	//*/
 	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -693,16 +693,22 @@ reimagined_init_level()
 	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.8;
 
 	//Wine
+	level.VALUE_WIDOWS_GRENADE_MAX = 2;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 768;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 512;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 192;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 128;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST = 64;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_VERTICAL_CUTOFF = 10;
+
 	level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT = -0.2;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN = 10;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN = 3;
+	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN = 10;
+	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN = 3;
+	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_HEAVY_COOLDOWN = 10;
+
 
 	level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING = 3;
 	level.VALUE_WIDOWS_PLAYER_FOV_SHRINK = 120;
+	level.THRESHOLD_WIDOWS_MAX_POISON_POINTS = 50;
 
 	level.ARRAY_WIDOWS_VALID_POISON_POINTS = array( "J_Shoulder_LE", "J_Shoulder_RI",
 													"J_Elbow_LE", "J_Elbow_RI",
@@ -713,14 +719,15 @@ reimagined_init_level()
 	for(i=0; i<10; i++)  
 	{
 		if( i < 5 ) 
-			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.25;
+			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.15;
 		else
-			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.4;
+			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.2;
 	}
 	level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[10] = 1;
 
 
 	level.ARRAY_WIDOWS_VALID_POISON_ZOMBIES = array( "zombie", "quad_zombie" );
+	level.THRESHOLD_WIDOWS_MAX_POISON_POINTS = 50;
 	level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION = 1/2;
 	level.THRESHOLD_WIDOWS_POISON_MAX_TIME = 10;
 	level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION = 1/3;
@@ -928,6 +935,7 @@ reimagined_init_player()
 	self.vulture_vison_toggle = true;
 
 	self.widows_cancel_warning = false;
+	self.widows_heavy_warning_cooldown = false;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;
@@ -8437,7 +8445,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				if( !isDefined(self.widows_posion_bullet_count) )
 					self.widows_posion_bullet_count = 0;
 				
-				chances = level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[ self.widows_poison_chances_by_bullet ];
+				chances = level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[ self.widows_posion_bullet_count ];
+				if( attacker hasProPerk(level.DBT_PRO) )
+					chances *= 2;
 				rand = randomint(100);
 			
 				if( rand <= chances*100 ) 

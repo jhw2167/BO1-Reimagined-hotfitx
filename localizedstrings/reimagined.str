@@ -78,6 +78,9 @@ LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Vulture Aid [Cost: &&1]\n    
 REFERENCE          	PERK_WIDOWSWINE
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Widow's Wine [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
+REFERENCE          	WINE_GRENADES
+LANG_ENGLISH        "Web Grenades"
+
 REFERENCE          	PERK_BABYJUGG
 LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to buy Baby Jugg [Cost: &&1]"
 

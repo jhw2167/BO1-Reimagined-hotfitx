@@ -990,7 +990,6 @@ perk_machine_arrival_update()
 		}
 
 		level.nml_perk = level.ARRAY_MOON_VALID_NML_PERKS[ perk_index ];
-		iprintln("Perk Index: " + perk_index + " - " + level.nml_perk);
 
 		level.last_perk_index = perk_index;
 		perk_machine_show_selected( perk_index, false );

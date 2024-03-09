@@ -146,6 +146,7 @@ weapon,sp/psg1_upgraded_zm_x2
 
 //Perks
 weapon,sp/zombie_perk_bottle
+weapon,sp/bo3_zm_widows_grenade
 
 
 //SOUNDS
@@ -160,12 +161,6 @@ stringtable,weaponoptions.csv
 //fx,misc/fx_zombie_powerup_red_wave
 //fx,eyes/fx_zombie_eye_single_red
 //fx,eyes/fx_zombie_eye_single_purple
-
-fx,acidgat/fx_acidgat_explode
-//fx,acidgat/fx_acidgat_explode_ug
-//fx,acidgat/fx_acidgat_marker
-//fx,acidgat/fx_acidgat_view
-//fx,acidgat/fx_acidgat_zombiesplash
 
 
 fx,maps/zombie/fx_zombie_tesla_bolt_secondary	//tesla volt bounce, wpn efects
@@ -184,6 +179,15 @@ fx,electric_cherry/fx_electric_cherry_shock_large
 fx,vulture/fx_vulture_glow
 fx,vulture/fx_vulture_box
 fx,vulture/fx_vulture_skull
+
+//Wine
+fx,widowswine/fx_widows_wine_zombie
+fx,acidgat/fx_acidgat_explode
+//fx,acidgat/fx_acidgat_explode_ug
+//fx,acidgat/fx_acidgat_marker
+//fx,acidgat/fx_acidgat_view
+//fx,acidgat/fx_acidgat_zombiesplash
+
 
 
 
@@ -337,6 +341,10 @@ material,i_t6_specialty_firesale_shader
 material,i_t6_specialty_instakill_shader
 material,i_t6_specialty_zomblood_shader
 
+//wine
+material,vending_widows_grenade_icon
+material,vending_widows_grenade_indicator
+material,t7_semtex_ww
 
 //XMODELS
 xmodel,zombie_3rd_perk_bottle_jugg
@@ -432,6 +440,12 @@ xmodel,t6_wpn_zmb_perk_bottle_sleight_view
 xmodel,t6_wpn_zmb_perk_bottle_sleight_world
 xmodel,t6_wpn_zmb_perk_bottle_vulture_view
 xmodel,t6_wpn_zmb_perk_bottle_vulture_world
+
+//Wine
+xmodel,bo3_t7_ww_grenade_world
+xmodel,bo3_t7_ww_grenade_view
+xmodel,bo3_t7_ww_grenade_proj
+
 
 
 //ANIMS
