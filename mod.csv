@@ -160,7 +160,7 @@ stringtable,weaponoptions.csv
 //fx,misc/fx_zombie_powerup_red_grab
 //fx,misc/fx_zombie_powerup_red_wave
 //fx,eyes/fx_zombie_eye_single_red
-//fx,eyes/fx_zombie_eye_single_purple
+fx,eyes/fx_zombie_eye_single_purple
 
 
 fx,maps/zombie/fx_zombie_tesla_bolt_secondary	//tesla volt bounce, wpn efects

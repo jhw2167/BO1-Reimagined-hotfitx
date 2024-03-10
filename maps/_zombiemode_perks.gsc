@@ -389,12 +389,10 @@ default_vending_precaching()
 	if( is_true( level.zombiemode_using_widowswine_perk ) )
 	{
 		PreCacheModel( "bo3_t7_ww_grenade_world" );
-		PreCacheModel( "bo3_t7_ww_grenade_view" );
+		//PreCacheModel( "bo3_t7_ww_grenade_proj" );
+		//PreCacheModel( "bo3_t7_ww_grenade_view" );
 
 		PrecacheShader( "vending_widows_grenade_icon" );
-		PrecacheShader( "t7_semtex_ww" );
-		register_tactical_grenade_for_level( "bo3_zm_widows_grenade" );
-
 		PreCacheShader( "specialty_widowswine_zombies" );
 		PreCacheShader( "specialty_widowswine_zombies_pro" );
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_off" );
@@ -1608,6 +1606,9 @@ electric_perks_dialog()
 
 convertProPerkToShaderPro( perk )
 {
+	if ( !isDefined ( perk ) )
+		return "UNKOWN";
+	
 	if (perk == "specialty_armorvest_upgrade")
 		return "specialty_juggernaut_zombies_pro";
 	if (perk == "specialty_quickrevive_upgrade")
@@ -1636,6 +1637,9 @@ return "UNKOWN";
 
 convertPerkToShader( perk )
 {
+	if ( !isDefined ( perk ) )
+		return "UNKOWN";
+	
 	if (perk == "specialty_armorvest")
 		return "specialty_juggernaut_zombies";
 	if (perk == "specialty_quickrevive")
@@ -1682,6 +1686,9 @@ is_special_zombie( animname ) {
 
 hasProPerk( perk )
 {
+	if ( !isDefined ( perk ) )
+		return "UNKOWN";
+	
 	if (perk == "specialty_armorvest_upgrade")
 		return self.PRO_PERKS[ level.JUG_PRO ];
 	if (perk == "specialty_quickrevive_upgrade")
@@ -1710,6 +1717,9 @@ hasProPerk( perk )
 
 playerHasPerk( perk )
 {
+	if ( !isDefined ( perk ) )
+		return "UNKOWN";
+	
 	//Mirror the above function - without "_upgrade"
 	if (perk == "specialty_armorvest")
 		return self HasPerk( "specialty_armorvest" );
@@ -5994,6 +6004,7 @@ init_widows_wine()
 
 	level._effect[ "fx_widows_wine_explode" ] = LoadFX( "widowswine/fx_widows_wine_explode" );
 	level._effect[ "fx_widows_wine_zombie" ] = LoadFX( "widowswine/fx_widows_wine_zombie" );
+	level._effect["fx_trail_crossbow_blink_red_os"]	  = loadfx("weapon/crossbow/fx_trail_crossbow_blink_red_os");
 }
 
 player_watch_widowswine()
@@ -6004,20 +6015,16 @@ player_watch_widowswine()
 watch_widowswine_upgrade( stop_str )
 {
 	iprintln("watch_widowswine_upgrade");
-	self thread player_give_wine_grenades();
+	self thread player_give_wine_grenades( stop_str );
 	self waittill( stop_str );
 }
 
-player_give_wine_grenades()
+player_give_wine_grenades( stop_str )
 {
 	self giveweapon( "bo3_zm_widows_grenade" );
 	self set_player_tactical_grenade( "bo3_zm_widows_grenade" );
-	self SetWeaponAmmoClip( "bo3_zm_widows_grenade", level.VALUE_WIDOWS_GRENADE_MAX );
-
-	iprintln("Gave widows wine grenades " + self GetWeaponAmmoClip( "bo3_zm_widows_grenade" ) );
-
-	self SetClientDvar("tactical_grenade_icon", "vending_widows_grenade_icon");
-	self SetClientDvar("tactical_grenade_amount", level.VALUE_WIDOWS_GRENADE_MAX);
+	
+	self thread player_watch_widows_grenade( stop_str );
 }
 	
 /*	 Handle Zombie close HUD  */
@@ -6389,7 +6396,7 @@ player_zombie_handle_widows_poison( zombie )
 {
 	fraction = level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION;
 	MAX_TIME = level.THRESHOLD_WIDOWS_POISON_MAX_TIME;
-	if( self hasProPerk( self.WWN_PRO ) ) {
+	if( self hasProPerk( level.WWN_PRO ) ) {
 		fraction = level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION;
 		MAX_TIME = level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME;
 	}
@@ -6401,7 +6408,6 @@ player_zombie_handle_widows_poison( zombie )
 	dmg = (zombie.health - min_health) / (MAX_TIME / interval);
 	
 	keepPoison = (zombie.health > min_health) && (time > 0);
-	poison_spots = array_randomize( level.ARRAY_WIDOWS_VALID_POISON_POINTS );
 
 	points_per_tick = maps\_zombiemode_score::zombie_calculate_damage_points( level.apocalypse, zombie );
 	ticks_to_reach_max = level.THRESHOLD_WIDOWS_MAX_POISON_POINTS / points_per_tick;
@@ -6424,11 +6430,10 @@ player_zombie_handle_widows_poison( zombie )
 
 		if( (count % fx_count) == 0 )
 		{
-			//PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
-			PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], zombie, "tag_origin" );
+			PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
+			//PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], zombie, "tag_origin" );
 			//PlayFxOnTag( level._effect[ "fx_widows_wine_zombie" ], zombie, "tag_origin" );
-			self playlocalsound( "mx_widows_explode" );
-			self PlaySound( "mx_widows_explode" );
+			//self PlayLocalSound( "mx_widows_explode" );
 			zombie thread zombie_handle_widows_poison_fx();
 		}
 		count++;
@@ -6444,8 +6449,6 @@ player_zombie_handle_widows_poison( zombie )
 	{
 		scale = 50;
 		forward = vector_scale( AnglesToForward( self.angles ), scale );
-		iprintln("Forward: " + forward);
-
 		model = Spawn( "script_model", self.origin + forward );
 		model SetModel( "tag_origin" );
 		//model LinkTo( self, "tag_origin", forward );
@@ -6465,3 +6468,110 @@ player_zombie_handle_widows_poison( zombie )
 		model Delete();
 	}
 	
+//Handle Widows Grenades
+
+player_watch_widows_grenade( stop_str )
+{
+	self endon( "disconnect" );
+	self endon( "death" );
+	self endon( stop_str );
+
+	while( self hasProPerk( level.WWN_PRO ) )
+	{
+
+		self waittill( "grenade_fire", grenade, weapName );
+		if( weapName == "bo3_zm_widows_grenade" )
+			self thread player_widows_grenade_explode( grenade );
+
+		wait( 0.05 );
+	}
+
+}
+
+player_widows_grenade_explode( grenade )
+{
+	model = Spawn( "script_model", grenade.origin );
+	grenade setModel( "tag_orgin" );
+	model SetModel( "bo3_t7_ww_grenade_world" );
+	PlayFxOnTag( level._effect[ "widow_light" ], model, "tag_origin" );
+	model linkTo( grenade );
+
+	MAX_TIME = level.VALUE_WIDOWS_GRENADE_EXPLODE_TIME;
+	MAX_RANGE = level.VALUE_WIDOWS_GRENADE_EXPLOSION_RANGE;
+	MIN_RANGE = level.VALUE_WIDOWS_GRENADE_TRIGGER_RANGE;
+	time = 0;
+
+	zombies = get_array_of_closest( grenade.origin, GetAiSpeciesArray( "axis", "all" ),
+								 undefined, undefined, MAX_RANGE );
+	
+	interval = 0.2;
+	while( time < MAX_TIME )
+	{
+		wait( interval );
+		time += interval;
+		triggered = (zombies.size > 0) && checkDist( model.origin, zombies[0].origin, MIN_RANGE );
+		if( triggered )
+			break;
+
+		zombies = get_array_of_closest( model.origin, GetAiSpeciesArray( "axis", "all" ),
+									 undefined, undefined, MAX_RANGE );
+
+		if( Int(time / interval) % 5 == 0)
+		{
+			//PlayFx( level._effect["fx_trail_crossbow_blink_red_os"], model.origin );
+			//PlayFx( level._effect["fx_zombie_eye_single"], model.origin );
+			PlayFxOnTag( level._effect["fx_trail_crossbow_blink_red_os"], model, "tag_origin" );
+		}
+	}
+
+	PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], model, "tag_origin" );
+	PlayFx( level._effect[ "fx_widows_wine_explode" ], model.origin );
+	PlaySoundAtPosition( "mx_widows_explode", model.origin );
+	model Delete();
+
+	for( i = 0; i < zombies.size; i++ ) {
+		zombies[i] thread zombie_watch_widows_web( self );			
+	}
+
+
+}
+
+
+zombie_watch_widows_web( player )
+{
+	self endon( "death" );
+
+	wait ( RandomFloatrange( 0, 0.5 ) );
+	PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], self, "tag_origin" );
+	PlaySoundAtPosition( "mx_widows_explode", self.origin );
+
+	MAX_TIME = level.VALUE_WIDOWS_ZOMBIE_WEBBED_TIME;
+
+	boss_zombie = is_boss_zombie( self.animname ) || is_special_zombie( self.animname );
+	can_slow_zombie = !self.marked_for_freeze && !boss_zombie;
+	if( can_slow_zombie )
+		self thread maps\_zombiemode_weapon_effects::slow_zombie_over_time( MAX_TIME, "walk" );
+
+	self doDamage( level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE, self.origin, player );
+	
+	if( boss_zombie )
+		return;
+
+	player thread player_zombie_handle_widows_poison( self );
+
+	time = 0;
+	interval = 1;
+
+	flip_fx = 1;
+	fx_spots = array( "j_SpineLower", "j_SpineUpper" );
+	while( IsAlive( self ) && time < MAX_TIME )
+	{
+		wait( interval );
+		time += interval;
+
+		PlayFxOnTag( level._effect[ "fx_widows_wine_zombie" ], self, fx_spots[ flip_fx ] );
+		flip_fx = !flip_fx;
+	}
+	
+	
+}

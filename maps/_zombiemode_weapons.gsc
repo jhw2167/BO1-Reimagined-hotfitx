@@ -4070,7 +4070,7 @@ init_includes()
  	//include_weapon("psg1_zm");
  	include_weapon("ppsh_zm");
 	
-	include_weapon("bo3_zm_widows_grenade", false);
+	include_weapon("bo3_zm_widows_grenade", false, true);
  	include_weapon("falling_hands_zm", false);
 
  	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");

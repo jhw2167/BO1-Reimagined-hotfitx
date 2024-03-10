@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=20;	//*/
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -693,7 +693,6 @@ reimagined_init_level()
 	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.8;
 
 	//Wine
-	level.VALUE_WIDOWS_GRENADE_MAX = 2;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 768;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 512;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 128;
@@ -705,10 +704,8 @@ reimagined_init_level()
 	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN = 3;
 	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_HEAVY_COOLDOWN = 10;
 
-
 	level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING = 3;
 	level.VALUE_WIDOWS_PLAYER_FOV_SHRINK = 120;
-	level.THRESHOLD_WIDOWS_MAX_POISON_POINTS = 50;
 
 	level.ARRAY_WIDOWS_VALID_POISON_POINTS = array( "J_Shoulder_LE", "J_Shoulder_RI",
 													"J_Elbow_LE", "J_Elbow_RI",
@@ -725,13 +722,20 @@ reimagined_init_level()
 	}
 	level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[10] = 1;
 
-
 	level.ARRAY_WIDOWS_VALID_POISON_ZOMBIES = array( "zombie", "quad_zombie" );
 	level.THRESHOLD_WIDOWS_MAX_POISON_POINTS = 50;
 	level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION = 1/2;
 	level.THRESHOLD_WIDOWS_POISON_MAX_TIME = 10;
 	level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION = 1/3;
 	level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME = 15;
+
+	level.VALUE_WIDOWS_GRENADE_MAX = 4;
+	level.VALUE_WIDOWS_GRENADE_EXPLODE_TIME = 60;
+	level.VALUE_WIDOWS_GRENADE_TRIGGER_RANGE = 64;
+	level.VALUE_WIDOWS_GRENADE_EXPLOSION_RANGE = 300;
+	level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE = 300;
+
+	level.VALUE_WIDOWS_ZOMBIE_WEBBED_TIME = 10;
 
 	
 	//Bullet Effects

@@ -448,43 +448,65 @@ bonus_freeze_damage( zomb, player, radius, time )
 	//Slow zombies
 	for ( i = 0; i < zombies.size; i++ ) 
 	{
-		if ( is_true(zombies[i].zombie_move_speed_supersprint) )
-		{
-			zombies[i].zombie_move_speed_supersprint = false;
-			zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
-		}
-		else if ( zombies[i].zombie_move_speed != new_move_speed )
-		{
-			zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
-		}
-
-		zombies[i].marked_for_freeze = true;
-		zombies[i] thread unmark_frozen_zombie( total_sheercold_time );
+		zombies[i] thread slow_zombie_over_time( total_sheercold_time, new_move_speed);
 	}
 		
 }
 
-//After a few seconds, unmark zombies for freeze
-unmark_frozen_zombie( zombie_thaw_time )
-{
-	if( !IsDefined(self) || !IsDefined( zombie_thaw_time ) )
-		return;
-
-	wait( zombie_thaw_time );
-
-	if ( !IsDefined( self ) || !IsAlive( self ) )
+	slow_zombie_over_time( duration, new_move_speed )
 	{
-		// guy died on us
-		return;
+		if( !isDefined( self ) || !IsAlive( self ) )
+			return;
+
+		if( !isDefined( new_move_speed ) )
+			new_move_speed = "walk";
+
+		if( !IsDefined( duration )  )
+			duration = 60;
+
+		if ( is_true(self.zombie_move_speed_supersprint) )
+		{
+			self.zombie_move_speed_supersprint = false;
+			self maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
+			self.marked_for_freeze = true;
+		}
+		else if ( self.zombie_move_speed != new_move_speed )
+		{
+			self maps\_zombiemode_spawner::set_zombie_run_cycle( new_move_speed );
+			self.marked_for_freeze = true;
+		}
+
+		self thread unmark_frozen_zombie( duration );
 	}
 
-	if(isDefined(self.marked_for_freeze)) {
-		self.marked_for_freeze = false;
-		//make him run again as he thaws out
-		self maps\_zombiemode_spawner::set_zombie_run_cycle( self.zombie_move_speed_original );
-	}
+	//After a few seconds, unmark zombies for freeze
+	unmark_frozen_zombie( zombie_thaw_time )
+	{
+		if( !IsDefined(self) || !IsDefined( zombie_thaw_time ) )
+			return;
 
-}
+		//Use while loop to wait for the time to pass
+		interval = 0.5;
+		while( zombie_thaw_time > 0 )
+		{
+			wait( interval );
+			zombie_thaw_time -= interval; 
+			condition = ( zombie_thaw_time > 0 ) || !IsDefined( self ) || !IsAlive( self );
+		}
+
+		if ( !IsDefined( self ) || !IsAlive( self ) )
+		{
+			// guy died on us
+			return;
+		}
+
+		if(isDefined(self.marked_for_freeze)) {
+			self.marked_for_freeze = false;
+			//make him run again as he thaws out
+			self maps\_zombiemode_spawner::set_zombie_run_cycle( self.zombie_move_speed_original );
+		}
+
+	}
 
 //HERE_
 freezegun_get_enemies_in_range() {

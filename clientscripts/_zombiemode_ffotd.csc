@@ -36,6 +36,9 @@ notetrack_think()
 
 include_weapons()
 {
+	include_weapon( "bo3_zm_widows_grenade", false );
+	include_weapon( "sticky_grenade_zm", false );
+
 	if(GetDvar("mapname") == "zombie_cod5_prototype")
 	{
 		include_weapon( "ak47_zm" );
@@ -334,6 +337,7 @@ get_grenade_type(weapon)
 		case "zombie_nesting_dolls":
 		case "zombie_quantum_bomb":
 		case "molotov_zm":
+		case "bo3_zm_widows_grenade":
 			return "tactical";
 
 		default:
@@ -385,6 +389,10 @@ get_grenade_icon(weapon, nade_type)
 		else if(weapon == "molotov_zm")
 		{
 			icon = "hud_icon_molotov";
+		}
+		else if(weapon == "bo3_zm_widows_grenade")
+		{
+			icon = "vending_widows_grenade_icon";
 		}
 	}
 

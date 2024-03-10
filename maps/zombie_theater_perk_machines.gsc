@@ -23,7 +23,7 @@ place_babyjug()
 	bottle = Spawn( "script_model", machine_origin );
 	bottle.angles = machine_angles;
 	bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
-
+	
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 0), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";
 	perk_trigger.target = "vending_babyjugg";

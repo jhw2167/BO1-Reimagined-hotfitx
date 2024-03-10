@@ -3936,6 +3936,7 @@ register_offhand_weapons_for_level_defaults()
 	level.zombie_lethal_grenade_player_init = "frag_grenade_zm";
 
 	register_tactical_grenade_for_level( "zombie_cymbal_monkey" );
+	register_tactical_grenade_for_level( "bo3_zm_widows_grenade" );
 	level.zombie_tactical_grenade_player_init = undefined;
 
 	register_placeable_mine_for_level( "claymore_zm" );
