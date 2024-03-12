@@ -698,14 +698,14 @@ reimagined_init_level()
 	//Wine
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 768;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 512;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 128;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 160;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST = 64;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_VERTICAL_CUTOFF = 10;
 
-	level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT = -0.2;
+	level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT = -0.1;
 	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN = 10;
 	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN = 3;
-	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_HEAVY_COOLDOWN = 10;
+	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_HEAVY_COOLDOWN = 15;
 
 	level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING = 3;
 	level.VALUE_WIDOWS_PLAYER_FOV_SHRINK = 120;
@@ -997,7 +997,7 @@ checkDist( a, b, distance)
 	vars_defined = isDefined(a) && isDefined(b) && isDefined(distance);
 	if( !IsDefined( a ) || !IsDefined( b ) )
 	{
-		iprintln("checkDist for distance: " + distance + " is undefined" );
+		//iprintln("checkDist for distance: " + distance + " is undefined" );
 		return false;
 	}
 		
@@ -1909,7 +1909,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.2.5" );
+	SetDvar( "zm_mod_version", "1.2.6" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -6121,7 +6121,7 @@ pre_round_think()
 		//Give all players 1000 points per round
 		players = GetPlayers();
 		for(i=0;i<players.size;i++) {
-			iprintln("Giving points: " + i);
+			//iprintln("Giving points: " + i);
 			players[i] maps\_zombiemode_score::add_to_player_score( level.starting_round * 1000);
 		}
 	}
@@ -7671,7 +7671,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//ORIGIN_
-	iprintln("Origin: " + attacker.origin );
+	//iprintln("Origin: " + attacker.origin );
 	/*
 	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));
@@ -7685,9 +7685,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Testing has Upp VLT: " + attacker hasProPerk(level.VLT_PRO));
 	//iprintln("Testing has Upp WWN: " + attacker hasProPerk(level.WWN_PRO)); 
 
-	iprintln("BA: " + attacker HasPerk("specialty_bulletaccuracy"));
-	iprintln("SA: " + attacker HasPerk("specialty_bulletaccuracy"));
-	iprintln("SS: " + attacker HasPerk("specialty_stockpile"));
+	//iprintln("BA: " + attacker HasPerk("specialty_bulletaccuracy"));
+	//iprintln("SA: " + attacker HasPerk("specialty_bulletaccuracy"));
+	//iprintln("SS: " + attacker HasPerk("specialty_stockpile"));
 
 	*/
 	

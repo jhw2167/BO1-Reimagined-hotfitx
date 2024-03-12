@@ -9814,11 +9814,11 @@ default_fog_print()
 	wait_for_first_player();
 
 	/#
-	iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );
+	//iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );
 	wait( 8 );
-	iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );
+	//iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );
 	wait( 8 );
-	iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );	
+	//iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );	
 	#/
 }
 
@@ -12986,7 +12986,7 @@ trigger_thread(ent, on_enter_payload, on_exit_payload)	// Self == The trigger.
 		
 	self add_trigger_to_ent(ent);
 
-//	iprintlnbold("Trigger " + self.targetname + " hit by ent " + ent getentitynumber());
+//	//iprintlnbold("Trigger " + self.targetname + " hit by ent " + ent getentitynumber());
 	
 	endon_condition = "leave_trigger_" + self GetEntityNumber();
 	
@@ -13002,7 +13002,7 @@ trigger_thread(ent, on_enter_payload, on_exit_payload)	// Self == The trigger.
 
 	ent notify(endon_condition);
 
-//	iprintlnbold(ent getentitynumber() + " leaves trigger " + self.targetname + ".");
+//	//iprintlnbold(ent getentitynumber() + " leaves trigger " + self.targetname + ".");
 
 	if(IsDefined(ent) && IsDefined(on_exit_payload))
 	{

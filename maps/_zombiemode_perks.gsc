@@ -4243,7 +4243,7 @@ watch_stamina_upgrade(perk_str)
 	checkDist(a, b, distance )
 	{
 		if( !IsDefined( a ) || !IsDefined( b ) )
-			iprintln("checkDist for distance: " + distance + " is undefined" );
+			//iprintln("checkDist for distance: " + distance + " is undefined" );
 
 		return maps\_zombiemode::checkDist( a, b, distance );
 	}
@@ -6059,7 +6059,7 @@ player_watch_widowswine()
 
 watch_widowswine_upgrade( stop_str )
 {
-	iprintln("watch_widowswine_upgrade");
+	//iprintln("watch_widowswine_upgrade");
 	self thread player_give_wine_grenades( stop_str );
 	self waittill( stop_str );
 }
@@ -6370,33 +6370,33 @@ player_watch_widows_warning()
 			forward_angles = VectorToAngles( forward_dir );
 
 			arctan = atan( forward_dir[1] / forward_dir[0] );
-			iprintln("Arctan: " + arctan);
-			iprintln("Angles: " + forward_angles);
+			//iprintln("Arctan: " + arctan);
+			//iprintln("Angles: " + forward_angles);
 
 			//left-vector, 30deg from forward
 			left_angle = arcTan - angle_offset;
-			iprintln("Left Angle: " + left_angle);
+			//iprintln("Left Angle: " + left_angle);
 			left_vector = ( cos( left_angle ), sin( left_angle ), 0 );
-			iprintln("Left Vector: ");
-			iprintln( left_vector );
+			//iprintln("Left Vector: ");
+			//iprintln( left_vector );
 
 			right_angle = arcTan + angle_offset;
-			iprintln("Right Angle: " + right_angle);
+			//iprintln("Right Angle: " + right_angle);
 			right_vector = ( cos( right_angle ), sin( right_angle ), 0 );
 			
-			iprintln("zomb_origin: ");
-			iprintln( zomb_origin );
-			iprintln("view_pos: ");
-			iprintln( view_pos );
+			//iprintln("zomb_origin: ");
+			//iprintln( zomb_origin );
+			//iprintln("view_pos: ");
+			//iprintln( view_pos );
 			normal = VectorNormalize( zomb_origin - view_pos );
-			iprintln("Normal: " + normal); 
+			//iprintln("Normal: " + normal); 
 			//iprintln( normal );
 
 			//if zombie is "in front of" left vector, then it's to the left
 			is_left = VectorDot( left_vector, normal ) > 0;
 			is_right = VectorDot( right_vector, normal ) > 0;
 
-			iprintln("Is Left: " + is_left + "  Is Right: " + is_right);
+			//iprintln("Is Left: " + is_left + "  Is Right: " + is_right);
 
 		}
 
