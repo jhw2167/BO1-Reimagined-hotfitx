@@ -810,10 +810,6 @@ powerup_drop(drop_point, player, zombie)
 		type = "random";
 	}
 
-	level.total_drops_round++;
-	if ( level.total_drops_round > level.THRESHOLD_MAX_DROPS )
-		return;
-
 	////iprintln("SPAWNING DROP FROM POWERUP_DROP: " + type);
 	// This needs to go above the network_safe_spawn because that has a wait.
 	// Otherwise, multiple threads could attempt to drop powerups.

@@ -270,9 +270,11 @@ zombie_spawn_init( animname_set )
 		}
 
 		//Reimagined-Expanded, zombie drops
-		if(level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND
-		&& !self.respawn_zombie
-		&& is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
+		if(
+		( level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND )
+		&& ( !self.respawn_zombie )
+		&& ( is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname) )
+		&& ( level.total_drops_round < level.THRESHOLD_MAX_DROPS )
 		)
 			self thread zombie_wait_determine_drop();
 
@@ -426,6 +428,7 @@ zombie_determine_drop()
 			
 		if( self.hasDrop == "GREEN" || self.hasDrop == "BLUE" || self.hasDrop == "RED" ) 
 		{
+			level.total_drops_round++;
 			self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 			wait 0.5;
 			self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
@@ -449,9 +452,14 @@ zombie_watch_despawn_no_damage()
 	self.zombie_despawn=false;
 	self endon("death");
 	level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+
 	while( !self.zombie_despawn )
 	{
 		self zombie_watch_despawn_no_damage_trigger();
+		
+		if( !IsDefined(self) || !IsAlive(self) )
+				return;
+		
 		wait(0.1);
 	}
 	
@@ -466,8 +474,16 @@ zombie_watch_despawn_no_damage()
 		self endon( "hit_player" );
 		level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
-		players = GetPlayers();
-		for(i=0; i < players.size ; i++) {
+
+		if( !IsDefined(self) || !IsAlive(self) )
+				return;
+			
+		players = get_players();
+		for(i=0; i < players.size ; i++) 
+		{
+			if( !IsDefined(players[i].origin) || !IsDefined(self.origin) )
+				continue;
+
 			if ( checkDist(self.origin, players[i].origin, level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS ))
 				return;
 		}

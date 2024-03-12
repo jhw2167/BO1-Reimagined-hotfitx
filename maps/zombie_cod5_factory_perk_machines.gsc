@@ -8,11 +8,11 @@ init()
 	place_divetonuke();
 	place_deadshot();	
 	place_marathon();		
-	//place_martyrdom();	
-	//place_extraammo();		
+	place_martyrdom();	
+	place_extraammo();		
 	//place_chugabud();	
 	place_mulekick();	
-	//place_vulture();	
+	place_vulture();
 }
 
 place_babyjug()

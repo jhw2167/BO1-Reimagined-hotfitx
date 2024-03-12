@@ -5,9 +5,9 @@ init()
 {			
 	place_babyjug();
 
-	//place_martyrdom();
+	place_martyrdom();
 	place_vulture();
-	//place_wine();
+	place_wine();
 	place_mulekick();
 }
 
@@ -53,7 +53,7 @@ place_vulture()
 
 place_martyrdom()
 {
-	machine_origin = (1373.24, 2542.64, -389.865);
+	machine_origin = (-671.24, 1672.64, -470.865);
 	machine_angles = (0, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;

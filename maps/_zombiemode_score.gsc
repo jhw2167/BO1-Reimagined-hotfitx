@@ -463,7 +463,7 @@ add_to_player_score( points, add_to_total )
 		add_to_total = true;
 	}
 
-	if( !IsDefined( points ) || level.intermission )
+	if( !IsDefined( points ) || level.intermission || points == 0 )
 	{
 		return;
 	}

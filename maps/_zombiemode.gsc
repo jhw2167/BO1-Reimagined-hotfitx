@@ -45,16 +45,16 @@ main()
 	level.starting_round=GetDvarInt("zombie_round_start");
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
-	//Overrides
-	/* 									*/
-	level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=10;	///
+	//Overrides	
+	/* 									/
+	//level.zombie_ai_limit_override=34;	///
+	level.starting_round_override=13;	///
 	level.starting_points_override=50000;	///
-	level.drop_rate_override=200;		/// //Rate = Expected drops per round
+	//level.drop_rate_override=200;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=20;	//*/
+	//level.calculate_amount_override=20;	///
 	//level.apocalypse_override=true;		///
 	level.override_give_all_perks=true;	///*/
 
@@ -68,6 +68,7 @@ main()
 	level.zombie_trap_killed_count = 0;
 	level.zombie_pathing_failed = 0;
 	level.zombie_breadcrumb_failed = 0;
+	level.mapname = Tolower( GetDvar( #"mapname" ) );
 
 	//level.zombie_visionset = "zombie_neutral";
 
@@ -481,7 +482,7 @@ reimagined_init_level()
 	level.STRING_MIN_ZOMBS_REMAINING_NOTIFY = "MIN_ZOMBS_REMAINING_NOTIFY";		//level message when < 5 zombies remain
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
 
-	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS=128;
+	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS = 128;
 	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
 	
 	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 25;	//25 points per zombie killed before it despawns
@@ -513,7 +514,7 @@ reimagined_init_level()
 			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
 		}
 
-	level.THRESHOLD_MAX_DROPS = 4;	//Max Drops allowed per round. Protects against bugs
+	level.THRESHOLD_MAX_DROPS = 5;	//Max Drops allowed per round. Protects against bugs
 
 	level.THRESHOLD_MAX_POINTS_CARPENTER = 1000;
 	level.THRESHOLD_MAX_POINTS_NUKE = 2400;
@@ -692,10 +693,12 @@ reimagined_init_level()
 	level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET = 20;
 	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.8;
 
+	level.VALUE_VULTURE_ROUND_START_ZOMBIE_IMMUNITY = 15;
+
 	//Wine
-	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 768;
+	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 768;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 512;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DISTANCE = 128;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 128;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST = 64;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_VERTICAL_CUTOFF = 10;
 
@@ -988,14 +991,15 @@ wait_set_player_visionset()
 	//iprintln( "wait_set_player_visionset done");
 }
 
-//Reimagined-Expanded -- get zombies in provided range
+//Reimagined-Expanded -- check of obj is in range
 checkDist( a, b, distance)
 {
 	vars_defined = isDefined(a) && isDefined(b) && isDefined(distance);
-	if(!vars_defined) {
-		iprintln("checkDist: called on undefineds");
+	if( !IsDefined( a ) || !IsDefined( b ) )
+	{
+		iprintln("checkDist for distance: " + distance + " is undefined" );
 		return false;
-	}	
+	}
 		
 
 	if( DistanceSquared( a, b ) < distance * distance )
@@ -4464,8 +4468,9 @@ give_pro_perks( overrideToGiveAll )
 	if( is_true( overrideToGiveAll ) )
 	{
 		level.max_perks = 20;
-		self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		return;
+		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//return;
 	}
 		
 	else
@@ -7064,13 +7069,19 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			}
 		}
 
-		eAttacker notify( "hit_player" );
 
 		// tracking player damage
 		if( !is_boss_zombie(eAttacker.animname) )
 		{
-			if( self hasProPerk( level.ECH_PRO ) && self.cherry_defense )
+			if( self hasProPerk( level.ECH_PRO ) && self.cherry_defense ) {
 				self thread maps\_zombiemode_perks::player_electric_cherry_defense( eAttacker );
+				return 0;
+			}
+			else if( self HasPerk( level.WWN_PRK ) && !self.widows_heavy_warning_cooldown )
+			{
+				eAttacker thread maps\_zombiemode_perks::zombie_watch_widows_web( self );
+			}
+				
 
 			if( is_true(eAttacker.is_zombie) )
 			{
@@ -7094,7 +7105,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 
 		}
 		
-
+		eAttacker notify( "hit_player" );
 
 		if( is_true(eattacker.is_zombie) && eattacker.animname == "director_zombie" )
 		{
@@ -7660,7 +7671,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//ORIGIN_
-	//iprintln("Origin: " + attacker.origin );
+	iprintln("Origin: " + attacker.origin );
 	/*
 	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));

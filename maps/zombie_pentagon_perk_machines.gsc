@@ -9,9 +9,9 @@ init()
 	place_deadshot();
 	place_marathon();
 	place_mulekick();
-	//place_vulture();
-	//place_martyrdom();
-	//place_extraammo(); Windows is availible by not placed
+	place_vulture();
+	place_martyrdom();
+	place_extraammo(); //Windows is availible by not placed
 	
 }
 

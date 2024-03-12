@@ -1133,6 +1133,12 @@ turn_sleight_on()
 //
 turn_revive_on()
 {
+	//if map is moon
+	if( level.mapname == "zombie_moon")
+	{
+		setup_revive_moon();
+	}
+	
 	machine = getentarray("vending_revive", "targetname");
 	/*machine_model = undefined;
 	machine_clip = undefined;
@@ -1178,7 +1184,7 @@ turn_revive_on()
 	}*/
 
 	level waittill("revive_on");
-
+	
 	for( i = 0; i < machine.size; i++ )
 	{
 		if(IsDefined(machine[i].classname) && machine[i].classname == "script_model")
@@ -1193,6 +1199,26 @@ turn_revive_on()
 	level notify( "specialty_quickrevive_power_on" );
 }
 
+	setup_revive_moon()
+	{
+		origin = (6, -123, -2);
+		machine = getentarray("vending_revive", "targetname");
+		trigger = GetEnt( level.QRV_PRK , "script_noteworthy");
+		trigger.origin = origin + (0 , 0, 30);
+		perk_clip = undefined;
+
+		for( i = 0; i < machine.size; i++ )
+		{
+			if(IsDefined(machine[i].classname) && machine[i].classname == "script_model")
+			{
+				machine[i].origin = origin;
+				perk_clip = spawn( "script_model", machine[i].origin );
+				perk_clip.angles = machine[0].angles;
+				perk_clip SetModel( "collision_geo_64x64x256" );
+				perk_clip Hide();
+			}
+		}
+	}
 
 revive_solo_fx(machine_clip)
 {
@@ -4217,7 +4243,8 @@ watch_stamina_upgrade(perk_str)
 	checkDist(a, b, distance )
 	{
 		if( !IsDefined( a ) || !IsDefined( b ) )
-			iprintln("checkDist fir distance: " + distance);
+			iprintln("checkDist for distance: " + distance + " is undefined" );
+
 		return maps\_zombiemode::checkDist( a, b, distance );
 	}
 
@@ -4816,9 +4843,27 @@ watch_vulture_upgrade( perk_str )
 	//Reactivate zombies that have drops
 	thread vulture_activate_zombie_powerup_glow();
 
-	self thread test_disable_vulture();
+	self thread player_vulture_upgrade_zombie_immune( perk_str );
+	//self thread test_disable_vulture();
 	self waittill( perk_str );
 	self send_message_to_csc("hud_anim_handler", "vulture_hud_off");
+}
+
+//Zombies don't attack player for 15s at begging of each round
+player_vulture_upgrade_zombie_immune( perk_str )
+{
+
+	while( self hasProPerk( level.VLT_PRO ) )
+	{
+		level waittill( "start_of_round" );
+
+		self.ignoreme = true;
+		wait( level.VALUE_VULTURE_ROUND_START_ZOMBIE_IMMUNITY );
+		self.ignoreme = false;
+
+		level waittill( "end_of_round" );
+	}
+
 }
 
 test_disable_vulture()
@@ -5535,7 +5580,7 @@ init_vulture()
 				return false;
 
 
-			switch ( Tolower( GetDvar( #"mapname" ) ) )
+			switch ( level.mapname )
 			{
 				case "zombie_moon":
 					if( is_in_array( level.ARRAY_MOON_VALID_NML_PERKS, perk) )
@@ -6406,6 +6451,7 @@ player_zombie_handle_widows_poison( zombie )
 	time = MAX_TIME;
 	interval = 0.25;	//4 poison ticks a second
 	dmg = (zombie.health - min_health) / (MAX_TIME / interval);
+	dmg /= 2;	//Half the damage, a zombie can be applied with poison twice
 	
 	keepPoison = (zombie.health > min_health) && (time > 0);
 
