@@ -201,7 +201,7 @@ rocket_move_vertical()
 {
 
 	// Shawn J  - Sound - adding sound to rocket moving into position
-	////iprintlnbold( "rocket setting up!" );
+	//iprintlnbold( "rocket setting up!" );
 	level thread rocket_arm_sounds();
 
 	level.rocket_lifter_arm RotateTo( (90, 0, 0), 15, 3, 5 );
@@ -264,7 +264,7 @@ move_lifter_away()
 //	level.rocket linkto( level.rocket_lifter_arm );
 //
 //	// Shawn J  - Sound - adding sound to rocket moving into position
-//	////iprintlnbold( "rocket setting up!" );
+//	//iprintlnbold( "rocket setting up!" );
 //	level.rocket_lifter_arm playsound( "evt_rocket_set_main" );
 //
 //	// DCS: move new claws.

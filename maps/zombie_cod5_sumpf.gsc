@@ -174,7 +174,7 @@ init_sounds()
 {
 	maps\_zombiemode_utility::add_sound( "wooden_door", "zmb_door_wood_open" );
 
-	////iprintlnbold ("init_audio");
+	//iprintlnbold ("init_audio");
 
 	level thread toilet_useage();
 	level thread radio_one();

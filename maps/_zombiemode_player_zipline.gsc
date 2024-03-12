@@ -354,7 +354,7 @@ do_player_zipline(vehicle,zip_path,zip_trig)
 	self player_enter_zipline(vehicle,zip_path);
 	
 	//kevin adding audio
-	////iprintlnbold ("START");
+	//iprintlnbold ("START");
 	sound_ent = spawn( "script_origin" , self.origin );
 	sound_ent linkto( self );
 	sound_ent playloopsound( "evt_zipline_slide" );

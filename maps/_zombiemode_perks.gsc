@@ -643,7 +643,7 @@ vending_weapon_upgrade()
 
 		if ( player.score < self.cost )
 		{
-			//player ////iprintln( "Not enough points to buy Perk: " + perk );
+			//player //iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -651,7 +651,7 @@ vending_weapon_upgrade()
 		
 		if ( player maps\_zombiemode_weapons::is_weapon_upgraded( current_weapon ) && player.score < self.double_cost )
 		{
-			//player ////iprintln( "Not enough points to buy Perk: " + perk );
+			//player //iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -707,7 +707,7 @@ vending_weapon_upgrade()
 		self SetHintString("");
 		self disable_trigger();
 
-		////iprintln("Call knuckle crack from main thread");
+		//iprintln("Call knuckle crack from main thread");
 		player thread do_knuckle_crack();
 
 		// Remember what weapon we have.  This is needed to check unique weapon counts.
@@ -869,7 +869,7 @@ wait_for_player_to_take( player, weapon, packa_timer )
 			/#
 			if ( "none" == current_weapon )
 			{
-				////iprintlnbold( "WEAPON IS NONE, PACKAPUNCH RETRIEVAL DENIED" );
+				//iprintlnbold( "WEAPON IS NONE, PACKAPUNCH RETRIEVAL DENIED" );
 			}
 			#/
 
@@ -1407,7 +1407,7 @@ turn_divetonuke_on()
 divetonuke_explode( attacker, origin )
 {
 	// tweakable vars
-	////iprintln("divetonuke_explode");
+	//iprintln("divetonuke_explode");
 	radius = level.zombie_vars["zombie_perk_divetonuke_radius"];
 	min_damage = level.zombie_vars["zombie_perk_divetonuke_min_damage"];
 	max_damage = level.zombie_vars["zombie_perk_divetonuke_max_damage"];
@@ -1438,7 +1438,7 @@ divetonuke_explode( attacker, origin )
 		}
 		
 	} else {
-		////iprintln("divetonuke_explode");
+		//iprintln("divetonuke_explode");
 		PlayFx( level._effect["divetonuke_groundhit"], origin );
 		attacker PlaySound("wpn_grenade_explode");
 	}
@@ -1533,9 +1533,6 @@ turn_vulture_on()
 	}
 	level notify( "specialty_altmelee_power_on" );
 
-	player = GetPlayers()[0];
-	//gun = player perk_give_bottle_begin( level.VLT_PRK );
-	//machine thread give_perk_think(player, gun, level.VLT_PRK , 0);
 }
 
 turn_widowswine_on()
@@ -1622,7 +1619,7 @@ electric_perks_dialog()
 				wait(3);
 				self notify ("warning_dialog");
 				/#
-				////iprintlnbold("warning_given");
+				//iprintlnbold("warning_given");
 				#/
 			}
 		}
@@ -1816,14 +1813,14 @@ addProPerk( perk )
 		self giveWidowswineUpgrade();
 	}
 
-	////iprintln( " ADD PRO PERK : " + perk);
+	//iprintln( " ADD PRO PERK : " + perk);
 }
 
 //disableProPerk
 disablePerk( perk, time ) 
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
-		////iprintln("disablePerk: self or self.PRO_PERKS is undefined");
+		//iprintln("disablePerk: self or self.PRO_PERKS is undefined");
 		return;
 	}
 
@@ -1869,7 +1866,7 @@ returnPerk( perk )
 removePerk( perk, removeOrDisableHud )
 {
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
-		////iprintln("removePerk: self or self.PRO_PERKS is undefined");
+		//iprintln("removePerk: self or self.PRO_PERKS is undefined");
 		return;
 	}
 
@@ -1973,7 +1970,7 @@ giveWidowswineUpgrade() {
 player_print_msg(msg) {
 	flag_wait( "all_players_connected" );
 	wait(2);
-	////iprintln( msg );
+	//iprintln( msg );
 }
 
 disableSpeed( wait_time ) {
@@ -1996,7 +1993,7 @@ vending_trigger_think()
 	if(self.script_noteworthy == "specialty_longersprint")
 		perk = "specialty_endurance";
 	
-	////iprintln("PRINT PERK" + perk);
+	//iprintln("PRINT PERK" + perk);
 	//Reimagined-Expanded babyjugg!
 	if ( IsDefined(perk) && perk == "specialty_extraammo" )
 	{
@@ -2062,7 +2059,7 @@ vending_trigger_think()
 
 			if ( player.score < cost )
 			{
-				//player ////iprintln( "Not enough points to buy Perk: " + perk );
+				//player //iprintln( "Not enough points to buy Perk: " + perk );
 				wait(0.1);
 				self playsound("evt_perk_deny");
 				continue;
@@ -2085,7 +2082,7 @@ vending_trigger_think()
 			player.preMaxHealth = 140;
 			player SetClientDvar("perk_bar_00", convertPerkToShader( level.JUG_PRK ) );
 			player send_message_to_csc( "hud_anim_handler", "perk_bar_00_on" );
-			////iprintln("player max health: " + player.preMaxHealth);
+			//iprintln("player max health: " + player.preMaxHealth);
 			if(player.maxHealth < 140)
 			{
 				player SetMaxHealth( 140 );
@@ -2389,7 +2386,7 @@ vending_trigger_think()
 				player.num_perks--;		//Will be incremented later when perk is perchased, so we pre-decrement!
 			} else if ( cheat != true )
 			{
-				//player ////iprintln( "Already using Perk: " + perk );
+				//player //iprintln( "Already using Perk: " + perk );
 				self playsound("deny");
 				player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 1 );
 				continue;
@@ -2398,7 +2395,7 @@ vending_trigger_think()
 
 		if ( player.score < cost )
 		{
-			//player ////iprintln( "Not enough points to buy Perk: " + perk );
+			//player //iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -2406,7 +2403,7 @@ vending_trigger_think()
 
 		if ( player.num_perks >= level.max_perks && !is_true(player._retain_perks) )
 		{
-			//player ////iprintln( "Too many perks already to buy Perk: " + perk );
+			//player //iprintln( "Too many perks already to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			// COLLIN: do we have a VO that would work for this? if not we'll leave it at just the deny sound
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "sigh" );
@@ -2429,7 +2426,7 @@ vending_trigger_think()
 		//	perk += "_upgrade";
 		//}
 
-		////iprintln( "Bought Perk: " + perk );
+		//iprintln( "Bought Perk: " + perk );
 		///bottle_dispense
 		switch( perk )
 		{
@@ -2527,7 +2524,7 @@ give_perk_think(player, gun, perk, cost)
 
 	//player give_perk( perk, true );
 
-	//player ////iprintln( "Bought Perk: " + perk );
+	//player //iprintln( "Bought Perk: " + perk );
 	bbPrint( "zombie_uses: playername %s playerscore %d teamscore %d round %d cost %d name %s x %f y %f z %f type perk",
 		player.playername, player.score, level.team_pool[ player.team_num ].score, level.round_number, cost, perk, self.origin );
 }
@@ -2574,14 +2571,14 @@ unlocked_perk_upgrade( perk )
 
 give_perk( perk, bought )
 {
-	////iprintln( "Giving Perk " + perk );
-	////iprintln(" Player " + self.entity_num );
+	//iprintln( "Giving Perk " + perk );
+	//iprintln(" Player " + self.entity_num );
 
 	//Reimagined-Expanded
 	if( IsSubStr( perk, "_upgrade" ) )
 	{	
 		if( self hasProPerk( perk ) ) {
-			////iprintln( "Self has pro perk: " + self.entity_num);
+			//iprintln( "Self has pro perk: " + self.entity_num);
 			return;
 		}
 
@@ -2935,7 +2932,7 @@ perk_think( perk )
 		self notify(perk_str);
 	}
 
-	////iprintln( "Perk Lost: " + perk );
+	//iprintln( "Perk Lost: " + perk );
 	self UnsetPerk( perk );
 	self.num_perks--;
 
@@ -2997,7 +2994,7 @@ perk_think( perk )
 		self perk_hud_destroy( perk );
 
 	self.perk_purchased = undefined;
-	//self ////iprintln( "Perk Lost: " + perk );
+	//self //iprintln( "Perk Lost: " + perk );
 
 
 	if ( IsDefined( level.perk_lost_func ) )
@@ -3386,7 +3383,7 @@ perk_hud_create( perk )
 	if( self.PERKS_DISABLED[ perk + "_upgrade"] )
 		return;
 	
-	////iprintln("shader: " + shader);
+	//iprintln("shader: " + shader);
 
 	hud = create_simple_hud( self );
 	hud.foreground = true;
@@ -3735,7 +3732,7 @@ perk_give_bottle_end( gun, perk )
 		return;
 	}
 
-	////iprintln("give perk: " + perk);
+	//iprintln("give perk: " + perk);
 	self give_perk(perk, true);
 
 	if(self HasWeapon(gun) && is_placeable_mine(gun) && self GetWeaponAmmoClip(gun) == 0)
@@ -3743,7 +3740,7 @@ perk_give_bottle_end( gun, perk )
 		gun = "none";
 	}
 
-	////iprintln("taking weapon line 2681: " + weapon);
+	//iprintln("taking weapon line 2681: " + weapon);
 	self TakeWeapon(weapon);
 
 	if( self is_multiple_drinking() )
@@ -4056,7 +4053,7 @@ move_faster_while_ads(perk_str)
 	while(1)
 	{
 		current_ads = self PlayerADS();
-		////iprintln(current_ads);
+		//iprintln(current_ads);
 		if(current_ads == 0 || previous_ads > current_ads || self.still_reloading) // || self.is_reloading
 		{
 			if(set)
@@ -4243,7 +4240,11 @@ watch_stamina_upgrade(perk_str)
 	checkDist(a, b, distance )
 	{
 		if( !IsDefined( a ) || !IsDefined( b ) )
+		{
 			//iprintln("checkDist for distance: " + distance + " is undefined" );
+			return false;
+		}
+			
 
 		return maps\_zombiemode::checkDist( a, b, distance );
 	}
@@ -4284,7 +4285,7 @@ watch_fastreload_upgrade(perk_str)
 		{
 			//wait till player switches weapons
 			self waittill("weapon_switch_complete");
-			////iprintln("Observed weapon switch");	
+			//iprintln("Observed weapon switch");	
 
 			self thread magicReload();
 		}
@@ -4339,7 +4340,7 @@ trigger_deadshot_pro_hitmarker( hitWeakpoint )
 
 	level.sound_num++;
 	level.sound_num = level.sound_num % 5;
-	////iprintln("sound_num: " + level.sound_num);
+	//iprintln("sound_num: " + level.sound_num);
 	if( hitWeakpoint ) 
 	{
 		//play the sound 2 times
@@ -4831,6 +4832,7 @@ player_watch_vulture()
 		VULTURE_PRO_STOP = level.VLT_PRO + "_stop";
 
 		event = self waittill_any_return( 	VULTURE_STOP, VULTURE_PRO_STOP );
+		//iprintln( "Vulture Vision STOP" );
 
 		level notify( level_notify_str + self GetEntityNumber() );
 	}
@@ -4878,7 +4880,10 @@ test_disable_vulture()
 	zombies = GetAISpeciesArray( "axis", "all" );
 	for( i = 0; i < zombies.size; i++ ) 
 	{
-		if( IsDefined( zombies[i].hasDrop) )
+		hasDrop = IsDefined( zombies[i].hasDrop ) && 
+			( zombies[i].hasDrop == "GREEN" || zombies[i].hasDrop == "BLUE" );
+
+		if( hasDrop )
 		{
 			zombies[i] setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 			wait_network_frame();
@@ -5020,7 +5025,7 @@ init_vulture()
 			structs[ structs.size ] = struct;
 		}
 
-		if( is_true( level.moon_startmap ) )
+		if( level.mapname == "zombie_moon" )
 		{
 			//This is just moon case, may need more fine tuning for shino
 			for( i = 0; i < structs.size; i++ )
@@ -5112,9 +5117,10 @@ init_vulture()
 		}
 
 		level.vulture_waypoint_structs = structs;
+		//iprintln( "Waypoints strucuts: " + level.vulture_waypoint_structs.size );
 		while( true )
 		{
-			players = GetPlayers();
+			players = get_players();
 			if( level.vulture_waypoint_structs_update ) 
 			{
 				structs = vulture_update_waypoint_structs();
@@ -5130,8 +5136,8 @@ init_vulture()
 				
 				for( i = 0; i < structs.size; i ++ )	
 				{
-					struct = structs[i];
-					if( isDefined( struct.chest_to_check ) )	//box is handled seperately		
+					struct = level.vulture_waypoint_structs[i];
+					if( isDefined( struct.chest_to_check )  )	//box is handled seperately		
 						continue;
 
 					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, struct );
@@ -5139,7 +5145,11 @@ init_vulture()
 					if( is_visible )
 					{
 						if( isDefined( struct.player_waypoint[ num ] ) )
+						{
+							//iprintln( "Waypoint already exists " + struct.perk );
 							continue;
+						}
+							
 
 						struct.player_waypoint[ num ] = create_individual_waypoint( player, struct );
 						//create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.origin, struct.angles );
@@ -5200,7 +5210,7 @@ init_vulture()
 
 			} //End Players FOR
 			wait 0.1;
-			//wait 2;
+			wait 2;
 		}
 		//END WHILE
 
@@ -5319,7 +5329,7 @@ init_vulture()
 
 		// */
 
-		/* Handle zombie powerup drop waypoints */
+/* Handle zombie powerup drop waypoints */
 
 		vulture_watch_powerup_waypoints()
 		{
@@ -5451,6 +5461,7 @@ init_vulture()
 		//Self is player with vulture
 		create_individual_waypoint( player, struct )
 		{
+			//iprintln( "Creating waypoint " + struct.perk );
 			wp = NewClientHudElem( player );
 
 			//Uses pro perk shader
@@ -5631,12 +5642,12 @@ init_vulture()
 
 		}
 			
-		
 		if( !IsDefined( player ) || !IsDefined( struct ) )
 			return false;
 
 		if( !IsDefined( player.origin ) || !IsDefined( struct.origin ) )
 			return false;
+
 
 		/* CHECK DISTANCE CUTOFFS */
 
@@ -5684,12 +5695,16 @@ init_vulture()
 				is_visible = check_map_specific_perk_movements( struct.perk, struct.origin );
 			else
 				is_visible = true;
+
+			//iprintln( "Vis 1: " + struct.perk + "  " + is_visible );
 			
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
 			{
 				is_visible = checkPlayerLookingAtObject( player, struct, level.THRESHOLD_VULTURE_FOV_HUD_DOT ) && is_visible;
 			}
+
+			//iprintln( "Vis 2: " + struct.perk + "  " + is_visible );
 
 		} 
 		else if( IsDefined( struct.animname ) )	//struct could be a zombie
@@ -5737,6 +5752,8 @@ init_vulture()
 			
 		cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
 		cutoffFar = !checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR );
+
+		//iprintln("Returning before cutoff: " + struct.perk + "  " + is_visible);
 
 		if( cutoffClose || cutoffFar )
 			return false;
@@ -5958,6 +5975,9 @@ zombie_watch_vulture_drop_bonus()
 		drop Delete();
 
 	}
+	
+/* Handle Drops */
+
 		//Self is drop
 		watch_player_vulture_drop_pickup( player )
 		{

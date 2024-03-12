@@ -131,7 +131,7 @@ bttp_damage_thread()
 	{
 		self.trigger waittill( "damage", amount, attacker, direction, point, dmg_type, modelName, tagName );
 
-		////iprintln("damage");
+		//iprintln("damage");
 
 		if( isplayer( attacker ) && dmg_type == "MOD_MELEE" )
 		{

@@ -57,7 +57,7 @@ quad_roof_crumble_fx_play()
 	if(isDefined(self.script_noteworthy))
 	{		
 		clientnotify(self.script_noteworthy);
-		////iprintlnbold("GSC - Turning Power Light On:  " + self.script_noteworthy);
+		//iprintlnbold("GSC - Turning Power Light On:  " + self.script_noteworthy);
 	}	
 	
 	if (IsDefined(self.script_int))
@@ -204,7 +204,7 @@ spawn_second_wave_quads(second_wave_targetname)
 		return; 
 	}	
 
-	////iprintlnbold("Quad Zombie Second Wave...");
+	//iprintlnbold("Quad Zombie Second Wave...");
 	
 	for(i=0; i<second_wave_spawners.size; i++)
 	{
@@ -235,7 +235,7 @@ spawn_a_quad_zombie(spawn_array)
 	wait( level.zombie_vars["zombie_spawn_delay"] ); 
 	//wait(RandomInt(10,45));
 	
-	////iprintlnbold("Spawn a Quad Zombie...");
+	//iprintlnbold("Spawn a Quad Zombie...");
 	wait_network_frame();
 }
 
@@ -287,7 +287,7 @@ Intro_Quad_Spawn()
 	// initial wave of quads
 	///////////////////////////////////////////////////////
 
-	////iprintlnbold("Quad Zombie Initial Wave...");
+	//iprintlnbold("Quad Zombie Initial Wave...");
 	
 	//try to spawn a zombie.
 	initial_spawners = [];
@@ -335,7 +335,7 @@ Intro_Quad_Spawn()
 	// second wave of quads
 	///////////////////////////////////////////////////////
 		
-	////iprintlnbold("Quad Zombie Second Wave...");
+	//iprintlnbold("Quad Zombie Second Wave...");
 	
 	spawned = 0;
 
@@ -389,7 +389,7 @@ Intro_Quad_Spawn()
 	// mixed wave of quads and zombies
 	///////////////////////////////////////////////////////
 	
-	////iprintlnbold("Mixed Zombie Wave...");
+	//iprintlnbold("Mixed Zombie Wave...");
 	
 	level.round_spawn_func = maps\_zombiemode::round_spawning;
 	level thread [[level.round_spawn_func]]();

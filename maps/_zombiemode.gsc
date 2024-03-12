@@ -46,7 +46,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 									/
+	/* 									*/
 	//level.zombie_ai_limit_override=34;	///
 	level.starting_round_override=13;	///
 	level.starting_points_override=50000;	///
@@ -4469,10 +4469,9 @@ give_pro_perks( overrideToGiveAll )
 	{
 		level.max_perks = 20;
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
-		//return;
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		return;
 	}
-		
 	else
 		overrideToGiveAll = false;
 

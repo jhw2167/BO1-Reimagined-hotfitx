@@ -25,7 +25,7 @@ player_add_points( event, mod, hit_location, zombie)
 	multiplier = self get_points_multiplier();
 	
 
-	////iprintln("event: " + event + " mod: " + mod + " ");
+	//iprintln("event: " + event + " mod: " + mod + " ");
 
 	switch( event )
 	{
@@ -34,17 +34,17 @@ player_add_points( event, mod, hit_location, zombie)
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
 
-			////iprintln("zombie_death_player_points: " + player_points);
+			//iprintln("zombie_death_player_points: " + player_points);
 			//Headshots and melee bonus
 			player_points += player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
-			////iprintln("KILL BONUS: " + player_points);
+			//iprintln("KILL BONUS: " + player_points);
 
 			//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
 			if( level.apocalypse ) 
 			{
 				//No points for WondwerWeapons, double for pistols
 				player_points *= weapon_points_multiplier( self getcurrentweapon(), mod );
-				////iprintln("WEAPON multiplier: " + player_points);
+				//iprintln("WEAPON multiplier: " + player_points);
 
 				//Bonus points for killing zombies quickly - not doubled, not valid on WW
 				if( player_points > 0 )
@@ -53,7 +53,7 @@ player_add_points( event, mod, hit_location, zombie)
 				if( player_points < 0 )
 					player_points = 0;
 			}
-			////iprintln("Points after multiplier: " + player_points);
+			//iprintln("Points after multiplier: " + player_points);
 
 			if(IsDefined(self.kill_tracker))
 			{
@@ -74,9 +74,9 @@ player_add_points( event, mod, hit_location, zombie)
 			//Reimagined-Expanded
 
 			//put each variable in a seperate line for easier debugging
-			////iprintln("defined: " + IsDefined( zombie ));
-			////iprintln("animname: " + zombie.animname);
-			////iprintln("respawn: " + zombie.respawn_zombie);		
+			//iprintln("defined: " + IsDefined( zombie ));
+			//iprintln("animname: " + zombie.animname);
+			//iprintln("respawn: " + zombie.respawn_zombie);		
 
 			player_points = zombie_calculate_damage_points( level.apocalypse, zombie );
 			player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
@@ -170,7 +170,7 @@ player_add_points( event, mod, hit_location, zombie)
 				if ( zombie.respawn_zombie )
 					return 0;
 			}				
-			////iprintln("Points after multiplier: " + player_points);
+			//iprintln("Points after multiplier: " + player_points);
 
 		}
 

@@ -377,7 +377,7 @@ moon_biodome_powerup_temptation( struct_array )
 
 	while( IsDefined( powerup ) )
 	{
-		////iprintln(temptation_array[ temptation_index ]);
+		//iprintln(temptation_array[ temptation_index ]);
 		powerup maps\_zombiemode_powerups::powerup_setup( temptation_array[ temptation_index ] );
 
 		// only start these threads on the first time through

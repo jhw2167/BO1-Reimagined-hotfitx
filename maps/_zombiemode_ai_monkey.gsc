@@ -2217,7 +2217,7 @@ groundhit_watcher( animname )
 	zombies = array_combine( zombies_axis, dogs );
 
 	//dist = Distance( self.origin, self.favoriteenemy.origin );
-	////iprintln( "dist = " + dist );
+	//iprintln( "dist = " + dist );
 
 	if ( IsDefined( zombies ) )
 	{
@@ -3049,7 +3049,7 @@ monkey_pack_take_perk()
 	{
 		if ( players[i] HasPerk( perk ) )
 		{
-			////iprintln("taking perk " + perk);
+			//iprintln("taking perk " + perk);
 			perk_str = perk + "_stop";
 			players[i] notify( perk_str );
 
@@ -3060,7 +3060,7 @@ monkey_pack_take_perk()
 			}*/
 		}
 	}
-	////iprintln("took perk");
+	//iprintln("took perk");
 }
 
 hasProPerk( perk )
@@ -3209,7 +3209,7 @@ monkey_print( str )
 /#
 	if ( is_true( level.debug_monkey ) )
 	{
-		////iprintln( str + "\n" );
+		//iprintln( str + "\n" );
 	}
 #/
 }

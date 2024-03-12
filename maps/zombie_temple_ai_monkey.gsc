@@ -389,7 +389,7 @@ _setup_zone_info()
 		valid = IsDefined(zoneName) && IsDefined(level.zones[zoneName]);
 		if ( !valid )
 		{
-			////iprintln("Could not find zone for barrier: " + checkEnt.origin);
+			//iprintln("Could not find zone for barrier: " + checkEnt.origin);
 			continue;
 		}
 
@@ -624,7 +624,7 @@ _grab_powerup(powerup)
 	monkey = spawner StalingradSpawn();
 	while ( spawn_failed(monkey) )
 	{
-		////iprintln("monkey spawn failed");
+		//iprintln("monkey spawn failed");
 		wait_network_frame();
 		monkey = spawner StalingradSpawn();
 	}

@@ -68,7 +68,7 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 	for ( i = 0; i < zombies.size; i++ )
 	{
 		if(self.dbtp_penetrated_zombs >= level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS * bonus_penn) {
-			////iprintln("Zombie penetration limit reached");
+			//iprintln("Zombie penetration limit reached");
 			break;	//no more zombies can be penetrated
 		}
 			
@@ -76,21 +76,21 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 		if ( !IsDefined( zombies[i] ) || !IsAlive( zombies[i] ) )
 		{
 			// guy died on us
-			////iprintln("died");
+			//iprintln("died");
 			continue;
 		}
 		
 		/*
 		if( !(zombies[i].animname=="zombie") )
 		{
-			////iprintln("not zombie");
+			//iprintln("not zombie");
 			//continue;
 		}
 		*/
 		
 		if( ( IsDefined(zombies[i].dbtap_marked) && (zombies[i].dbtap_marked == self.entity_num) ) )
 		{
-			////iprintln("marked");
+			//iprintln("marked");
 			continue;
 		}
 		
@@ -98,7 +98,7 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 		test_range_squared = DistanceSquared( view_pos, test_origin );
 		if ( test_range_squared > level.THRESHOLD_DBT_MAX_DIST*level.THRESHOLD_DBT_MAX_DIST )
 		{
-			////iprintln("RANGE");
+			//iprintln("RANGE");
 			break; // everything else in the list will be out of range
 		}
 
@@ -107,14 +107,14 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 		if ( 0 > dot )
 		{
 			// guy's behind us
-			////iprintln("behind");
+			//iprintln("behind");
 			continue;
 		}
 
 		if ( !zombies[i] DamageConeTrace( view_pos, self ) || !BulletTracePassed( view_pos, test_origin, false, undefined ) )
 		{
 			// guy can't actually be hit from where we are
-			////iprintln("trace not passed");
+			//iprintln("trace not passed");
 			continue;
 		}
 
@@ -147,7 +147,7 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 			continue;
 		}
 
-		////iprintln("Penn zombie " + pre_count + " PENN ZOMBS " + self.dbtp_penetrated_zombs);
+		//iprintln("Penn zombie " + pre_count + " PENN ZOMBS " + self.dbtp_penetrated_zombs);
 		if(pre_count < 0) {
 			pre_count++;
 			continue;
@@ -538,19 +538,19 @@ freezegun_get_enemies_in_range() {
 		if ( !IsDefined( zombies[i] ) || !IsAlive( zombies[i] ) )
 		{
 			// guy died on us
-			////iprintln("died");
+			//iprintln("died");
 			continue;
 		}
 		
 		if( !(zombies[i].animname=="zombie") )
 		{
-			////iprintln("not zombie");
+			//iprintln("not zombie");
 			continue;
 		}
 		
 		if(IsDefined(zombies[i].marked_for_freeze) && zombies[i].marked_for_freeze )
 		{
-			////iprintln("marked for freeze");
+			//iprintln("marked for freeze");
 			continue;
 		}
 		
@@ -638,7 +638,7 @@ tesla_get_enemies_in_area( origin, distance, player )
 		{
 			 if ( !IsDefined( zombies[i] )  || !IsAlive( zombies[i] ) || zombies[i].marked_for_tesla )
 			{
-				////iprintln("dead zombie");
+				//iprintln("dead zombie");
 				continue;
 			}
 			
@@ -650,20 +650,20 @@ tesla_get_enemies_in_area( origin, distance, player )
 			
 			if ( is_magic_bullet_shield_enabled( zombies[i] ) )
 			{
-				////iprintln("bullet shield zombie");
+				//iprintln("bullet shield zombie");
 				continue;
 			}
 			
 			
 			if ( DistanceSquared( origin, zombies[i].origin ) > distance_squared )
 			{
-				////iprintln("out of range zombie");
+				//iprintln("out of range zombie");
 				continue;
 			} 
 			
 			if ( IsDefined( zombies[i].zombie_tesla_hit ) && zombies[i].zombie_tesla_hit == true )
 			{
-				////iprintln("tesla zombie");
+				//iprintln("tesla zombie");
 				continue;
 			}
 
@@ -788,7 +788,7 @@ tesla_play_death_fx( arc_num )
 		tag = "J_Spine1";
 	}
 
-	////iprintln("Play texla death fx");
+	//iprintln("Play texla death fx");
 	PlayFxOnTag( level._effect[fx], self, tag );
 
 	
@@ -810,7 +810,7 @@ tesla_play_arc_fx( target )
 		return;
 	}
 	
-	////iprintln("Self and target defined, is tesla_bolt defined: " + IsDefined(level._effect["tesla_bolt"]));
+	//iprintln("Self and target defined, is tesla_bolt defined: " + IsDefined(level._effect["tesla_bolt"]));
 
 	tag = "J_SpineUpper";
 

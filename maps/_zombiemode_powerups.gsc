@@ -772,7 +772,7 @@ powerup_drop(drop_point, player, zombie)
 	{
 		return;
 	}
-	////iprintln("in drop"); 
+	//iprintln("in drop"); 
 
 	type = "";
 	powerup_override = undefined;
@@ -810,7 +810,7 @@ powerup_drop(drop_point, player, zombie)
 		type = "random";
 	}
 
-	////iprintln("SPAWNING DROP FROM POWERUP_DROP: " + type);
+	//iprintln("SPAWNING DROP FROM POWERUP_DROP: " + type);
 	// This needs to go above the network_safe_spawn because that has a wait.
 	// Otherwise, multiple threads could attempt to drop powerups.
 
@@ -1069,7 +1069,7 @@ powerup_setup( powerup_override, drop_color )
 	if ( !IsDefined( powerup_override ) )
 	{
 		powerup = get_valid_powerup( drop_color );
-		////iprintln(powerup);
+		//iprintln(powerup);
 		//TODO - check for next valid powerup here to see if cycle resets
 	}
 	else
@@ -1830,7 +1830,7 @@ delete_on_bonfire_sale(temp_ent)
 
 start_carpenter( origin )
 {
-	////iprintln("Starting carpenter");
+	//iprintln("Starting carpenter");
 
 	//level thread maps\_zombiemode_audio::do_announcer_playvox( level.devil_vox["powerup"]["carpenter"] );
 	window_boards = getstructarray( "exterior_goal", "targetname" );
@@ -2251,11 +2251,11 @@ full_ammo_powerup( drop_item, player )
 
 full_ammo_powerup_implementation( drop_item, player, player_num )
 {
-	////iprintln("Calling full ammo with player num: " + player_num + "");
+	//iprintln("Calling full ammo with player num: " + player_num + "");
 
 	if( drop_item == undefined )
 	{
-		////iprintln("Drop item is undefined");
+		//iprintln("Drop item is undefined");
 		player thread powerup_vo("full_ammo");
 		drop_item = SpawnStruct();
 		drop_item.caution = false; //makes text red

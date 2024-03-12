@@ -169,7 +169,7 @@ microwavegun_fired(upgraded)
 	self microwavegun_get_enemies_in_range(upgraded, false);
 	self microwavegun_get_enemies_in_range(upgraded, true); // second pass does shrinkable objects.
 
-	////iprintlnbold( "szl: " + level.microwavegun_sizzle_enemies.size );
+	//iprintlnbold( "szl: " + level.microwavegun_sizzle_enemies.size );
 
 	level.microwavegun_network_choke_count = 0;
 	for ( i = 0; i < level.microwavegun_sizzle_enemies.size; i++ )
