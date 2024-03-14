@@ -2991,7 +2991,11 @@ perk_think( perk )
 
 	//Reimagined-Expanded - don't destroy perk hud if pro perk is only disabled
 	if( !self.PERKS_DISABLED[ perk + "_upgrade" ] )
+	{
+		iprintln( "Perk Think: " + perk + " " + result );
 		self perk_hud_destroy( perk );
+	}
+		
 
 	self.perk_purchased = undefined;
 	//self //iprintln( "Perk Lost: " + perk );
@@ -3007,20 +3011,23 @@ perk_think( perk )
 
 manage_ui_perk_hud_interface( command, perk )
 {
+	notify_message = "ui_perk_hud_next";
 	queue_num = self.perk_hud_queue_num;
-	while( self.perk_hud_queue_locked  || queue_num < self.perk_hud_queue_unlocks_num) 
+	self.perk_hud_queue_num++;
+
+	while( self.perk_hud_queue_locked  || self.perk_hud_queue_unlocks_num < queue_num ) 
 	{
+		//self waittill( notify_message );	
 		wait 0.05;
 	}
 
 	self.perk_hud_queue_locked = true;
-	self.perk_hud_queue_num++;
 
-	//iprintln(" EXECUTE UI PERK HUD: " + command + " " + perk + " " + self.perk_hud_queue_num);	
 	self manage_ui_perk_hud( command, perk );
 
 	self.perk_hud_queue_unlocks_num++;
 	self.perk_hud_queue_locked = false;
+	self notify( notify_message );
 }
 
 manage_ui_perk_hud( command, perk )
@@ -5189,7 +5196,6 @@ init_vulture()
 					for( i = 0; i < level.vulture_track_current_powerups.size; i++ )
 					{
 						powerup = level.vulture_track_current_powerups[i];
-						//iprintln( "Checking powerup in array" + powerup );
 						
 						is_visible = check_waypoint_visible( player, powerup );
 
@@ -5210,7 +5216,7 @@ init_vulture()
 
 			} //End Players FOR
 			wait 0.1;
-			wait 2;
+			//wait 2;
 		}
 		//END WHILE
 
@@ -6108,12 +6114,14 @@ player_watch_widows_warning()
 		if( self HasPerk( level.WWN_PRK ) )
 		{
 
-			no_warning = self maps\_laststand::player_is_in_laststand() || self.widows_cancel_warning;
+			no_warning = self maps\_laststand::player_is_in_laststand() 
+						|| self.widows_cancel_warning
+						|| self IsSprinting();
 
 			if( no_warning ) 
 			{
 				self notify( "widows_cancel_warning" );
-				wait 0.1;
+				wait 0.5;
 				continue;
 			}
 					
@@ -6341,7 +6349,7 @@ player_watch_widows_warning()
 		}
 		
 		overlay = NewClientHudElem( self );
-		overlay setshader( "overlay_low_health_compass", 600, 500 );
+		overlay setshader( "overlay_low_health_compass", 630, 525 );
 
 		overlay.x = 0;
 		overlay.y = 0;
@@ -6366,7 +6374,7 @@ player_watch_widows_warning()
 		overlay.alignY = "bottom";
 		overlay.vertAlign = "user_bottom";
 
-		overlay.y += 200;		//move down off screen
+		overlay.y += 175;		//move down off screen
 
 		overlay.alpha = 1;
 		startAlpha = 1;
@@ -6459,6 +6467,11 @@ player_watch_widows_warning()
 
 player_zombie_handle_widows_poison( zombie )
 {
+	if( is_true( zombie.marked_for_poison ) )
+		return;
+	else
+		zombie.marked_for_poison = true;
+
 	fraction = level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION;
 	MAX_TIME = level.THRESHOLD_WIDOWS_POISON_MAX_TIME;
 	if( self hasProPerk( level.WWN_PRO ) ) {
@@ -6480,7 +6493,7 @@ player_zombie_handle_widows_poison( zombie )
 	max_ticks = MAX_TIME / interval;
 
 	points_count = Int( max_ticks / ticks_to_reach_max );	//Every 1/4 of the way, give points
-	fx_count = 8;											//Every 4 seconds, play fx
+	fx_count = 12;											//Every 3 seconds, play fx
 	count = 0;
 
 	while( keepPoison )
@@ -6492,11 +6505,11 @@ player_zombie_handle_widows_poison( zombie )
 			zombie doDamage( dmg, zombie.origin, undefined );
 		
 		time -= interval;
-		keepPoison = (zombie.health > min_health) && (time > 0);
+		keepPoison = (zombie.health > min_health) && (time > 0) && IsAlive( zombie ) && zombie.marked_for_poison;
 
 		if( (count % fx_count) == 0 )
 		{
-			PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
+			//PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], zombie, "tag_origin" );
 			//PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], zombie, "tag_origin" );
 			//PlayFxOnTag( level._effect[ "fx_widows_wine_zombie" ], zombie, "tag_origin" );
 			//self PlayLocalSound( "mx_widows_explode" );
@@ -6613,16 +6626,21 @@ zombie_watch_widows_web( player )
 
 	MAX_TIME = level.VALUE_WIDOWS_ZOMBIE_WEBBED_TIME;
 
-	boss_zombie = is_boss_zombie( self.animname ) || is_special_zombie( self.animname );
-	can_slow_zombie = !self.marked_for_freeze && !boss_zombie;
-	if( can_slow_zombie )
+	boss_zombie_or_poisoned = is_boss_zombie( self.animname ) || is_special_zombie( self.animname ) || is_true( self.marked_for_poison ) ;
+
+	if( boss_zombie_or_poisoned )
+		return;
+
+	can_slow_zombie = is_true( self.isZombie ) && is_true( self.marked_for_freeze );
+
+	if( can_slow_zombie ) {
+		wait( level.VALUE_WIDOWS_ZOMBIE_WAIT_WEBBED_TIME );
 		self thread maps\_zombiemode_weapon_effects::slow_zombie_over_time( MAX_TIME, "walk" );
+	}
+		
 
 	self doDamage( level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE, self.origin, player );
 	
-	if( boss_zombie )
-		return;
-
 	player thread player_zombie_handle_widows_poison( self );
 
 	time = 0;

@@ -173,7 +173,7 @@ zombie_spawn_init( animname_set )
 	self.targetname = "zombie";
 	self.script_noteworthy = undefined;
 
-	if( !animname_set )
+	if( !animname_set  || !isDefined( self.animname ) )
 	{
 		self.animname = "zombie";
 	}
@@ -184,7 +184,8 @@ zombie_spawn_init( animname_set )
 	self.ignoreme = true; // don't let attack dogs give chase until the zombie is in the playable area
 	self.allowdeath = true; 			// allows death during animscripted calls
 	self.force_gib = true; 		// needed to make sure this guy does gibs
-	self.is_zombie = true; 			// needed for melee.gsc in the animscripts
+	if( self.animname == "zombie" )
+		self.is_zombie = true; 			// needed for melee.gsc in the animscripts
 	self.has_legs = true; 			// Sumeet - This tells the zombie that he is allowed to stand anymore or not, gibbing can take
 									// out both legs and then the only allowed stance should be prone.
 	self allowedStances( "stand" );
@@ -278,7 +279,7 @@ zombie_spawn_init( animname_set )
 		)
 			self thread zombie_wait_determine_drop();
 
-		if( level.zombiemode_using_vulture_perk )
+		if( is_true( level.zombiemode_using_vulture_perk ) )
 			self thread maps\_zombiemode_perks::zombie_watch_vulture_drop_bonus();
 	}
 
@@ -461,6 +462,7 @@ zombie_watch_despawn_no_damage()
 				return;
 		
 		wait(0.1);
+		wait 1;
 	}
 	
 	respawn_queue_interface("PUSH", self.zombie_type);
@@ -472,6 +474,7 @@ zombie_watch_despawn_no_damage()
 	{
 		self endon("zombie_damaged");
 		self endon( "hit_player" );
+
 		level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 
@@ -518,18 +521,21 @@ respawn_queue_interface( action, zombie_type )
 	
 	//iprintln("respawn_queue_interface: " + action + " | " + zombie_type);
 	queue_num = level.respawn_queue_num;
-	while( level.respawn_queue_locked  || queue_num < level.respawn_queue_unlocks_num) 
+	level.respawn_queue_num++;
+	NOTIFY_MSG = "respawn_queue_unlock_";
+	while( level.respawn_queue_locked  || level.respawn_queue_unlocks_num < queue_num ) 
 	{
-		wait 0.05;
+		level waittill( NOTIFY_MSG );
 	}
 
 	level.respawn_queue_locked = true;
-	level.respawn_queue_num++;
 
 	response = alter_respawn_queue( action, zombie_type );
 
 	level.respawn_queue_unlocks_num++;
 	level.respawn_queue_locked = false;
+	level notify( NOTIFY_MSG );
+
 	//iprintln("interface returning: " + response);
 	return response;
 }

@@ -463,7 +463,7 @@ add_to_player_score( points, add_to_total )
 		add_to_total = true;
 	}
 
-	if( !IsDefined( points ) || level.intermission || points == 0 )
+	if( !IsDefined( points ) || level.intermission )
 	{
 		return;
 	}
@@ -667,16 +667,21 @@ create_highlight_hud( x, y, value )
 	hud.horzAlign = "user_right";
 	hud.vertAlign = "user_bottom";
 
-	if( value < 1 )
+	if( value < -1 )
 	{
 		hud.color = ( 0.4, 0, 0 );
 	}
-	else
+	else if ( value > 0 )
 	{
 		hud.color = ( 0.9, 0.9, 0.0 );
 		hud.label = &"SCRIPT_PLUS";
 	}
-
+	else
+	{
+		hud.color = ( 0.0, 0.0, 0.0 );
+		hud.alpha = 0.5;
+	}
+	
 	//hud.glowColor = ( 0.3, 0.6, 0.3 );
 	//hud.glowAlpha = 1;
 	hud.hidewheninmenu = true;
@@ -689,6 +694,7 @@ create_highlight_hud( x, y, value )
 //
 // Handles the creation/movement/deletion of the moving hud elems
 //
+/*
 score_highlight( scoring_player, score, value )
 {
 	self endon( "disconnect" );
@@ -819,8 +825,9 @@ score_highlight( scoring_player, score, value )
 
 	hud Destroy();
 }
+*/
 
-/*
+//*
 //OLD
 //
 // Handles the creation/movement/deletion of the moving hud elems
@@ -871,7 +878,7 @@ score_highlight( scoring_player, score, value )
 		y *= 2;
 	}
 
-	time = 0.5;
+	time = 0.8;
 	half_time = time * 0.5;
 	quarter_time = time * 0.25;
 
@@ -898,7 +905,7 @@ score_highlight( scoring_player, score, value )
 	//hud.x -= 20 + RandomInt( 40 );
 	//hud.y -= ( -15 + RandomInt( 30 ) );
 	hud.x -= 50;
-	hud.y += ( -20 + (((y_count + 2) % 5) * 10) );
+	hud.y += ( -20 + (((y_count + 2) % 5) * 15) );
 
 	wait( time - quarter_time );
 
@@ -920,7 +927,9 @@ minus_after_wait(time)
 {
 	wait time;
 	self.current_highlight_hudelem_count--;
-}*/
+}
+
+//*/
 
 
 //

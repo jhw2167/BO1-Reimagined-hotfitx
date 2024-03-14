@@ -46,17 +46,17 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 									*/
-	//level.zombie_ai_limit_override=34;	///
-	level.starting_round_override=13;	///
-	level.starting_points_override=50000;	///
-	//level.drop_rate_override=200;		/// //Rate = Expected drops per round
-	level.zombie_timeout_override=1000;	///
+	/* 										/
+	//level.zombie_ai_limit_override=24;	///
+	level.starting_round_override=22;	///
+	level.starting_points_override=100000;	///
+	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=20;	///
-	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.calculate_amount_override=2;	///
+	level.apocalypse_override=true;		///
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -347,9 +347,9 @@ reimagined_init_player_depedent_values()
 
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 
-	if( isDefined( level.players_size) )
-		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
-	else if ( isDefined( level.zombie_timeout_override ) )
+	
+	//level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
+	if ( isDefined( level.zombie_timeout_override ) )
 		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = level.zombie_timeout_override;
 }
 
@@ -628,7 +628,7 @@ reimagined_init_level()
 	level.VALUE_CHERRY_SHOCK_RANGE = 160;
 	level.VALUE_CHERRY_SHOCK_DMG = 32768;	//2^15
 	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 4;
-	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 24;
+	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 32;
 	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
 	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
 
@@ -637,13 +637,13 @@ reimagined_init_level()
 
 	//Vulture
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;
-	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.05;
-	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.075;
+	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.025;
+	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.04;
 	level.VALUE_VULTURE_MIN_AMMO_BONUS = 2;
-	level.VALUE_VULTURE_MAX_AMMO_BONUS = 10;
+	level.VALUE_VULTURE_MAX_AMMO_BONUS = 25;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 50;			//1-1000, 2.5% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 50;			//1-1000, 5% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -698,12 +698,12 @@ reimagined_init_level()
 	//Wine
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 768;
 	//level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 512;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 160;
-	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST = 64;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_DIST = 384;
+	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST = 96;
 	level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_VERTICAL_CUTOFF = 10;
 
-	level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT = -0.1;
-	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN = 10;
+	level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT = 0;
+	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_COOLDOWN = 7;
 	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_ONTURN_COOLDOWN = 3;
 	level.VALUE_WIDOWS_ZOMBIE_CLOSE_HUD_HEAVY_COOLDOWN = 15;
 
@@ -716,28 +716,30 @@ reimagined_init_level()
 													"J_Knee_LE", "J_Knee_RI");
 
 	level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET = [];
-	for(i=0; i<10; i++)  
+	POISON_MAX=20;
+	for(i=0; i< POISON_MAX; i++)  
 	{
-		if( i < 5 ) 
-			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.15;
+		if( i < (POISON_MAX / 2) ) 
+			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.05;
 		else
-			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.2;
+			level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[i] = 0.1;
 	}
-	level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[10] = 1;
+	level.ARRAY_WIDOWS_POISON_CHANCES_BY_BULLET[ POISON_MAX ] = 1;
 
 	level.ARRAY_WIDOWS_VALID_POISON_ZOMBIES = array( "zombie", "quad_zombie" );
 	level.THRESHOLD_WIDOWS_MAX_POISON_POINTS = 50;
-	level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION = 1/2;
-	level.THRESHOLD_WIDOWS_POISON_MAX_TIME = 10;
-	level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION = 1/3;
+	level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION = 1.0/2.0;
+	level.THRESHOLD_WIDOWS_POISON_MAX_TIME = 8;
+	level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION = 1.0/3.0;
 	level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME = 15;
 
 	level.VALUE_WIDOWS_GRENADE_MAX = 4;
 	level.VALUE_WIDOWS_GRENADE_EXPLODE_TIME = 60;
-	level.VALUE_WIDOWS_GRENADE_TRIGGER_RANGE = 64;
+	level.VALUE_WIDOWS_GRENADE_TRIGGER_RANGE = 80;
 	level.VALUE_WIDOWS_GRENADE_EXPLOSION_RANGE = 300;
 	level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE = 300;
 
+	level.VALUE_WIDOWS_ZOMBIE_WAIT_WEBBED_TIME = 1;
 	level.VALUE_WIDOWS_ZOMBIE_WEBBED_TIME = 10;
 
 	
@@ -1909,7 +1911,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.2.6" );
+	SetDvar( "zm_mod_version", "1.5.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -4468,8 +4470,10 @@ give_pro_perks( overrideToGiveAll )
 	if( is_true( overrideToGiveAll ) )
 	{
 		level.max_perks = 20;
-		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//PERKS
+		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		return;
 	}
 	else
@@ -7420,7 +7424,7 @@ wait_and_revive()
 //Reimagined-Expanded Self is zombie
 zombie_knockdown( wait_anim, upgraded )
 {
-	if(IsDefined(self.knockdown) && self.knockdown)
+	if( is_true(self.knockdown) )
 		return;
 	
 	self.knockdown = true;
@@ -7602,8 +7606,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		else if( weapon == "knife_zm" ) 		//knife punch!
 		{
 			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
-			if( final_damage < self.health )
-				self thread zombie_knockdown( wait_anim, false );
+			if( is_true( self.is_zombie ) ) 
+			{
+				if( final_damage < self.health )
+					self thread zombie_knockdown( wait_anim, false );
+			}
+			
 
 		}
 		else if ( weapon == "upgraded_knife_zm" ) //upgraded knife/punch
@@ -7653,7 +7661,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				if( is_boss_zombie(self.animname) )
 					final_damage = 8000;
 				else
-					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6);
+					final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6 );
 			}
 
 			final_damage += base_knife_damage;
@@ -8466,7 +8474,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 				if( rand <= chances*100 ) 
 				{
-					self.marked_for_poison = true;
 					attacker thread maps\_zombiemode_perks::player_zombie_handle_widows_poison( self );
 				}
 				else
