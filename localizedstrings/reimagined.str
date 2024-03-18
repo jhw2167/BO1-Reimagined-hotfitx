@@ -363,6 +363,10 @@ LANG_ENGLISH       	"Round: "
 REFERENCE          	ROUND_TOTAL_TIME
 LANG_ENGLISH       	"Round Total: "
 
+REFERENCE          	SCRIPT_PERCENT
+LANG_ENGLISH       	"%"
+
+
 REFERENCE          	SIDEQUEST_COMPLETE
 LANG_ENGLISH       	"Sidequest Complete! Time: "
 

@@ -6631,8 +6631,9 @@ zombie_watch_widows_web( player )
 	if( boss_zombie_or_poisoned )
 		return;
 
-	can_slow_zombie = is_true( self.isZombie ) && is_true( self.marked_for_freeze );
+	can_slow_zombie = is_true( self.is_zombie ) && !is_true( self.marked_for_freeze );
 
+	//iprintln("Can Slow Zombie: " + can_slow_zombie);
 	if( can_slow_zombie ) {
 		wait( level.VALUE_WIDOWS_ZOMBIE_WAIT_WEBBED_TIME );
 		self thread maps\_zombiemode_weapon_effects::slow_zombie_over_time( MAX_TIME, "walk" );

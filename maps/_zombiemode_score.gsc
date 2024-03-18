@@ -43,10 +43,25 @@ player_add_points( event, mod, hit_location, zombie)
 			if( level.apocalypse ) 
 			{
 				//No points for WondwerWeapons, double for pistols
-				player_points *= weapon_points_multiplier( self getcurrentweapon(), mod );
-				//iprintln("WEAPON multiplier: " + player_points);
+				
+				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod );
+				if( weapon_multiplier < 1 ) 
+				{
+					self.gross_possible_points += player_points; //points u could have got if u had a better weapon
+					player_points *= weapon_multiplier;
+				} 
+				else 
+				{
+					player_points *= weapon_multiplier;
+					self.gross_possible_points += player_points;
+				}	
+				
 
 				//Bonus points for killing zombies quickly - not doubled, not valid on WW
+				max_bonus = level.ARRAY_QUICK_KILL_BONUS_POINTS[level.round_number];
+				if( IsDefined( max_bonus ) )
+					self.gross_possible_points += max_bonus;
+				
 				if( player_points > 0 )
 					player_points += quick_kill_bonus_points( zombie );
 
@@ -79,7 +94,20 @@ player_add_points( event, mod, hit_location, zombie)
 			//iprintln("respawn: " + zombie.respawn_zombie);		
 
 			player_points = zombie_calculate_damage_points( level.apocalypse, zombie );
-			player_points *= self weapon_points_multiplier( self getcurrentweapon(), mod );
+			if( level.apocalypse ) 
+			{
+				weapon_multiplier = self weapon_points_multiplier( self getcurrentweapon(), mod );
+				if( weapon_multiplier < 1 ) 
+				{
+					self.gross_possible_points += player_points; //points u could have got if u had a better weapon
+					player_points *= weapon_multiplier;
+				} 
+				else 
+				{
+					player_points *= weapon_multiplier;
+					self.gross_possible_points += player_points;
+				}
+			}
 			
 
 			break;
@@ -121,6 +149,7 @@ player_add_points( event, mod, hit_location, zombie)
 
 	//player_points = multiplier * round_up_score( player_points, 5 );
 	//team_points = multiplier * round_up_score( team_points, 5 );
+
 	player_points = int(multiplier * player_points);
 	team_points = int(multiplier * team_points);
 
@@ -141,6 +170,22 @@ player_add_points( event, mod, hit_location, zombie)
 
 	//stat tracking
 	self.stats["score"] = self.score_total;
+	self.gross_points += player_points;
+	
+	switch( event )
+	{
+		case "death":
+		case "ballistic_knife_death":
+		case "damage_light":
+		case "damage_ads":
+		case "damage":
+			//Handle gross_possible_points uniquely
+			break;
+
+		default:
+			self.gross_possible_points += player_points;
+			break;
+	}
 
 //	self thread play_killstreak_vo();
 }
@@ -224,7 +269,7 @@ weapon_points_multiplier( weapon, mod )
 		case "shrink_ray_zm":
 		case "shrink_ray_upgraded_zm":
 		case "humangun_upgraded_zm":
-		if(level.apocalypse && mod != "MOD_GRENADE_SPLASH")
+		if( mod != "MOD_GRENADE_SPLASH" )
 			multiplier = 0;
         break;
 
@@ -377,8 +422,12 @@ quick_kill_bonus_points( zombie )
 player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 {
 	if( mod == "MOD_MELEE" )
-	{
-		return level.zombie_vars["zombie_score_bonus_melee"];
+	{ 
+		score = level.zombie_vars["zombie_score_bonus_melee"];
+		if( self HasPerk( level.VLT_PRK ) )
+			score += level.VALUE_VULTURE_BONUS_MELEE_POINTS;
+
+		return score;
 	}
 
 	score = 0;
@@ -492,6 +541,7 @@ minus_to_player_score( points )
 	}
 
 	self.score -= points;
+	self.spent_points += points;
 
 	// also set the score onscreen
 	self set_player_score_hud();
@@ -678,7 +728,7 @@ create_highlight_hud( x, y, value )
 	}
 	else
 	{
-		hud.color = ( 0.0, 0.0, 0.0 );
+		hud.color = ( 0, 0, 0 );
 		hud.alpha = 0.5;
 	}
 	

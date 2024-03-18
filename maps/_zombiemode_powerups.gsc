@@ -1485,6 +1485,13 @@ powerup_grab()
 					case "full_ammo":
 						level thread full_ammo_powerup( self, players[i] );
 						players[i] thread powerup_vo("full_ammo");
+						if( level.vulture_is_upgraded_drop ) 
+						{
+							wait 15;
+							players[i] thread powerup_vo("full_ammo");
+							level thread full_ammo_powerup( self, players[i] );
+						}
+							
 						break;
 
 					case "double_points":
@@ -1498,8 +1505,15 @@ powerup_grab()
 						break;
 
 					case "carpenter": //reimagined-expanded
-						level thread start_carpenter_new( self.origin );
 						players[i] thread powerup_vo("carpenter");
+						level thread start_carpenter_new( self.origin );
+						
+						if( level.vulture_is_upgraded_drop ) 
+						{
+							wait 15;
+							players[i] thread powerup_vo("carpenter");
+							level thread start_carpenter_new( self.origin );
+						}
 						break;
 
 					case "fire_sale":
@@ -3804,7 +3818,7 @@ powerup_shader_on_hud( item, powerup_on_var, powerup_time_var, sound, loop_sound
 	if(!IsDefined(time))
 	{
 		time = 30;
-		if( level.vulture_is_upgraded_drop)
+		if( level.vulture_is_upgraded_drop )
 			time = 45;
 	}
 
@@ -4389,7 +4403,7 @@ carpenter_speed_down()
 	for(i=0;i<zombies.size;i++) 
 	{
 		var = randomintrange(1, 4);
-		if( zombies[i].has_legs == true) 
+		if( is_true( zombies[i].is_zombie ) ) 
 		{
 			if( zombies[i].zombie_move_speed == "sprint" )
 			{

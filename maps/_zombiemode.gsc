@@ -46,12 +46,12 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										/
-	//level.zombie_ai_limit_override=24;	///
-	level.starting_round_override=22;	///
+	/* 										*REMOVE_DEV_OVERRIDES*/
+	level.zombie_ai_limit_override=5;	///
+	level.starting_round_override=30;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	//level.zombie_timeout_override=10;	///
+	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=2;	///
@@ -850,6 +850,12 @@ reimagined_init_player()
 {
 	//init-player
 
+	self.gross_points = 500;
+	self.gross_possible_points = 500;
+	self.spent_points = 0;
+
+
+	//Perk Stuff
 	self.purchased_perks = [];
 	self.perk_hud_queue_num = 0;
 	self.perk_hud_queue_unlocks_num = 0;
@@ -1911,7 +1917,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.5.0" );
+	SetDvar( "zm_mod_version", "1.6.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -7671,9 +7677,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= 2;
 		}
 
-		if( (final_damage > self.health) && self HasPerk( level.VLT_PRK ) )
-			attacker thread maps\_zombiemode_score::add_to_player_score( level.VALUE_VULTURE_BONUS_MELEE_POINTS );
-
 		return final_damage;
 	}
 
@@ -9710,6 +9713,12 @@ intermission()
 		players[i] thread [[level.custom_intermission]]();
 	}
 
+	if( level.apocalypse )
+	{
+		thread player_apocalypse_stats();	
+	}
+	
+
 	wait( 0.25 );
 
 	// Delay the last stand monitor so we are 100% sure the zombie intermission ("zi") is set on the cients
@@ -9784,7 +9793,7 @@ player_intermission()
 	self setClientDvar("hud_timer_on_game", 0);
 	self setClientDvar("hud_health_bar_on_game", 0);
 	self setClientDvar("hud_zone_name_on_game", 0);
-	self setClientDvar("hud_character_names_on_game", 0);
+	self setClientDvar("hud_character_names_on_game", 0);	
 
 	points = getstructarray( "intermission", "targetname" );
 
@@ -9882,6 +9891,91 @@ player_intermission()
 			}
 		}
 	}
+}
+
+//Show additional Stats for Apocalypse games
+
+player_apocalypse_stats()
+{
+	headers = array( "Total Points", "Efficiency" );
+	totals = [];
+	efficiencies = [];
+
+	players = get_players();
+	for( i = 0; i < players.size; i++ )
+	{
+		totals[i] = players[i].gross_points;
+		efficiencies[i] = players[i].gross_points / players[i].gross_possible_points;
+	}
+
+	COL_OFFSET = 70;
+	VERT_OFFSET = 64;
+	HORZ_OFFSET = 40;
+	hudElems = [];
+
+	for( i = 0; i < headers.size; i++ )
+	{
+		for( j = 0; j < players.size; j++ )
+		{
+			hudElems[i][j] = NewClienthudElem( players[j] );
+			hudElems[i][j].alignX = "center";
+			hudElems[i][j].alignY = "middle";
+			hudElems[i][j].horzAlign = "center";
+			hudElems[i][j].vertAlign = "middle";
+			hudElems[i][j].y -= VERT_OFFSET;
+			hudElems[i][j].x -= (HORZ_OFFSET - (i * COL_OFFSET));
+			hudElems[i][j].foreground = true;
+			hudElems[i][j].fontScale = 1.2;
+			hudElems[i][j].alpha = 1;
+			hudElems[i][j].color = ( 1.0, 1.0, 1.0 );
+			hudElems[i][j] SetText( headers[i] );
+		}
+	}
+
+	//SET VALUES
+	ROW_OFSSET = 20;
+
+	for( k = 0; k < headers.size; k++ )
+	{
+		for( j = 0; j < players.size; j++ )
+		{
+			i = k + 2;
+			hudElems[i][j] = NewClienthudElem( players[j] );
+			hudElems[i][j].alignX = "center";
+			hudElems[i][j].alignY = "middle";
+			hudElems[i][j].horzAlign = "center";
+			hudElems[i][j].vertAlign = "middle";
+			hudElems[i][j].y -= VERT_OFFSET;
+			hudElems[i][j].y += ROW_OFSSET*(j+1);
+			hudElems[i][j].x -= (HORZ_OFFSET - (k * COL_OFFSET));
+			hudElems[i][j].foreground = true;
+			hudElems[i][j].fontScale = 1.2;
+			hudElems[i][j].alpha = 1;
+			hudElems[i][j].color = ( 1.0, 1.0, 1.0 );
+			if( k == 0 )
+			{
+				hudElems[i][j] SetText( totals[j] );
+			}
+			else
+			{
+				hudElems[i][j] SetText( Int( efficiencies[j] * 1000 ) / 10 );
+			}
+		}
+	}
+
+	wait( 12 );
+
+	outer_size = headers.size + 2;
+
+	for( i = 0; i < outer_size; i++ )
+	{
+		for( j = 0; j < players.size; j++ )
+		{
+			hudElems[i][j] Destroy();
+		}
+	}
+
+	
 }
 
 fade_up_over_time(t)
