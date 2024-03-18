@@ -46,7 +46,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										*REMOVE_DEV_OVERRIDES*/
+	/* 										 REMOVE_DEV_OVERRIDES*/
 	level.zombie_ai_limit_override=5;	///
 	level.starting_round_override=30;	///
 	level.starting_points_override=100000;	///
@@ -962,6 +962,7 @@ reimagined_init_player()
 
 	//Threads
 	self thread wait_set_player_visionset();
+	self thread watch_player_button_press();
 
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
@@ -998,6 +999,45 @@ wait_set_player_visionset()
 
 	//iprintln( "wait_set_player_visionset done");
 }
+
+watch_player_button_press()
+{
+	self endon("disconnect");
+	self endon("death");
+	self endon("end_game");
+
+	while(1)
+	{
+
+		if( level.apocalypse )
+		{
+			if( self buttonPressed( "TAB" ) )
+			{
+				iprintln("checking tab");
+				self player_handle_scoreboard("TAB");
+				wait(0.1);
+			}
+		}
+		
+		
+		wait 0.01;
+		//wait(1);
+	}
+}
+
+/* Handle particular button press */
+	player_handle_scoreboard( button )
+	{
+		self thread player_apocalypse_stats( "apocalypse_stats_end" );
+		while( self buttonPressed( button ) )
+		{
+			wait 0.05;
+		}
+
+		iprintln("ending scoreboard");
+
+		self notify( "apocalypse_stats_end" );
+	}
 
 //Reimagined-Expanded -- check of obj is in range
 checkDist( a, b, distance)
@@ -1917,7 +1957,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.6.0" );
+	SetDvar( "zm_mod_version", "1.7.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -7079,8 +7119,18 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		}
 
 
-		// tracking player damage
-		if( !is_boss_zombie(eAttacker.animname) )
+		// tracking damage against players
+		valid_zomb = false;
+		if( isDefined( eAttacker.animname ) )
+		{
+			valid_zomb = is_in_array( level.ARRAY_VALID_STANDARD_ZOMBIES, eAttacker.animname ) 
+						|| eAttacker.animname == "monkey_zombie";
+			
+			valid_zomb = valid_zomb && !is_boss_zombie( eAttacker.animname );
+		}
+			
+
+		if( valid_zomb )
 		{
 			if( self hasProPerk( level.ECH_PRO ) && self.cherry_defense ) {
 				self thread maps\_zombiemode_perks::player_electric_cherry_defense( eAttacker );
@@ -7101,7 +7151,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 						iDamage = int(iDamage * 0.5);
 					self.previous_zomb_attacked_by = hash;
 
-					//Reimagined-Expaded, maybe we'lll use later, not necessary right now
+					//Reimagined-Expaded, maybe we'll use later, not necessary right now
 					//Slow consequtive zombie attack by slowing animation
 					
 					if( level.round_number < level.THREHOLD_SLOW_ZOMBIE_ATTACK_ANIM_ROUND_MAX ) {
@@ -9713,10 +9763,7 @@ intermission()
 		players[i] thread [[level.custom_intermission]]();
 	}
 
-	if( level.apocalypse )
-	{
-		thread player_apocalypse_stats();	
-	}
+	
 	
 
 	wait( 0.25 );
@@ -9813,6 +9860,11 @@ player_intermission()
 	self.game_over_bg SetShader( "black", 640, 480 );
 	self.game_over_bg.alpha = 1;
 
+	if( level.apocalypse )
+	{
+		self thread player_apocalypse_stats(undefined, 12);	
+	}
+
 	org = undefined;
 	while( 1 )
 	{
@@ -9895,8 +9947,19 @@ player_intermission()
 
 //Show additional Stats for Apocalypse games
 
-player_apocalypse_stats()
+player_apocalypse_stats( message, timeout )
 {
+	if( !isdefined( message ) )
+	{
+		message = "apocalypse_stats_end";
+	}
+
+	if( !isdefined( timeout ) )
+	{
+		timeout = 10000;
+	}
+
+
 	headers = array( "Total Points", "Efficiency" );
 	totals = [];
 	efficiencies = [];
@@ -9911,13 +9974,18 @@ player_apocalypse_stats()
 	COL_OFFSET = 70;
 	VERT_OFFSET = 64;
 	HORZ_OFFSET = 40;
-	hudElems = [];
 
+	if( players.size > 1 )
+	{
+		HORZ_OFFSET += 2*COL_OFFSET; //Move over two columns
+	}
+
+	hudElems = [];
 	for( i = 0; i < headers.size; i++ )
 	{
 		for( j = 0; j < players.size; j++ )
 		{
-			hudElems[i][j] = NewClienthudElem( players[j] );
+			hudElems[i][j] = NewClienthudElem( self );
 			hudElems[i][j].alignX = "center";
 			hudElems[i][j].alignY = "middle";
 			hudElems[i][j].horzAlign = "center";
@@ -9940,7 +10008,7 @@ player_apocalypse_stats()
 		for( j = 0; j < players.size; j++ )
 		{
 			i = k + 2;
-			hudElems[i][j] = NewClienthudElem( players[j] );
+			hudElems[i][j] = NewClienthudElem( self );
 			hudElems[i][j].alignX = "center";
 			hudElems[i][j].alignY = "middle";
 			hudElems[i][j].horzAlign = "center";
@@ -9963,7 +10031,7 @@ player_apocalypse_stats()
 		}
 	}
 
-	wait( 12 );
+	self waittill_notify_or_timeout( message, timeout );
 
 	outer_size = headers.size + 2;
 
