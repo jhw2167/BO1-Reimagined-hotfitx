@@ -261,7 +261,7 @@ post_all_players_connected()
 
 	//Reimagined-Expanded -- Set Up Players bonus player perk fx
 	level reimagined_init_player_depedent_values();
-	players = GetPlayers();
+	players = get_players();
 	for(i=0;i<players.size;i++) 
 	{
 		players[i] reimagined_init_player();
@@ -854,7 +854,34 @@ reimagined_init_player()
 	self.gross_possible_points = 500;
 	self.spent_points = 0;
 
+	//Must wait to give knife later
+	if(!flag("round_restarting"))
+	{
+		wait_network_frame();
+	}
 
+	self.current_melee_weapon = "rebirth_hands_sp";
+	self.offhand_melee_weapon = "knife_zm";
+	offhand_eqipment = "combat_" + self.offhand_melee_weapon;
+
+	if( !self HasWeapon( self.current_melee_weapon ) )
+		self GiveWeapon( self.current_melee_weapon );
+	
+	if( !self HasWeapon( self.offhand_melee_weapon ) )
+		self GiveWeapon( self.offhand_melee_weapon );
+	
+	if( !self HasWeapon( offhand_eqipment ) )
+		self GiveWeapon( offhand_eqipment );
+
+	self set_player_melee_weapon( self.current_melee_weapon );
+	current = self get_player_melee_weapon();
+	iprintln("Current:" + current );
+	self SetActionSlot(2, "weapon",  offhand_eqipment );
+	
+	
+	//keep knife_zm for pushing zombies down
+	
+	
 	//Perk Stuff
 	self.purchased_perks = [];
 	self.perk_hud_queue_num = 0;
@@ -1008,12 +1035,35 @@ watch_player_button_press()
 
 	while(1)
 	{
+		
+		if( self buttonPressed( "DPAD_DOWN" ) || self buttonPressed( "7" )  )
+		{
+			//hold for 1 second, while loop
+			time = 0;
+			iprintln("checking for swap");
+			while( self buttonPressed( "DPAD_DOWN" ) || self buttonPressed( "7" ) )
+			{ 
+				wait_network_frame();
+				time += 0.1;
+				if( time > .5 )
+				{
+					self handle_swap_melee();
+					break;
+				}
+			}
+
+			while( self buttonPressed( "DPAD_DOWN" ) || self buttonPressed( "7" ) )
+			{ 
+				wait( 0.1 );
+			}
+
+			wait 1;
+		}
 
 		if( level.apocalypse )
 		{
 			if( self buttonPressed( "TAB" ) )
 			{
-				iprintln("checking tab");
 				self player_handle_scoreboard("TAB");
 				wait(0.1);
 			}
@@ -1034,9 +1084,43 @@ watch_player_button_press()
 			wait 0.05;
 		}
 
-		iprintln("ending scoreboard");
-
 		self notify( "apocalypse_stats_end" );
+	}
+
+	//HERE
+	handle_swap_melee()
+	{
+		old_knife = self.current_melee_weapon;
+		new_knife = self.offhand_melee_weapon;
+
+		current_weapon = self getcurrentweapon();
+
+		new_equipment = old_knife;
+		if( new_knife == "rebirth_hands_sp" )
+		{
+			self TakeWeapon( old_knife );
+			new_equipment = "combat_" + old_knife;
+			self GiveWeapon( new_equipment );
+		}
+		else
+		{
+			//Take knife equipment, now your primary
+			old_equipment = "combat_" + new_knife;
+			self TakeWeapon( old_equipment );
+			self GiveWeapon( new_knife );
+			
+		}
+		
+		iprintln("melee: " + new_knife);
+		iprintln("action_slot: " + new_equipment );
+
+		self SetActionSlot(2, "weapon", new_equipment );
+		self set_player_melee_weapon( new_knife );
+		self.current_melee_weapon = new_knife;
+		self.offhand_melee_weapon = old_knife;
+
+		self SwitchToWeapon( new_equipment );
+
 	}
 
 //Reimagined-Expanded -- check of obj is in range
@@ -1336,6 +1420,7 @@ track_players_ammo_count()
 					weap == "equip_gasmask_zm" ||
 					weap == "lower_equip_gasmask_zm" ||
 					weap == "combat_knife_zm" ||
+					weap == "rebirth_hands_sp" ||
 					weap == "combat_bowie_knife_zm" ||
 					weap == "combat_sickle_knife_zm" ||
 					weap == "meat_zm" ||
@@ -3110,7 +3195,7 @@ onPlayerSpawned()
 		if(!flag("round_restarting"))
 		{
 			self thread give_starting_weapon("m1911_zm");
-			self set_melee_actionslot();
+			//self set_melee_actionslot();
 		}
 
 		self enablehealthshield( false );
@@ -11054,16 +11139,20 @@ set_melee_actionslot()
 		wait_network_frame();
 	}
 
-	melee = self get_player_melee_weapon();
-	if(IsDefined(melee))
-	{
-		wep = "combat_" + melee;
-		self GiveWeapon(wep);
-		self SetActionSlot(2, "weapon", wep);
+	
+	wep = self.offhand_melee_weapon;
+	new_equipment = "combat_" + wep;
+	if( wep == "rebirth_hands_sp" ){
+		new_equipment = wep;
 	}
+	else
+		self GiveWeapon( new_equipment );
+	
+	self SetActionSlot(2, "weapon", new_equipment);
+	
 	
 	//keep knife_zm for pushing zombies down
-	self set_player_melee_weapon("knife_zm");
+	//self set_player_melee_weapon("knife_zm");
 }
 
 set_gamemode()

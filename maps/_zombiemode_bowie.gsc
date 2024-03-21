@@ -247,16 +247,21 @@ do_bowie_flourish_end( gun )
 
 	self TakeWeapon(weapon);
 
-	//self GiveWeapon( "bowie_knife_zm" );
-	//self set_player_melee_weapon( "bowie_knife_zm" ); keep player with knife_zm for knockdown
-
-	self TakeWeapon("combat_knife_zm");
-	self GiveWeapon("combat_bowie_knife_zm");
-	self SetActionSlot(2, "weapon", "combat_bowie_knife_zm");
-
 	if( self HasWeapon("knife_zm") )
 	{
-		//self TakeWeapon( "knife_zm" );
+		self TakeWeapon( "knife_zm" );
+		self.current_melee_weapon = "bowie_knife_zm";
+
+		self GiveWeapon( "bowie_knife_zm" );
+		self set_player_melee_weapon( "bowie_knife_zm" ); //remove knife_zm for knockdown, player can switch back
+
+	}
+	else if( self HasWeapon("rebirth_hands_sp") )
+	{
+		self.offhand_melee_weapon = "bowie_knife_zm";
+		self TakeWeapon("combat_knife_zm");
+		self GiveWeapon("combat_bowie_knife_zm");
+		self SetActionSlot(2, "weapon", "combat_bowie_knife_zm");
 	}
 
 	// TODO: race condition?

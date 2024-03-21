@@ -290,16 +290,22 @@ do_sickle_flourish_end( gun )
 	self TakeWeapon(weapon);
 
 	//Reimagined-expanded
-	//self GiveWeapon( "sickle_knife_zm" );
-	//self set_player_melee_weapon( "sickle_knife_zm" );	keep player with knockdown punch
-
-	self TakeWeapon("combat_knife_zm");
-	self GiveWeapon("combat_sickle_knife_zm");
-	self SetActionSlot(2, "weapon", "combat_sickle_knife_zm");
-
+	
 	if( self HasWeapon("knife_zm") )
 	{
-		//self TakeWeapon( "knife_zm" );
+		self TakeWeapon( "knife_zm" );
+		self.current_melee_weapon = "sickle_knife_zm";
+
+		self GiveWeapon( "sickle_knife_zm" );
+		self set_player_melee_weapon( "sickle_knife_zm" );	// remove keep player with knockdown punch
+
+	}
+	else if( self HasWeapon("rebirth_hands_sp") )
+	{
+		self.offhand_melee_weapon = "sickle_knife_zm";
+		self TakeWeapon("combat_knife_zm");
+		self GiveWeapon("combat_sickle_knife_zm");
+		self SetActionSlot(2, "weapon", "combat_sickle_knife_zm");	
 	}
 
 	// TODO: race condition?

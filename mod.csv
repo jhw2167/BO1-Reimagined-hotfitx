@@ -39,6 +39,9 @@ weapon,sp/freezegun_zm
 weapon,sp/freezegun_upgraded_zm
 
 //EQUIPMENT
+weapon,sp/rebirth_hands_sp
+//weapon,sp/punch_zm
+//weapon,sp/combat_punch_zm
 weapon,sp/knife_zm
 weapon,sp/bowie_knife_zm
 weapon,sp/sickle_knife_zm
@@ -211,6 +214,7 @@ material,mtl_viet_zombie_napalm_body
 
 material,specialty_bo4hitmarker_white
 material,specialty_bo4hitmarker_red__
+material,punch_zm
 
 
 //Material Properties
