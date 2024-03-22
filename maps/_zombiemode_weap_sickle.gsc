@@ -290,8 +290,8 @@ do_sickle_flourish_end( gun )
 	self TakeWeapon(weapon);
 
 	//Reimagined-expanded
-	
-	if( self HasWeapon("knife_zm") )
+	melee_wep = self get_player_melee_weapon();
+	if( melee_wep == "knife_zm")
 	{
 		self TakeWeapon( "knife_zm" );
 		self.current_melee_weapon = "sickle_knife_zm";

@@ -246,8 +246,8 @@ do_bowie_flourish_end( gun )
 	}
 
 	self TakeWeapon(weapon);
-
-	if( self HasWeapon("knife_zm") )
+	melee_wep = self get_player_melee_weapon();
+	if( melee_wep == "knife_zm")
 	{
 		self TakeWeapon( "knife_zm" );
 		self.current_melee_weapon = "bowie_knife_zm";
@@ -256,7 +256,7 @@ do_bowie_flourish_end( gun )
 		self set_player_melee_weapon( "bowie_knife_zm" ); //remove knife_zm for knockdown, player can switch back
 
 	}
-	else if( self HasWeapon("rebirth_hands_sp") )
+	else
 	{
 		self.offhand_melee_weapon = "bowie_knife_zm";
 		self TakeWeapon("combat_knife_zm");

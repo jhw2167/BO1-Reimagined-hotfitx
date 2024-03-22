@@ -321,7 +321,7 @@ init_weapons()
  	add_zombie_weapon( "combat_bowie_knife_zm",		undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
  	add_zombie_weapon( "combat_sickle_knife_zm",	undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"sickle",			"",		undefined );
 	add_zombie_weapon( "rebirth_hands_sp",					undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
-	//add_zombie_weapon( "rebirth_hands_sp",			undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
+	add_zombie_weapon( "vorkuta_knife_sp",					undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
 
  	add_zombie_weapon( "falling_hands_zm",			undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
 
@@ -4131,9 +4131,10 @@ init_includes()
  		register_tactical_grenade_for_level( "molotov_zm" );
  	}
 
+	include_weapon( "vorkuta_knife_sp", false);
+	register_melee_weapon_for_level( "vorkuta_knife_sp" );
+
 	include_weapon( "rebirth_hands_sp", false);
-	//include_weapon( "rebirth_hands_sp", false);
-	//register_melee_weapon_for_level( "rebirth_hands_sp" );
 	register_melee_weapon_for_level( "rebirth_hands_sp" );
 	
  	include_weapon("combat_knife_zm", false);

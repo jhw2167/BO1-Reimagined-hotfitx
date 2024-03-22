@@ -778,6 +778,7 @@ reimagined_init_level()
 	//MISCELLANEOUS EFFECTS
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
+	level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS = array( "rebirth_hands_sp", "vorkuta_knife_sp" );
 
 	//Real Time Variables
 	level.respawn_queue = [];
@@ -854,33 +855,36 @@ reimagined_init_player()
 	self.gross_possible_points = 500;
 	self.spent_points = 0;
 
-	//Must wait to give knife later
-	if(!flag("round_restarting"))
+	if( !flag("round_restarting") )
 	{
 		wait_network_frame();
 	}
 
 	self.current_melee_weapon = "rebirth_hands_sp";
 	self.offhand_melee_weapon = "knife_zm";
-	offhand_eqipment = "combat_" + self.offhand_melee_weapon;
+
+	//self.current_melee_weapon = "bowie_knife_zm";
+	//self.current_melee_weapon = "knife_zm";
+	//self.offhand_melee_weapon = "rebirth_hands_sp";
+
+	offhand_equipment = "combat_" + self.offhand_melee_weapon;
+	//if( self.offhand_melee_weapon == "rebirth_hands_sp" )	
+		//offhand_equipment = "rebirth_hands_sp";
+
+	//if( !self HasWeapon( self.offhand_melee_weapon ) )
+		//self GiveWeapon( self.offhand_melee_weapon );
+	self GiveWeapon( "vorkuta_knife_sp" );
+		
+	
+	self SetActionSlot(2, "weapon",  offhand_equipment );
+
+	if( !self HasWeapon( offhand_equipment ) )
+		self GiveWeapon( offhand_equipment );
 
 	if( !self HasWeapon( self.current_melee_weapon ) )
 		self GiveWeapon( self.current_melee_weapon );
 	
-	if( !self HasWeapon( self.offhand_melee_weapon ) )
-		self GiveWeapon( self.offhand_melee_weapon );
-	
-	if( !self HasWeapon( offhand_eqipment ) )
-		self GiveWeapon( offhand_eqipment );
-
 	self set_player_melee_weapon( self.current_melee_weapon );
-	current = self get_player_melee_weapon();
-	iprintln("Current:" + current );
-	self SetActionSlot(2, "weapon",  offhand_eqipment );
-	
-	
-	//keep knife_zm for pushing zombies down
-	
 	
 	//Perk Stuff
 	self.purchased_perks = [];
@@ -1033,33 +1037,50 @@ watch_player_button_press()
 	self endon("death");
 	self endon("end_game");
 
+	//Must wait to start watching for button presses
+	if(!flag("round_restarting"))
+	{
+		wait_network_frame();
+	}
+
+	//Pre trigger hack
+	self handle_swap_melee();
+	self handle_swap_melee();
+
 	while(1)
 	{
-		
-		if( self buttonPressed( "DPAD_DOWN" ) || self buttonPressed( "7" )  )
+		/* MELEE SWAP */
+		if( self is_action_slot_pressed() )
 		{
+			iprintln("DPAD_DOWN pressed");
 			//hold for 1 second, while loop
 			time = 0;
-			iprintln("checking for swap");
-			while( self buttonPressed( "DPAD_DOWN" ) || self buttonPressed( "7" ) )
+			
+			while( self is_action_slot_pressed()  )
 			{ 
-				wait_network_frame();
+				wait( 0.1 );
 				time += 0.1;
-				if( time > .5 )
+				if( time > .4 )
 				{
+					while( self is_action_slot_pressed() || self isSwitchingWeapons() )
+					{ 
+						wait( 0.1 );
+					}
 					self handle_swap_melee();
 					break;
 				}
 			}
 
-			while( self buttonPressed( "DPAD_DOWN" ) || self buttonPressed( "7" ) )
+			while( self is_action_slot_pressed() )
 			{ 
 				wait( 0.1 );
 			}
 
-			wait 1;
+			wait 2;
 		}
 
+
+		/* APOCALYPSE SCOREBOARD */
 		if( level.apocalypse )
 		{
 			if( self buttonPressed( "TAB" ) )
@@ -1070,10 +1091,70 @@ watch_player_button_press()
 		}
 		
 		
-		wait 0.01;
+		wait 0.1;
 		//wait(1);
 	}
 }
+
+	is_action_slot_pressed()
+	{
+		if( self ActionSlotTwoButtonPressed() )
+			return true;
+
+		//PC
+		if( self buttonPressed( "7" ))
+			return true;
+
+		//XBOX
+		if( self buttonPressed( "DPAD_DOWN" ))
+			return true;
+
+		
+		return false;
+	}
+
+		
+		
+//HERE
+	handle_swap_melee()
+	{
+		
+		primary_weapon = self GetWeaponsListPrimaries()[0];
+		if( isDefined( primary_weapon ) )
+			self SwitchToWeapon( primary_weapon );
+
+		old_knife = self.current_melee_weapon;
+		new_knife = self.offhand_melee_weapon;
+
+		if( new_knife == "rebirth_hands_sp" )
+		{
+			new_equipment = "combat_" + old_knife;
+			old_equipment = "vorkuta_knife_sp";
+		}
+		else
+		{
+			//Take knife equipment, now your primary
+			new_equipment = "vorkuta_knife_sp";
+			old_equipment = "combat_" + new_knife;
+		
+		}
+
+		self TakeWeapon( old_knife );
+		self GiveWeapon( new_knife );
+
+		self TakeWeapon( old_equipment );
+		self GiveWeapon( new_equipment );
+
+		self SetActionSlot(2, "weapon", new_equipment );
+		self set_player_melee_weapon( new_knife );
+
+		self.current_melee_weapon = new_knife;
+		self.offhand_melee_weapon = old_knife;
+
+		if( isDefined( primary_weapon ) )
+			self SwitchToWeapon( primary_weapon );
+
+	}
 
 /* Handle particular button press */
 	player_handle_scoreboard( button )
@@ -1085,42 +1166,6 @@ watch_player_button_press()
 		}
 
 		self notify( "apocalypse_stats_end" );
-	}
-
-	//HERE
-	handle_swap_melee()
-	{
-		old_knife = self.current_melee_weapon;
-		new_knife = self.offhand_melee_weapon;
-
-		current_weapon = self getcurrentweapon();
-
-		new_equipment = old_knife;
-		if( new_knife == "rebirth_hands_sp" )
-		{
-			self TakeWeapon( old_knife );
-			new_equipment = "combat_" + old_knife;
-			self GiveWeapon( new_equipment );
-		}
-		else
-		{
-			//Take knife equipment, now your primary
-			old_equipment = "combat_" + new_knife;
-			self TakeWeapon( old_equipment );
-			self GiveWeapon( new_knife );
-			
-		}
-		
-		iprintln("melee: " + new_knife);
-		iprintln("action_slot: " + new_equipment );
-
-		self SetActionSlot(2, "weapon", new_equipment );
-		self set_player_melee_weapon( new_knife );
-		self.current_melee_weapon = new_knife;
-		self.offhand_melee_weapon = old_knife;
-
-		self SwitchToWeapon( new_equipment );
-
 	}
 
 //Reimagined-Expanded -- check of obj is in range
@@ -7573,10 +7618,21 @@ zombie_knockdown( wait_anim, upgraded )
 	self SetPlayerCollision( 0 );
 	//endon_str = "zombie_knockdown_" + attacker.entity_num;
 	//self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
+	self StartRagdoll();
+	mag = 20;
+	randX = RandomFloatRange(0, 1);
+	randY = RandomFloatRange(0, 1);
+	self launchragdoll((randX,randY,1) * mag);
+
 	self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
 	animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
 	
 	wait( wait_anim );
+
+	if( !IsDefined(self) || !IsAlive(self) )
+		return;
+	self.doingRagdollDeath = false;
+	self.nodeathragdoll = true;
 	getup_anim = %ai_zombie_thundergun_getup_b;
 	self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
 	animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
@@ -7744,9 +7800,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( boss_zombie ) {
 			//skip pre processing for punch
 		}
-		else if( weapon == "knife_zm" ) 		//knife punch!
+		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) ) 		//knife punch!
 		{
 			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
+			if( weapon == "vorkuta_knife_zm" )
+				wait_anim *= 1.5;
+
 			if( is_true( self.is_zombie ) ) 
 			{
 				if( final_damage < self.health )
@@ -10081,6 +10140,7 @@ player_apocalypse_stats( message, timeout )
 			hudElems[i][j].fontScale = 1.2;
 			hudElems[i][j].alpha = 1;
 			hudElems[i][j].color = ( 1.0, 1.0, 1.0 );
+			hudElems[i][j].hidewheninmenu = true;
 			hudElems[i][j] SetText( headers[i] );
 		}
 	}
@@ -11133,26 +11193,8 @@ character_names_hud()
 
 set_melee_actionslot()
 {
-	// must wait if it is not a round restart or else the player doesn't get the melee weapon
-	if(!flag("round_restarting"))
-	{
-		wait_network_frame();
-	}
-
-	
-	wep = self.offhand_melee_weapon;
-	new_equipment = "combat_" + wep;
-	if( wep == "rebirth_hands_sp" ){
-		new_equipment = wep;
-	}
-	else
-		self GiveWeapon( new_equipment );
-	
-	self SetActionSlot(2, "weapon", new_equipment);
 	
 	
-	//keep knife_zm for pushing zombies down
-	//self set_player_melee_weapon("knife_zm");
 }
 
 set_gamemode()
