@@ -47,8 +47,8 @@ main()
 
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
-	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=30;	///
+	level.zombie_ai_limit_override=2;	///
+	level.starting_round_override=9;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -467,9 +467,9 @@ reimagined_init_level()
 	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
 	level.THRESHOLD_ZOMBIE_AI_LIMIT = 45;
 
-	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 75;
+	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 100;	//up from 75
 
-	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 10;
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 5;
 	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_MED = 5;
@@ -636,7 +636,7 @@ reimagined_init_level()
 	level.VALUE_CHERRY_PRO_SCALAR = 16/10;	//scales range, damage, max enemies by ~2
 
 	//Vulture
-	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;
+	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.025;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.04;
 	level.VALUE_VULTURE_MIN_AMMO_BONUS = 2;
@@ -1042,6 +1042,8 @@ watch_player_button_press()
 	{
 		wait_network_frame();
 	}
+	iprintln("watch_player_button_press");
+	wait(2);
 
 	//Pre trigger hack
 	self handle_swap_melee();
@@ -1052,7 +1054,7 @@ watch_player_button_press()
 		/* MELEE SWAP */
 		if( self is_action_slot_pressed() )
 		{
-			iprintln("DPAD_DOWN pressed");
+			//iprintln("DPAD_DOWN pressed");
 			//hold for 1 second, while loop
 			time = 0;
 			
@@ -2087,7 +2089,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.7.0" );
+	SetDvar( "zm_mod_version", "1.8.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -7618,11 +7620,11 @@ zombie_knockdown( wait_anim, upgraded )
 	self SetPlayerCollision( 0 );
 	//endon_str = "zombie_knockdown_" + attacker.entity_num;
 	//self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
-	self StartRagdoll();
+	//self StartRagdoll();
 	mag = 20;
 	randX = RandomFloatRange(0, 1);
 	randY = RandomFloatRange(0, 1);
-	self launchragdoll((randX,randY,1) * mag);
+	//self launchragdoll((randX,randY,1) * mag);
 
 	self animscripted( "fall_anim", self.origin, self.angles, fall_anim );
 	animscripts\traverse\zombie_shared::wait_anim_length( fall_anim, wait_anim );
@@ -7794,8 +7796,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 							attacker HasWeapon("combat_bowie_knife_zm") ||
 							attacker HasWeapon("sickle_knife_zm") ||
 							attacker HasWeapon("combat_sickle_knife_zm") );
+
+		usingUpgradedKnife = weapon == "bowie_knife_zm" || 
+							weapon == "combat_bowie_knife_zm" ||
+							weapon == "sickle_knife_zm" || 
+							weapon == "combat_sickle_knife_zm";
 		
 		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );
+
+		
 
 		if( boss_zombie ) {
 			//skip pre processing for punch
@@ -7831,7 +7840,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage = damage;
 
 		}
-		else if( ( weapon == "combat_bowie_knife_zm" || weapon == "combat_sickle_knife_zm" || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
+		else if( (usingUpgradedKnife || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
 		{
 			final_damage = int(self.maxhealth / 3) + 10;
 			if( level.round_number < 12)

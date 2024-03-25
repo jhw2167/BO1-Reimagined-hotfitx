@@ -2992,7 +2992,7 @@ perk_think( perk )
 	//Reimagined-Expanded - don't destroy perk hud if pro perk is only disabled
 	if( !self.PERKS_DISABLED[ perk + "_upgrade" ] )
 	{
-		iprintln( "Perk Think: " + perk + " " + result );
+		//iprintln( "Perk Think: " + perk + " " + result );
 		self perk_hud_destroy( perk );
 	}
 		
@@ -5671,6 +5671,7 @@ init_vulture()
 		} 
 		else if( isDefined(struct.perk_to_check) )
 		{
+			//iprintln( "Vis 1: " + struct.perk + "  " + is_visible );
 			/* Determine if Perk or PAP is in Playable Area */
 
 			inPlayableArea = checkObjectInPlayableArea( struct.script_model );
@@ -5702,15 +5703,14 @@ init_vulture()
 			else
 				is_visible = true;
 
-			//iprintln( "Vis 1: " + struct.perk + "  " + is_visible );
+			//iprintln( "Vis 2: " + struct.perk + "  " + is_visible );
 			
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
 			{
 				is_visible = checkPlayerLookingAtObject( player, struct, level.THRESHOLD_VULTURE_FOV_HUD_DOT ) && is_visible;
 			}
-
-			//iprintln( "Vis 2: " + struct.perk + "  " + is_visible );
+			//iprintln( "Vis 3: " + struct.perk + "  " + is_visible );
 
 		} 
 		else if( IsDefined( struct.animname ) )	//struct could be a zombie
@@ -5775,9 +5775,10 @@ init_vulture()
 		//view_angles = player GetTagAngles( "tag_flash" );
 		view_angles = player GetPlayerAngles();
 		forwardAngles = AnglesToForward( view_angles );
+		//iprintln( "View Angles: " + view_angles + "  Forward: " + forwardAngles );
 
 		//Perk needs to be within a wide cone from this players view
-		view_pos = player GetTagOrigin( "tag_flash" ) - player GetPlayerViewHeight();
+		view_pos = player GetPlayerViewHeight();
 		normal = VectorNormalize( object.origin - view_pos );	
 
 		dot = VectorDot( forwardAngles, normal );
@@ -6207,16 +6208,14 @@ player_watch_widows_warning()
 	{
 		self endon( "death" );
 
-		forward_view_angles = self GetPlayerAngles();
-		forward_view_dir = self GetWeaponForwardDir();
+		forward_view_dir = AnglesToForward( self GetPlayerAngles() );
 		
 		initial_dir = forward_view_dir[1];
 		turn_threshold = 0.2;					//Looks like they use radians
 
 		while ( 1 )
 		{
-			//dir = self GetPlayerAngles();
-			dir = self GetWeaponForwardDir();
+			dir = AnglesToForward( self GetPlayerAngles() );
 			dot = VectorDot( forward_view_dir, dir );
 
 			if( dot <= turn_threshold ) //anything at least 90 degrees or more returns <0
@@ -6232,14 +6231,39 @@ player_watch_widows_warning()
 
 	player_widows_check_zomb_behind( zomb )
 	{
-		view_pos = self GetWeaponMuzzlePoint();
-		origin = zomb GetCentroid();
-		forward_view_angles = self GetWeaponForwardDir();
+		view_pos = self GetPlayerViewHeight();
+		//origin = zomb GetCentroid();
+		origin = zomb.origin + ( 0, 0, 40 );
+		forward_view_angles = AnglesToForward( self GetPlayerAngles() );
 
+		iprintln("forward_view_angles: " + forward_view_angles);
+		
 		normal = VectorNormalize( origin - view_pos );
+		iprintln("normal: " + normal);
 		dot = VectorDot( forward_view_angles, normal );
 
-		return ( level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT > dot ); //means zombie is behind us
+		//return ( level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT > dot ); //means zombie is behind us
+		return !( zomb zombie_in_player_fov( self, level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT ) );
+	}
+
+	zombie_in_player_fov( player, threshold )	//threshold is between 0 and 1
+	{
+		playerAngles = player getplayerangles();
+		playerForwardVec = AnglesToForward( playerAngles );
+		playerUnitForwardVec = VectorNormalize( playerForwardVec );
+
+		zombiePos = self.origin;
+		playerPos = player GetOrigin();
+		playerTozombieVec = zombiePos - playerPos;
+		playerTozombieUnitVec = VectorNormalize( playerTozombieVec );
+
+		forwardDotzombie = VectorDot( playerUnitForwardVec, playerTozombieUnitVec );
+		angleFromCenter = ACos( forwardDotzombie );
+
+		playerFOV = GetDvarFloat( #"cg_fov" );
+		inPlayerFov = ( angleFromCenter <= ( playerFOV * 0.5 * ( 1 - threshold ) ) );
+
+		return inPlayerFov;
 	}
 
 	//Create hud elem for widows
@@ -6312,7 +6336,7 @@ player_watch_widows_warning()
 		zomb_origin = zomb.origin;
 		zomb_centroid = zomb GetCentroid();
 		origin = self.origin;
-		view_pos = self GetWeaponMuzzlePoint();
+		view_pos = self GetPlayerViewHeight();
 
 		if( checkDist( origin, zomb_origin, level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST ) )
 		{
@@ -6391,10 +6415,11 @@ player_watch_widows_warning()
 		player_widows_calc_angle_behind_player( zomb )
 		{
 			zomb_origin = zomb GetCentroid();
-			view_pos = self GetWeaponMuzzlePoint();
+			view_pos = self GetPlayerViewHeight();
 			
 			angle_offset = 30;
-			forward_dir = self GetWeaponForwardDir();
+			forward_dir = AnglesToForward( self GetPlayerAngles() );
+
 			forward_angles = VectorToAngles( forward_dir );
 
 			arctan = atan( forward_dir[1] / forward_dir[0] );
