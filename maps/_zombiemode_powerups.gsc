@@ -692,7 +692,7 @@ watch_for_drop()
 			level.zombie_vars["zombie_drop_item"] = 1;
 			while(curr_total_score >= score_to_drop)
 			{
-				level.zombie_vars["zombie_powerup_drop_increment"] *= 1.1;
+				level.zombie_vars["zombie_powerup_drop_increment"] *= level.VALUE_ZOMBIE_RANDOM_DROP_EARLY_SCALER;
 				score_to_drop += level.zombie_vars["zombie_powerup_drop_increment"];
 			}
 		}

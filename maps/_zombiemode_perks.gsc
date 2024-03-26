@@ -4523,7 +4523,6 @@ player_watch_electric_cherry()
 				if( a_zombies[i].health <= perk_dmg ) 
 				{
 					a_zombies[i] thread electric_cherry_death_fx();
-					self maps\_zombiemode_score::add_to_player_score( level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS );
 				}
 				else {
 		
@@ -4663,7 +4662,6 @@ player_watch_electric_cherry()
 		if( kill_zombie ) 
 		{
 			zombie thread electric_cherry_death_fx();
-			self maps\_zombiemode_score::add_to_player_score( level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS );
 		}
 		else {
 			zombie thread electric_cherry_stun();

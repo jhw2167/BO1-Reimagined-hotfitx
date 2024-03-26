@@ -387,7 +387,8 @@ Laststand_Bleedout( delay )
 
 	setClientSysState("lsm", "1", self);
 
-	self.bleedout_time = delay;
+	//self.bleedout_time = delay;
+	self.bleedout_time = level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME;
 
 	while ( self.bleedout_time > Int( delay * 0.5 ) )
 	{

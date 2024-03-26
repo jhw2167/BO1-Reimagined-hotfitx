@@ -39,8 +39,8 @@ weapon,sp/freezegun_zm
 weapon,sp/freezegun_upgraded_zm
 
 //EQUIPMENT
-weapon,sp/punch_zm
-weapon,sp/combat_punch_zm
+weapon,sp/rebirth_hands_sp
+weapon,sp/vorkuta_knife_sp
 weapon,sp/knife_zm
 weapon,sp/bowie_knife_zm
 weapon,sp/sickle_knife_zm
@@ -149,8 +149,6 @@ weapon,sp/psg1_upgraded_zm_x2
 //Perks
 weapon,sp/zombie_perk_bottle
 weapon,sp/bo3_zm_widows_grenade
-weapon,sp/rebirth_hands_sp
-weapon,sp/vorkuta_knife_sp
 
 
 //SOUNDS

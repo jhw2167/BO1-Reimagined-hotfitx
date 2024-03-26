@@ -23,7 +23,7 @@ player_add_points( event, mod, hit_location, zombie)
 	player_points = 0;
 	team_points = 0;
 	multiplier = self get_points_multiplier();
-	
+	gross_possible_points = 0;
 
 	//iprintln("event: " + event + " mod: " + mod + " ");
 
@@ -33,10 +33,12 @@ player_add_points( event, mod, hit_location, zombie)
 		case "ballistic_knife_death":
 			player_points	= get_zombie_death_player_points();
 			team_points		= get_zombie_death_team_points();
+			gross_possible_points += player_points;
 
 			//iprintln("zombie_death_player_points: " + player_points);
 			//Headshots and melee bonus
 			player_points += player_add_points_kill_bonus( mod, hit_location, self getcurrentweapon(), zombie );
+			gross_possible_points += level.zombie_vars["zombie_score_bonus_head"];
 			//iprintln("KILL BONUS: " + player_points);
 
 			//Reimagined-Expanded - Apocalypse mod - Bonus points for killing zombies quickly
@@ -47,20 +49,21 @@ player_add_points( event, mod, hit_location, zombie)
 				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod );
 				if( weapon_multiplier < 1 ) 
 				{
-					self.gross_possible_points += player_points; //points u could have got if u had a better weapon
 					player_points *= weapon_multiplier;
 				} 
 				else 
 				{
 					player_points *= weapon_multiplier;
-					self.gross_possible_points += player_points;
+					gross_possible_points *= weapon_multiplier;
 				}	
 				
 
 				//Bonus points for killing zombies quickly - not doubled, not valid on WW
 				max_bonus = level.ARRAY_QUICK_KILL_BONUS_POINTS[level.round_number];
 				if( IsDefined( max_bonus ) )
-					self.gross_possible_points += max_bonus;
+					gross_possible_points += max_bonus;
+				else
+					gross_possible_points += level.ARRAY_QUICK_KILL_BONUS_POINTS[ level.THRESHOLD_MAX_APOCALYSE_ROUND ];
 				
 				if( player_points > 0 )
 					player_points += quick_kill_bonus_points( zombie );
@@ -179,11 +182,11 @@ player_add_points( event, mod, hit_location, zombie)
 		case "damage_light":
 		case "damage_ads":
 		case "damage":
-			//Handle gross_possible_points uniquely
+			self.gross_possible_points += (multiplier * gross_possible_points);
 			break;
 
 		default:
-			self.gross_possible_points += player_points;
+			self.gross_possible_points += (multiplier * player_points);
 			break;
 	}
 
@@ -509,7 +512,7 @@ add_to_player_score( points, add_to_total )
 {
 	if ( !IsDefined(add_to_total) )
 	{
-		add_to_total = true;
+		add_to_total = false;
 	}
 
 	if( !IsDefined( points ) || level.intermission )
@@ -522,6 +525,8 @@ add_to_player_score( points, add_to_total )
 	if ( add_to_total )
 	{
 		self.score_total += points;
+		self.gross_points += points;
+		self.gross_possible_points += points;
 	}
 
 	// also set the score onscreen

@@ -47,14 +47,14 @@ main()
 
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
-	level.zombie_ai_limit_override=2;	///
+	level.zombie_ai_limit_override=5;	///
 	level.starting_round_override=9;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	level.zombie_timeout_override=1000;	///
+	level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=2;	///
+	level.calculate_amount_override=5;	///
 	level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -444,14 +444,14 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
-			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 40;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 50;
 		} 
 		else {
 			level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = i;
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = i;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
 
-			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 40;
+			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 50;
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
 		}
 			
@@ -495,15 +495,15 @@ reimagined_init_level()
 	level.VALUE_PLAYER_DOWNED_PENALTY = 25;	//Multiplied by num players - 1
 	level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL = 3; //POSTs every 2.5 seconds
 	level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME = 120;	//Player has 125 seconds to be revived
-	SetDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
 
 
 	level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND = 7; //equal or greater than, only "random" drops after this round
+	level.VALUE_ZOMBIE_RANDOM_DROP_EARLY_SCALER = 1.2;	//Increment increases by 20% after each drop
 
-	//These are expected values * 10, so "10" is 1 drop expected per round,
+	//These are (expected drops per round * 10), so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 
@@ -625,8 +625,8 @@ reimagined_init_level()
 
 	//Cherry
 	level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME = 2;
-	level.VALUE_CHERRY_SHOCK_RANGE = 160;
-	level.VALUE_CHERRY_SHOCK_DMG = 32768;	//2^15
+	level.VALUE_CHERRY_SHOCK_RANGE = 258;
+	level.VALUE_CHERRY_SHOCK_DMG = 65536; 	//2^16=65536
 	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 4;
 	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 32;
 	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 16;
@@ -855,6 +855,10 @@ reimagined_init_player()
 	self.gross_possible_points = 500;
 	self.spent_points = 0;
 
+
+	//Bleedout
+	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
+
 	if( !flag("round_restarting") )
 	{
 		wait_network_frame();
@@ -1068,6 +1072,7 @@ watch_player_button_press()
 					{ 
 						wait( 0.1 );
 					}
+					iprintln("Swapping Melee");
 					self handle_swap_melee();
 					break;
 				}
@@ -1085,7 +1090,8 @@ watch_player_button_press()
 		/* APOCALYPSE SCOREBOARD */
 		if( level.apocalypse )
 		{
-			if( self buttonPressed( "TAB" ) )
+			//if ( self ScoreButtonPressed() )
+			if( self buttonPressed( "TAB" ) || self buttonPressed( "BUTTON_BACK" ) )
 			{
 				self player_handle_scoreboard("TAB");
 				wait(0.1);
@@ -1094,7 +1100,7 @@ watch_player_button_press()
 		
 		
 		wait 0.1;
-		//wait(1);
+		wait(1);
 	}
 }
 
@@ -1103,6 +1109,7 @@ watch_player_button_press()
 		if( self ActionSlotTwoButtonPressed() )
 			return true;
 
+		
 		//PC
 		if( self buttonPressed( "7" ))
 			return true;
@@ -3172,9 +3179,11 @@ Laststand_points_penalty()
 	}
 
 	count = 0;
+	players = get_players();
 	while( self.bleedout_time > 0 )
 	{
-		players = get_players();
+		
+		wait ( level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL );
 
 		//Skip points penalty if someone has QRV_PRO and can reive player
 		skipPointsPenalty = false;
@@ -3185,12 +3194,16 @@ Laststand_points_penalty()
 			}
 		}
 
+		if ( skipPointsPenalty )
+			continue;
+		
+
 		for ( i = 0; i < players.size; i++ ) {
 			penalty = level.VALUE_PLAYER_DOWNED_PENALTY * ( level.players_size - 1 );
 			if( players[i].score > penalty )
 				players[i] maps\_zombiemode_score::minus_to_player_score( penalty );
 		}	
-		wait ( level.VALUE_PLAYER_DOWNED_PENALTY_INTERVAL );
+		
 	}
 
 }
@@ -6303,7 +6316,7 @@ pre_round_think()
 		players = GetPlayers();
 		for(i=0;i<players.size;i++) {
 			//iprintln("Giving points: " + i);
-			players[i] maps\_zombiemode_score::add_to_player_score( level.starting_round * 1000);
+			players[i] maps\_zombiemode_score::add_to_player_score( level.starting_round * 1000, true);
 		}
 	}
 
@@ -6692,6 +6705,7 @@ round_wait()
 	{
 		if( flag( "end_round_wait" ) )
 		{
+			level thread reimagined_expanded_apocalypse_bonus( false );
 			return;
 		}
 
@@ -6713,13 +6727,16 @@ round_wait()
 
 }
 
-reimagined_expanded_apocalypse_bonus()
+reimagined_expanded_apocalypse_bonus( giveBonus )
 {
 	wait( 5 );
 		players = get_players();
 		for(i=0;i<players.size;i++) {
 			bonus = level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ];
-			players[i] maps\_zombiemode_score::add_to_player_score( bonus );
+			if( giveBonus )
+				players[i] maps\_zombiemode_score::add_to_player_score( bonus, true );
+			else
+				players[i].gross_possible_points += bonus;
 		}
 }
 
