@@ -1454,8 +1454,7 @@ divetonuke_explode( attacker, origin )
 	// WW (01/12/11): start clientsided effects - These client flags are defined in _zombiemode.gsc & _zombiemode.csc
 	// Used for zombie_dive2nuke_visionset() in _zombiemode.csc
 	attacker SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
-	wait_network_frame();
-	wait_network_frame();
+	wait( 0.1 );
 	attacker ClearClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
 }
 
@@ -2817,7 +2816,7 @@ give_back_additional_weapon()
 		self SetWeaponAmmoClip( dual_wield_name, self.weapon_taken_by_losing_additionalprimaryweapon[3] );
 	}
 
-	wait_network_frame();
+	wait( 0.1 );
 
 	if(!is_true(self.has_powerup_weapon))
 	{
@@ -4386,7 +4385,7 @@ watch_phd_upgrade(perk_str)
 	{
 		self waittill("sprint");
 		while( self IsSprinting() ) {
-			wait_network_frame();
+			wait( 0.1 );
 		}
 
 		if( IsDefined( self.divetoprone ) && self.divetoprone == 1) 
@@ -4891,7 +4890,7 @@ test_disable_vulture()
 		if( hasDrop )
 		{
 			zombies[i] setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
-			wait_network_frame();
+			wait( 0.1 );
 			zombies[i] clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 		}
 	
@@ -5964,8 +5963,9 @@ zombie_watch_vulture_drop_bonus()
 		players = GetPlayers();
 		for( i = 0; i < players.size; i++ ) 
 		{
-			if( players[i] HasPerk( level.VLT_PRK ) ) {
-				drop SetVisibleToPlayer( players[i] );
+			if( players[i] HasPerk( level.VLT_PRK ) ) 
+			{
+				drop SetInvisibleToPlayer( players[i], false );
 				drop thread watch_player_vulture_drop_pickup( players[i] );
 			}
 			else
@@ -5976,7 +5976,7 @@ zombie_watch_vulture_drop_bonus()
 		PlayFxOnTag( level._effect["powerup_grabbed_wave_solo"] , drop, "tag_origin" );
 		drop notify( "vulture_drop_done" );
 
-		wait( 2 );	//wait for players to cleanup fx, may need to be longer
+		wait( 1 );	//wait for players to cleanup fx, may need to be longer
 		drop Delete();
 
 	}
@@ -6234,13 +6234,9 @@ player_watch_widows_warning()
 		origin = zomb.origin + ( 0, 0, 40 );
 		forward_view_angles = AnglesToForward( self GetPlayerAngles() );
 
-		iprintln("forward_view_angles: " + forward_view_angles);
-		
 		normal = VectorNormalize( origin - view_pos );
-		iprintln("normal: " + normal);
 		dot = VectorDot( forward_view_angles, normal );
 
-		//return ( level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT > dot ); //means zombie is behind us
 		return !( zomb zombie_in_player_fov( self, level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT ) );
 	}
 

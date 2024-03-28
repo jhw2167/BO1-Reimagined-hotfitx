@@ -382,8 +382,8 @@ intro_screen()
 	level.intro_hud[0] settext(&"WAW_ZOMBIE_INTRO_FACTORY_LEVEL_PLACE");
 	level.intro_hud[1] settext("");
 	level.intro_hud[2] settext("");
-//	level.intro_hud[1] settext(&"WAW_ZOMBIE_INTRO_FACTORY_LEVEL_TIME");
-//	level.intro_hud[2] settext(&"WAW_ZOMBIE_INTRO_FACTORY_LEVEL_DATE");
+	//level.intro_hud[1] settext(&"WAW_ZOMBIE_INTRO_FACTORY_LEVEL_TIME");
+	//level.intro_hud[2] settext(&"WAW_ZOMBIE_INTRO_FACTORY_LEVEL_DATE");
 
 	for(i = 0 ; i < 3; i++)
 	{

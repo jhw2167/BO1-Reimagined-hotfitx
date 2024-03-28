@@ -69,6 +69,7 @@ main()
 	level.zombie_pathing_failed = 0;
 	level.zombie_breadcrumb_failed = 0;
 	level.mapname = Tolower( GetDvar( #"mapname" ) );
+	level.ARRAY_ZOMBIEMODE_PLAYER_COLORS = array("white", "blue", "yellow", "green");
 
 	//level.zombie_visionset = "zombie_neutral";
 
@@ -859,36 +860,6 @@ reimagined_init_player()
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
 
-	if( !flag("round_restarting") )
-	{
-		wait_network_frame();
-	}
-
-	self.current_melee_weapon = "rebirth_hands_sp";
-	self.offhand_melee_weapon = "knife_zm";
-
-	//self.current_melee_weapon = "bowie_knife_zm";
-	//self.current_melee_weapon = "knife_zm";
-	//self.offhand_melee_weapon = "rebirth_hands_sp";
-
-	offhand_equipment = "combat_" + self.offhand_melee_weapon;
-	//if( self.offhand_melee_weapon == "rebirth_hands_sp" )	
-		//offhand_equipment = "rebirth_hands_sp";
-
-	//if( !self HasWeapon( self.offhand_melee_weapon ) )
-		//self GiveWeapon( self.offhand_melee_weapon );
-	self GiveWeapon( "vorkuta_knife_sp" );
-		
-	
-	self SetActionSlot(2, "weapon",  offhand_equipment );
-
-	if( !self HasWeapon( offhand_equipment ) )
-		self GiveWeapon( offhand_equipment );
-
-	if( !self HasWeapon( self.current_melee_weapon ) )
-		self GiveWeapon( self.current_melee_weapon );
-	
-	self set_player_melee_weapon( self.current_melee_weapon );
 	
 	//Perk Stuff
 	self.purchased_perks = [];
@@ -1019,6 +990,12 @@ wait_set_player_visionset()
 		self give_pro_perks( true );
 	}
 
+	//Print entitity number and random char
+	iprintln( "Entity Number: " + self.entity_num);
+	iprintln( " Random Char: " + self.zm_random_char );
+	iprintln( " Fromz zombi_load: " + self.zombiemode_load_ent_num );
+	
+
 	wait( 10 );
 
 	//Test zombiemode_perks disablePerk function
@@ -1051,6 +1028,7 @@ watch_player_button_press()
 
 	//Pre trigger hack
 	self handle_swap_melee();
+	wait( 0.2 );
 	self handle_swap_melee();
 
 	while(1)
@@ -1091,16 +1069,21 @@ watch_player_button_press()
 		if( level.apocalypse )
 		{
 			//if ( self ScoreButtonPressed() )
-			if( self buttonPressed( "TAB" ) || self buttonPressed( "BUTTON_BACK" ) )
+			if( self buttonPressed( "TAB" ) )
 			{
 				self player_handle_scoreboard("TAB");
 				wait(0.1);
 			}
+
+			if( self buttonPressed( "BUTTON_BACK" ) )
+			{
+				self player_handle_scoreboard("BUTTON_BACK");
+				wait(0.1);
+			}
 		}
 		
-		
 		wait 0.1;
-		wait(1);
+		//wait(1);
 	}
 }
 
@@ -2096,7 +2079,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.8.0" );
+	SetDvar( "zm_mod_version", "1.10.0" );
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -2844,9 +2827,9 @@ onPlayerConnect()
 		{
 			level.char_nums = array(0, 1, 2, 3);
 		}
-		player.zm_random_char = level.char_nums[RandomInt(level.char_nums.size)];
-		player.entity_num = player.zm_random_char;
-		level.char_nums = array_remove_nokeys(level.char_nums, player.entity_num);
+		//player.zm_random_char = level.char_nums[RandomInt(level.char_nums.size)];
+		//player.entity_num = player.zm_random_char;
+		//level.char_nums = array_remove_nokeys(level.char_nums, player.entity_num);
 
 		//player.entity_num = player GetEntityNumber();
 		player thread onPlayerSpawned();
@@ -3255,7 +3238,7 @@ onPlayerSpawned()
 		if(!flag("round_restarting"))
 		{
 			self thread give_starting_weapon("m1911_zm");
-			//self set_melee_actionslot();
+			self thread set_melee_weapons();
 		}
 
 		self enablehealthshield( false );
@@ -3283,10 +3266,11 @@ onPlayerSpawned()
 			self SetClientDvar("hud_enemy_counter_on_game", 1);
 		}
 
-		self setClientDvar("hud_timer_on_game", 1);
-		self setClientDvar("hud_health_bar_on_game", 1);
-		self setClientDvar("hud_zone_name_on_game", 1);
-		self setClientDvar("hud_character_names_on_game", 1);
+		if( level.mapname == "zombie_cod5_factory")
+			self thread delay_hud_setup(12);
+		else
+			self thread delay_hud_setup(0.1);
+		
 
 		self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
 
@@ -3359,10 +3343,6 @@ onPlayerSpawned()
 
 				self thread player_gravity_fix();
 
-				mapname = Tolower(GetDvar(#"mapname"));
-				if( mapname == "zombie_cod5_factory")
-					wait( 8 ); // wait for the intro to finish
-
 				self thread health_bar_hud();
 
 				self thread character_names_hud();
@@ -3379,6 +3359,15 @@ onPlayerSpawned()
 	}
 }
 
+delay_hud_setup( delay )
+{
+	wait( delay );
+	self setClientDvar("hud_health_bar_on_game", 1);
+	self setClientDvar("hud_timer_on_game", 1);
+	self setClientDvar("hud_zone_name_on_game", 1);
+	self setClientDvar("hud_character_names_on_game", 1);
+}
+
 // unfreeze after a frame so players cant become "frozen" when spawning in if they are holding attack button
 unfreeze_controls_after_frame()
 {
@@ -3392,6 +3381,31 @@ give_starting_weapon(wep)
 	self GiveStartAmmo( wep );
 	wait_network_frame();
 	self SwitchToWeapon( wep );
+}
+
+set_melee_weapons()
+{
+
+	if( !flag("round_restarting") )
+	{
+		wait_network_frame();
+	}
+
+	self.current_melee_weapon = "rebirth_hands_sp";
+	self.offhand_melee_weapon = "knife_zm";
+	offhand_equipment = "combat_" + self.offhand_melee_weapon;	//offhand knife
+
+	self GiveWeapon( "vorkuta_knife_sp" );						//offhand punch
+	self SetActionSlot(2, "weapon",  offhand_equipment );
+
+	if( !self HasWeapon( offhand_equipment ) )
+		self GiveWeapon( offhand_equipment );
+
+	if( !self HasWeapon( self.current_melee_weapon ) )
+		self GiveWeapon( self.current_melee_weapon );
+	
+	self set_player_melee_weapon( self.current_melee_weapon );
+
 }
 
 spawn_life_brush( origin, radius, height )
@@ -5643,8 +5657,21 @@ reimagined_expanded_round_start()
 	}
 
 	//Increase max perks every 5 rounds after 15
-		if( level.round_number > 14 && level.round_number % 5 == 0 ){
-			level.max_perks++;
+		if( level.round_number > 14 && level.round_number % 5 == 0 ) 
+		{
+			//Switch case for the maps:
+			switch( level.mapname ) 
+			{
+				case "zombie_cod5_prototype":
+				case "zombie_cod5_asylum":
+				case "zombie_cod5_sumpf":
+				case "zombie_cod5_factory":
+				case "zombie_theater":
+				case "zombie_pentagon":
+					level.max_perks++;
+					break;	
+			}
+			
 		}
 
 
@@ -10155,6 +10182,7 @@ player_apocalypse_stats( message, timeout )
 	{
 		for( j = 0; j < players.size; j++ )
 		{
+			ent_num = players[j].entity_num;
 			hudElems[i][j] = NewClienthudElem( self );
 			hudElems[i][j].alignX = "center";
 			hudElems[i][j].alignY = "middle";
@@ -10165,6 +10193,7 @@ player_apocalypse_stats( message, timeout )
 			hudElems[i][j].foreground = true;
 			hudElems[i][j].fontScale = 1.2;
 			hudElems[i][j].alpha = 1;
+			//hudElems[i][j].color = level.ARRAY_ZOMBIEMODE_PLAYER_COLORS[ ent_num ];
 			hudElems[i][j].color = ( 1.0, 1.0, 1.0 );
 			hudElems[i][j].hidewheninmenu = true;
 			hudElems[i][j] SetText( headers[i] );
@@ -11167,7 +11196,7 @@ character_names_hud()
 	players = get_players();
 	for ( j = 0; j < players.size; j++ )
 	{
-		players[j].entity_num = players[j] GetEntityNumber();
+		//players[j].entity_num = players[j] GetEntityNumber();
 		// Allow custom maps to override this logic
 		if(isdefined(level._zombiemode_get_player_name_string))
 		{
@@ -11193,23 +11222,8 @@ character_names_hud()
 		if(IsDefined(name))
 		{
 			offset = players.size - j - 1;
-			color = undefined;
-			if(players[j] GetEntityNumber() == 0)
-			{
-				color = "white";
-			}
-			else if(players[j] GetEntityNumber() == 1)
-			{
-				color = "blue";
-			}
-			else if(players[j] GetEntityNumber() == 2)
-			{
-				color = "yellow";
-			}
-			else if(players[j] GetEntityNumber() == 3)
-			{
-				color = "green";
-			}
+			color = level.ARRAY_ZOMBIEMODE_PLAYER_COLORS[ players[j].entity_num ];
+			color = "white";
 			self SetClientDvar( "hud_character_name_" + color, name );
 			self SetClientDvar( "hud_character_name_offset_" + color, offset * 20 );
 			self SetClientDvar( "hud_character_name_on_" + color, true );
@@ -11217,11 +11231,6 @@ character_names_hud()
 	}
 }
 
-set_melee_actionslot()
-{
-	
-	
-}
 
 set_gamemode()
 {
