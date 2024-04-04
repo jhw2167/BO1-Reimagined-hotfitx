@@ -159,7 +159,10 @@ dog_round_spawning()
  #/
 	//Reimagined-Expanded, intergrating dog rounds with normal rounds
 	level.zombie_dog_total = max;
-	level.zombie_total += max;
+	if( level.apocalypse )
+		level.zombie_total += max;
+	else
+		level.zombie_total = max;
 	
 	
 

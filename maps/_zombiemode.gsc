@@ -314,6 +314,8 @@ post_all_players_connected()
 
 	level thread enemies_remaining_hud();
 
+	level thread watch_faulty_rounds();
+
 	level thread sidequest_hud();
 }
 
@@ -10780,6 +10782,27 @@ update_time(level_var, client_var)
 	}
 }
 
+watch_faulty_rounds()
+{
+	level endon( "intermission" );
+	level endon( "end_game" );
+
+	time_no_enemies = 0;
+	while(1)
+	{
+		enemy_count = get_enemy_count();
+		if(enemy_count == 0)
+			time_no_enemies++;
+		else
+			time_no_enemies = 0;
+
+		if(time_no_enemies > 8)
+			break;
+		
+	}	
+}
+
+
 enemies_remaining_hud()
 {
 	if(level.gamemode != "survival" && level.gamemode != "grief")
@@ -10800,7 +10823,6 @@ enemies_remaining_hud()
 			notifyDespawnOnce = false;
 		}
 			
-
 
 		if( zombs == 0 || is_true(flag("enter_nml")) || is_true(flag("round_restarting")) )
 		{
