@@ -29,11 +29,13 @@ quad_prespawn()
 	zombies = GetAIArray( "axis" );
 	quad_zombies = 0;
 	for ( i = 0; i < zombies.size; i++ ) {
-		if ( zombies[i].animname == "quad_zombie" )
+		if ( IsDefined(zombies[i].animname) && zombies[i].animname == "quad_zombie" )
 			quad_zombies++;
 	}
-	
-	if( (quad_zombies / zombies.size) > level.THRESHOLD_NOVA_CRAWLER_MAX_PORTION ) {
+
+
+	if( (quad_zombies > 3) && ( (quad_zombies / zombies.size) > 0.2 ) ) 
+	{
 		return;
 	}
 		

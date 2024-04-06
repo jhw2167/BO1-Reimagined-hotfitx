@@ -122,8 +122,8 @@ main()
 	if ( !isdefined( level.zombie_ai_limit ) )
 	{
 		//Reimagined-Expanded - raised from 24 to 40
-		level.zombie_ai_limit = 45;
-		SetAILimit( 32 );//allows zombies to spawn in as some were just killed
+		level.zombie_ai_limit = 32;
+		SetAILimit( 32 );	//allows zombies to spawn in as some were just killed
 	}
 
 	
@@ -468,7 +468,7 @@ reimagined_init_level()
 
 	level.VALUE_HORDE_SIZE = 100; 			/// none in early rounds
 	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
-	level.THRESHOLD_ZOMBIE_AI_LIMIT = 45;
+	level.THRESHOLD_ZOMBIE_AI_LIMIT = 32;
 
 	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 100;	//up from 75
 
@@ -970,11 +970,29 @@ reimagined_init_player()
 
 	//Threads
 	self thread wait_set_player_visionset();
+	self thread watch_player_utility();
 	self thread watch_player_button_press();
 
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
 
+watch_player_utility()
+{
+	dev_only = false;
+	while(1)
+	{
+		if( self buttonPressed("v") && dev_only )
+		{
+			iprintln("kill all");
+			zombies = GetAiSpeciesArray( "axis", "all" );
+			for(i=0;i<zombies.size;i++)
+			{
+				zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
+			}
+		}
+		wait(0.5);
+	}
+}
 
 wait_set_player_visionset()
 {
@@ -5224,11 +5242,18 @@ round_spawning()
 		else
 		{
 			ai = spawn_zombie( spawn_point );
-			if( IsDefined( ai ) )
+			wait 0.2;
+			if( IsDefined( ai ) && IsDefined( ai.animname) )
 			{
 				level.zombie_total--;
-				ai thread round_spawn_failsafe();
 				count++;
+				ai thread round_spawn_failsafe();
+				
+			}
+			else
+			{
+				ai DoDamage( ai.health + 100, (0,0,0) );
+				continue;
 			}
 		}
 
@@ -5236,7 +5261,7 @@ round_spawning()
 		determine_horde_wait( count );
 		
 		
-		wait_network_frame();
+		wait(0.1);
 	}
 }
 
@@ -5580,11 +5605,11 @@ reimagined_expanded_round_start()
 			level.VALUE_ZOMBIE_SPAWN_DELAY = 4 - level.players_size * 0.75;
 
 			//MAX ZOMBIES
-			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 32, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
 			level.zombie_move_speed = 50;	//runners
-			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 45, hard limit at 100, network issues?
+			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 32, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( 10 + level.players_size * 2 );
 			level.VALUE_HORDE_DELAY = int( 10 - level.players_size * 2 ); 
@@ -10784,7 +10809,6 @@ update_time(level_var, client_var)
 
 watch_faulty_rounds()
 {
-	level endon( "intermission" );
 	level endon( "end_game" );
 
 	time_no_enemies = 0;
@@ -10796,9 +10820,10 @@ watch_faulty_rounds()
 		else
 			time_no_enemies = 0;
 
-		if(time_no_enemies > 8)
+		if(time_no_enemies > 15)
 			break;
-		
+
+		wait(1);
 	}	
 }
 
@@ -10845,7 +10870,7 @@ enemies_remaining_hud()
 			}
 		}
 
-		wait .05;
+		wait .5;
 	}
 }
 
