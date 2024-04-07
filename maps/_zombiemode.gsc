@@ -978,21 +978,30 @@ reimagined_init_player()
 
 watch_player_utility()
 {
+	//iprintln("Jump utility");
+
 	dev_only = false;
 	while(1)
 	{
-		if( self buttonPressed("v") && dev_only )
+		if( self buttonPressed("v")  && dev_only)
 		{
-			iprintln("kill all");
-			zombies = GetAiSpeciesArray( "axis", "all" );
-			for(i=0;i<zombies.size;i++)
-			{
-				zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
-			}
+			self kill_all_utility();
 		}
 		wait(0.5);
 	}
 }
+
+	kill_all_utility()
+	{
+		//iprintln("kill all");
+		zombies = GetAiSpeciesArray( "axis", "all" );
+		for(i=0;i<zombies.size;i++)
+		{
+			zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
+		}
+
+		iprintln("Origin: " + self.origin);
+	}
 
 wait_set_player_visionset()
 {
@@ -10814,16 +10823,27 @@ watch_faulty_rounds()
 	time_no_enemies = 0;
 	while(1)
 	{
+		wait(1);
 		enemy_count = get_enemy_count();
 		if(enemy_count == 0)
 			time_no_enemies++;
 		else
 			time_no_enemies = 0;
 
-		if(time_no_enemies > 15)
-			break;
-
-		wait(1);
+		if(time_no_enemies > 30) 
+		{
+			level.zombie_total = 0;
+			flag_set( "end_round_wait" );
+			level notify( "last_dog_down" );
+			wait( 1 );
+			flag_clear( "end_round_wait" );
+			time_no_enemies = 0;
+		}
+		else if ( time_no_enemies > 10 && time_no_enemies < 12)
+		{
+			iprintln("Counting wait");
+		}
+		
 	}	
 }
 
