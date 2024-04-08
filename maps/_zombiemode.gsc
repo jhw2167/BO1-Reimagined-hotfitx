@@ -48,10 +48,10 @@ main()
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
 	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=9;	///
+	//level.starting_round_override=9;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	level.zombie_timeout_override=10;	///
+	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///
@@ -803,6 +803,11 @@ reimagined_init_level()
 
 	//Maps
 
+	//Shino
+
+	level.ARRAY_SHINO_PERKS_AVAILIBLE = array("", "", "", "", "vending_babyjugg" ); //babyjug never valid
+	level.ARRAY_SHINO_ZONE_OPENED = [];
+
 	//Cosmodrome
 	level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME = 30;
 
@@ -1023,6 +1028,10 @@ wait_set_player_visionset()
 	//iprintln( "Entity Number: " + self.entity_num);
 
 	wait( 10 );
+
+	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {
+		iprintln( "Perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] );
+	}
 
 	//Test zombiemode_perks disablePerk function
 	/*

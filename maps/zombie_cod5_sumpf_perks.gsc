@@ -49,44 +49,8 @@ solo_quick_revive_disable()
 
 randomize_vending_machines()
 {
-	vending_machines = GetEntArray( "zombie_vending", "targetname" );
-	//swap_quick_revive( vending_machines );
-	vending_machine_remove = [];
-	for( i = 0; i < vending_machines.size; i ++ )
-	{
-		if( vending_machines[i].script_noteworthy == "specialty_deadshot" || 
-		//vending_machines[i].script_noteworthy == "specialty_quickrevive" || 
-		vending_machines[i].script_noteworthy == "specialty_bulletdamage" || 
-		vending_machines[i].script_noteworthy == "specialty_altmelee" )
-		{
-			vending_machine_remove[ vending_machine_remove.size ] = vending_machines[i];
-		}
-	}
-	for( i = 0; i < vending_machine_remove.size; i ++ )
-	{
-		vending_machines = array_remove( vending_machines, vending_machine_remove[i] );
-	}
-	start_locations = [];
-	start_locations[0] = GetEnt( "random_vending_start_location_0", "script_noteworthy" );
-	start_locations[1] = GetEnt( "random_vending_start_location_1", "script_noteworthy" );
-	start_locations[2] = GetEnt( "random_vending_start_location_2", "script_noteworthy" );
-	start_locations[3] = GetEnt( "random_vending_start_location_3", "script_noteworthy" );
-	start_locations[4] = spawn_perk_machine_location( "specialty_longersprint" );
-	start_locations[5] = spawn_perk_machine_location( "specialty_flakjacket" );
-	//start_locations[6] = spawn_perk_machine_location( "specialty_bulletaccuracy" );			//wine not used yet
-	
 
-	level.start_locations = [];
-	level.start_locations[ level.start_locations.size ] = start_locations[0].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[1].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[2].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[3].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[4].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[5].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[6].origin;
-	level.start_locations[ level.start_locations.size ] = start_locations[7].origin;
-	start_locations = array_randomize( start_locations );
-
+	/*
 	for( i = 0; i < vending_machines.size; i ++ )
 	{
 		origin = start_locations[i].origin;
@@ -99,9 +63,83 @@ randomize_vending_machines()
 		machine Hide();
 		vending_machines[i] trigger_on();
 	}
+	*/
+
+	level thread watch_randomized_vending_machines();
 	level.perk_randomization_on = [];
 	level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
 }
+
+	watch_randomized_vending_machines()
+	{
+		level endon("end_game");
+
+		start_locations[0] = GetEnt( "random_vending_start_location_0", "script_noteworthy" );
+		start_locations[1] = GetEnt( "random_vending_start_location_1", "script_noteworthy" );
+		start_locations[2] = GetEnt( "random_vending_start_location_2", "script_noteworthy" );
+		start_locations[3] = GetEnt( "random_vending_start_location_3", "script_noteworthy" );
+
+		level.start_locations = [];
+		level.start_locations[ level.start_locations.size ] = start_locations[0].origin;
+		level.start_locations[ level.start_locations.size ] = start_locations[1].origin;
+		level.start_locations[ level.start_locations.size ] = start_locations[2].origin;
+		level.start_locations[ level.start_locations.size ] = start_locations[3].origin;
+		
+		while(1)
+		{
+			iprintln( "seting up random vendings" );
+			vending_machines = GetEntArray( "zombie_vending", "targetname" );
+
+			vending_machines = array_randomize( vending_machines );
+
+			new_shino_perks = [];
+			for( i = 0; i < vending_machines.size; i++ )
+			{
+				iprintln( "testing new perk: " + vending_machines[i].target );
+				
+				if( is_in_array( level.ARRAY_SHINO_PERKS_AVAILIBLE, vending_machines[i].target ) )
+					continue;
+				
+				iprintln( "Can spawn perk!"  );
+				machine = vending_machines[i] get_vending_machine( start_locations[i] );
+
+				machine.origin = start_locations[i].origin;
+				machine.angles = start_locations[i].angles;
+				machine Hide();
+
+				if( is_true( level.ARRAY_SHINO_ZONE_OPENED[i] ) )
+					vending_randomization_effect( i );
+						
+				new_shino_perks[ i ] = vending_machines[i].target;
+				
+				if( i >= 3 ) //only 4 perks at a time on shino
+					break;
+			}
+
+			OFF_MAP = SpawnStruct();
+			OFF_MAP.origin = (0,0,0);
+			OFF_MAP.angles = (0,0,0);
+			for( i = 0; i < vending_machines.size; i++ )
+			{
+				if( is_in_array( new_shino_perks, vending_machines[i].target ) )
+				{
+					iprintln( "new perk available: " + new_shino_perks[i] );
+					level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] = new_shino_perks[i];
+					continue;
+				}
+				
+				machine = vending_machines[i] get_vending_machine( OFF_MAP );
+
+				machine.origin = OFF_MAP.origin;
+				machine.angles = OFF_MAP.angles;
+				machine Hide();
+
+			}
+
+			level waittill("between_round_over");
+			iprintln( "between round over trigered" );
+		}
+	}
 
 //Reimagined-Expanded, will need to edit with vulture aid
 hide_waypoint_until_perk_spawned( struct )
@@ -121,6 +159,7 @@ hide_waypoint_until_perk_spawned( struct )
 	}
 	return false;
 }
+
 
 spawn_perk_machine_location( perk )
 {
@@ -154,16 +193,18 @@ get_vending_machine( start_location )
 	{
 		return;
 	}
-	start_location.origin = machine.origin;
-	start_location.angles = machine.angles;
+	machine.origin = start_location.origin;
+	machine.angles = start_location.angles;
 	self EnableLinkTo();
 	self LinkTo( start_location );
+	iprintln( self.target + " linked to position: " + start_location.origin ); 
 	return machine;
 }
 
 activate_vending_machine( machine, origin, entity )
 {
 	level notify( "master_switch_activated" );
+	iprintln( "activate_vending_machine: " + machine );
 	switch( machine )
 	{
 		case "zombie_vending_jugg_on":
@@ -257,7 +298,11 @@ play_vending_vo( machine, origin )
 vending_randomization_effect( index )
 {
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;
+	iprintln( "vending_randomization_effect zone opened: " + index );
+
 	machines = [];
+	magic_index = 0;
 	for( j = 0; j < vending_triggers.size; j ++ )
 	{
 		machine_array = GetEntArray( vending_triggers[j].target, "targetname" );
@@ -266,18 +311,22 @@ vending_randomization_effect( index )
 			if( !IsDefined( machine_array[i].script_noteworthy ) || machine_array[i].script_noteworthy != "clip" )
 			{
 				machines[j] = machine_array[i];
+				magic_index = j;
 			}
 		}
 	}
+	
 	machine = undefined;
 	for( j = 0; j < machines.size; j ++ )
 	{
 		if( machines[j].origin == level.start_locations[ index ] )
 		{
 			machine = machines[j];
+			iprintln( "found machine " + machines[j].target );
 			break;
 		}
 	}
+
 	PlaySoundAtPosition( "rando_start", machine.origin );
 	origin = machine.origin;
 	if( level.vending_model_info.size > 1 )
@@ -290,6 +339,7 @@ vending_randomization_effect( index )
 		PlayFXOnTag( level._effect[ "zombie_perk_4th" ], machine, "tag_origin" );
 		PlaySoundAtPosition( "rando_perk", machine.origin );
 	}
+
 	true_model = machine.model;
 	machine Show();
 	level thread play_sound_2D( "perk_lottery" );

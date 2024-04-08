@@ -98,7 +98,7 @@ main()
 	maps\zombie_cod5_sumpf_perk_machines::init();
 	maps\zombie_cod5_sumpf_perks::randomize_vending_machines();
 
-	level thread turn_on_all_perks();
+	//level thread turn_on_all_perks();
 
 	level.zone_manager_init_func = ::sumpf_zone_init;
 	init_zones[0] = "center_building_upstairs";
