@@ -251,6 +251,7 @@ default_vending_precaching()
 
 	PrecacheItem( "zombie_perk_bottle" );
 	PreCacheModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+	PrecacheItem( "zombie_knuckle_crack" );
 
 	/*
 	PreCacheShader( "specialty_glow_dbl_tap" );

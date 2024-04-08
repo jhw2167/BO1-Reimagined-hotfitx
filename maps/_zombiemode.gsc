@@ -980,7 +980,7 @@ watch_player_utility()
 {
 	//iprintln("Jump utility");
 
-	dev_only = false;
+	dev_only = true;
 	while(1)
 	{
 		if( self buttonPressed("v")  && dev_only)
@@ -1020,10 +1020,7 @@ wait_set_player_visionset()
 	}
 
 	//Print entitity number and random char
-	iprintln( "Entity Number: " + self.entity_num);
-	iprintln( " Random Char: " + self.zm_random_char );
-	iprintln( " Fromz zombi_load: " + self.zombiemode_load_ent_num );
-	
+	//iprintln( "Entity Number: " + self.entity_num);
 
 	wait( 10 );
 
@@ -1052,7 +1049,7 @@ watch_player_button_press()
 	{
 		wait_network_frame();
 	}
-	iprintln("watch_player_button_press");
+	
 	wait(2);
 
 	//Pre trigger hack
@@ -7889,16 +7886,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( boss_zombie ) {
 			//skip pre processing for punch
 		}
-		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) ) 		//knife punch!
+		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) && is_true( self.is_zombie ) ) 		//knife punch!
 		{
 			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 			if( weapon == "vorkuta_knife_zm" )
 				wait_anim *= 1.5;
 
-			if( is_true( self.is_zombie ) ) 
+			if( final_damage < self.health ) 
 			{
-				if( final_damage < self.health )
-					self thread zombie_knockdown( wait_anim, false );
+				self thread zombie_knockdown( wait_anim, false );
 			}
 			
 
@@ -7907,7 +7903,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			self [[ self.thundergun_fling_func ]]( attacker );
 		}
-		else if( weapon == "combat_knife_zm" ) //Reimagined, knife held as independent weapo
+		else if( weapon == "combat_knife_zm" || weapon == "knife_zm" ) //Reimagined, knife held as independent weapo
 		{
 
 			damage = int(self.maxhealth / level.round_number) + 100;
@@ -7998,7 +7994,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(attacker hasProPerk(level.PHD_PRO))
 			final_damage *= 2;
 
-		return final_damage;
+		
 	}
 
 	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" )
@@ -8012,7 +8008,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( is_boss_zombie(self.animname) )
 			return final_damage / 5;
 
-		return final_damage;
+	
 	}
 
 	// damage scaling for explosive weapons

@@ -452,7 +452,7 @@ thief_round_tracker()
 
 	while ( 1 )
 	{
-		level waittill( "between_round_over" );
+		level waittill_any( "between_round_over", "thief_round_stop" );
 
 
 		if ( level.round_number >= level.next_thief_round )
@@ -486,6 +486,14 @@ thief_round_tracker()
 					level.next_thief_round = level.round_number + 4;
 					level.prev_thief_round_amount = undefined;
 				}
+			}
+
+			if( level.apocalypse )
+			{
+				flag_wait( "last_thief_down" );
+				
+				thief_round_stop();
+				level.music_round_override = false;
 			}
 
 			//level.prev_thief_round = level.next_thief_round;
@@ -993,7 +1001,15 @@ thief_take_loot()
 	is_laststand = player maps\_laststand::player_is_in_laststand();
 
 	// don't take these items...choose random primary instead
-	if ( is_offhand_weapon( weapon ) || weapon == "zombie_bowie_flourish" || weapon == "none" || isSubStr( weapon, "zombie_perk_bottle" ) || is_laststand || weapon == "zombie_knuckle_crack" )
+	is_nonstealable = is_offhand_weapon( weapon ) 
+		|| weapon == "zombie_bowie_flourish" 
+		|| isSubStr( weapon, "zombie_perk_bottle" ) 
+		|| is_laststand || weapon == "zombie_knuckle_crack"
+		|| weapon == player.current_melee_weapon
+		|| weapon == player.offhand_melee_weapon
+		|| is_in_array( level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon );
+
+	if ( is_nonstealable )
 	{
 		primaries = player GetWeaponsListPrimaries();
 		if( isDefined( primaries ) )
