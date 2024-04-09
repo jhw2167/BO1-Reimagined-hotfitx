@@ -789,6 +789,9 @@ flag_toggle( message )
   
 flag_wait( msg )
 {
+	if( !isdefined( msg ) || level.flag[ msg ] )
+		return;
+		
 	while( !level.flag[ msg ] )
 		level waittill( msg );
 }

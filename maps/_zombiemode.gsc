@@ -805,7 +805,8 @@ reimagined_init_level()
 
 	//Shino
 
-	level.ARRAY_SHINO_PERKS_AVAILIBLE = array("", "", "", "", "vending_babyjugg" ); //babyjug never valid
+	//level.ARRAY_SHINO_TARGETNAME_PERKS = valid_vending = ["vending_jugg", "vending_doubletap", "vending_revive", "vending_sleight", "vending_divetonuke", "vending_deadshot", "vending_marathon", "vending_electriccherry", "vending_widowswine", "vending_chugabud", "vending_additionalprimaryweapon", "vending_vulture"];
+	level.ARRAY_SHINO_PERKS_AVAILIBLE = array("", "", "", ""); //babyjug never valid
 	level.ARRAY_SHINO_ZONE_OPENED = [];
 
 	//Cosmodrome
@@ -981,6 +982,7 @@ reimagined_init_player()
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
 
+//watch_utility
 watch_player_utility()
 {
 	//iprintln("Jump utility");
@@ -992,9 +994,33 @@ watch_player_utility()
 		{
 			self kill_all_utility();
 		}
+
+		if( self buttonPressed("I")  && dev_only)
+		{
+			get_vending_utility();
+		}
 		wait(0.5);
 	}
 }
+
+	get_vending_utility()
+	{
+		iprintln( "Deleting old perks " );
+		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+		iprintln( "Size " + vending_triggers.size );
+		for( j = 0; j < vending_triggers.size; j ++ )
+		{
+			machine_array = GetEntArray( vending_triggers[j].target, "targetname" );
+			iprintln( "Perk exisits " + vending_triggers[j].target  );
+			for( i = 0; i < machine_array.size; i ++ )
+			{
+				iprintln( "Machine exisits " + machine_array[i].targetname  );
+				machine_array[j] delete();
+			}
+
+			vending_triggers[j] delete();
+		}
+	}
 
 	kill_all_utility()
 	{

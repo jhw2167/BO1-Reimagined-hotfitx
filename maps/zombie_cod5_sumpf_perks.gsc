@@ -65,9 +65,9 @@ randomize_vending_machines()
 	}
 	*/
 
-	level thread watch_randomized_vending_machines();
-	level.perk_randomization_on = [];
-	level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
+	//level thread watch_randomized_vending_machines();
+	//level.perk_randomization_on = [];
+	//level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
 }
 
 	watch_randomized_vending_machines()
@@ -140,6 +140,8 @@ randomize_vending_machines()
 			iprintln( "between round over trigered" );
 		}
 	}
+
+
 
 //Reimagined-Expanded, will need to edit with vulture aid
 hide_waypoint_until_perk_spawned( struct )
@@ -303,6 +305,7 @@ vending_randomization_effect( index )
 
 	machines = [];
 	magic_index = 0;
+	/*
 	for( j = 0; j < vending_triggers.size; j ++ )
 	{
 		machine_array = GetEntArray( vending_triggers[j].target, "targetname" );
@@ -326,7 +329,9 @@ vending_randomization_effect( index )
 			break;
 		}
 	}
+	*/
 
+	machine = GetEnt( level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ], "targetname" );
 	PlaySoundAtPosition( "rando_start", machine.origin );
 	origin = machine.origin;
 	if( level.vending_model_info.size > 1 )
