@@ -15198,4 +15198,14 @@ waittill_player_shoots(weapon_type, ender)
 	}		
 	
 }
+
+wait_print( msg, data )
+{
+	flag_wait("begin_spawning");
+	iprintLn( msg );
+	
+	if( IsDefined( data ) )
+		iprintln( data );
+	
+}
  

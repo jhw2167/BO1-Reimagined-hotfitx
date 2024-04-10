@@ -1573,7 +1573,7 @@ perk_fx( fx, offset )
 	off_event = self.targetname + "_off";
 	moved_event = self.targetname + "_moved";
 
-	level waittill_any( off_event, moved_event );
+	level waittill_any( off_event, moved_event, "perks_swapping" );
 
 	model delete();
 
@@ -2213,7 +2213,7 @@ vending_trigger_think()
 	if ( !solo || level.script == "zombie_cod5_sumpf" ) //fix for being able to buy Quick Revive on solo on Shi No Numa before the perk-a-cola spawn animation is complete
 	{
 		notify_name = perk + "_power_on";
-		level waittill( notify_name );
+		level waittill_any( notify_name, "master_switch_activated");
 	}
 
 	if(!IsDefined(level._perkmachinenetworkchoke))

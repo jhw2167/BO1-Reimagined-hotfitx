@@ -96,6 +96,7 @@ main()
 	//Reimagined-Expanded, setup game
 	maps\_zombiemode::main();
 	//maps\zombie_cod5_sumpf_perks::randomize_vending_machines();
+	//maps\zombie_cod5_sumpf_perk_machines::init();
 
 	//level thread turn_on_all_perks();
 

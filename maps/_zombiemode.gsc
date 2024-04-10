@@ -55,7 +55,7 @@ main()
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///
-	level.apocalypse_override=true;		///
+	//level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
@@ -995,7 +995,7 @@ watch_player_utility()
 			self kill_all_utility();
 		}
 
-		if( self buttonPressed("I")  && dev_only)
+		if( self buttonPressed("i")  && dev_only)
 		{
 			get_vending_utility();
 		}
@@ -1015,10 +1015,10 @@ watch_player_utility()
 			for( i = 0; i < machine_array.size; i ++ )
 			{
 				iprintln( "Machine exisits " + machine_array[i].targetname  );
-				machine_array[j] delete();
+				//machine_array[j] delete();
 			}
 
-			vending_triggers[j] delete();
+			//vending_triggers[j] delete();
 		}
 	}
 

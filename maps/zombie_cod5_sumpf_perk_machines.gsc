@@ -280,6 +280,60 @@ place_vulture(machine_origin,  machine_angles)
 
 */
 
+printHelper( a, b, c, d, e, f)
+{
+	if( !IsDefined( a ) )
+		a = "";
+	
+	if( !IsDefined( b ) )
+		b = "";
+
+	if( !IsDefined( c ) )
+		c = "";
+
+	if( !IsDefined( d ) )
+		d = "";
+
+	if( !IsDefined( e ) )
+		e = "";
+	
+	if( !IsDefined( f ) )
+		f = "";
+	
+	iprintln( a + " " + b + " " + c + " " + d + " " + e + " " + f );
+}
+
+remove_set_perks( trigger )
+{
+	clip = undefined;
+	model = undefined;
+
+	machine = GetEntArray( trigger.target, "targetname" );
+	for( i = 0; i < machine.size; i ++ )
+	{
+		if( IsDefined( machine[i].script_noteworthy ) && machine[i].script_noteworthy == "clip" )
+		{
+			clip = machine[i];
+		}
+		else
+		{
+			model = machine[i];
+		}
+	}
+	anchor = Spawn( "script_model", model.origin );
+	anchor.angles = model.angles;
+	anchor SetModel( "tag_origin" );
+	clip EnableLinkTo();
+	clip LinkTo( anchor );
+	trigger EnableLinkTo();
+	trigger LinkTo( anchor );
+	//model.origin = ( 9565, 327, -529 );
+	model.origin = ( 0, 0, -9999 );
+	model.angles = ( 0, 90, 0 );
+	anchor.origin = model.origin;
+	anchor.angles = model.angles;
+}
+
 init()
 {
 	//level._effect[ "lightning_dog_spawn" ] = LoadFX( "maps/zombie/fx_zombie_dog_lightning_buildup" );
@@ -288,47 +342,41 @@ init()
 		register_perk_spawn( loc.origin, loc.angles );
 	}
 
-	//Delete OG Perks
-	flag_wait( "begin_spawning" );
-	wait(5);
-	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
-		iprintln( "Deleting old perks " + vending_triggers.size );
-		for( j = 0; j < vending_triggers.size; j ++ )
-		{
-			machine_array = GetEntArray( vending_triggers[j].target, "targetname" );
-			iprintln( "Machine array for " + vending_triggers[j].target + " size " + machine_array.size  );
-			for( i = 0; i < machine_array.size; i ++ )
-			{
-				iprintln( "Deleted " + i + " " + vending_triggers[j].target );
-				machine_array[j] Hide();
-			}
-			iprintln( "Deleted " + vending_triggers[j].target  );
-			vending_triggers[j] delete();
-		}
+	vending_machines = GetEntArray( "zombie_vending", "targetname" );
+	for( i = 0; i < vending_machines.size; i ++ )
+	{
+		remove_set_perks( vending_machines[i] );
+	}
 
 	place_babyjug();
-	
-	spawn_perk( "zombie_vending_jugg", "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" );
-	//spawn_perk( "zombie_vending_sleight", "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" );
-	spawn_perk( "zombie_vending_doubletap", "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" );
-	//spawn_perk( "zombie_vending_revive", "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" );
-	spawn_perk( "zombie_vending_nuke", "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" );
-	spawn_perk( "zombie_vending_marathon", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
-	spawn_perk( "zombie_vending_ads", "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" );
-	spawn_perk( "zombie_vending_three_gun", "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" );
+	exitEarly = false;
+	if( exitEarly )
+	{
+
+	}
+	else
+	{
+		
+
+	spawn_perk( "zombie_vending_nuke_on", "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" );
+	spawn_perk( "zombie_vending_marathon_on", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
+	spawn_perk( "zombie_vending_ads_on", "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" );
+	spawn_perk( "zombie_vending_three_gun_on", "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" );
 	//spawn_perk( "p6_zm_vending_chugabud", "zombie_vending", "vending_chugabud", "specialty_extraammo", "mus_perks_whoswho_jingle", "mus_perks_whoswho_sting" );
-	spawn_perk( "p6_zm_vending_electric_cherry_off", "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" );
-	spawn_perk( "bo2_zombie_vending_vultureaid_off", "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" );
-	spawn_perk( "bo3_p7_zm_vending_widows_wine_off", "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" );
+	spawn_perk( "p6_zm_vending_electric_cherry_on", "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" );
+	spawn_perk( "bo2_zombie_vending_vultureaid_on", "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" );
+	spawn_perk( "bo3_p7_zm_vending_widows_wine_on", "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" );
 	//spawn_perk( "zombie_vending_packapunch", "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" );
 	//level._solo_revive_machine_expire_func = ::solo_quick_revive_disable;
 	level thread randomize_perks_think();
+
+	}
 }
 
 place_babyjug()
 {
-	machine_origin = (10570, 809, -478);
-	machine_angles = (60, 0, 72);
+	machine_origin = (10570, 809, -479);
+	machine_angles = (60, 0, 78);
 	bottle = Spawn( "script_model", machine_origin );
 	bottle.angles = machine_angles;
 	bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
@@ -364,6 +412,13 @@ register_perk_spawn( origin, angles )
 
 spawn_perk( model, targetname, target, perk, jingle, sting )
 {
+	if( !IsDefined( level.extra_vending_model_info ) )
+	{
+		level.extra_vending_model_info = [];
+	}
+
+	size = level.extra_vending_model_info.size;
+	level.extra_vending_model_info[ size ] = model;
 	machine = Spawn( "script_model", ( 0, 0, -9999 ) );
 	machine.angles = ( 0, 0, 0 );
 	machine SetModel( model );
@@ -415,23 +470,50 @@ randomize_perks_think()
 	//level.vulture_perk_custom_map_check = ::hidden_perk_waypoints;
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 	//vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
-	for( i = 0; i < vending_triggers.size; i ++ )
-	{
-		machine = GetEnt( vending_triggers[i].target, "targetname" );
-		vending_triggers[i] EnableLinkTo();
-		vending_triggers[i] LinkTo( machine );
-	}
+	vending_triggers = array_remove( vending_triggers, GetEnt( "vending_babyjugg", "target" ) );
 	
 	last_perks = [];
 	while( true )
 	{
+		for( i = 0; i < vending_triggers.size; i ++ )
+		{
+			machine = GetEntArray( vending_triggers[i].target, "targetname" );
+			for( j = 0; j < machine.size; j ++ )
+			{
+				if( IsDefined( machine[j].script_noteworthy ) && machine[j].script_noteworthy == "clip" ) 
+					continue;
+				
+				vending_triggers[i] EnableLinkTo();
+				vending_triggers[i] LinkTo( machine[j] );
+				
+			}
+			
+		}
+
 		curr_perks = [];
 		perk_list = array_randomize( vending_triggers );
 		for( i = 0; i < perk_list.size; i ++ )
 		{
-			machine = GetEnt( perk_list[i].target, "targetname" );
+			machine_array = GetEntArray( perk_list[i].target, "targetname" );
+
+			if( !IsDefined(machine_array) )
+			{
+				wait_print( "Machine array undefined event " + i, perk_list[i].target);
+				continue;
+			}
+
+			machine = undefined;
+			for( j = 0; j < machine_array.size; j ++ )
+			{
+				if( IsDefined( machine_array[j].script_noteworthy ) && machine_array[j].script_noteworthy == "clip" )
+					continue;
+				machine = machine_array[j];
+			}
+			if( !IsDefined( machine ) )
+				iprintln( "machine not found for: " + perk_list[i].target );
+
 			perk = perk_list[i].script_noteworthy;
-			if( is_in_array( last_perks, perk ) || curr_perks.size >= 3 )
+			if( is_in_array( last_perks, perk ) || curr_perks.size >= 4 )
 			{
 				machine.origin = ( 0, 0, -9999 );
 				machine.angles = ( 0, 0, 0 );
@@ -445,11 +527,12 @@ randomize_perks_think()
 				if( !level.ARRAY_SHINO_ZONE_OPENED[ index ] )
 					continue;
 				
-				
-				machine.origin = level.perk_spawn_location[ index ].origin;
-				machine.angles = level.perk_spawn_location[ index ].angles;
+				thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
+				//machine.origin = level.perk_spawn_location[ index ].origin;
+				//machine.angles = level.perk_spawn_location[ index ].angles;
 				//perk_list[i] perk_vulture_update_position( perk );
-				machine thread perk_swap_fx( perk );
+				
+				//machine thread perk_swap_fx( perk );
 				
 			}
 		}
@@ -462,7 +545,7 @@ randomize_perks_think()
 			wait 0.05;
 		}
 		level notify( "perks_swapping" );
-		wait 10;
+		wait 8;
 		for( i = 0; i < level.perk_spawn_location.size; i ++ )
 		{
 			level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );

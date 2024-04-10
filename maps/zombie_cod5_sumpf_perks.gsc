@@ -207,56 +207,60 @@ activate_vending_machine( machine, origin, entity )
 {
 	level notify( "master_switch_activated" );
 	iprintln( "activate_vending_machine: " + machine );
+
 	switch( machine )
 	{
 		case "zombie_vending_jugg_on":
-			level.perk_randomization_on[ "specialty_armorvest" ] = true;
-			level notify( "specialty_armorvest_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "jugger_light" );
+			level thread maps\_zombiemode_perks::turn_jugger_on();
 			break;
 
 		case "zombie_vending_doubletap_on":
-			level.perk_randomization_on[ "specialty_rof" ] = true;
-			level notify( "specialty_rof_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "doubletap_light" );
-			break;
-
-		case "zombie_vending_three_gun_on":
-			level.perk_randomization_on[ "specialty_additionalprimaryweapon" ] = true;
-			level notify( "specialty_additionalprimaryweapon_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "additionalprimaryweapon_light" );
+			level thread maps\_zombiemode_perks::turn_doubletap_on();
 			break;
 
 		case "zombie_vending_sleight_on":
-			level.perk_randomization_on[ "specialty_fastreload" ] = true;
-			level notify( "specialty_fastreload_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "sleight_light" );
+			level thread maps\_zombiemode_perks::turn_sleight_on();
 			break;
 
 		case "zombie_vending_marathon_on":
-			level.perk_randomization_on[ "specialty_longersprint" ] = true;
-			level notify( "specialty_longersprint_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "marathon_light" );
+			level thread maps\_zombiemode_perks::turn_marathon_on();
+			break;
+
+		case "zombie_vending_three_gun_on":
+			level thread maps\_zombiemode_perks::turn_additionalprimaryweapon_on();
+			break;
+
+		case "zombie_vending_ads_on":
+			level thread maps\_zombiemode_perks::turn_deadshot_on();
 			break;
 
 		case "zombie_vending_nuke_on":
-			level.perk_randomization_on[ "specialty_flakjacket" ] = true;
-			level notify( "specialty_flakjacket_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "divetonuke_light" );
+			level thread maps\_zombiemode_perks::turn_divetonuke_on();
 			break;
 
-		case "p6_zm_vending_chugabud_on":
-			level.perk_randomization_on[ "specialty_extraammo" ] = true;
-			level notify( "specialty_extraammo_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "sleight_light" );
+		case "p6_zm_vending_electric_cherry_on":
+			level thread maps\_zombiemode_perks::turn_electriccherry_on();
+			break;
+
+		case "bo2_zombie_vending_vultureaid_on":
+			level thread maps\_zombiemode_perks::turn_vulture_on();
 			break;
 
 		case "bo3_p7_zm_vending_widows_wine_on":
-			level.perk_randomization_on[ "specialty_bulletaccuracy" ] = true;
-			level notify( "specialty_bulletaccuracy_power_on" );
-			entity maps\_zombiemode_perks::perk_fx( "jugger_light" );
+			level thread maps\_zombiemode_perks::turn_widowswine_on();
+			break;
+
+		case "pack-a-punch":
+			//level thread maps\_zombiemode_perks::turn_PackAPunch_on();
+			break;
+
+		default:
+			iprintln( "activate_vending_machine: " + machine + " not found" );
 			break;
 	}
+
+	level notify( "juggernog_on" ); //tuirns all perks on
+
 	play_vending_vo( machine, origin );	
 }
 
@@ -303,37 +307,45 @@ vending_randomization_effect( index )
 	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;
 	iprintln( "vending_randomization_effect zone opened: " + index );
 
-	machines = [];
-	magic_index = 0;
-	/*
-	for( j = 0; j < vending_triggers.size; j ++ )
-	{
-		machine_array = GetEntArray( vending_triggers[j].target, "targetname" );
-		for( i = 0; i < machine_array.size; i ++ )
-		{
-			if( !IsDefined( machine_array[i].script_noteworthy ) || machine_array[i].script_noteworthy != "clip" )
-			{
-				machines[j] = machine_array[i];
-				magic_index = j;
-			}
-		}
-	}
-	
+	iprintln( "Trying to spawn perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] );
+	machine_array = GetEntArray( level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ], "targetname" );
+
 	machine = undefined;
-	for( j = 0; j < machines.size; j ++ )
+	for( j = 0; j < machine_array.size; j ++ )
 	{
-		if( machines[j].origin == level.start_locations[ index ] )
+		if( IsDefined( machine_array[j].script_noteworthy ) && machine_array[j].script_noteworthy == "clip" )
+			continue;
+		machine = machine_array[j];
+	}
+
+	if( !IsDefined( machine ) )
+		iprintln( "machine not found for: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] );
+	
+	machine Hide();
+	
+	triggers = GetEntArray( machine.targetname, "target" );
+	trigInd = 0;
+
+	for( i = 0; i < vending_triggers.size; i ++ )
+	{
+		if( vending_triggers[i].target == machine.targetname )
 		{
-			machine = machines[j];
-			iprintln( "found machine " + machines[j].target );
+			trigInd = i;
+			vending_triggers[i] EnableLinkTo();
+			vending_triggers[i] LinkTo( machine );
 			break;
 		}
+		
 	}
-	*/
+	
+	machine.origin = level.perk_spawn_location[ index ].origin;
+	machine.angles = level.perk_spawn_location[ index ].angles;
 
-	machine = GetEnt( level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ], "targetname" );
 	PlaySoundAtPosition( "rando_start", machine.origin );
 	origin = machine.origin;
+	iprintln( "At location: " + origin );
+	iprintln( "Where is trigger: " + triggers[trigInd] );
+	
 	if( level.vending_model_info.size > 1 )
 	{
 		PlayFXOnTag( level._effect[ "zombie_perk_start" ], machine, "tag_origin" );
@@ -354,6 +366,7 @@ vending_randomization_effect( index )
 	machine MoveTo( origin + ( 0, 0, 40 ), 5, 3, 0.5 );
 	machine Vibrate( machine.angles, 2, 1, 4 );
 	modelindex = 0;
+	level.vending_model_info = array_combine( level.vending_model_info, level.extra_vending_model_info );
 	for( i = 0; i < 30; i ++ )
 	{                             
 		wait 0.15;
@@ -362,7 +375,7 @@ vending_randomization_effect( index )
 			while( !IsDefined( level.vending_model_info[ modelindex ] ) )
 			{
 				modelindex ++;
-				if( modelindex == 8 )
+				if( modelindex == 12 )
 				{
 					modelindex = 0;
 				}
@@ -371,7 +384,7 @@ vending_randomization_effect( index )
 			machine SetModel( modelname );
 			PlayFXOnTag( level._effect[ "zombie_perk_flash" ], tag_fx, "tag_origin" );
 			modelindex ++;
-			if( modelindex == 8 )
+			if( modelindex == 12 )
 			{
 				modelindex = 0;
 			}
@@ -382,12 +395,5 @@ vending_randomization_effect( index )
 	PlayFXOnTag( level._effect[ "zombie_perk_end" ], machine, "tag_origin" );
 	PlaySoundAtPosition( "perks_rattle", machine.origin );
 	activate_vending_machine( true_model, origin, machine );
-	for( i = 0; i < machines.size; i ++ )
-	{
-		if( IsDefined( level.vending_model_info[i] ) && level.vending_model_info[i] == true_model )
-		{
-			level.vending_model_info[i] = undefined;
-			break;
-		}
-	}
+
 }
