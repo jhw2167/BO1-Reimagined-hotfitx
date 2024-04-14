@@ -308,9 +308,13 @@ remove_set_perks( trigger )
 	clip = undefined;
 	model = undefined;
 
+	trigger = GetEnt( trigger.script_noteworthy, "script_noteworthy" );
+	//wait_print( "Trigger: ", trigger.script_noteworthy );
 	machine = GetEntArray( trigger.target, "targetname" );
 	for( i = 0; i < machine.size; i ++ )
 	{
+		//machine[i] Delete();
+		//continue;
 		if( IsDefined( machine[i].script_noteworthy ) && machine[i].script_noteworthy == "clip" )
 		{
 			clip = machine[i];
@@ -320,6 +324,8 @@ remove_set_perks( trigger )
 			model = machine[i];
 		}
 	}
+	//trigger Delete();
+	
 	anchor = Spawn( "script_model", model.origin );
 	anchor.angles = model.angles;
 	anchor SetModel( "tag_origin" );
@@ -332,6 +338,7 @@ remove_set_perks( trigger )
 	model.angles = ( 0, 90, 0 );
 	anchor.origin = model.origin;
 	anchor.angles = model.angles;
+	
 }
 
 init()
@@ -356,7 +363,12 @@ init()
 	}
 	else
 	{
-		
+
+	//zombie_
+	//spawn_perk( "zombie_vending_jugg", "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" );
+	//spawn_perk( "zombie_vending_sleight", "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" );
+	//spawn_perk( "zombie_vending_doubletap", "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" );
+	//spawn_perk( "zombie_vending_revive", "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" );		
 
 	spawn_perk( "zombie_vending_nuke_on", "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" );
 	spawn_perk( "zombie_vending_marathon_on", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
@@ -472,35 +484,16 @@ randomize_perks_think()
 	//vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	vending_triggers = array_remove( vending_triggers, GetEnt( "vending_babyjugg", "target" ) );
 	
+	shino_zones_opened = array(0, 0, 0, 0);
 	last_perks = [];
 	while( true )
 	{
-		for( i = 0; i < vending_triggers.size; i ++ )
-		{
-			machine = GetEntArray( vending_triggers[i].target, "targetname" );
-			for( j = 0; j < machine.size; j ++ )
-			{
-				if( IsDefined( machine[j].script_noteworthy ) && machine[j].script_noteworthy == "clip" ) 
-					continue;
-				
-				vending_triggers[i] EnableLinkTo();
-				vending_triggers[i] LinkTo( machine[j] );
-				
-			}
-			
-		}
-
+		
 		curr_perks = [];
 		perk_list = array_randomize( vending_triggers );
 		for( i = 0; i < perk_list.size; i ++ )
 		{
 			machine_array = GetEntArray( perk_list[i].target, "targetname" );
-
-			if( !IsDefined(machine_array) )
-			{
-				wait_print( "Machine array undefined event " + i, perk_list[i].target);
-				continue;
-			}
 
 			machine = undefined;
 			for( j = 0; j < machine_array.size; j ++ )
@@ -515,8 +508,7 @@ randomize_perks_think()
 			perk = perk_list[i].script_noteworthy;
 			if( is_in_array( last_perks, perk ) || curr_perks.size >= 4 )
 			{
-				machine.origin = ( 0, 0, -9999 );
-				machine.angles = ( 0, 0, 0 );
+				continue;
 			}
 			else
 			{
@@ -524,7 +516,7 @@ randomize_perks_think()
 				curr_perks[ index ] = perk;
 				level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;
 				
-				if( !level.ARRAY_SHINO_ZONE_OPENED[ index ] )
+				if( !shino_zones_opened[ index ])
 					continue;
 				
 				thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
@@ -538,19 +530,45 @@ randomize_perks_think()
 		}
 
 		last_perks = curr_perks;
+		
 		level waittill( "between_round_over");
+		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 		level.pap_moving = true;
 		while( flag( "pack_machine_in_use" ) )
 		{
 			wait 0.05;
 		}
+		
 		level notify( "perks_swapping" );
-		wait 8;
-		for( i = 0; i < level.perk_spawn_location.size; i ++ )
-		{
+
+		for( i = 0; i < level.perk_spawn_location.size; i ++ ) {
 			level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
 		}
+
+		//Reset Triggers
+		for( i = 0; i < perk_list.size; i ++ )
+		{
+			//iprintln( "Resetting: " + perk_list[i].target );
+
+			machine_array = GetEntArray( perk_list[i].target, "targetname" );
+			machine = undefined;
+			for( j = 0; j < machine_array.size; j ++ )
+			{
+				if( IsDefined( machine_array[j].script_noteworthy ) && machine_array[j].script_noteworthy == "clip" )
+					continue;
+				machine = machine_array[j];
+			}
+			if( !IsDefined( machine ) )
+				continue;
+			//vending_triggers[i] EnableLinkTo();
+			//vending_triggers[i] LinkTo( machine );
+			
+			machine.origin = ( 0, 0, -9999 );
+			machine.angles = ( 0, 0, 0 );		
+		}
+
 		wait 1.5;
+
 		level.pap_moving = undefined;
 	}
 }

@@ -87,7 +87,7 @@ randomize_vending_machines()
 		
 		while(1)
 		{
-			iprintln( "seting up random vendings" );
+			
 			vending_machines = GetEntArray( "zombie_vending", "targetname" );
 
 			vending_machines = array_randomize( vending_machines );
@@ -203,51 +203,66 @@ get_vending_machine( start_location )
 	return machine;
 }
 
-activate_vending_machine( machine, origin, entity )
+activate_vending_machine( machine, origin, entity, script_noteworthy )
 {
-	level notify( "master_switch_activated" );
 	iprintln( "activate_vending_machine: " + machine );
+	//wait 4;
 
 	switch( machine )
 	{
+		case "zombie_vending_revive_on":
+			level thread maps\_zombiemode_perks::turn_revive_on();
+			level notify("revive_on");
+			break;
+
 		case "zombie_vending_jugg_on":
 			level thread maps\_zombiemode_perks::turn_jugger_on();
+			level notify("juggernog_on");
 			break;
 
 		case "zombie_vending_doubletap_on":
 			level thread maps\_zombiemode_perks::turn_doubletap_on();
+			level notify("doubletap_on");
 			break;
 
 		case "zombie_vending_sleight_on":
 			level thread maps\_zombiemode_perks::turn_sleight_on();
+			level notify("sleight_on");
 			break;
 
 		case "zombie_vending_marathon_on":
 			level thread maps\_zombiemode_perks::turn_marathon_on();
+			level notify("marathon_on");
 			break;
 
 		case "zombie_vending_three_gun_on":
 			level thread maps\_zombiemode_perks::turn_additionalprimaryweapon_on();
+			level notify("additionalprimaryweapon_on");
 			break;
 
 		case "zombie_vending_ads_on":
 			level thread maps\_zombiemode_perks::turn_deadshot_on();
+			level notify("deadshot_on");
 			break;
 
 		case "zombie_vending_nuke_on":
 			level thread maps\_zombiemode_perks::turn_divetonuke_on();
+			level notify("divetonuke_on");
 			break;
 
 		case "p6_zm_vending_electric_cherry_on":
 			level thread maps\_zombiemode_perks::turn_electriccherry_on();
+			level notify("electriccherry_on");
 			break;
 
 		case "bo2_zombie_vending_vultureaid_on":
 			level thread maps\_zombiemode_perks::turn_vulture_on();
+			level notify("vulture_on");
 			break;
 
 		case "bo3_p7_zm_vending_widows_wine_on":
 			level thread maps\_zombiemode_perks::turn_widowswine_on();
+			level notify("widowswine_on");
 			break;
 
 		case "pack-a-punch":
@@ -259,7 +274,15 @@ activate_vending_machine( machine, origin, entity )
 			break;
 	}
 
-	level notify( "juggernog_on" ); //tuirns all perks on
+	if( IsDefined( script_noteworthy ) )
+	{
+		level notify( script_noteworthy + "_power_on" );
+	}
+	else
+	{
+		iprintln( "script_noteworthy not defined for: " + machine );
+	}
+	
 
 	play_vending_vo( machine, origin );	
 }
@@ -328,23 +351,26 @@ vending_randomization_effect( index )
 
 	for( i = 0; i < vending_triggers.size; i ++ )
 	{
-		if( vending_triggers[i].target == machine.targetname )
+		if( vending_triggers[i].target == level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] )
 		{
 			trigInd = i;
-			vending_triggers[i] EnableLinkTo();
-			vending_triggers[i] LinkTo( machine );
 			break;
 		}
 		
 	}
+
 	
+	//vending_triggers[trigInd] EnableLinkTo();
+	//vending_triggers[trigInd] LinkTo( machine );
+	
+	//vending_triggers[trigInd].origin = (level.perk_spawn_location[ index ].origin + (0 , 0, 30), 0, 20, 70);
 	machine.origin = level.perk_spawn_location[ index ].origin;
 	machine.angles = level.perk_spawn_location[ index ].angles;
 
 	PlaySoundAtPosition( "rando_start", machine.origin );
 	origin = machine.origin;
-	iprintln( "At location: " + origin );
-	iprintln( "Where is trigger: " + triggers[trigInd] );
+	//iprintln( "At location: " + origin );
+	//iprintln( "Trigger origin: " + vending_triggers[trigInd].origin );
 	
 	if( level.vending_model_info.size > 1 )
 	{
@@ -394,6 +420,168 @@ vending_randomization_effect( index )
 	machine MoveTo( origin, 0.3, 0.3, 0 );
 	PlayFXOnTag( level._effect[ "zombie_perk_end" ], machine, "tag_origin" );
 	PlaySoundAtPosition( "perks_rattle", machine.origin );
-	activate_vending_machine( true_model, origin, machine );
+	thread activate_vending_machine( true_model, origin, machine, vending_triggers[trigInd].script_noteworthy );
+
+	perk_trigger = Spawn( "trigger_radius_use", machine.origin + (0 , 0, 30), 0, 20, 70 );
+	perk_trigger UseTriggerRequireLookAt();
+	perk_trigger SetHintString( &"ZOMBIE_NEED_POWER" );
+	perk_trigger SetCursorHint( "HINT_NOICON" );
+
+	wait 3.5;
+
+	perk_trigger.script_noteworthy = vending_triggers[trigInd].script_noteworthy;
+	perk_trigger set_perk_buystring( vending_triggers[trigInd].script_noteworthy );
+
+	level waittill( "perks_swapping" );
+
+	perk_trigger Delete();
+
+}
+
+set_perk_buystring( script_notetworthy )
+{
+	
+	self SetCursorHint( "HINT_NOICON" );
+	self UseTriggerRequireLookAt();
+
+	cost = level.zombie_vars["zombie_perk_cost"];
+	switch( script_notetworthy )
+	{
+	case "specialty_armorvest_upgrade":
+	case "specialty_armorvest":
+		cost = 2500;
+		break;
+
+	case "specialty_quickrevive_upgrade":
+	case "specialty_quickrevive":
+		cost = 1500;
+		break;
+
+	case "specialty_fastreload_upgrade":
+	case "specialty_fastreload":
+		cost = 3000;
+		break;
+
+	case "specialty_rof_upgrade":
+	case "specialty_rof":
+		cost = 2000;
+		break;
+
+	case "specialty_endurance_upgrade":
+	case "specialty_endurance":
+		cost = 2000;
+		break;
+
+	case "specialty_flakjacket_upgrade":
+	case "specialty_flakjacket":
+		cost = 2000;
+		break;
+
+	case "specialty_deadshot_upgrade":
+	case "specialty_deadshot":
+		cost = 2000; // WW (02-03-11): Setting this low at first so more people buy it and try it (TEMP)
+		break;
+
+	case "specialty_additionalprimaryweapon_upgrade":
+	case "specialty_additionalprimaryweapon":
+		cost = 4000;
+		break;
+
+	case "specialty_bulletdamage_upgrade":	//Cherry
+	case "specialty_bulletdamage":
+		cost = 2500;
+		break;
+
+	case "specialty_altmelee_upgrade":	//Vulture
+	case "specialty_altmelee":
+		cost = 3000;
+		break;
+
+	case "specialty_bulletaccuracy_upgrade":	//wine
+	case "specialty_bulletaccuracy":
+		cost = 3000;
+		break;
+
+	}
+
+
+	upgrade_perk_cost = level.VALUE_PERK_PUNCH_COST;
+	if(level.expensive_perks)
+		upgrade_perk_cost = level.VALUE_PERK_PUNCH_EXPENSIVE_COST;
+
+	switch( script_notetworthy )
+	{
+		case "specialty_armorvest_upgrade":
+		case "specialty_armorvest":
+			self SetHintString( &"REIMAGINED_PERK_JUGGERNAUT", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_quickrevive_upgrade":
+		case "specialty_quickrevive":
+			self SetHintString( &"REIMAGINED_PERK_QUICKREVIVE", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_fastreload_upgrade":
+		case "specialty_fastreload":
+			self SetHintString( &"REIMAGINED_PERK_FASTRELOAD", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_rof_upgrade":
+		case "specialty_rof":
+			self SetHintString( &"REIMAGINED_PERK_DOUBLETAP", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_endurance_upgrade":
+		case "specialty_endurance":
+			self SetHintString( &"REIMAGINED_PERK_MARATHON", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_flakjacket_upgrade":
+		case "specialty_flakjacket":
+			self SetHintString( &"REIMAGINED_PERK_DIVETONUKE", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_deadshot_upgrade":
+		case "specialty_deadshot":
+			self SetHintString( &"REIMAGINED_PERK_DEADSHOT", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_additionalprimaryweapon_upgrade":
+		case "specialty_additionalprimaryweapon":
+			self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_extraammo_upgrade":
+		case "specialty_extraammo":
+			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_bulletdamage_upgrade":
+		case "specialty_bulletdamage":
+			self SetHintString( &"REIMAGINED_PERK_CHERRY", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_altmelee_upgrade":
+		case "specialty_altmelee":
+			self SetHintString( &"REIMAGINED_PERK_VULTURE", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_bulletaccuracy_upgrade":
+		case "specialty_bulletaccuracy":
+			self SetHintString( &"REIMAGINED_PERK_WIDOWSWINE", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_stockpile_upgrade":
+		case "specialty_stockpile":
+			self SetHintString( &"REIMAGINED_PERK_BANDOLIER", cost, upgrade_perk_cost );
+			break;
+
+		case "specialty_scavanger_upgrade":
+		case "specialty_scavanger":
+			self SetHintString( &"REIMAGINED_PERK_TIMESLIP", cost, upgrade_perk_cost );
+			break;
+	}
+
+	self thread maps\_zombiemode_perks::watch_perk_trigger( script_notetworthy, cost, upgrade_perk_cost );
 
 }

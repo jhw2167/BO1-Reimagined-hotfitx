@@ -1331,15 +1331,20 @@ turn_jugger_on()
 
 	//iprintln("Juggernog_on");
 	//Reimagined-Expanded
-	level notify("divetonuke_on");
-	level notify("marathon_on");
-	level notify("doubletap_on");
-	level notify("deadshot_on");
-	level notify("additionalprimaryweapon_on");
-	level notify("electriccherry_on");
-	level notify("vulture_on");
-	level notify("widowswine_on");
-
+	if(level.mapname != "zombie_cod5_sumpf")
+	{
+		level notify("sleight_on");
+		level notify("revive_on");
+		level notify("divetonuke_on");
+		level notify("marathon_on");
+		level notify("doubletap_on");
+		level notify("deadshot_on");
+		level notify("additionalprimaryweapon_on");
+		level notify("electriccherry_on");
+		level notify("vulture_on");
+		level notify("widowswine_on");
+	}
+	
 
 	for( i = 0; i < machine.size; i++ )
 	{
@@ -2213,7 +2218,8 @@ vending_trigger_think()
 	if ( !solo || level.script == "zombie_cod5_sumpf" ) //fix for being able to buy Quick Revive on solo on Shi No Numa before the perk-a-cola spawn animation is complete
 	{
 		notify_name = perk + "_power_on";
-		level waittill_any( notify_name, "master_switch_activated");
+		//level waittill_any( notify_name, );
+		level waittill( notify_name );
 	}
 
 	if(!IsDefined(level._perkmachinenetworkchoke))
@@ -2321,13 +2327,23 @@ vending_trigger_think()
 		self SetHintString( perk + " Cost: " + level.zombie_vars["zombie_perk_cost"] );
 	}
 
+	if( level.mapname != "zombie_cod5_sumpf" )
+	{
+		self watch_perk_trigger( perk, cost, upgrade_perk_cost );
+	}
+	
+}
+
+watch_perk_trigger( perk, cost, upgrade_perk_cost )
+{
+	level endon("perks_swapping"); //shino
+
 	CONST_PERK = perk;
 	CONST_COST = cost;
 
 	i =0;
 	for( ;; )
 	{
-		wait(2);
 		i++;
 		self waittill( "trigger", player );
 
@@ -2491,6 +2507,7 @@ vending_trigger_think()
 		//Reset Perk and Const values for next purchase
 		perk = CONST_PERK;
 		cost = CONST_COST;
+		wait(1);
 	}
 }
 
