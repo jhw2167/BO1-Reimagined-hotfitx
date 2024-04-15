@@ -496,6 +496,7 @@ randomize_perks_think()
 			machine_array = GetEntArray( perk_list[i].target, "targetname" );
 
 			machine = undefined;
+			
 			for( j = 0; j < machine_array.size; j ++ )
 			{
 				if( IsDefined( machine_array[j].script_noteworthy ) && machine_array[j].script_noteworthy == "clip" )
@@ -514,7 +515,7 @@ randomize_perks_think()
 			{
 				index = curr_perks.size;
 				curr_perks[ index ] = perk;
-				level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;
+				level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;	//vending_###
 				
 				if( !shino_zones_opened[ index ])
 					continue;
@@ -531,7 +532,6 @@ randomize_perks_think()
 
 		last_perks = curr_perks;
 		
-		level waittill( "between_round_over");
 		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 		level.pap_moving = true;
 		while( flag( "pack_machine_in_use" ) )
@@ -539,7 +539,7 @@ randomize_perks_think()
 			wait 0.05;
 		}
 		
-		level notify( "perks_swapping" );
+		level waittill( "perks_swapping" );
 
 		for( i = 0; i < level.perk_spawn_location.size; i ++ ) {
 			level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
@@ -560,8 +560,6 @@ randomize_perks_think()
 			}
 			if( !IsDefined( machine ) )
 				continue;
-			//vending_triggers[i] EnableLinkTo();
-			//vending_triggers[i] LinkTo( machine );
 			
 			machine.origin = ( 0, 0, -9999 );
 			machine.angles = ( 0, 0, 0 );		

@@ -789,6 +789,9 @@ flag_toggle( message )
   
 flag_wait( msg )
 {
+	if( !IsDefined(level.flag) )
+		return;
+
 	if( !isdefined( msg ) || level.flag[ msg ] )
 		return;
 		

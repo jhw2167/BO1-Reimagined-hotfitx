@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -694,7 +694,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = .2;
 
 	level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET = 20;
-	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.8;
+	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0;
 
 	level.VALUE_VULTURE_ROUND_START_ZOMBIE_IMMUNITY = 15;
 
@@ -835,6 +835,7 @@ reimagined_init_level()
     case "zombie_cod5_asylum":
         break;
     case "zombie_cod5_sumpf":
+		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
         break;
     case "zombie_cod5_factory":
         break;
@@ -4736,10 +4737,10 @@ give_pro_perks( overrideToGiveAll )
 	if( is_true( overrideToGiveAll ) )
 	{
 		level.max_perks = 20;
-		self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//PERKS
-		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		return;
 	}
 	else
@@ -7995,7 +7996,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//ORIGIN_
-	//iprintln("Origin: " + attacker.origin );
+	iprintln("Origin: " + attacker.origin );
+	iprintln("class: " + attacker.classname );
+	iprintln("class: " + attacker.class );
 	/*
 	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));

@@ -2,44 +2,6 @@
 #include maps\_utility;
 #include maps\_zombiemode_utility;
 
-swap_quick_revive( vending_machines )
-{
-	trigger = undefined;
-	clip = undefined;
-	model = undefined;
-	for( i = 0; i < vending_machines.size; i ++ )
-	{
-		if( vending_machines[i].script_noteworthy == "specialty_quickrevive" )
-		{
-			trigger = vending_machines[i];
-			break;
-		}
-	}
-	machine = GetEntArray( trigger.target, "targetname" );
-	for( i = 0; i < machine.size; i ++ )
-	{
-		if( IsDefined( machine[i].script_noteworthy ) && machine[i].script_noteworthy == "clip" )
-		{
-			clip = machine[i];
-		}
-		else
-		{
-			model = machine[i];
-		}
-	}
-	anchor = Spawn( "script_model", model.origin );
-	anchor.angles = model.angles;
-	anchor SetModel( "tag_origin" );
-	clip EnableLinkTo();
-	clip LinkTo( anchor );
-	trigger EnableLinkTo();
-	trigger LinkTo( anchor );
-	model.origin = ( 9565, 327, -529 );
-	model.angles = ( 0, 90, 0 );
-	anchor.origin = model.origin;
-	anchor.angles = model.angles;
-	level._solo_revive_machine_expire_func = ::solo_quick_revive_disable;
-}
 
 solo_quick_revive_disable()
 {
@@ -68,140 +30,95 @@ randomize_vending_machines()
 	//level thread watch_randomized_vending_machines();
 	//level.perk_randomization_on = [];
 	//level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
+	level thread watch_randomize_vending_machines();
 }
 
-	watch_randomized_vending_machines()
+watch_randomize_vending_machines()
+{
+	self endon( "end_game" );
+
+
+	//self thread watch_hanging_zombie_eye_glow();
+	while( true )
 	{
-		level endon("end_game");
-
-		start_locations[0] = GetEnt( "random_vending_start_location_0", "script_noteworthy" );
-		start_locations[1] = GetEnt( "random_vending_start_location_1", "script_noteworthy" );
-		start_locations[2] = GetEnt( "random_vending_start_location_2", "script_noteworthy" );
-		start_locations[3] = GetEnt( "random_vending_start_location_3", "script_noteworthy" );
-
-		level.start_locations = [];
-		level.start_locations[ level.start_locations.size ] = start_locations[0].origin;
-		level.start_locations[ level.start_locations.size ] = start_locations[1].origin;
-		level.start_locations[ level.start_locations.size ] = start_locations[2].origin;
-		level.start_locations[ level.start_locations.size ] = start_locations[3].origin;
-		
-		while(1)
+		rounds_until_swap = randomintrange( 1, 4 );
+		iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
+		for( i = 0; i < rounds_until_swap; i++ )
 		{
+			event = self waittill_any_return( "end_of_round", "shino_force_swap");
+			if( event == "shino_force_swap" )
+				break;
 			
-			vending_machines = GetEntArray( "zombie_vending", "targetname" );
+		}
+		
+		iprintln( "Randomizing vending machines" );
+		self notify( "perks_swapping" );
+	}
 
-			vending_machines = array_randomize( vending_machines );
+}
 
-			new_shino_perks = [];
-			for( i = 0; i < vending_machines.size; i++ )
+watch_hanging_zombie_eye_glow()
+{
+	self endon( "end_game" );
+
+	//get all assets
+	flag_wait("begin_spawning");
+	//ents = GetEntArray( "script_model", "classname" );
+	ents = GetEntArray( "player", "classname" );
+
+	iprintln( "ents.size: " + ents.size );
+	player = GetPlayers()[0];
+	
+	falso = false;
+	while( falso )
+	{
+		for( i = 0; i < ents.size; i ++ )
+		{
+			if( !IsDefined(ents[i].origin ))
+				continue;
+			//Check models within 1000 units of player
+			closeEnough = maps\_zombiemode::checkDist(player.origin, ents[i].origin, 100);
+
+			if( !closeEnough )
 			{
-				iprintln( "testing new perk: " + vending_machines[i].target );
-				
-				if( is_in_array( level.ARRAY_SHINO_PERKS_AVAILIBLE, vending_machines[i].target ) )
-					continue;
-				
-				iprintln( "Can spawn perk!"  );
-				machine = vending_machines[i] get_vending_machine( start_locations[i] );
-
-				machine.origin = start_locations[i].origin;
-				machine.angles = start_locations[i].angles;
-				machine Hide();
-
-				if( is_true( level.ARRAY_SHINO_ZONE_OPENED[i] ) )
-					vending_randomization_effect( i );
-						
-				new_shino_perks[ i ] = vending_machines[i].target;
-				
-				if( i >= 3 ) //only 4 perks at a time on shino
-					break;
+				//iprintln( "Model: " + ents[i].model );
+				//iprintln( "---" );
+				wait( 0.1 );
+				continue;
 			}
 
-			OFF_MAP = SpawnStruct();
-			OFF_MAP.origin = (0,0,0);
-			OFF_MAP.angles = (0,0,0);
-			for( i = 0; i < vending_machines.size; i++ )
-			{
-				if( is_in_array( new_shino_perks, vending_machines[i].target ) )
-				{
-					iprintln( "new perk available: " + new_shino_perks[i] );
-					level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] = new_shino_perks[i];
-					continue;
-				}
-				
-				machine = vending_machines[i] get_vending_machine( OFF_MAP );
-
-				machine.origin = OFF_MAP.origin;
-				machine.angles = OFF_MAP.angles;
-				machine Hide();
-
-			}
-
-			level waittill("between_round_over");
-			iprintln( "between round over trigered" );
+			iprintln( "Model: " + ents[i].model );
+			iprintln( "Targetname: " + ents[i].targetname );
+			iprintln( "Target: " + ents[i].target );
+			iprintln( "---" );
+			wait( 0.1 );
 		}
+
+		wait( 5 ); 
+		
 	}
 
-
-
-//Reimagined-Expanded, will need to edit with vulture aid
-hide_waypoint_until_perk_spawned( struct )
-{
-	if( IsDefined( struct.perk_to_check ) )
+	for( i = 0; i < 10000; i++ )
 	{
-		perk = struct.perk_to_check;
-		switch( perk )
+		//ent = GetEntByNum( i );
+		ent = undefined;
+		if( !IsDefined( ent ) )
 		{
-			case "specialty_deadshot":
-			//case "specialty_quickrevive":
-			case "specialty_bulletdamage":
-			case "specialty_altmelee":
-				return false;
+			iprintln( "Ent not defined: " + i );
+			continue;
 		}
-		return !is_true( level.perk_randomization_on[ perk ] );
+			
+		iprintln( "Ent Data for: " + i  );
+		iprintln( "oRIGIN: " + ent.origin );
+		iprintln( "Model: " + ent.model );
+		iprintln( "Targetname: " + ent.targetname );
+		iprintln( "Target: " + ent.target );
+		iprintln( "---" );
+		wait( 0.1 );
 	}
-	return false;
+
 }
 
-
-spawn_perk_machine_location( perk )
-{
-	vending_machines = GetEntArray( "zombie_vending", "targetname" );
-	for( i = 0; i < vending_machines.size; i ++ )
-	{
-		if( vending_machines[i].script_noteworthy == perk )
-		{
-			machine = GetEnt( vending_machines[i].target, "targetname" );
-			model = Spawn( "script_model", machine.origin );
-			model.angles = machine.angles;
-			model SetModel( "tag_origin" );
-			return model;
-		}
-	}
-	return undefined;
-}
-
-get_vending_machine( start_location )
-{
-	machine = undefined;
-	machine_array = GetEntArray( self.target, "targetname" );
-	for( i = 0; i < machine_array.size; i ++ )
-	{
-		if( !IsDefined( machine_array[i].script_noteworthy ) || machine_array[i].script_noteworthy != "clip" )
-		{
-			machine = machine_array[i];
-		}		
-	}
-	if( !IsDefined( machine ) )
-	{
-		return;
-	}
-	machine.origin = start_location.origin;
-	machine.angles = start_location.angles;
-	self EnableLinkTo();
-	self LinkTo( start_location );
-	iprintln( self.target + " linked to position: " + start_location.origin ); 
-	return machine;
-}
 
 activate_vending_machine( machine, origin, entity, script_noteworthy )
 {
@@ -283,6 +200,7 @@ activate_vending_machine( machine, origin, entity, script_noteworthy )
 		iprintln( "script_noteworthy not defined for: " + machine );
 	}
 	
+	level notify ("zombie_vending_spawned");
 
 	play_vending_vo( machine, origin );	
 }

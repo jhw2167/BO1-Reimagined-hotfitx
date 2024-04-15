@@ -5067,8 +5067,6 @@ init_vulture()
 			}
 		}
 
-		level thread vulture_perk_watch_perks_move();
-
 		vending_weapon_upgrade_trigger = GetEntArray( "zombie_vending_upgrade", "targetname" );
 		for( i = 0; i < vending_weapon_upgrade_trigger.size; i ++ )
 		{
@@ -5139,6 +5137,7 @@ init_vulture()
 		}
 
 		level.vulture_waypoint_structs = structs;
+		level thread vulture_perk_watch_perks_move();
 		//iprintln( "Waypoints strucuts: " + level.vulture_waypoint_structs.size );
 		while( true )
 		{
@@ -5162,16 +5161,14 @@ init_vulture()
 					if( isDefined( struct.chest_to_check )  )	//box is handled seperately		
 						continue;
 
+					//iprintln( "Origin for struct perk: " + struct.perk + " is " + struct.script_model.origin);
+
 					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, struct );
 
 					if( is_visible )
 					{
 						if( isDefined( struct.player_waypoint[ num ] ) )
-						{
-							//iprintln( "Waypoint already exists " + struct.perk );
 							continue;
-						}
-							
 
 						struct.player_waypoint[ num ] = create_individual_waypoint( player, struct );
 						//create_loop_fx_to_player( player, struct.ent_num, struct.fx_var, struct.origin, struct.angles );
@@ -5235,17 +5232,6 @@ init_vulture()
 		}
 		//END WHILE
 
-	}
-
-	vulture_update_waypoint_structs( new_vulture_structs )
-	{
-		if( isDefined( new_vulture_structs ) )
-		{
-			level.vulture_waypoint_structs = new_vulture_structs;
-			level.vulture_waypoint_structs_update = true;
-		}
-			
-		return level.vulture_waypoint_structs;
 	}
 
 	// */
@@ -5597,11 +5583,14 @@ init_vulture()
 					break;
 				}
 			}
+			angles = ( 0, 0, 0 );
 			if( !IsDefined( machine.angles ) )
-				return level.VALUE_BASE_ORIGIN;
+				machine.angles = angles;
 
-			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
-			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
+			forward = AnglesToForward( angles - ( 0, 90, 0 ) );
+			origin = machine.origin;
+			if( level.mapname != "zombie_cod5_sumpf")
+				origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 
 			return origin + ( 0, 0, 50 );
 		}
@@ -5786,22 +5775,8 @@ init_vulture()
 	//Utility Function to determine if player is towards object
 	checkPlayerLookingAtObject( player, object, fov_threshold )
 	{
-		//Calculate if perk is in player's view
-		//view_angles = player GetTagAngles( "tag_flash" );
-		view_angles = player GetPlayerAngles();
-		forwardAngles = AnglesToForward( view_angles );
-		//iprintln( "View Angles: " + view_angles + "  Forward: " + forwardAngles );
-
-		//Perk needs to be within a wide cone from this players view
-		view_pos = player GetPlayerViewHeight();
-		normal = VectorNormalize( object.origin - view_pos );	
-
-		dot = VectorDot( forwardAngles, normal );
-
-		if( dot > fov_threshold )
-			return true;
-
-		return false;
+		return object object_in_player_fov( player, fov_threshold );
+		
 	}
 
 	checkObjectInPlayableArea( object )
@@ -5848,7 +5823,7 @@ vulture_perk_watch_perks_move()
 	//HERE
 	while( 1 ) 
 	{
-		level waittill_any( "zombie_vending_off", "zombie_vending_moved" );
+		level waittill_any( "zombie_vending_off", "zombie_vending_spawned", "perks_swapping" );
 		structs = vulture_update_waypoint_structs();
 
 		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
@@ -5859,13 +5834,15 @@ vulture_perk_watch_perks_move()
 			//Search through existing structs and match on perk
 			for( j = 0; j < structs.size; j++ )
 			{
+				if( !IsDefined(structs[j].perk) )
+					continue;
+
 				if( structs[j].perk == perk )
 				{
 					structs[j].location = vending_triggers[i] get_waypoint_origin( "perk" );
 					structs[j].origin = structs[j].location[ "origin" ];
-					structs[j].angles = structs[j].location[ "angles" ];
+					structs[j].angles = structs[j].location[ "angles" ];	
 					break;
-
 				}
 
 			}
@@ -5874,6 +5851,28 @@ vulture_perk_watch_perks_move()
 		vulture_update_waypoint_structs( structs );
 	}
 }
+
+	vulture_update_waypoint_structs( new_vulture_structs )
+	{
+		if( isDefined( new_vulture_structs ) )
+		{
+			for( i = 0; i < new_vulture_structs.size; i++ )
+			{
+				
+				if( !IsDefined(level.vulture_waypoint_structs[i].script_model) )
+					continue;
+
+				level.vulture_waypoint_structs[i].origin = new_vulture_structs[i].origin;
+				level.vulture_waypoint_structs[i].script_model Delete();
+				level.vulture_waypoint_structs[i].script_model = Spawn( "script_model", new_vulture_structs[i].origin );
+				
+			}
+			
+			level.vulture_waypoint_structs_update = true;
+		}
+			
+		return level.vulture_waypoint_structs;
+	}
 
 vulture_perk_watch_mystery_box()
 {
@@ -6255,10 +6254,10 @@ player_watch_widows_warning()
 		normal = VectorNormalize( origin - view_pos );
 		dot = VectorDot( forward_view_angles, normal );
 
-		return !( zomb zombie_in_player_fov( self, level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT ) );
+		return !( zomb object_in_player_fov( self, level.THRESHOLD_WIDOWS_BEHIND_HUD_DOT ) );
 	}
 
-	zombie_in_player_fov( player, threshold )	//threshold is between 0 and 1
+	object_in_player_fov( player, threshold )	//threshold is between 0 and 1
 	{
 		playerAngles = player getplayerangles();
 		playerForwardVec = AnglesToForward( playerAngles );
@@ -6449,13 +6448,7 @@ player_watch_widows_warning()
 			//iprintln("Right Angle: " + right_angle);
 			right_vector = ( cos( right_angle ), sin( right_angle ), 0 );
 			
-			//iprintln("zomb_origin: ");
-			//iprintln( zomb_origin );
-			//iprintln("view_pos: ");
-			//iprintln( view_pos );
 			normal = VectorNormalize( zomb_origin - view_pos );
-			//iprintln("Normal: " + normal); 
-			//iprintln( normal );
 
 			//if zombie is "in front of" left vector, then it's to the left
 			is_left = VectorDot( left_vector, normal ) > 0;
