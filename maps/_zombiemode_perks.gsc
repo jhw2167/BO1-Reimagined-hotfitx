@@ -127,7 +127,7 @@ place_doubletap_machine()
 
 	machine = Spawn( "script_model", level.zombie_doubletap_machine_origin );
 	machine.angles = level.zombie_doubletap_machine_angles;
-	machine setModel( "zombie_vending_doubletap" );
+	machine setModel( "zombie_vending_doubletap2" );
 	machine.targetname = "vending_doubletap";
 
 	machine_trigger = Spawn( "trigger_radius_use", level.zombie_doubletap_machine_origin + (0, 0, 30), 0, 20, 70 );
@@ -301,8 +301,8 @@ default_vending_precaching()
 		PreCacheShader( "specialty_doubletap_zombies" );
 		PreCacheShader( "specialty_doubletap_zombies_pro" );
 		PrecacheShader( "specialty_glow_dbl_tap" );
-		PreCacheModel( "zombie_vending_doubletap" );
-		PreCacheModel( "zombie_vending_doubletap_on" );
+		PreCacheModel( "zombie_vending_doubletap2" );
+		PreCacheModel( "zombie_vending_doubletap2_on" );
 		PreCacheString( &"REIMAGINED_PERK_DOUBLETAP" );
 		level._effect[ "doubletap_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
 		level thread turn_doubletap_on();
@@ -1366,7 +1366,7 @@ turn_doubletap_on()
 
 	for( i = 0; i < machine.size; i++ )
 	{
-		machine[i] setmodel("zombie_vending_doubletap_on");
+		machine[i] setmodel("zombie_vending_doubletap2_on");
 		machine[i] vibrate((0,-100,0), 0.3, 0.4, 3);
 		machine[i] playsound("zmb_perks_power_on");
 		machine[i] thread perk_fx( "doubletap_light" );

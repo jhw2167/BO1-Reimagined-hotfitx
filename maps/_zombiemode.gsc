@@ -7997,8 +7997,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	//ORIGIN_
 	iprintln("Origin: " + attacker.origin );
-	iprintln("class: " + attacker.classname );
-	iprintln("class: " + attacker.class );
+	//iprintln("class: " + attacker.classname );
+	//iprintln("class: " + attacker.class );
 	/*
 	//iprintln("Testing has Upp Jugg: " + attacker hasProPerk(level.JUG_PRO));
 	//iprintln("Testing has Upp QRV: " + attacker hasProPerk(level.QRV_PRO));

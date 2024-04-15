@@ -137,7 +137,7 @@ activate_vending_machine( machine, origin, entity, script_noteworthy )
 			level notify("juggernog_on");
 			break;
 
-		case "zombie_vending_doubletap_on":
+		case "zombie_vending_doubletap2_on":
 			level thread maps\_zombiemode_perks::turn_doubletap_on();
 			level notify("doubletap_on");
 			break;
@@ -228,7 +228,7 @@ play_vending_vo( machine, origin )
 			player thread maps\_zombiemode_audio::create_and_play_dialog( "level", "jugga" );
 			break;
 
-		case "zombie_vending_doubletap_on":
+		case "zombie_vending_doubletap2_on":
 			player thread maps\_zombiemode_audio::create_and_play_dialog( "level", "doubletap" );
 			break;
 

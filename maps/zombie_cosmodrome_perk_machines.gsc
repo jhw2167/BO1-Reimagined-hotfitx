@@ -35,7 +35,7 @@ place_doubletap()
 	machine_angles = (0, -180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
-	perk setModel( "zombie_vending_doubletap" );
+	perk setModel( "zombie_vending_doubletap2" );
 	perk.targetname = "vending_doubletap";
 	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger.targetname = "zombie_vending";

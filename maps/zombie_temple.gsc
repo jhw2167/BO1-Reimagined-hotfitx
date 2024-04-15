@@ -715,7 +715,7 @@ init_random_perk_machines()
 	randMachines = _add_machine(randMachines, "vending_divetonuke", "mus_perks_phd_sting", "specialty_flakjacket", "mus_perks_phd_jingle", "divetonuke_perk", "zombie_vending_nuke");
 	randMachines = _add_machine(randMachines, "vending_deadshot", "mus_perks_deadshot_sting", "specialty_deadshot", "mus_perks_deadshot_jingle", "tap_deadshot", "zombie_vending_ads");
 	randMachines = _add_machine(randMachines, "vending_sleight", "mus_perks_speed_sting", "specialty_fastreload", "mus_perks_speed_jingle", "speedcola_perk", "zombie_vending_sleight");
-	randMachines = _add_machine(randMachines, "vending_doubletap", "mus_perks_doubletap_sting", "specialty_rof", "mus_perks_doubletap_jingle", "tap_perk", "zombie_vending_doubletap");
+	randMachines = _add_machine(randMachines, "vending_doubletap", "mus_perks_doubletap_sting", "specialty_rof", "mus_perks_doubletap_jingle", "tap_perk", "zombie_vending_doubletap2");
 	if(IsDefined(level.override_place_revive_machine))
 	{
 		[[level.override_place_revive_machine]]();
