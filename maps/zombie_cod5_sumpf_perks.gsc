@@ -41,7 +41,8 @@ watch_randomize_vending_machines()
 	//self thread watch_hanging_zombie_eye_glow();
 	while( true )
 	{
-		rounds_until_swap = randomintrange( 1, 4 );
+		//rounds_until_swap = randomintrange( 1, 4 );
+		rounds_until_swap = 1;
 		iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_swap; i++ )
 		{
@@ -51,8 +52,9 @@ watch_randomize_vending_machines()
 			
 		}
 		
-		iprintln( "Randomizing vending machines" );
+		//iprintln( "Randomizing vending machines" );
 		self notify( "perks_swapping" );
+		//wait( 7 );
 	}
 
 }
@@ -138,6 +140,7 @@ activate_vending_machine( machine, origin, entity, script_noteworthy )
 			break;
 
 		case "zombie_vending_doubletap2_on":
+		case "zombie_vending_doubletap_on":
 			level thread maps\_zombiemode_perks::turn_doubletap_on();
 			level notify("doubletap_on");
 			break;
@@ -182,8 +185,9 @@ activate_vending_machine( machine, origin, entity, script_noteworthy )
 			level notify("widowswine_on");
 			break;
 
-		case "pack-a-punch":
-			//level thread maps\_zombiemode_perks::turn_PackAPunch_on();
+		case "zombie_vending_packapunch_on":
+			level thread maps\_zombiemode_perks::turn_PackAPunch_on();
+			level notify("Pack_A_Punch_on");
 			break;
 
 		default:
@@ -200,6 +204,7 @@ activate_vending_machine( machine, origin, entity, script_noteworthy )
 		iprintln( "script_noteworthy not defined for: " + machine );
 	}
 	
+	wait 3;
 	level notify ("zombie_vending_spawned");
 
 	play_vending_vo( machine, origin );	
@@ -245,6 +250,7 @@ play_vending_vo( machine, origin )
 vending_randomization_effect( index )
 {
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;
 	iprintln( "vending_randomization_effect zone opened: " + index );
 
@@ -276,12 +282,7 @@ vending_randomization_effect( index )
 		}
 		
 	}
-
 	
-	//vending_triggers[trigInd] EnableLinkTo();
-	//vending_triggers[trigInd] LinkTo( machine );
-	
-	//vending_triggers[trigInd].origin = (level.perk_spawn_location[ index ].origin + (0 , 0, 30), 0, 20, 70);
 	machine.origin = level.perk_spawn_location[ index ].origin;
 	machine.angles = level.perk_spawn_location[ index ].angles;
 
@@ -338,29 +339,38 @@ vending_randomization_effect( index )
 	machine MoveTo( origin, 0.3, 0.3, 0 );
 	PlayFXOnTag( level._effect[ "zombie_perk_end" ], machine, "tag_origin" );
 	PlaySoundAtPosition( "perks_rattle", machine.origin );
-	thread activate_vending_machine( true_model, origin, machine, vending_triggers[trigInd].script_noteworthy );
 
 	perk_trigger = Spawn( "trigger_radius_use", machine.origin + (0 , 0, 30), 0, 20, 70 );
 	perk_trigger UseTriggerRequireLookAt();
 	perk_trigger SetHintString( &"ZOMBIE_NEED_POWER" );
 	perk_trigger SetCursorHint( "HINT_NOICON" );
+	thread activate_vending_machine( true_model, origin, machine, vending_triggers[trigInd].script_noteworthy );
 
-	wait 3.5;
+	wait 3;
 
 	perk_trigger.script_noteworthy = vending_triggers[trigInd].script_noteworthy;
 	perk_trigger set_perk_buystring( vending_triggers[trigInd].script_noteworthy );
 
+	level.pap_moving = false;
 	level waittill( "perks_swapping" );
-
+	level.pap_moving = true;
 	perk_trigger Delete();
 
 }
 
 set_perk_buystring( script_notetworthy )
 {
-	
-	self SetCursorHint( "HINT_NOICON" );
-	self UseTriggerRequireLookAt();
+	if( script_notetworthy == "specialty_weapupgrade" )
+	{
+		iprintln( "specialty_weapupgrade return" );
+		self thread maps\_zombiemode_perks::vending_weapon_upgrade();
+		wait 0.1;
+		level notify("Pack_A_Punch_on");
+		//self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", 1000, 2000 );
+		
+		return;
+	}
+		
 
 	cost = level.zombie_vars["zombie_perk_cost"];
 	switch( script_notetworthy )

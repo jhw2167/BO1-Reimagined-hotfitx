@@ -24,8 +24,9 @@ init()
 	
 	level.zombiemode_using_bandolier_perk = true;
 	level.zombiemode_using_timeslip_perk = true;
-	level.zombiemode_using_pack_a_punch = true;
 	*/
+	level.zombiemode_using_pack_a_punch = true;
+	
 
 	level thread place_perk_machines_by_map();
 	level thread place_doubletap_machine();
@@ -56,7 +57,7 @@ init()
 		return;
 	}
 
-	if ( vending_weapon_upgrade_trigger.size >= 1 )
+	if ( vending_weapon_upgrade_trigger.size >= 1  && level.mapname != "zombie_cod5_sumpf")
 	{
 		array_thread( vending_weapon_upgrade_trigger, ::vending_weapon_upgrade );
 	}
@@ -91,7 +92,7 @@ init()
 	array_thread( vending_triggers, ::electric_perks_dialog );
 	//array_thread( vending_triggers, ::bump_trigger_think );
 	
-	level thread turn_PackAPunch_on();
+	//level thread turn_PackAPunch_on();
 
 	if ( isdefined( level.quantum_bomb_register_result_func ) )
 	{
@@ -410,6 +411,15 @@ default_vending_precaching()
 	{
 		PreCacheShader( "specialty_timeslip_zombies" );
 	}
+	if( is_true( level.zombiemode_using_pack_a_punch ) )
+	{
+		PreCacheModel( "zombie_vending_packapunch" );
+		PreCacheModel( "zombie_vending_packapunch_on" );
+		PreCacheString( &"REIMAGINED_PERK_PACKAPUNCH");
+		PreCacheString( &"ZOMBIE_GET_UPGRADED" );
+		level._effect[ "packapunch_fx" ] = LoadFX( "maps/zombie/fx_zombie_packapunch" );
+		level thread turn_PackAPunch_on();
+	}
 
 	// Minimap icons
 	PrecacheShader( "minimap_icon_juggernog" );
@@ -511,6 +521,7 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 
 vending_machine_trigger_think()
 {
+	level endon("perks_swapping");
 	self endon("death");
 
 	dist = 128 * 128;
@@ -522,6 +533,7 @@ vending_machine_trigger_think()
 		{
 			if(DistanceSquared( players[i].origin, self.origin ) < dist)
 			{
+				//iprintln("Player in range");
 				current_weapon = players[i] getCurrentWeapon();
 				if(current_weapon == "microwavegun_zm")
 				{
@@ -531,38 +543,47 @@ vending_machine_trigger_think()
 				packInUseByThisPlayer = ( flag("pack_machine_in_use") && IsDefined(self.user) && self.user == players[i] );
 				if ( players[i] hacker_active() )
 				{
+					//iprintln("1");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( !players[i] maps\_zombiemode_weapons::can_buy_weapon() || players[i] maps\_laststand::player_is_in_laststand() || is_true( players[i].intermission ) || players[i] isThrowingGrenade() )
 				{
+					//iprintln("2");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( is_true(level.pap_moving)) //can't use the pap machine while it's being lowered or raised
 				{
+					//iprintln("3");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( players[i] isSwitchingWeapons() )
 		 		{
+					//iprintln("4");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
 		 		else if( !packInUseByThisPlayer && flag("pack_machine_in_use") )
 		 		{
+					//iprintln("5");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
 				else if ( !packInUseByThisPlayer && !IsDefined( level.zombie_include_weapons[current_weapon] ) )
 				{
+					//iprintln("6");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if ( !packInUseByThisPlayer && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
 				{
+					//iprintln("7");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if ( !packInUseByThisPlayer && vending_2x_blacklist(current_weapon) )
 				{
+					//iprintln("8");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else
 				{
+					//iprintln("9");
 					self SetInvisibleToPlayer( players[i], false );
 				}
 			}
@@ -576,6 +597,8 @@ vending_machine_trigger_think()
 //
 vending_weapon_upgrade()
 {
+	level endon("perks_swapping");
+
 	perk_machine = GetEnt( self.target, "targetname" );
 	perk_machine_sound = GetEntarray ( "perksacola", "targetname");
 	packa_rollers = spawn("script_origin", self.origin);
@@ -592,7 +615,9 @@ vending_weapon_upgrade()
 	self SetHintString( &"ZOMBIE_NEED_POWER" );
 	self SetCursorHint( "HINT_NOICON" );
 
+	iprintln("Wait to turn on: ");
 	level waittill("Pack_A_Punch_on");
+	iprintln("PAP On: ");
 
 	self thread vending_machine_trigger_think();
 
@@ -601,10 +626,12 @@ vending_weapon_upgrade()
 	perk_machine playloopsound("zmb_perks_packa_loop");
 
 	self thread vending_weapon_upgrade_cost();
+	alltrue = true;
 
 	for( ;; )
 	{
 		self waittill( "trigger", player );
+		iprintln("Triggered: ");
 
 		index = maps\_zombiemode_weapons::get_player_index(player);
 		plr = "zmb_vox_plr_" + index + "_";
@@ -820,6 +847,8 @@ wait_for_third_person_weapon_complete()
 
 vending_weapon_upgrade_cost()
 {
+	level endon("perks_swapping");
+
 	while ( 1 )
 	{
 		self.cost = level.VALUE_PAP_COST;
@@ -831,7 +860,7 @@ vending_weapon_upgrade_cost()
 			
 		
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.double_cost );
-
+		iprintln("Set hint string:" );
 		level waittill( "powerup bonfire sale" );
 
 		self.cost = level.VALUE_PAP_BONFIRE_COST;
@@ -5090,6 +5119,8 @@ init_vulture()
 
 			//For multiple PAP locations, do a little more work
 			pap_locations = getstructarray("pap_location","targetname");
+			if( IsDefined( level.pap_locations ) )
+				pap_locations = array_combine( pap_locations, level.pap_locations );
 			if( IsDefined(pap_locations) && pap_locations.size > 0 )
 			{
 				structs[ structs.size - 1].using_pap_locations = true;	//Default PaP vending will not be valid waypoint
@@ -5470,7 +5501,6 @@ init_vulture()
 		{
 			//iprintln( "Creating waypoint " + struct.perk );
 			wp = NewClientHudElem( player );
-
 			//Uses pro perk shader
 			icon = struct.waypoint_name;
 			wp SetTargetEnt( struct.script_model );
@@ -5708,7 +5738,7 @@ init_vulture()
 				is_visible = true;
 
 			//iprintln( "Vis 2: " + struct.perk + "  " + is_visible );
-			
+			//wait( 0.5 );
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
 			{
@@ -5723,9 +5753,9 @@ init_vulture()
 			if( !IsAlive( struct ) )
 				return false;
 
-			inPlayableArea = checkObjectInPlayableArea( struct );
-			if( !inPlayableArea )
-				return false;
+			//inPlayableArea = checkObjectInPlayableArea( struct );
+			//if( !inPlayableArea )
+				//return false;
 
 			cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
 			

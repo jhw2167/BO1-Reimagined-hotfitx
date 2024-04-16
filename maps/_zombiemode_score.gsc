@@ -427,7 +427,7 @@ player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 	if( mod == "MOD_MELEE" )
 	{ 
 		score = level.zombie_vars["zombie_score_bonus_melee"];
-		if( self HasPerk( level.VLT_PRK ) )
+		if( self HasPerk( level.VLT_PRK ) && level.apocalypse )
 			score += level.VALUE_VULTURE_BONUS_MELEE_POINTS;
 
 		return score;

@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///
 	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -694,7 +694,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_HUD_ALPHA_CLOSE = .2;
 
 	level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET = 20;
-	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0;
+	level.THRESHOLD_VULTURE_FOV_HUD_DOT = 0.1;
 
 	level.VALUE_VULTURE_ROUND_START_ZOMBIE_IMMUNITY = 15;
 
@@ -10872,10 +10872,6 @@ watch_faulty_rounds()
 			wait( 1 );
 			flag_clear( "end_round_wait" );
 			time_no_enemies = 0;
-		}
-		else if ( time_no_enemies > 10 && time_no_enemies < 12)
-		{
-			iprintln("Counting wait");
 		}
 		
 	}	

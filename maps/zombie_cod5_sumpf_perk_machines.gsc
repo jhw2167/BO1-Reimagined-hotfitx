@@ -344,8 +344,10 @@ remove_set_perks( trigger )
 init()
 {
 	//level._effect[ "lightning_dog_spawn" ] = LoadFX( "maps/zombie/fx_zombie_dog_lightning_buildup" );
+	level.pap_locations =[];
 	for( i = 0; i < 4; i ++ ) {
 		loc = GetEnt( "random_vending_start_location_"+i, "script_noteworthy" );
+		level.pap_locations[ i ] = loc;
 		register_perk_spawn( loc.origin, loc.angles );
 	}
 
@@ -378,7 +380,7 @@ init()
 	spawn_perk( "p6_zm_vending_electric_cherry_on", "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" );
 	spawn_perk( "bo2_zombie_vending_vultureaid_on", "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" );
 	spawn_perk( "bo3_p7_zm_vending_widows_wine_on", "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" );
-	//spawn_perk( "zombie_vending_packapunch", "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" );
+	spawn_perk( "zombie_vending_packapunch_on", "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" );
 	//level._solo_revive_machine_expire_func = ::solo_quick_revive_disable;
 	level thread randomize_perks_think();
 
@@ -445,30 +447,6 @@ spawn_perk( model, targetname, target, perk, jingle, sting )
 
 ///*
 
-perk_vulture_update_position( perk )
-{
-	if( IsDefined( level.perk_vulture ) && IsDefined( level.perk_vulture.vulture_vision_fx_list ) )
-	{
-		structs = level.perk_vulture.vulture_vision_fx_list;
-		for( i = 0; i < structs.size; i ++ )
-		{
-			if( IsDefined( structs[i].perk_to_check ) && structs[i].perk_to_check == perk )
-			{
-				type = "perk";
-				switch( perk )
-				{
-					case "specialty_weapupgrade":
-						type = "packapunch";
-						break;
-				}
-				//structs[i].location = self maps\_zombiemode_perks::get_waypoint_origin( type );
-				//Need entire Vulture aid code for this to work, see zombiemode_perks.gsc::3500-4900
-				level.perk_randomization_on[ perk ] = true;
-				return;
-			}
-		}
-	}
-}
 
 randomize_perks_think()
 {
@@ -481,7 +459,7 @@ randomize_perks_think()
 	level.perk_randomization_on = [];
 	//level.vulture_perk_custom_map_check = ::hidden_perk_waypoints;
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
-	//vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
+	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	vending_triggers = array_remove( vending_triggers, GetEnt( "vending_babyjugg", "target" ) );
 	
 	shino_zones_opened = array(0, 0, 0, 0);
@@ -490,11 +468,13 @@ randomize_perks_think()
 	{
 		
 		curr_perks = [];
-		perk_list = array_randomize( vending_triggers );
-		for( i = 0; i < perk_list.size; i ++ )
+		//perk_list = array_randomize( vending_triggers );
+		perk_list = vending_triggers;
+		//for( i = 0; i < perk_list.size; i ++ )
+		for( i = perk_list.size-1; i > -1; i-- )
 		{
 			machine_array = GetEntArray( perk_list[i].target, "targetname" );
-
+			//iprintln("1 Machine Array Size: " + perk_list[i].target );
 			machine = undefined;
 			
 			for( j = 0; j < machine_array.size; j ++ )
@@ -506,6 +486,8 @@ randomize_perks_think()
 			if( !IsDefined( machine ) )
 				iprintln( "machine not found for: " + perk_list[i].target );
 
+			//iprintln("2 Machine: " + perk_list[i].target );
+
 			perk = perk_list[i].script_noteworthy;
 			if( is_in_array( last_perks, perk ) || curr_perks.size >= 4 )
 			{
@@ -513,6 +495,7 @@ randomize_perks_think()
 			}
 			else
 			{
+				//iprintln("3 Machine: " + perk_list[i].target );
 				index = curr_perks.size;
 				curr_perks[ index ] = perk;
 				level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;	//vending_###
@@ -520,6 +503,7 @@ randomize_perks_think()
 				if( !shino_zones_opened[ index ])
 					continue;
 				
+				//iprintln("4 Machine: " + perk_list[i].target );
 				thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
 				//machine.origin = level.perk_spawn_location[ index ].origin;
 				//machine.angles = level.perk_spawn_location[ index ].angles;
@@ -532,7 +516,6 @@ randomize_perks_think()
 
 		last_perks = curr_perks;
 		
-		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 		level.pap_moving = true;
 		while( flag( "pack_machine_in_use" ) )
 		{
@@ -540,6 +523,8 @@ randomize_perks_think()
 		}
 		
 		level waittill( "perks_swapping" );
+
+		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 
 		for( i = 0; i < level.perk_spawn_location.size; i ++ ) {
 			level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
