@@ -340,7 +340,11 @@ vending_randomization_effect( index )
 	PlayFXOnTag( level._effect[ "zombie_perk_end" ], machine, "tag_origin" );
 	PlaySoundAtPosition( "perks_rattle", machine.origin );
 
-	perk_trigger = Spawn( "trigger_radius_use", machine.origin + (0 , 0, 30), 0, 20, 70 );
+
+	//perk_trigger = Spawn( "trigger_radius_use", machine.origin + (0 , 0, 30), 0, 20, 70 );
+	perk_trigger = Spawn( "trigger_radius_use", machine.origin + (0 , 0, 0), 0, 20, 70 );
+	
+	perk_trigger.angles = machine.angles + (0, 90, 0);
 	perk_trigger UseTriggerRequireLookAt();
 	perk_trigger SetHintString( &"ZOMBIE_NEED_POWER" );
 	perk_trigger SetCursorHint( "HINT_NOICON" );
@@ -353,7 +357,16 @@ vending_randomization_effect( index )
 
 	level.pap_moving = false;
 	level waittill( "perks_swapping" );
+
+	while( flag( "pack_machine_in_use" ) )
+	{
+		wait 0.05;
+	}
+	wait( 1.5 );
+	
+	perk_trigger notify( "death" );
 	level.pap_moving = true;
+
 	perk_trigger Delete();
 
 }
@@ -362,12 +375,9 @@ set_perk_buystring( script_notetworthy )
 {
 	if( script_notetworthy == "specialty_weapupgrade" )
 	{
-		iprintln( "specialty_weapupgrade return" );
 		self thread maps\_zombiemode_perks::vending_weapon_upgrade();
 		wait 0.1;
 		level notify("Pack_A_Punch_on");
-		//self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", 1000, 2000 );
-		
 		return;
 	}
 		

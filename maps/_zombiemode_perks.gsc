@@ -521,7 +521,7 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 
 vending_machine_trigger_think()
 {
-	level endon("perks_swapping");
+	
 	self endon("death");
 
 	dist = 128 * 128;
@@ -597,7 +597,7 @@ vending_machine_trigger_think()
 //
 vending_weapon_upgrade()
 {
-	level endon("perks_swapping");
+	self endon("death");
 
 	perk_machine = GetEnt( self.target, "targetname" );
 	perk_machine_sound = GetEntarray ( "perksacola", "targetname");
@@ -615,9 +615,7 @@ vending_weapon_upgrade()
 	self SetHintString( &"ZOMBIE_NEED_POWER" );
 	self SetCursorHint( "HINT_NOICON" );
 
-	iprintln("Wait to turn on: ");
 	level waittill("Pack_A_Punch_on");
-	iprintln("PAP On: ");
 
 	self thread vending_machine_trigger_think();
 
@@ -631,7 +629,6 @@ vending_weapon_upgrade()
 	for( ;; )
 	{
 		self waittill( "trigger", player );
-		iprintln("Triggered: ");
 
 		index = maps\_zombiemode_weapons::get_player_index(player);
 		plr = "zmb_vox_plr_" + index + "_";
@@ -847,7 +844,7 @@ wait_for_third_person_weapon_complete()
 
 vending_weapon_upgrade_cost()
 {
-	level endon("perks_swapping");
+	self endon("death");
 
 	while ( 1 )
 	{
@@ -1107,6 +1104,21 @@ turn_PackAPunch_on()
 			perk thread activate_PackAPunch();
 		}
 	}
+
+
+	if( Tolower( GetDvar( #"mapname" ) ) != "zombie_cod5_sumpf" )
+		return;
+		
+	machine = getentarray("vending_packapunch", "targetname");
+	level waittill("Pack_A_Punch_on");
+	
+	for( i = 0; i < machine.size; i++ )
+	{
+		machine[i] vibrate((0,-100,0), 0.3, 0.4, 3);
+		machine[i] playsound("zmb_perks_power_on");
+		machine[i] thread perk_fx( "doubletap_light" );
+	}
+	
 }
 
 activate_PackAPunch()
@@ -1608,6 +1620,16 @@ perk_fx( fx, offset )
 	moved_event = self.targetname + "_moved";
 
 	level waittill_any( off_event, moved_event, "perks_swapping" );
+
+	if( self.targetname == "vending_packapunch" )
+	{
+		while( flag( "pack_machine_in_use" ) )
+		{
+			wait 0.05;
+		}
+		wait( 1.5 );
+	}
+	
 
 	model delete();
 
@@ -4910,9 +4932,9 @@ player_vulture_upgrade_zombie_immune( perk_str )
 	{
 		level waittill( "start_of_round" );
 
-		self.ignoreme = true;
+		//self.ignoreme = true;
 		wait( level.VALUE_VULTURE_ROUND_START_ZOMBIE_IMMUNITY );
-		self.ignoreme = false;
+		//self.ignoreme = false;
 
 		level waittill( "end_of_round" );
 	}
@@ -5321,7 +5343,7 @@ init_vulture()
 
 		player_vulture_zombie_normal_fx( zombies )
 		{
-			if( zombies.size > 3) 
+			if( zombies.size > 3 && level.zombie_total < 24 ) //only on last horde
 				return;
 
 			for( i = 0; i < zombies.size; i++ )
@@ -5499,7 +5521,10 @@ init_vulture()
 		//Self is player with vulture
 		create_individual_waypoint( player, struct )
 		{
-			//iprintln( "Creating waypoint " + struct.perk );
+
+			if( !IsDefined( struct.script_model ) )
+				return;
+
 			wp = NewClientHudElem( player );
 			//Uses pro perk shader
 			icon = struct.waypoint_name;
@@ -5619,8 +5644,8 @@ init_vulture()
 
 			forward = AnglesToForward( angles - ( 0, 90, 0 ) );
 			origin = machine.origin;
-			if( level.mapname != "zombie_cod5_sumpf")
-				origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
+			//if( level.mapname != "zombie_cod5_sumpf")
+				//origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 
 			return origin + ( 0, 0, 50 );
 		}
@@ -5651,6 +5676,7 @@ init_vulture()
 
 		get_pack_a_punch_origin( trigger )
 		{
+			iprintln( "PAP Origin: ");
 			machine = GetEnt( trigger.target, "targetname" );
 			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
 			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
@@ -5659,9 +5685,22 @@ init_vulture()
 
 		get_origin_from_pap_location( location )
 		{
+			iprintln( "PAP location: ");
 			forward = AnglesToForward( location.angles );
-			origin = location.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
-			return origin - ( 0, 0, 20 );
+			origin = location.origin; //+ vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
+			adj = ( 0, 0, 0 );
+			switch( level.mapname )
+			{
+				case "zombie_cod5_sumpf":
+					adj = ( 0, 0, 20 );
+				break;
+				case "zombie_coast":
+					adj = ( 0, 0, -20 );
+				break;
+			}
+
+			iprintln( "Origin: " + origin + "  Adj: " + adj );
+			return origin + adj;
 		}
 
 	//Check Waypoint visibuity
@@ -5709,8 +5748,8 @@ init_vulture()
 			/* Determine if Perk or PAP is in Playable Area */
 
 			inPlayableArea = checkObjectInPlayableArea( struct.script_model );
-			if( !inPlayableArea )
-				return false;
+			//if( !inPlayableArea )
+				//return false;
 			
 
 			/* Determine if PAP is at this spot */
@@ -5853,7 +5892,7 @@ vulture_perk_watch_perks_move()
 	//HERE
 	while( 1 ) 
 	{
-		level waittill_any( "zombie_vending_off", "zombie_vending_spawned", "perks_swapping" );
+		event = level waittill_any_return( "zombie_vending_off", "zombie_vending_spawned", "perks_swapping" );
 		structs = vulture_update_waypoint_structs();
 
 		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
@@ -5871,7 +5910,14 @@ vulture_perk_watch_perks_move()
 				{
 					structs[j].location = vending_triggers[i] get_waypoint_origin( "perk" );
 					structs[j].origin = structs[j].location[ "origin" ];
-					structs[j].angles = structs[j].location[ "angles" ];	
+					structs[j].angles = structs[j].location[ "angles" ];
+
+					if( event == "perks_swapping" )
+					{
+						structs[j].origin = (0, 0, -9999);
+						structs[j].angles = (0, 0, 0);
+					}
+				
 					break;
 				}
 

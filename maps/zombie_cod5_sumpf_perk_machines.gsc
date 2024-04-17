@@ -468,10 +468,10 @@ randomize_perks_think()
 	{
 		
 		curr_perks = [];
-		//perk_list = array_randomize( vending_triggers );
-		perk_list = vending_triggers;
-		//for( i = 0; i < perk_list.size; i ++ )
-		for( i = perk_list.size-1; i > -1; i-- )
+		perk_list = array_randomize( vending_triggers );
+		//perk_list = vending_triggers;
+		for( i = 0; i < perk_list.size; i ++ )
+		//for( i = perk_list.size-1; i > -1; i-- )
 		{
 			machine_array = GetEntArray( perk_list[i].target, "targetname" );
 			//iprintln("1 Machine Array Size: " + perk_list[i].target );
@@ -505,25 +505,20 @@ randomize_perks_think()
 				
 				//iprintln("4 Machine: " + perk_list[i].target );
 				thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
-				//machine.origin = level.perk_spawn_location[ index ].origin;
-				//machine.angles = level.perk_spawn_location[ index ].angles;
-				//perk_list[i] perk_vulture_update_position( perk );
-				
-				//machine thread perk_swap_fx( perk );
 				
 			}
 		}
 
 		last_perks = curr_perks;
 		
-		level.pap_moving = true;
+		level waittill( "perks_swapping" );
+
 		while( flag( "pack_machine_in_use" ) )
 		{
 			wait 0.05;
 		}
+		wait( 1.5 );
 		
-		level waittill( "perks_swapping" );
-
 		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 
 		for( i = 0; i < level.perk_spawn_location.size; i ++ ) {

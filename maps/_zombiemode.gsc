@@ -56,7 +56,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///
 	//level.apocalypse_override=true;		///
-	//level.override_give_all_perks=true;	///*/
+	level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -8032,7 +8032,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(attacker hasProPerk(level.PHD_PRO))
 			final_damage *= 2;
 
-		
+				if(self.animname == "director_zombie")
+					self.dmg_taken += int(final_damage);
+	
+
+		return final_damage;
 	}
 
 	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" )
@@ -8046,7 +8050,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( is_boss_zombie(self.animname) )
 			return final_damage / 5;
 
-	
+		if(self.animname == "director_zombie")
+				self.dmg_taken += int(final_damage);
+				
+		return final_damage;
 	}
 
 	// damage scaling for explosive weapons
