@@ -4393,7 +4393,8 @@ magicReload()
 		if(weapons[i] == primary || diff == 0 || stock == 0)
 			continue;
 
-		self electric_cherry_reload_attack( self.cherry_sequence, weapons[i] );		//triggers cherry
+		if( self HasPerk( level.ECH_PRK) )
+			self electric_cherry_reload_attack( self.cherry_sequence, weapons[i] );		//triggers cherry
 
 		self SetWeaponAmmoClip(weapons[i], clip + diff);
 		self SetWeaponAmmoStock(weapons[i], stock - diff);
@@ -5071,6 +5072,7 @@ init_vulture()
 			struct.ent_num = model GetEntityNumber();
 			struct.script_model = Spawn( "script_model", struct.origin );
 			struct.player_waypoint = [];
+			struct.wp_type = "WEAPON";
 			struct.waypoint_name = "specialty_glow_rifle";
 
 			structs[ structs.size ] = struct;
@@ -5093,6 +5095,7 @@ init_vulture()
 			struct.ent_num = vending_triggers[i] GetEntityNumber();
 			struct.script_model = Spawn( "script_model", struct.origin );
 			struct.waypoint_name = convertPerkToShader( perk ) + "_pro";
+			struct.wp_type = "PERK";
 			struct.player_waypoint = [];
 
 			structs[ structs.size ] = struct;
@@ -5135,7 +5138,7 @@ init_vulture()
 			struct.script_model = Spawn( "script_model", struct.origin );
 			struct.waypoint_name = "specialty_glow_pap";
 			struct.player_waypoint = [];
-
+			struct.wp_type = "PAP";
 			structs[ structs.size ] = struct;
 		}
 
@@ -5163,7 +5166,7 @@ init_vulture()
 					struct.script_model = Spawn( "script_model", struct.origin );
 					struct.waypoint_name = "specialty_glow_pap";
 					struct.player_waypoint = [];
-
+					struct.wp_type = "PAP_LOC";
 					structs[ structs.size ] = struct;
 				}
 			}
@@ -5200,7 +5203,7 @@ init_vulture()
 				structs = vulture_update_waypoint_structs();
 				level.vulture_waypoint_structs_update = false;
 			}
-				
+			iprintln( "Waypoints strucuts: " + structs.size );
 
 			for( p = 0; p < players.size; p ++ )
 			{
@@ -5215,7 +5218,7 @@ init_vulture()
 						continue;
 
 					//iprintln( "Origin for struct perk: " + struct.perk + " is " + struct.script_model.origin);
-
+					//Main Loop
 					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, struct );
 
 					if( is_visible )
@@ -5519,12 +5522,16 @@ init_vulture()
 
 
 		//Self is player with vulture
+		//create_waypoint
 		create_individual_waypoint( player, struct )
 		{
-
+	
 			if( !IsDefined( struct.script_model ) )
 				return;
 
+			//iprintln( "Script model target ent: " + struct.script_model GetEntityNumber() );
+			//iprintln( "Perk: " + struct.perk );
+			
 			wp = NewClientHudElem( player );
 			//Uses pro perk shader
 			icon = struct.waypoint_name;
@@ -5747,7 +5754,7 @@ init_vulture()
 			//iprintln( "Vis 1: " + struct.perk + "  " + is_visible );
 			/* Determine if Perk or PAP is in Playable Area */
 
-			inPlayableArea = checkObjectInPlayableArea( struct.script_model );
+			//inPlayableArea = checkObjectInPlayableArea( struct.script_model );
 			//if( !inPlayableArea )
 				//return false;
 			
@@ -5755,6 +5762,8 @@ init_vulture()
 			/* Determine if PAP is at this spot */
 			if( struct.perk_to_check == "specialty_weapupgrade_location" )
 			{
+				if( level.pap_moving )
+					return false;
 				
 				if( !IsDefined( level.vulture_track_current_pap_spot ))
 					return false;
@@ -5866,11 +5875,11 @@ vulture_perk_watch_pap_move()
 	while( 1 ) 
 	{
 		while( !IsDefined( level.pap_moving) ||  ! level.pap_moving ) { //Pap is either still or not available
-			wait 1;
+			wait 0.5;
 		}
 
 		while( is_true( level.pap_moving ) ) {
-			wait 1;
+			wait 0.5;
 		}
 		
 		vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
@@ -5896,6 +5905,7 @@ vulture_perk_watch_perks_move()
 		structs = vulture_update_waypoint_structs();
 
 		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+		
 		for( i = 0; i < vending_triggers.size; i ++ )
 		{
 			perk = vending_triggers[i].script_noteworthy;
@@ -5903,7 +5913,7 @@ vulture_perk_watch_perks_move()
 			//Search through existing structs and match on perk
 			for( j = 0; j < structs.size; j++ )
 			{
-				if( !IsDefined(structs[j].perk) )
+				if( structs[j].wp_type != "PERK" )
 					continue;
 
 				if( structs[j].perk == perk )
@@ -5932,17 +5942,28 @@ vulture_perk_watch_perks_move()
 	{
 		if( isDefined( new_vulture_structs ) )
 		{
-			for( i = 0; i < new_vulture_structs.size; i++ )
+			for( i = 0; i < level.vulture_waypoint_structs.size; i++ )
 			{
+				for( j = 0; j < new_vulture_structs.size; j++ )
+				{
 				
-				if( !IsDefined(level.vulture_waypoint_structs[i].script_model) )
-					continue;
+					if( level.vulture_waypoint_structs[i].wp_type != "PERK" )
+						continue;
 
-				level.vulture_waypoint_structs[i].origin = new_vulture_structs[i].origin;
-				level.vulture_waypoint_structs[i].script_model Delete();
-				level.vulture_waypoint_structs[i].script_model = Spawn( "script_model", new_vulture_structs[i].origin );
+					existing_entnum = level.vulture_waypoint_structs[i].script_model GetEntityNumber();
+					new_entnum = new_vulture_structs[j].script_model GetEntityNumber();
+
+					if( existing_entnum != new_entnum )
+						continue;
+
+					level.vulture_waypoint_structs[i].origin = new_vulture_structs[i].origin;
+					level.vulture_waypoint_structs[i].script_model Delete();
+					level.vulture_waypoint_structs[i].script_model = Spawn( "script_model", new_vulture_structs[i].origin );
 				
+				}
 			}
+			
+			
 			
 			level.vulture_waypoint_structs_update = true;
 		}

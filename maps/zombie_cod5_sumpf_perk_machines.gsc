@@ -470,8 +470,8 @@ randomize_perks_think()
 		curr_perks = [];
 		perk_list = array_randomize( vending_triggers );
 		//perk_list = vending_triggers;
-		for( i = 0; i < perk_list.size; i ++ )
 		//for( i = perk_list.size-1; i > -1; i-- )
+		for( i = 0; i < perk_list.size; i ++ )
 		{
 			machine_array = GetEntArray( perk_list[i].target, "targetname" );
 			//iprintln("1 Machine Array Size: " + perk_list[i].target );
@@ -518,7 +518,7 @@ randomize_perks_think()
 			wait 0.05;
 		}
 		wait( 1.5 );
-		
+
 		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 
 		for( i = 0; i < level.perk_spawn_location.size; i ++ ) {
