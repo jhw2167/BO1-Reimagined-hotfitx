@@ -1486,11 +1486,9 @@ powerup_grab()
 						level thread full_ammo_powerup( self, players[i] );
 						players[i] thread powerup_vo("full_ammo");
 						if( level.vulture_is_upgraded_drop ) 
-						{
-							wait 15;
-							players[i] thread powerup_vo("full_ammo");
-							level thread full_ammo_powerup( self, players[i] );
-						}
+							self thread delay_give_drop( players[i], "full_ammo", 
+							level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME );
+						
 							
 						break;
 
@@ -1509,11 +1507,9 @@ powerup_grab()
 						level thread start_carpenter_new( self.origin );
 						
 						if( level.vulture_is_upgraded_drop ) 
-						{
-							wait 15;
-							players[i] thread powerup_vo("carpenter");
-							level thread start_carpenter_new( self.origin );
-						}
+							self thread delay_give_drop( players[i], "carpenter",
+							 level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME );
+						
 						break;
 
 					case "fire_sale":
@@ -1651,6 +1647,29 @@ powerup_grab()
 		}
 		wait 0.1;
 	}
+}
+
+delay_give_drop( player, powerup_name, delay)
+{
+	wait(delay);
+	
+	switch(powerup_name)
+	{
+		case "full_ammo":
+			level thread full_ammo_powerup( self, player );
+			player thread powerup_vo("full_ammo");
+							
+		break;
+
+	
+		case "carpenter": //reimagined-expanded
+			player thread powerup_vo("carpenter");
+			level thread start_carpenter_new( self.origin );
+			
+		break;
+	}
+		
+
 }
 
 //Reimagined-Expanded - Call zombieblood script!

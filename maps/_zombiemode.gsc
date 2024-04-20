@@ -650,6 +650,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
+	level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME = 30;
 
 	level.ARRAY_VULTURE_INVALID_AMMO_WEAPONS = array(
 		"microwavegundw_upgraded_zm",
@@ -2383,8 +2384,8 @@ init_client_flags()
 init_fx()
 {
 	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
-	level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
-	level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
+	//level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
+	//level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
 
 	//Gives CSC error if not included
 	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
@@ -8052,7 +8053,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if(self.animname == "director_zombie")
 				self.dmg_taken += int(final_damage);
-				
+
 		return final_damage;
 	}
 

@@ -254,6 +254,8 @@ vending_randomization_effect( index )
 	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;
 	iprintln( "vending_randomization_effect zone opened: " + index );
 
+	//level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = "vending_packapunch";
+
 	iprintln( "Trying to spawn perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] );
 	machine_array = GetEntArray( level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ], "targetname" );
 
@@ -363,7 +365,7 @@ vending_randomization_effect( index )
 		wait 0.05;
 	}
 	wait( 1.5 );
-	
+
 	perk_trigger notify( "death" );
 	level.pap_moving = true;
 

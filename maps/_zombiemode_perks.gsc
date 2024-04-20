@@ -417,7 +417,7 @@ default_vending_precaching()
 		PreCacheModel( "zombie_vending_packapunch_on" );
 		PreCacheString( &"REIMAGINED_PERK_PACKAPUNCH");
 		PreCacheString( &"ZOMBIE_GET_UPGRADED" );
-		level._effect[ "packapunch_fx" ] = LoadFX( "maps/zombie/fx_zombie_packapunch" );
+		//level._effect[ "packapunch_fx" ] = LoadFX( "maps/zombie/fx_zombie_packapunch" );
 		level thread turn_PackAPunch_on();
 	}
 
@@ -5203,7 +5203,6 @@ init_vulture()
 				structs = vulture_update_waypoint_structs();
 				level.vulture_waypoint_structs_update = false;
 			}
-			iprintln( "Waypoints strucuts: " + structs.size );
 
 			for( p = 0; p < players.size; p ++ )
 			{
@@ -5692,7 +5691,7 @@ init_vulture()
 
 		get_origin_from_pap_location( location )
 		{
-			iprintln( "PAP location: ");
+			
 			forward = AnglesToForward( location.angles );
 			origin = location.origin; //+ vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
 			adj = ( 0, 0, 0 );
@@ -5706,7 +5705,6 @@ init_vulture()
 				break;
 			}
 
-			iprintln( "Origin: " + origin + "  Adj: " + adj );
 			return origin + adj;
 		}
 
@@ -5751,7 +5749,9 @@ init_vulture()
 		} 
 		else if( isDefined(struct.perk_to_check) )
 		{
-			//iprintln( "Vis 1: " + struct.perk + "  " + is_visible );
+			//iprintln( "Vis 0: " + struct.perk_to_check  );
+
+			//iprintln( "Vis 1: " + struct.perk_to_check + "  " + is_visible );
 			/* Determine if Perk or PAP is in Playable Area */
 
 			//inPlayableArea = checkObjectInPlayableArea( struct.script_model );
@@ -5762,15 +5762,21 @@ init_vulture()
 			/* Determine if PAP is at this spot */
 			if( struct.perk_to_check == "specialty_weapupgrade_location" )
 			{
+				//iprintln( "Vis 1.1: " + struct.perk_to_check + "  " + is_visible );
+
 				if( level.pap_moving )
 					return false;
 				
+				//iprintln( "Vis 1.2: " + struct.perk_to_check + "  " + is_visible );
 				if( !IsDefined( level.vulture_track_current_pap_spot ))
 					return false;
 
+				//iprintln( "Vis 1.3: " + struct.perk_to_check + "  " + is_visible );
 				in_range = checkDist( struct.original_struct.origin, level.vulture_track_current_pap_spot, 100 );
 				if( !in_range )
 					return false;		
+
+				//iprintln( "Vis 1.4: " + struct.perk_to_check + "  " + is_visible );
 
 			}
 			else if( struct.perk_to_check == "specialty_weapupgrade" )
@@ -5778,6 +5784,7 @@ init_vulture()
 				if( is_true( struct.using_pap_locations ))
 					return false;
 			}
+
 			/* ##############				############## */
 			
 			if( IsDefined( struct.perk ) )
@@ -5785,7 +5792,7 @@ init_vulture()
 			else
 				is_visible = true;
 
-			//iprintln( "Vis 2: " + struct.perk + "  " + is_visible );
+			//iprintln( "Vis 2: " + struct.perk_to_check + "  " + is_visible );
 			//wait( 0.5 );
 			//Only show perks within VERY_FAR range and IF player is looking in their direction
 			if( checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR ) )
@@ -5869,29 +5876,51 @@ init_vulture()
 		return false;
 	}
 
+//HERE_
 vulture_perk_watch_pap_move()
 {
-	wait_network_frame();
+	
+	level.pap_moving = true;
 	while( 1 ) 
 	{
-		while( !IsDefined( level.pap_moving) ||  ! level.pap_moving ) { //Pap is either still or not available
+		while( !IsDefined( level.pap_moving) ||  !level.pap_moving ) { //Pap is either still or not available
 			wait 0.5;
 		}
+
+	
+	
 
 		while( is_true( level.pap_moving ) ) {
 			wait 0.5;
 		}
 		
+		machine = undefined;
 		vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
 		for(i=0; i<vending_weapon_upgrade_trigger.size; i++ )
 		{
 			perk = getent(vending_weapon_upgrade_trigger[i].target, "targetname");
-			if(isDefined(perk))
+			
+			if(isDefined(perk) && isDefined(perk.origin) )
 			{
 				level.vulture_track_current_pap_spot = perk.origin;
 			}
+			else
+			{
+				
+				machine_array = vending_weapon_upgrade_trigger;
+				for( j = 0; j < machine_array.size; j ++ )
+				{
+					if( IsDefined( machine_array[j].script_noteworthy ) && machine_array[j].script_noteworthy == "clip" )
+						continue;
+					machine = machine_array[j];
+				}
+				level.vulture_track_current_pap_spot = machine.origin;
+			
+			}
 		}
 		
+		iprintln( "new pap: " );
+		iprintln( level.vulture_track_current_pap_spot );
 	}
 }
 

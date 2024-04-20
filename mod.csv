@@ -167,7 +167,7 @@ stringtable,weaponoptions.csv
 
 fx,maps/zombie/fx_zombie_tesla_bolt_secondary	//tesla volt bounce, wpn efects
 fx,maps/zombie/fx_zombie_tesla_shock
-fx,maps/zombie/fx_zombie_packapunch
+//fx,maps/zombie/fx_zombie_packapunch
 
 //weapon effects
 fx,explosions/fx_explosion_charge_large
