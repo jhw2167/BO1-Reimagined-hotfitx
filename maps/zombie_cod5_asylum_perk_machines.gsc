@@ -13,6 +13,7 @@ init()
 	//place_chugabud();		
 	place_mulekick();	
 	place_vulture();
+	place_packapunch();
 }
 
 
@@ -29,6 +30,30 @@ place_babyjug()
 	perk_trigger.target = "vending_babyjugg";
 	perk_trigger.script_noteworthy = "specialty_extraammo";
 
+}
+
+place_packapunch()
+{
+	machine_origin = (335, 18.25, 55.26);
+	machine_angles = (0, 90, 0);
+	perk = Spawn( "script_model", machine_origin );
+	perk.angles = machine_angles;
+	perk setModel( "zombie_vending_packapunch" );
+	perk.targetname = "vending_packapunch";
+	perk_trigger = Spawn( "trigger_radius_use", machine_origin + (0 , 0, 30), 0, 20, 70 );
+	perk_trigger.targetname = "zombie_vending_upgrade";
+	perk_trigger.target = "vending_packapunch";
+	perk_trigger.script_noteworthy = "specialty_weapupgrade";
+	perk_trigger.script_sound = "mus_perks_packa_jingle";
+	perk_trigger.script_label = "mus_perks_packa_sting";
+	perk_clip = spawn( "script_model", machine_origin );
+	perk_clip.angles = machine_angles;
+	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip Hide();
+	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
+	bump_trigger.script_activated = 1;
+	bump_trigger.script_sound = "fly_bump_bottle";
+	bump_trigger.targetname = "audio_bump_trigger";
 }
 
 place_divetonuke()
@@ -222,3 +247,250 @@ place_vulture()
 	bump_trigger.script_sound = "fly_bump_bottle";
 	bump_trigger.targetname = "audio_bump_trigger";
 }
+
+
+/*
+	###############################
+	PRO PERK PLACER
+
+*/
+
+
+/*
+	Enter visualizer
+	self is player placing the object
+*/
+start_properk_placer()
+{
+	iprintlnbold("Starting Pro Perk Placer");
+	
+	r=150;
+	z=10;
+	//angles = self GetPlayerAngles(); 
+	//offset = (r*sin(angles[1]), r*cos(angles[1]), z);
+	forward_view_angles = self GetWeaponForwardDir();
+	offset = vector_scale(forward_view_angles, r);
+
+	iprintlnbold("Forward view angles: " + forward_view_angles);
+	iprintlnbold("self: " + self.origin);
+	iprintlnbold("Offset: " + offset);
+
+	new_pos = self.origin + offset;
+	iprintln("new pos: " + new_pos );
+	object = Spawn( "script_model", new_pos);
+	object SetModel( "zombie_vending_packapunch_on" );
+	//object.angles = angles + (0, 180, 0);
+	object.angles = VectorToAngles(forward_view_angles);
+
+	iprintlnbold("Configured object");
+
+	wait(1);
+
+	level.editing = array("x", "y", "z", "theta", "ro", "phi");
+	level.fidelities = array(5, 10, 45);
+
+    while(1)
+    {
+
+		if( self buttonPressed("q") )
+		{
+			//Return object to player
+			forward_view_angles = self GetWeaponForwardDir();
+			offset = vector_scale(forward_view_angles, r);
+
+			object.origin = self.origin + offset;
+			object.angles = VectorToAngles(forward_view_angles);
+			object.angles += (0, -90, 0);
+			iprintlnbold("Returning object to player");
+			wait(1);
+			continue;
+		}
+
+		if( self buttonPressed("e") )
+		{
+			//Edit objects position and angles
+			i = 0; // Editing Index
+    		j = level.fidelities.size-1; //fidelities index
+			
+			while(1)
+			{
+				if(self buttonPressed("v"))
+				{
+					i++;
+					if(i >= level.editing.size)
+						i = 0;
+					editing = level.editing[i];
+					iprintlnbold("Editing: " + editing);
+					wait( 0.5 );
+					continue;
+				}
+
+				if(self buttonPressed("c"))
+				{
+					j++;
+					if(j >= level.fidelities.size)
+						j = 0;
+					iprintlnbold("Fidelity: " + level.fidelities[j]);
+					wait( 0.5 );
+					continue;
+				}
+
+				temp = self editObject( object, i, j );
+				object.origin = temp.origin;
+				object.angles = temp.angles;
+
+				iprintln("pos: " + object.origin);
+				iprintln("ang: " + object.angles);
+
+				if(self buttonPressed("ENTER"))
+					break;
+				
+				wait(0.2);
+			}
+			
+			
+			iprintlnbold("object position: " + object.origin);
+			iprintlnbold("object angles: " + object.angles);
+		}
+
+        wait 0.5;
+    }
+}
+
+
+editObject( object, i, j )
+{
+
+	editing = level.editing[i];
+
+	struct = SpawnStruct();
+	struct.origin = object.origin;
+	struct.angles = object.angles;
+	//iprintlnbold("Begining position: " + object.origin);
+	//iprintlnbold("Begining angles: " + object.angles);
+
+	while(1)
+	{
+		
+		
+			
+		if(self buttonPressed("f"))
+		{
+			iprintln("DOWN");
+			struct adjust( editing, -1 * level.fidelities[j] );
+			//wait(0.05);
+			return struct;
+		}
+
+		if(self buttonPressed("r"))
+		{
+			iprintln("UP");
+			struct adjust( editing, level.fidelities[j] );
+			//wait(0.05);
+			return struct;
+		}
+
+		if(self buttonPressed("ENTER"))
+		{
+			iprintlnbold("Returning struct");
+			return struct;
+		}
+		
+		
+		wait(0.05);
+	}
+
+
+}
+
+adjust( editing, adj )
+{
+	angles = self.angles;
+	new_angles = (0,0,0);
+	iprintlnbold("Adjusting: " + editing + " by " + adj);
+
+	//editing = "none";
+	//self.origin += (10, 0, 0);
+	//self.angles += (10, 0, 0);
+
+	switch(editing)
+	{
+		case "x":
+			self.origin += (adj, 0, 0);
+			break;
+		case "y":
+			self.origin += (0, adj, 0);
+			break;
+		case "z":
+			self.origin += (0, 0, adj);
+			break;
+		case "theta":
+		iprintln("Adjusting theta " + adj);
+		iprintln("current theta " + angles[0]);
+			if(angles[0] + adj > 180 )
+			{
+				diff = (angles[0] + adj) - 180;
+				self.angles += (-180 + diff, 0, 0);
+			}
+			else if(angles[0] - adj < -180)
+			{
+				diff = (angles[0] + adj) + 180;
+				self.angles += ( 180 - diff, 0, 0);
+			}
+			else
+				self.angles += (adj, 0, 0);
+			break;
+		case "ro":
+		iprintln("Adjusting roll " + adj);
+		iprintln("current roll " + angles[1]);
+			if(angles[1] + adj > 180 )
+			{
+				diff = (angles[1] + adj) - 180;
+				self.angles += (0, -180 + diff, 0);
+			}
+			else if(angles[1] - adj < -180)
+			{
+				diff = (angles[1] + adj) + 180;
+				self.angles += (0, 180 - diff, 0);
+			}
+			else
+				self.angles += (0, adj, 0);
+			break;
+		case "phi":
+		iprintln("Adjusting pitch " + adj);
+		iprintln("current pitch " + angles[2]);
+			if(angles[2] + adj > 180 )
+			{
+				diff = (angles[2] + adj) - 180;
+				self.angles += (0, 0, -180 + diff);
+			}
+			else if(angles[2] - adj < -180)
+			{
+				diff = (angles[2] + adj) + 180;
+				self.angles += (0, 0, 180 - diff);
+			}
+			else
+				self.angles += (0, 0, adj);
+			break;
+
+		default:
+			break;
+	}
+
+	iprintlnbold("New position: " + self.origin);
+	iprintlnbold("New angles: " + self.angles);
+
+
+}
+
+/*
+Adjust(args)
+{
+    adj *= dir;
+}
+
+
+
+
+	###############################
+*/

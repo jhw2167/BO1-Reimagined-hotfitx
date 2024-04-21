@@ -37,13 +37,12 @@ watch_randomize_vending_machines()
 {
 	self endon( "end_game" );
 
-
 	//self thread watch_hanging_zombie_eye_glow();
 	while( true )
 	{
-		//rounds_until_swap = randomintrange( 1, 4 );
-		rounds_until_swap = 1;
-		iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
+		rounds_until_swap = randomintrange( 1, 4 );
+		//rounds_until_swap = 1;
+		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_swap; i++ )
 		{
 			event = self waittill_any_return( "end_of_round", "shino_force_swap");
@@ -54,7 +53,7 @@ watch_randomize_vending_machines()
 		
 		//iprintln( "Randomizing vending machines" );
 		self notify( "perks_swapping" );
-		//wait( 7 );
+		wait( 2 );
 	}
 
 }
@@ -71,53 +70,6 @@ watch_hanging_zombie_eye_glow()
 	iprintln( "ents.size: " + ents.size );
 	player = GetPlayers()[0];
 	
-	falso = false;
-	while( falso )
-	{
-		for( i = 0; i < ents.size; i ++ )
-		{
-			if( !IsDefined(ents[i].origin ))
-				continue;
-			//Check models within 1000 units of player
-			closeEnough = maps\_zombiemode::checkDist(player.origin, ents[i].origin, 100);
-
-			if( !closeEnough )
-			{
-				//iprintln( "Model: " + ents[i].model );
-				//iprintln( "---" );
-				wait( 0.1 );
-				continue;
-			}
-
-			iprintln( "Model: " + ents[i].model );
-			iprintln( "Targetname: " + ents[i].targetname );
-			iprintln( "Target: " + ents[i].target );
-			iprintln( "---" );
-			wait( 0.1 );
-		}
-
-		wait( 5 ); 
-		
-	}
-
-	for( i = 0; i < 10000; i++ )
-	{
-		//ent = GetEntByNum( i );
-		ent = undefined;
-		if( !IsDefined( ent ) )
-		{
-			iprintln( "Ent not defined: " + i );
-			continue;
-		}
-			
-		iprintln( "Ent Data for: " + i  );
-		iprintln( "oRIGIN: " + ent.origin );
-		iprintln( "Model: " + ent.model );
-		iprintln( "Targetname: " + ent.targetname );
-		iprintln( "Target: " + ent.target );
-		iprintln( "---" );
-		wait( 0.1 );
-	}
 
 }
 
@@ -252,11 +204,11 @@ vending_randomization_effect( index )
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;
-	iprintln( "vending_randomization_effect zone opened: " + index );
+	//iprintln( "vending_randomization_effect zone opened: " + index );
 
 	//level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = "vending_packapunch";
 
-	iprintln( "Trying to spawn perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] );
+	//iprintln( "Trying to spawn perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] );
 	machine_array = GetEntArray( level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ], "targetname" );
 
 	machine = undefined;
@@ -357,7 +309,10 @@ vending_randomization_effect( index )
 	perk_trigger.script_noteworthy = vending_triggers[trigInd].script_noteworthy;
 	perk_trigger set_perk_buystring( vending_triggers[trigInd].script_noteworthy );
 
+	level.pap_moving = true;
+	wait 0.1;
 	level.pap_moving = false;
+
 	level waittill( "perks_swapping" );
 
 	while( flag( "pack_machine_in_use" ) )

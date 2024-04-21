@@ -495,7 +495,7 @@ randomize_perks_think()
 			}
 			else
 			{
-				//iprintln("3 Machine: " + perk_list[i].target );
+
 				index = curr_perks.size;
 				curr_perks[ index ] = perk;
 				level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;	//vending_###
@@ -503,7 +503,6 @@ randomize_perks_think()
 				if( !shino_zones_opened[ index ])
 					continue;
 				
-				//iprintln("4 Machine: " + perk_list[i].target );
 				thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
 				
 			}

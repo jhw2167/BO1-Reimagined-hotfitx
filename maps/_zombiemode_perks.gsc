@@ -28,7 +28,7 @@ init()
 	level.zombiemode_using_pack_a_punch = true;
 	
 
-	level thread place_perk_machines_by_map();
+	level place_perk_machines_by_map();
 	level thread place_doubletap_machine();
 
 	// Perks-a-cola vending machine use triggers
@@ -36,6 +36,7 @@ init()
 
 	// Pack-A-Punch weapon upgrade machine use triggers
 	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
+	
 	flag_init("pack_machine_in_use");
 	flag_init( "solo_game" );
 
@@ -418,6 +419,7 @@ default_vending_precaching()
 		PreCacheString( &"REIMAGINED_PERK_PACKAPUNCH");
 		PreCacheString( &"ZOMBIE_GET_UPGRADED" );
 		//level._effect[ "packapunch_fx" ] = LoadFX( "maps/zombie/fx_zombie_packapunch" );
+		level.pap_moving = false;
 		level thread turn_PackAPunch_on();
 	}
 
@@ -533,7 +535,7 @@ vending_machine_trigger_think()
 		{
 			if(DistanceSquared( players[i].origin, self.origin ) < dist)
 			{
-				//iprintln("Player in range");
+				iprintln("Player in range");
 				current_weapon = players[i] getCurrentWeapon();
 				if(current_weapon == "microwavegun_zm")
 				{
@@ -543,47 +545,47 @@ vending_machine_trigger_think()
 				packInUseByThisPlayer = ( flag("pack_machine_in_use") && IsDefined(self.user) && self.user == players[i] );
 				if ( players[i] hacker_active() )
 				{
-					//iprintln("1");
+					iprintln("1");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( !players[i] maps\_zombiemode_weapons::can_buy_weapon() || players[i] maps\_laststand::player_is_in_laststand() || is_true( players[i].intermission ) || players[i] isThrowingGrenade() )
 				{
-					//iprintln("2");
+					iprintln("2");
 					self SetInvisibleToPlayer( players[i], true );
 				}
-				else if( is_true(level.pap_moving)) //can't use the pap machine while it's being lowered or raised
+				else if( is_true(level.pap_moving) ) //can't use the pap machine while it's being lowered or raised
 				{
-					//iprintln("3");
+					iprintln("3");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( players[i] isSwitchingWeapons() )
 		 		{
-					//iprintln("4");
+					iprintln("4");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
 		 		else if( !packInUseByThisPlayer && flag("pack_machine_in_use") )
 		 		{
-					//iprintln("5");
+					iprintln("5");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
 				else if ( !packInUseByThisPlayer && !IsDefined( level.zombie_include_weapons[current_weapon] ) )
 				{
-					//iprintln("6");
+					iprintln("6");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if ( !packInUseByThisPlayer && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
 				{
-					//iprintln("7");
+					iprintln("7");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if ( !packInUseByThisPlayer && vending_2x_blacklist(current_weapon) )
 				{
-					//iprintln("8");
+					iprintln("8");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else
 				{
-					//iprintln("9");
+					iprintln("9");
 					self SetInvisibleToPlayer( players[i], false );
 				}
 			}
@@ -1384,6 +1386,7 @@ turn_jugger_on()
 		level notify("electriccherry_on");
 		level notify("vulture_on");
 		level notify("widowswine_on");
+		level notify("Pack_A_Punch_on");
 	}
 	
 
@@ -5880,15 +5883,11 @@ init_vulture()
 vulture_perk_watch_pap_move()
 {
 	
-	level.pap_moving = true;
 	while( 1 ) 
 	{
 		while( !IsDefined( level.pap_moving) ||  !level.pap_moving ) { //Pap is either still or not available
 			wait 0.5;
 		}
-
-	
-	
 
 		while( is_true( level.pap_moving ) ) {
 			wait 0.5;

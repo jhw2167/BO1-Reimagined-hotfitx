@@ -140,6 +140,7 @@ main()
 	//maps\_zombiemode_grief::init();
 
 	// Call the other zombiemode scripts
+	maps\_zombiemode_perks::init();
 	maps\_zombiemode_audio::audio_init();
 	maps\_zombiemode_claymore::init();
 	maps\_zombiemode_weapons::init();
@@ -147,7 +148,6 @@ main()
 	maps\_zombiemode_blockers::init();
 	maps\_zombiemode_spawner::init();
 	maps\_zombiemode_powerups::init();
-	maps\_zombiemode_perks::init();
 	maps\_zombiemode_user::init();
 	maps\_zombiemode_weap_cymbal_monkey::init();
 	maps\_zombiemode_weap_freezegun::init();
@@ -1001,6 +1001,13 @@ watch_player_utility()
 		{
 			get_vending_utility();
 		}
+
+		if( self buttonPressed("q")  && dev_only)
+		{
+			self.ignoreme = true;
+			self maps\zombie_cod5_asylum_perk_machines::start_properk_placer();
+		}
+
 		wait(0.5);
 	}
 }
@@ -1060,6 +1067,9 @@ wait_set_player_visionset()
 	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {
 		iprintln( "Perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] );
 	}
+
+	iprintln("Upgraded kar: " + level.zombie_weapons["zombie_kar98k"].upgrade_name );
+	iprintln("Upgraded type arisaka: " + level.zombie_weapons["zombie_type99_rifle"].upgrade_name );
 
 	//Test zombiemode_perks disablePerk function
 	/*

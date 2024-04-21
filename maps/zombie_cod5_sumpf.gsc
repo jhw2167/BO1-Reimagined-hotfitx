@@ -377,7 +377,7 @@ include_weapons()
 
 
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_kar98k", "zombie_kar98k_upgraded", 						&"WAW_ZOMBIE_WEAPON_KAR98K_200", 				200,	"rifle");
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_type99_rifle", "",					&"WAW_ZOMBIE_WEAPON_TYPE99_200", 			    200,	"rifle" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_type99_rifle", "zombie_kar98k_upgraded",					&"WAW_ZOMBIE_WEAPON_TYPE99_200", 			    200,	"rifle" );
 
 	// Semi Auto
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_gewehr43", "zombie_gewehr43_upgraded",						&"WAW_ZOMBIE_WEAPON_GEWEHR43_600", 				600,	"rifle" );
@@ -387,7 +387,7 @@ include_weapons()
 	maps\_zombiemode_weapons::add_zombie_weapon( "stielhandgranate", "", 						&"WAW_ZOMBIE_WEAPON_STIELHANDGRANATE_250", 		250,	"grenade", "", 250 );
 	maps\_zombiemode_weapons::add_zombie_weapon( "mine_bouncing_betty", "", &"WAW_ZOMBIE_WEAPON_SATCHEL_2000", 2000 );
 	// Scoped
-	maps\_zombiemode_weapons::add_zombie_weapon( "kar98k_scoped_zombie", "", 					&"WAW_ZOMBIE_WEAPON_KAR98K_S_750", 				750,	"sniper");
+	maps\_zombiemode_weapons::add_zombie_weapon( "kar98k_scoped_zombie", "zombie_kar98k_upgraded", 					&"WAW_ZOMBIE_WEAPON_KAR98K_S_750", 				750,	"sniper");
 
 	// Full Auto
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_stg44", "zombie_stg44_upgraded", 							    &"WAW_ZOMBIE_WEAPON_STG44_1200", 				1200, "mg" );

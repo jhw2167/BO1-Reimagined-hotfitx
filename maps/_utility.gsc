@@ -10797,7 +10797,7 @@ SpawnThrottleEnableThread()
 {
 	level notify ("spawn_throttle_enable_thread_ender");
 	level endon ("spawn_throttle_enable_thread_ender");
-	if (isdefined(level.flag["all_players_connected"]))
+	if ( isDefined(level.flag) && isdefined(level.flag["all_players_connected"]))
 	{
 		flag_wait("all_players_connected");
 		level.spawnThrottleEnable = true;	 
