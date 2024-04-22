@@ -802,7 +802,18 @@ reimagined_init_level()
 	//MISC
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
-	//Maps
+	/*	
+		#################### 
+				Maps		
+		####################
+	*/
+
+	//Veruktd
+	level.ARRAY_PAP_DROP_SPAWN_LOCATIONS = [];
+	for(i=0;i<6;i++)  {
+		level.ARRAY_PAP_DROP_SPAWN_LOCATIONS[i] = SpawnStruct();
+	}
+	level.ARRAY_PAP_DROP_SPAWN_LOCATIONS[0].origin = (737, -490, 64);
 
 	//Shino
 

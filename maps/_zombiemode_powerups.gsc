@@ -1518,8 +1518,17 @@ powerup_grab()
 						break;
 
 					case "bonfire_sale":
-						level thread start_bonfire_sale( self );
-						players[i] thread powerup_vo("firesale");
+						if( level.mapname == "zombie_cod5_asylum" )
+						{
+							players[i] thread start_special_pap( self );
+							players[i] thread powerup_vo( "bonus_points_solo" );
+							break;
+						}
+						else
+						{
+							level thread start_bonfire_sale( self );
+							players[i] thread powerup_vo("firesale");
+						}
 						break;
 
 					case "minigun":
@@ -1860,6 +1869,15 @@ delete_on_bonfire_sale(temp_ent)
 		temp_ent Delete();
 }
 
+start_special_pap( powerup, isUpgraded )
+{
+	destination = SpawnStruct();
+
+	destination.origin = level.pap_origin + (100, 0, 10);
+	destination.angles = self GetPlayerAngles();
+	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );
+
+}
 
 start_carpenter( origin )
 {

@@ -35,6 +35,7 @@ place_babyjug()
 place_packapunch()
 {
 	machine_origin = (335, 18.25, 55.26);
+	level.pap_origin = machine_origin;
 	machine_angles = (0, 90, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
@@ -154,8 +155,13 @@ place_martyrdom()
 
 place_extraammo()
 {
-	machine_origin = (1481.5, 64.1, 61.8);
-	machine_angles = (0, -180, 0);
+	//Reinaissance
+	//machine_origin = (1481.5, 64.1, 61.8);
+	//machine_angles = (0, -180, 0);
+
+	machine_origin = (428, -408, 56);
+	machine_angles = (0, 180, 0);
+
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "bo3_p7_zm_vending_widows_wine_off" );
@@ -278,7 +284,7 @@ start_properk_placer()
 	new_pos = self.origin + offset;
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
-	object SetModel( "zombie_vending_packapunch_on" );
+	object SetModel( "bo3_p7_zm_vending_widows_wine_on" );
 	//object.angles = angles + (0, 180, 0);
 	object.angles = VectorToAngles(forward_view_angles);
 
@@ -335,12 +341,15 @@ start_properk_placer()
 					continue;
 				}
 
-				temp = self editObject( object, i, j );
-				object.origin = temp.origin;
-				object.angles = temp.angles;
+				if(self buttonPressed("e"))
+				{
+					temp = self editObject( object, i, j );
+					object.origin = temp.origin;
+					object.angles = temp.angles;
 
-				iprintln("pos: " + object.origin);
-				iprintln("ang: " + object.angles);
+					iprintln("pos: " + object.origin);
+					iprintln("ang: " + object.angles);
+				}
 
 				if(self buttonPressed("ENTER"))
 					break;

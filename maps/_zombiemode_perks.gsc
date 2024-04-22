@@ -535,7 +535,7 @@ vending_machine_trigger_think()
 		{
 			if(DistanceSquared( players[i].origin, self.origin ) < dist)
 			{
-				iprintln("Player in range");
+				//iprintln("Player in range");
 				current_weapon = players[i] getCurrentWeapon();
 				if(current_weapon == "microwavegun_zm")
 				{
@@ -545,47 +545,47 @@ vending_machine_trigger_think()
 				packInUseByThisPlayer = ( flag("pack_machine_in_use") && IsDefined(self.user) && self.user == players[i] );
 				if ( players[i] hacker_active() )
 				{
-					iprintln("1");
+					//iprintln("1");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( !players[i] maps\_zombiemode_weapons::can_buy_weapon() || players[i] maps\_laststand::player_is_in_laststand() || is_true( players[i].intermission ) || players[i] isThrowingGrenade() )
 				{
-					iprintln("2");
+					//iprintln("2");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( is_true(level.pap_moving) ) //can't use the pap machine while it's being lowered or raised
 				{
-					iprintln("3");
+					//iprintln("3");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if( players[i] isSwitchingWeapons() )
 		 		{
-					iprintln("4");
+					//iprintln("4");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
 		 		else if( !packInUseByThisPlayer && flag("pack_machine_in_use") )
 		 		{
-					iprintln("5");
+					//iprintln("5");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
 				else if ( !packInUseByThisPlayer && !IsDefined( level.zombie_include_weapons[current_weapon] ) )
 				{
-					iprintln("6");
+					//iprintln("6");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if ( !packInUseByThisPlayer && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
 				{
-					iprintln("7");
+					//iprintln("7");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else if ( !packInUseByThisPlayer && vending_2x_blacklist(current_weapon) )
 				{
-					iprintln("8");
+					//iprintln("8");
 					self SetInvisibleToPlayer( players[i], true );
 				}
 				else
 				{
-					iprintln("9");
+					//iprintln("9");
 					self SetInvisibleToPlayer( players[i], false );
 				}
 			}
