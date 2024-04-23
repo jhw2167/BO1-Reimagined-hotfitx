@@ -14,6 +14,7 @@ init()
 	place_mulekick();	
 	place_vulture();
 	place_packapunch();
+	place_barriers();
 }
 
 
@@ -131,8 +132,11 @@ place_marathon()
 
 place_martyrdom()
 {
-	machine_origin = (1169.64, 622.181, 56.5353);
-	machine_angles = (0, -90, 0);
+	//Renaisance
+	//machine_origin = (1169.64, 622.181, 56.5353);
+	//machine_angles = (0, -90, 0);
+	machine_origin = (-250, -384, 226);
+	machine_angles = (360, 180, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "p6_zm_vending_electric_cherry_off" );
@@ -254,6 +258,34 @@ place_vulture()
 	bump_trigger.targetname = "audio_bump_trigger";
 }
 
+place_barriers()
+{
+	level.verukt_barriers = [];
+
+	//Side Barriers
+	side_origin = ( 600, -568, 56 );
+	level.verukt_barriers[0] = spawn( "script_model", side_origin );
+	level.verukt_barriers[0].angles = (0, 0, 0);
+	level.verukt_barriers[0] SetModel( "collision_geo_64x64x256" );
+	level.verukt_barriers[0] Hide();
+
+	level.verukt_barriers[1] = spawn( "script_model", side_origin + (-70, 0, 0) );
+	level.verukt_barriers[1].angles = (0, 0, 0);
+	level.verukt_barriers[1] SetModel( "collision_geo_64x64x256" );
+	level.verukt_barriers[1] Hide();
+
+	//Behind Barriers
+	behind_origin = ( 300, -392, 61 );
+	for(i = 0; i < 18; i++)
+	{
+		level.verukt_barriers[i+2] = spawn( "script_model", behind_origin + (0, 50 * i, 0) );
+		level.verukt_barriers[i+2].angles = (0, 0, 0);
+		level.verukt_barriers[i+2] SetModel( "collision_geo_64x64x256" );
+		level.verukt_barriers[i+2] Hide();
+	}
+	
+	
+}
 
 /*
 	###############################
@@ -284,7 +316,7 @@ start_properk_placer()
 	new_pos = self.origin + offset;
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
-	object SetModel( "bo3_p7_zm_vending_widows_wine_on" );
+	object SetModel( "p6_zm_vending_electric_cherry_off" );
 	//object.angles = angles + (0, 180, 0);
 	object.angles = VectorToAngles(forward_view_angles);
 

@@ -615,6 +615,10 @@ include_powerups()
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
+
+	include_powerup( "bonfire_sale" );
+	include_powerup( "fire_sale" );
+	include_powerup( "free_perk" );	
 }
 
 /*------------------------------------
@@ -1279,6 +1283,8 @@ master_electric_switch()
 
 	//activate perks-a-cola
 	level notify( "master_switch_activated" );
+	level thread watch_pap_teleport_drops();
+	
 	fx_org delete();
 
 	fx_org = spawn("script_model", (-675.021, -300.906, 283.724));
@@ -1401,6 +1407,36 @@ electric_current_open_middle_door()
 		fx_org delete();
 
 
+
+}
+
+watch_pap_teleport_drops()
+{
+
+	self endon( "end_game" );
+
+	while( true )
+	{
+		//rounds_until_spawn = randomintrange( 1, 4 );
+		rounds_until_spawn = 1;
+		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
+		for( i = 0; i < rounds_until_spawn; i++ )
+		{
+			//self waittill( "between_round_over" );
+			self waittill( "end_of_round" );
+			
+		}
+
+		seconds_wait = randomintrange( 10, 100 );
+		//level waittill_any_or_timeout( "end_of_round", seconds_wait );
+		//wait(10);
+		
+		drop_spot = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
+		
+		//drop_spot = level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[0];
+		maps\_zombiemode_powerups::specific_powerup_drop( "bonfire_sale", drop_spot.origin );
+
+	}
 
 }
 

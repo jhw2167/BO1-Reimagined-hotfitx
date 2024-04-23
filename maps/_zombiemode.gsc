@@ -48,7 +48,7 @@ main()
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
 	level.zombie_ai_limit_override=5;	///
-	//level.starting_round_override=9;	///
+	level.starting_round_override=17;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
@@ -809,11 +809,15 @@ reimagined_init_level()
 	*/
 
 	//Veruktd
-	level.ARRAY_PAP_DROP_SPAWN_LOCATIONS = [];
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS = [];
 	for(i=0;i<6;i++)  {
-		level.ARRAY_PAP_DROP_SPAWN_LOCATIONS[i] = SpawnStruct();
+		level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[i] = SpawnStruct();
 	}
-	level.ARRAY_PAP_DROP_SPAWN_LOCATIONS[0].origin = (737, -490, 64);
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[0].origin = (737, -490, 64); //Spawn1
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[1].origin = (760, -73, 64); //Spawn2
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[2].origin = (514, 970, 226); //Corner Vultures
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[3].origin = (-678, -145, 64); //Downstairs power
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[4].origin = (-200, -350, 226); //Upper Balcony
 
 	//Shino
 

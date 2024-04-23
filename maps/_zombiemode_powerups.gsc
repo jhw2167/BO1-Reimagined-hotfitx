@@ -929,6 +929,7 @@ specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
 
 	if ( IsDefined(powerup) )
 	{
+		iprintln("SPAWNING DROP FROM SPECIFIC_POWERUP_DROP: " + powerup_name + " origin " + powerup.origin );
 		powerup powerup_setup( powerup_name );
 
 		if(!permament)
@@ -1084,6 +1085,8 @@ powerup_setup( powerup_override, drop_color )
 	}
 
 	struct = level.zombie_powerups[powerup];
+
+	iprintln( "Setting up with struct: " + struct.model_name );
 
 	if ( powerup == "random_weapon" )
 	{
@@ -1411,6 +1414,8 @@ powerup_grab()
 		//return;
 	}
 
+	iprintln( "grapping powerup: " + self.powerup_name );
+
 	self endon ("powerup_timedout");
 	self endon ("powerup_grabbed");
 	self endon( "powerup_end" );
@@ -1522,6 +1527,7 @@ powerup_grab()
 						{
 							players[i] thread start_special_pap( self );
 							players[i] thread powerup_vo( "bonus_points_solo" );
+							self.powerup_name = "bonus_points_player";
 							break;
 						}
 						else
@@ -1873,9 +1879,41 @@ start_special_pap( powerup, isUpgraded )
 {
 	destination = SpawnStruct();
 
-	destination.origin = level.pap_origin + (100, 0, 10);
-	destination.angles = self GetPlayerAngles();
+	//destination.origin = level.pap_origin + (100, 0, 10);
+	destination.origin = (640, 14, 61);
+	destination.angles = level.pap_angles + (0, -180, 0);
+
+	self.ignoreme = true;
+	level.pap_moving = false;
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );
+	self shellshock( "explosion", 1.25 );
+	self shellshock( "electrocution", 1.25 );
+
+	if( isUpgraded )
+		wait 5;
+	wait 2;
+
+	//while pap in use, dont tp
+	while( flag("pack_machine_in_use") ) {
+		wait 0.5;
+	}
+
+	level.pap_moving = true;
+
+	destination.origin = (640, 14, 61);
+
+	wait 2;
+
+	respawn_point = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
+	respawn = SpawnStruct();
+	respawn.origin = respawn_point.origin;
+	respawn.angles = self GetPlayerAngles();
+
+	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( respawn, true );
+
+	self shellshock( "electrocution", 1.25 );
+	//wait(2);
+	
 
 }
 
