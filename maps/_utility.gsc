@@ -15199,7 +15199,8 @@ waittill_player_shoots(weapon_type, ender)
 	
 }
 
-wait_print( msg, data )
+/*
+//wait_print( msg, data )
 {
 	flag_wait("begin_spawning");
 	iprintLn( msg );
@@ -15208,4 +15209,5 @@ wait_print( msg, data )
 		iprintln( data );
 	
 }
+*/
  

@@ -474,7 +474,12 @@ randomize_perks_think()
 		for( i = 0; i < perk_list.size; i ++ )
 		{
 			machine_array = GetEntArray( perk_list[i].target, "targetname" );
-			//iprintln("1 Machine Array Size: " + perk_list[i].target );
+
+			if( !IsDefined(machine_array) )
+			{
+				continue;
+			}
+
 			machine = undefined;
 			
 			for( j = 0; j < machine_array.size; j ++ )
