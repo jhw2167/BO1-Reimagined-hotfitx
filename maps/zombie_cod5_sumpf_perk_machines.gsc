@@ -498,7 +498,7 @@ randomize_perks_think()
 
 			if( !IsDefined(machine_array) )
 			{
-				wait_print( "Machine array undefined event " + i, perk_list[i].target);
+				//wait_print( "Machine array undefined event " + i, perk_list[i].target);
 				continue;
 			}
 
