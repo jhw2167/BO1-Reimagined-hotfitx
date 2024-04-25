@@ -4589,10 +4589,7 @@ player_watch_electric_cherry()
 			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
 			{
 
-				iprintLn("Zombie: " + a_zombies[i].origin[2]);
-				iprintLn("Player: " + self.origin[2]);
 				height_diff = self.origin[2] - a_zombies[i].origin[2];
-
 				if( (height_diff > height_limit) || (height_diff < -1*height_limit) )
 					continue;
 
