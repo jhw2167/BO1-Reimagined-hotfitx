@@ -240,10 +240,18 @@ vending_randomization_effect( index )
 	machine.origin = level.perk_spawn_location[ index ].origin;
 	machine.angles = level.perk_spawn_location[ index ].angles;
 
+	//This location needs special treatment for cherry
+	if( level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] == "vending_electriccherry"  && index == 1 )
+	{
+		machine.origin = (11671, 3602, -659);
+	}
+
 	PlaySoundAtPosition( "rando_start", machine.origin );
 	origin = machine.origin;
-	//iprintln( "At location: " + origin );
-	//iprintln( "Trigger origin: " + vending_triggers[trigInd].origin );
+	//index
+	iprintLn( "Index: " + index );
+	iprintln( "At location: " + origin );
+	iprintln( "Trigger origin: " + vending_triggers[trigInd].origin );
 	
 	if( level.vending_model_info.size > 1 )
 	{

@@ -1016,6 +1016,12 @@ watch_player_utility()
 		{
 			get_vending_utility();
 		}
+
+		if( self buttonPressed("q")  && dev_only)
+		{
+			maps\zombie_cod5_asylum_perk_machines::start_properk_placer();
+		}
+
 		wait(0.5);
 	}
 }
