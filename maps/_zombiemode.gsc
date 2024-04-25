@@ -1056,7 +1056,9 @@ watch_player_utility()
 		iprintLn( msg );
 		
 		if( IsDefined( data ) )
+		{
 			iprintln( data );
+		}
 		
 	}
 

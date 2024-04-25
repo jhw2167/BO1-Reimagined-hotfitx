@@ -464,8 +464,6 @@ randomize_perks_think()
 					continue;
 				machine = machine_array[j];
 			}
-			if( !IsDefined( machine ) )
-				iprintln( "machine not found for: " + perk_list[i].target );
 
 			//iprintln("2 Machine: " + perk_list[i].target );
 
