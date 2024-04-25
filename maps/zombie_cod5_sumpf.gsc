@@ -316,46 +316,42 @@ include_weapons()
 	include_weapon( "ray_gun_upgraded_zm", false );
 	include_weapon( "zombie_fg42_upgraded", false );
 	include_weapon( "ithaca_upgraded_zm", false );
+	include_weapon( "tesla_gun_upgraded_zm", false );	
+
+
+	//Single Shot
+	include_weapon( "karabin_zm", false );	
+	include_weapon( "zombie_gewehr43", false, true );
+	include_weapon( "zombie_m1garand", false, true );
+	include_weapon( "zombie_m1carbine", false, true );
+	//include_weapon( "zombie_springfield", false, true );
+	//include_weapon( "zombie_kar98k", false, true );
+	
+	include_weapon( "zombie_gewehr43_upgraded", false );
+	include_weapon( "zombie_m1garand_upgraded", false );
+	include_weapon( "zombie_m1carbine_upgraded", false );
+	include_weapon( "karabin_upgraded_zm", false );	
+	include_weapon( "m14_upgraded_zm", false );	
+	
+	//Shotguns
+	include_weapon( "zombie_shotgun", false, true );
 	include_weapon( "zombie_shotgun_upgraded", false );		
-	include_weapon( "zombie_doublebarrel_sawed_upgraded", false );
-	include_weapon( "zombie_doublebarrel_upgraded", false );
-	include_weapon( "zombie_type100_smg_upgraded", false );
-	include_weapon( "mp40_upgraded_zm", false );
+
+	
+	//Full Auto
+	include_weapon( "zombie_bar", false, true );
+	include_weapon( "zombie_stg44", false, true );
+	include_weapon( "zombie_thompson", false, true );	
+	include_weapon( "mp40_zm", false, true );
+	include_weapon( "zombie_type100_smg", false );
+	
+	
 	include_weapon( "zombie_thompson_upgraded", false );
 	include_weapon( "zombie_bar_upgraded", false );	
 	include_weapon( "zombie_stg44_upgraded", false );
-	include_weapon( "zombie_gewehr43_upgraded", false );
-	include_weapon( "zombie_m1carbine_upgraded", false );
-	include_weapon( "zombie_m1garand_upgraded", false );
-	include_weapon( "m14_upgraded_zm", false );
-	include_weapon( "tesla_gun_upgraded_zm", false );	
-	include_weapon( "mg42_upgraded_zm", false );
-	include_weapon( "mg08_upgraded_zm", false );	
-	include_weapon( "win1894_upgraded_zm", false );			
-	include_weapon( "karabin_upgraded_zm", false );	
+	include_weapon( "mp40_upgraded_zm", false );
+	include_weapon( "zombie_type100_smg_upgraded", false );
 
-	// Bolt Action
-	include_weapon( "zombie_type99_rifle", false, true);
-
-	// Semi Auto
-	include_weapon( "zombie_m1carbine", false, true );
-	include_weapon( "zombie_m1garand", false, true );
-	include_weapon( "zombie_gewehr43", false, true );
-
-	// Full Auto
-	include_weapon( "zombie_stg44", false, true );
-	include_weapon( "zombie_thompson", false, true );
-	include_weapon( "mp40_zm", false, true );
-	include_weapon( "zombie_type100_smg", false, true );
-
-	include_weapon( "stielhandgranate", false, true );
-
-	include_weapon( "zombie_shotgun", false, true );
-
-	// Heavy MG
-	include_weapon( "zombie_bar", false, true );
-
-	// Special
 	include_weapon( "tesla_gun_zm" );
 	include_weapon( "m1911_upgraded_zm", false );
 

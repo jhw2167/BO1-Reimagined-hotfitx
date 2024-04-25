@@ -4076,17 +4076,17 @@ init_includes()
  	include_weapon("falling_hands_zm", false);
 
  	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
-	if(vending_weapon_upgrade_trigger.size >= 1)
+	//if(vending_weapon_upgrade_trigger.size >= 1)
 	{
  		include_weapon("ak47_ft_upgraded_zm", false);
 	 	include_weapon("stoner63_upgraded_zm", false);
 	 	//include_weapon("psg1_upgraded_zm", false);
 	 	include_weapon("ppsh_upgraded_zm", false);
 		
-		//Reimagined-Expanded
-		//All double PaP weapons:
-		// - no wall weapons
-		// - no wonder weapons
+	//Reimagined-Expanded
+	//All double PaP weapons:
+	// - no wall weapons
+	// - no wonder weapons
 		//include_weapon( "m14_upgraded_zm_x2", false );
 		//include_weapon( "rottweil72_upgraded_zm_x2", false );
 		//include_weapon( "m16_gl_upgraded_zm_x2", false );
@@ -4121,7 +4121,9 @@ init_includes()
 		
 		//include_weapon( "china_lake_upgraded_zm_x2", false );
 		//include_weapon( "m72_law_upgraded_zm_x2", false );
-	}
+	
+	
+ 	}
 
  	if(IsSubStr(level.script, "zombie_cod5"))
  	{

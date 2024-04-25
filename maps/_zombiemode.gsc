@@ -48,7 +48,7 @@ main()
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
 	level.zombie_ai_limit_override=5;	///
-	level.starting_round_override=17;	///
+	//level.starting_round_override=9;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
@@ -140,7 +140,6 @@ main()
 	//maps\_zombiemode_grief::init();
 
 	// Call the other zombiemode scripts
-	maps\_zombiemode_perks::init();
 	maps\_zombiemode_audio::audio_init();
 	maps\_zombiemode_claymore::init();
 	maps\_zombiemode_weapons::init();
@@ -148,6 +147,7 @@ main()
 	maps\_zombiemode_blockers::init();
 	maps\_zombiemode_spawner::init();
 	maps\_zombiemode_powerups::init();
+	maps\_zombiemode_perks::init();
 	maps\_zombiemode_user::init();
 	maps\_zombiemode_weap_cymbal_monkey::init();
 	maps\_zombiemode_weap_freezegun::init();
@@ -802,22 +802,20 @@ reimagined_init_level()
 	//MISC
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
-	/*	
-		#################### 
-				Maps		
-		####################
-	*/
+	//Maps
 
 	//Veruktd
 	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS = [];
-	for(i=0;i<6;i++)  {
-		level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[i] = SpawnStruct();
+	
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[0] = Spawn( "script_model", (737, -490, 64)); //Spawn1
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[1] = Spawn( "script_model", (760, -73, 64)); //Spawn2
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[2] = Spawn( "script_model", (514, 970, 226)); //Corner Vultures
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[3] = Spawn( "script_model", (-678, -145, 64)); //Downstairs power
+	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[4] = Spawn( "script_model", (-200, -350, 226)); //Upper Balcony
+
+	for(i=0;i<5;i++)  {
+		level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[i] SetModel( "tag_origin" );
 	}
-	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[0].origin = (737, -490, 64); //Spawn1
-	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[1].origin = (760, -73, 64); //Spawn2
-	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[2].origin = (514, 970, 226); //Corner Vultures
-	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[3].origin = (-678, -145, 64); //Downstairs power
-	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[4].origin = (-200, -350, 226); //Upper Balcony
 
 	//Shino
 
@@ -1016,13 +1014,6 @@ watch_player_utility()
 		{
 			get_vending_utility();
 		}
-
-		if( self buttonPressed("q")  && dev_only)
-		{
-			self.ignoreme = true;
-			self maps\zombie_cod5_asylum_perk_machines::start_properk_placer();
-		}
-
 		wait(0.5);
 	}
 }
@@ -1082,9 +1073,6 @@ wait_set_player_visionset()
 	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {
 		iprintln( "Perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] );
 	}
-
-	iprintln("Upgraded kar: " + level.zombie_weapons["zombie_kar98k"].upgrade_name );
-	iprintln("Upgraded type arisaka: " + level.zombie_weapons["zombie_type99_rifle"].upgrade_name );
 
 	//Test zombiemode_perks disablePerk function
 	/*
