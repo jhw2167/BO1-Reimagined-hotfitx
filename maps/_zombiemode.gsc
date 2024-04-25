@@ -47,8 +47,8 @@ main()
 
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
-	level.zombie_ai_limit_override=5;	///
-	//level.starting_round_override=9;	///
+	level.zombie_ai_limit_override=10;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///

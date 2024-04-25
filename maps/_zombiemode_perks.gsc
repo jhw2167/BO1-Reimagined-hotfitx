@@ -4579,6 +4579,7 @@ player_watch_electric_cherry()
 		a_zombies = GetAISpeciesArray( "axis", "all" );
 		a_zombies = get_array_of_closest( self.origin, a_zombies, undefined, undefined, perk_radius );
 		n_zombies_hit = 0;
+		height_limit = 30;
 		
 		for( i = 0; i < a_zombies.size; i ++ )
 		{
@@ -4587,6 +4588,13 @@ player_watch_electric_cherry()
 
 			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
 			{
+
+				iprintLn("Zombie: " + a_zombies[i].origin[2]);
+				iprintLn("Player: " + self.origin[2]);
+				height_diff = self.origin[2] - a_zombies[i].origin[2];
+
+				if( (height_diff > height_limit) || (height_diff < -1*height_limit) )
+					continue;
 
 				if( n_zombies_hit > max_enemies )
 					break;
