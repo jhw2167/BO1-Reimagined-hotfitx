@@ -612,6 +612,8 @@ reimagined_init_level()
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
 
 	//Double Tap
+	level.VALUE_DBT_DAMAGE_BONUS = 1.2;
+	level.VALUE_DBT_PRO_DAMAGE_BONUS = 1.6;
 	level.VALUE_DBT_UNITS = 5;
 	level.VALUE_DBT_PENN_DIST = 20;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
@@ -8723,12 +8725,20 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//End Switch
 
 
-		if( attacker HasPerk("specialty_rof") )
+		if( attacker HasPerk( level.DBT_PRK ) )
 		{
-			final_damage = int(final_damage * 1.5);
+			if( attacker hasProPerk(level.DBT_PRO) )
+			{
+				final_damage = int(final_damage * level.VALUE_DBT_PRO_DAMAGE_BONUS);
+			}
+			else
+			{
+				final_damage = int(final_damage * level.VALUE_DBT_DAMAGE_BONUS);
+			}
+			
 		}
 
-		if(attacker HasPerk("specialty_deadshot") && WeaponClass(weapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
+		if(attacker HasPerk( level.DST_PRK ) && WeaponClass(weapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
 		{
 			final_damage = int(final_damage * 2);
 		}
