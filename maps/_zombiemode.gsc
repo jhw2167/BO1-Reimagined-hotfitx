@@ -1049,6 +1049,41 @@ watch_player_utility()
 		iprintln("Origin: " + self.origin);
 	}
 
+
+	wait_print( msg, data )
+	{
+		flag_wait("begin_spawning");
+		iprintLn( msg );
+		
+		if( IsDefined( data ) )
+			iprintln( data );
+		
+	}
+
+	printHelper( a, b, c, d, e, f)
+	{
+		if( !IsDefined( a ) )
+			a = "";
+		
+		if( !IsDefined( b ) )
+			b = "";
+
+		if( !IsDefined( c ) )
+			c = "";
+
+		if( !IsDefined( d ) )
+			d = "";
+
+		if( !IsDefined( e ) )
+			e = "";
+		
+		if( !IsDefined( f ) )
+			f = "";
+		
+		iprintln( a + " " + b + " " + c + " " + d + " " + e + " " + f );
+	}
+
+
 wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );

@@ -280,36 +280,12 @@ place_vulture(machine_origin,  machine_angles)
 
 */
 
-printHelper( a, b, c, d, e, f)
-{
-	if( !IsDefined( a ) )
-		a = "";
-	
-	if( !IsDefined( b ) )
-		b = "";
-
-	if( !IsDefined( c ) )
-		c = "";
-
-	if( !IsDefined( d ) )
-		d = "";
-
-	if( !IsDefined( e ) )
-		e = "";
-	
-	if( !IsDefined( f ) )
-		f = "";
-	
-	iprintln( a + " " + b + " " + c + " " + d + " " + e + " " + f );
-}
-
 remove_set_perks( trigger )
 {
 	clip = undefined;
 	model = undefined;
 
 	trigger = GetEnt( trigger.script_noteworthy, "script_noteworthy" );
-	//wait_print( "Trigger: ", trigger.script_noteworthy );
 	machine = GetEntArray( trigger.target, "targetname" );
 	for( i = 0; i < machine.size; i ++ )
 	{

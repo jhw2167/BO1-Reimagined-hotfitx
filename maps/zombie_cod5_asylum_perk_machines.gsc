@@ -38,6 +38,7 @@ place_packapunch()
 	machine_origin = (335, 18.25, 55.26);
 	level.pap_origin = machine_origin;
 	machine_angles = (0, 90, 0);
+	level.pap_angles = machine_angles;
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "zombie_vending_packapunch" );

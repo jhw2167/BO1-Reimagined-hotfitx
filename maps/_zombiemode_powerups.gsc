@@ -1899,8 +1899,7 @@ start_special_pap( powerup, isUpgraded )
 	}
 
 	level.pap_moving = true;
-
-	destination.origin = (640, 14, 61);
+	self.ignoreme = false;
 
 	wait 2;
 
