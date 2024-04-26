@@ -28,6 +28,8 @@ main()
 	level.dogs_enabled = false;
 
 	level.zones = [];
+	level.mapname = Tolower( GetDvar( #"mapname" ) );
+	level.script = level.mapname;
 
 //	maps\_waw_destructible_opel_blitz::init_blitz();
 	precacheshellshock("electrocution");

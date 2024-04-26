@@ -535,5 +535,14 @@ rawfile,character\c_usa_marine4_dlc5.gsc
 //STRINGS
 localize,reimagined
 
+//fonts
+font,fonts\Achafexp.ttf
+font,fonts\Achafita.ttf
+font,fonts\Achaflft.ttf
+font,fonts\Achafont.ttf
+font,fonts\Achafout.ttf
+font,fonts\Achafsex.ttf
+
+
 //IGNORE FILES THAT ARE ALREADY LOADED IN THE BASE GAME
 ignore,ignorefiles

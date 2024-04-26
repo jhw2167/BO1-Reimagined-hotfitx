@@ -72,14 +72,6 @@ enable_dog_rounds()
 
 thread_enable_dog_rounds()
 {
-	//Reimagined-Expanded - Have to wait or "no bosses" won't be set yet
-	flag_wait("all_players_connected");
-	
-	if( level.no_bosses ) {
-		level.dog_rounds_enabled = false;
-		return;
-	}
-
 	level.dog_rounds_enabled = true;
 
 	if( !isdefined( level.dog_round_track_override ) )
@@ -437,6 +429,12 @@ dog_round_tracker()
 	{
 		
 		level waittill ( "between_round_over" );
+
+		if( IsDefined(level.no_bosses) && level.no_bosses ) 
+		{
+			level.dog_rounds_enabled = false;
+			return;
+		}
 
 		if ( level.round_number == level.next_dog_round )
 		{

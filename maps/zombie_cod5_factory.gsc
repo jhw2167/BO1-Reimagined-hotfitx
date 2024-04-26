@@ -30,6 +30,9 @@ main()
 	level.door_dialog_function = maps\_zombiemode::play_door_dialog;
 	level.dog_spawn_func = maps\_zombiemode_ai_dogs::dog_spawn_factory_logic;
 
+	level.mapname = Tolower( GetDvar( #"mapname" ) );
+	level.script = level.mapname;
+
 	// Animations needed for door initialization
 	script_anims_init();
 

@@ -4,6 +4,7 @@
 #include maps\_music;
 #include maps\_zombiemode_utility;
 #include maps\_busing;
+#include maps\_zombiemode_reimagined_utility;
 
 #using_animtree( "generic_human" );
 
@@ -69,6 +70,7 @@ main()
 	level.zombie_pathing_failed = 0;
 	level.zombie_breadcrumb_failed = 0;
 	level.mapname = Tolower( GetDvar( #"mapname" ) );
+	level.script = level.mapname;
 	level.ARRAY_ZOMBIEMODE_PLAYER_COLORS = array("white", "blue", "yellow", "green");
 
 	//level.zombie_visionset = "zombie_neutral";
@@ -1019,7 +1021,8 @@ watch_player_utility()
 
 		if( self buttonPressed("q")  && dev_only)
 		{
-			maps\zombie_cod5_asylum_perk_machines::start_properk_placer();
+			//_zombiemode_reimagined_utility
+			start_properk_placer();
 		}
 
 		wait(0.5);
@@ -1058,79 +1061,36 @@ watch_player_utility()
 	}
 
 
-	wait_print( msg, data )
-	{
-		flag_wait("begin_spawning");
-		iprintLn( msg );
-		
-		if( IsDefined( data ) )
-		{
-			iprintln( data );
-		}
-		
-	}
-
-	printHelper( a, b, c, d, e, f)
-	{
-		if( !IsDefined( a ) )
-			a = "";
-		
-		if( !IsDefined( b ) )
-			b = "";
-
-		if( !IsDefined( c ) )
-			c = "";
-
-		if( !IsDefined( d ) )
-			d = "";
-
-		if( !IsDefined( e ) )
-			e = "";
-		
-		if( !IsDefined( f ) )
-			f = "";
-		
-		iprintln( a + " " + b + " " + c + " " + d + " " + e + " " + f );
-	}
-
+	
 
 wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
-	//iprintln( "wait_set_player_visionset");
-	//iprintln( level.zombie_visionset );
+	
 	if(IsDefined(level.zombie_visionset)) {
 		self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
 		//self VisionSetNaked( "zombie_neutral", 0.5 );
 	}
 
+	wait 5;
+
 	//Overide give perks
 	if( is_true(level.override_give_all_perks) ) {
 		self give_pro_perks( true );
 	}
 
+
 	//Print entitity number and random char
 	//iprintln( "Entity Number: " + self.entity_num);
 
-	wait( 10 );
+	wait( 5 );
 
 	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {
 		iprintln( "Perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] );
 	}
 
-	//Test zombiemode_perks disablePerk function
-	/*
-	for(i=0;i<level.ARRAY_VALID_PERKS.size;i++) {
-		self thread maps\_zombiemode_perks::disablePerk( level.ARRAY_VALID_PRO_PERKS[i], 10 );
-		wait 1;
-	}
-	*/
 
-	//DEBUG AND TEST
-
-
-	//iprintln( "wait_set_player_visionset done");
 }
 
 watch_player_button_press()
@@ -6405,7 +6365,7 @@ setApocalypseOptions()
 		level.no_bosses = false;
 		level.expensive_perks = false;
 		level.tough_zombies = false;
-		level.types = false;
+		level.zombie_types = false;
 		level.total_perks = 5;
 		level.bo2_perks = true;
 		level.extra_drops = false;
@@ -6420,7 +6380,7 @@ setApocalypseOptions()
 	if(level.tough_zombies > 0 || level.apocalypse)
 		level.tough_zombies = true;
 	if(level.zombie_types > 0 || level.apocalypse)
-		level.types = true;
+		level.zombie_types = true;
 	if(level.bo2_perks > 0 || level.apocalypse)
 		level.bo2_perks = true;
 	if(level.extra_drops > 0 || level.apocalypse)
@@ -6454,8 +6414,45 @@ setApocalypseOptions()
 	}
 
 	level.max_perks = level.total_perks;
-		
+
+	level thread print_apocalypse_options();
+
 }
+
+print_apocalypse_options()
+{
+	flag_wait("begin_spawning");
+
+	players = GetPlayers();
+	for(i=0; i<players.size; i++)
+	{
+		
+		if(level.apocalypse )
+			players[i] generate_hint_title(undefined, "Apocalypse Zombies");
+		else
+			players[i] generate_hint_title(undefined, "Classic Zombies");
+
+		if( level.expensive_perks )
+			players[i] generate_hint(undefined, "Expensive Perks: On");
+		if( level.tough_zombies )
+			players[i] generate_hint(undefined, "Tough Zombies: On");
+		if( level.zombie_types )
+			players[i] generate_hint(undefined, "Zombie Types: On");
+		if( level.bo2_perks )
+			players[i] generate_hint(undefined, "BO2 Perks: On");
+		if( level.extra_drops )
+			players[i] generate_hint(undefined, "Extra Drops: On");
+		if( level.alt_bosses == 2 )
+			players[i] generate_hint(undefined, "Zombie Bosses: Tough");
+		else if( level.no_bosses )
+			players[i] generate_hint(undefined, "Zombie Bosses: None");
+		else
+			players[i] generate_hint(undefined, "Zombie Bosses: Normal");
+
+	}
+	
+}
+
 
 //Reimagined-Expanded
 pre_round_think()
@@ -6483,7 +6480,7 @@ pre_round_think()
 	//iprintln("Alt Bosses is: "+ level.alt_bosses);
 	//iprintln("Expensive Perks is: "+ level.expensive_perks);
 	//iprintln("Tough Zombies is: "+ level.tough_zombies);
-	//iprintln("Zombie Types is: "+ level.types);
+	//iprintln("Zombie Types is: "+ level.zombie_types);
 	//iprintln("No Perks is: "+ level.total_perks);
 	//iprintln("BO2 Perks is: "+ level.bo2_perks);
 	//iprintln("Extra Drops is: "+ level.extra_drops);

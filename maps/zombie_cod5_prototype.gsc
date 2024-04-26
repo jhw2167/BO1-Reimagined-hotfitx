@@ -19,10 +19,14 @@ main()
 	//maps\_waw_destructible_opel_blitz::init_blitz();
 	level.startInvulnerableTime = GetDvarInt( "player_deathInvulnerableTime" );
 
+	level.mapname = Tolower( GetDvar( #"mapname" ) );
+	level.script = level.mapname;
+
 	include_weapons();
 	include_powerups();
 	
 	level.zones = [];
+	
 
 	level._effect["zombie_grain"]			= LoadFx( "misc/fx_zombie_grain_cloud" );
 

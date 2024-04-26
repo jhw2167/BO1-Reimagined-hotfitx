@@ -24,6 +24,8 @@ main()
 	// make sure we randomize things in the map once
 	level.randomize_perks = false;
 	//level.exit_level_func = ::sumpf_exit_level;
+	level.mapname = Tolower( GetDvar( #"mapname" ) );
+	level.script = level.mapname;
 
 	// JMA - used to modify the percentages of pulls of ray gun and tesla gun in magic box
 	level.pulls_since_last_ray_gun = 0;

@@ -485,9 +485,15 @@ init_weapon_upgrade()
 			}
 		}
 
-		hint_string = get_weapon_hint( weapon_spawns[i].zombie_weapon_upgrade );
-		cost = get_weapon_cost( weapon_spawns[i].zombie_weapon_upgrade );
-
+		hint_string = "Buy Weapon";
+		cost = 1000;
+		weapon_name = weapon_spawns[i].zombie_weapon_upgrade;
+		if( IsDefined( level.zombie_weapons[weapon_name] ) )
+		{
+			hint_string = get_weapon_hint( weapon_spawns[i].zombie_weapon_upgrade );
+			cost = get_weapon_cost( weapon_spawns[i].zombie_weapon_upgrade );
+		}
+	
 		weapon_spawns[i] SetHintString( hint_string, cost );
 		weapon_spawns[i] setCursorHint( "HINT_NOICON" );
 		weapon_spawns[i] UseTriggerRequireLookAt();
@@ -802,28 +808,45 @@ get_weapon_hint( weapon_name )
 {
 	AssertEx( IsDefined( level.zombie_weapons[weapon_name] ), weapon_name + " was not included or is not part of the zombie weapon list." );
 
-	return level.zombie_weapons[weapon_name].hint;
+	if( !IsDefined( level.zombie_weapons ) )
+		return "";
+
+	if( IsDefined( level.zombie_weapons[weapon_name].hint ) )
+		return level.zombie_weapons[weapon_name].hint;
+	
+
+	return "BUY " + weapon_name;
 }
 
 get_weapon_cost( weapon_name )
 {
 	AssertEx( IsDefined( level.zombie_weapons[weapon_name] ), weapon_name + " was not included or is not part of the zombie weapon list." );
 
-	return level.zombie_weapons[weapon_name].cost;
+
+	if( IsDefined( level.zombie_weapons[weapon_name].cost ) )
+		return level.zombie_weapons[weapon_name].cost;
+
+	return 5000;
 }
 
 get_ammo_cost( weapon_name )
 {
 	AssertEx( IsDefined( level.zombie_weapons[weapon_name] ), weapon_name + " was not included or is not part of the zombie weapon list." );
 
-	return level.zombie_weapons[weapon_name].ammo_cost;
+	if( IsDefined( level.zombie_weapons[weapon_name].ammo_cost ) )
+		return level.zombie_weapons[weapon_name].ammo_cost;
+	
+	return 4500;
 }
 
 get_is_in_box( weapon_name )
 {
 	AssertEx( IsDefined( level.zombie_weapons[weapon_name] ), weapon_name + " was not included or is not part of the zombie weapon list." );
 
-	return level.zombie_weapons[weapon_name].is_in_box;
+	if( IsDefined( level.zombie_weapons[weapon_name].is_in_box ) )
+		return level.zombie_weapons[weapon_name].is_in_box;
+		
+	return false;
 }
 
 
@@ -4125,7 +4148,7 @@ init_includes()
 	
  	}
 
- 	if(IsSubStr(level.script, "zombie_cod5"))
+ 	if(IsDefined(level.script) && IsSubStr(level.script, "zombie_cod5"))
  	{
  		include_weapon("molotov_zm");
  		register_tactical_grenade_for_level( "molotov_zm" );
