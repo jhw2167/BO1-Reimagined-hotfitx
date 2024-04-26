@@ -10,6 +10,7 @@
 
 main()
 {
+	level.flag = [];
 	maps\zombie_cod5_asylum_fx::main();
 
 	// viewmodel arms for the level

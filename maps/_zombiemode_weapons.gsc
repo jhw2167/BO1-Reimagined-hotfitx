@@ -485,14 +485,15 @@ init_weapon_upgrade()
 			}
 		}
 
-		hint_string = "Buy Weapon";
-		cost = 1000;
 		weapon_name = weapon_spawns[i].zombie_weapon_upgrade;
-		if( IsDefined( level.zombie_weapons[weapon_name] ) )
-		{
-			hint_string = get_weapon_hint( weapon_spawns[i].zombie_weapon_upgrade );
-			cost = get_weapon_cost( weapon_spawns[i].zombie_weapon_upgrade );
-		}
+		if( !IsDefined(weapon_name) 
+		|| !IsDefined( level.zombie_weapons )
+		|| !IsDefined( level.zombie_weapons[weapon_name] )
+		|| !IsDefined( getent( weapon_spawns[i].target, "targetname" ) )
+		 )
+			continue;
+		hint_string = get_weapon_hint( weapon_spawns[i].zombie_weapon_upgrade );
+		cost = get_weapon_cost( weapon_spawns[i].zombie_weapon_upgrade );
 	
 		weapon_spawns[i] SetHintString( hint_string, cost );
 		weapon_spawns[i] setCursorHint( "HINT_NOICON" );
@@ -845,7 +846,7 @@ get_is_in_box( weapon_name )
 
 	if( IsDefined( level.zombie_weapons[weapon_name].is_in_box ) )
 		return level.zombie_weapons[weapon_name].is_in_box;
-		
+
 	return false;
 }
 
@@ -3473,8 +3474,16 @@ weapon_set_first_time_hint( cost, ammo_cost )
 
 weapon_spawn_think()
 {
-	cost = get_weapon_cost( self.zombie_weapon_upgrade );
-	ammo_cost = get_ammo_cost( self.zombie_weapon_upgrade );
+	cost = 5000;
+	ammo_cost = 4500;
+	weapon_name = self.zombie_weapon_upgrade;
+	if( IsDefined( level.zombie_weapons[weapon_name] ) )
+	{
+		cost = get_weapon_cost( weapon_name );
+		ammo_cost = get_ammo_cost( weapon_name );
+	}
+
+	
 	is_grenade = (WeaponType( self.zombie_weapon_upgrade ) == "grenade");
 
 	if(level.gamemode == "gg" && !is_grenade)

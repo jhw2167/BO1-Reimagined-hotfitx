@@ -792,6 +792,9 @@ flag_wait( msg )
 	if( !IsDefined(level.flag) )
 		return;
 
+	if( !IsDefined(level.flag[ msg ]) )
+		level.flag[ msg ] = false;
+
 	if( !isdefined( msg ) || level.flag[ msg ] )
 		return;
 		
