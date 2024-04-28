@@ -1272,5 +1272,48 @@ LANG_ENGLISH 		"Widows Wine 2.0 Pro"
 REFERENCE 			WWN_PRO_HINT
 LANG_ENGLISH 		"- Replaces special grenade with Web Grenades that will slow all zombies in moderate radius \n- Poison reduces to 1/3 health over 15 seconds"
 
+REFERENCE			PAP_TITLE
+LANG_ENGLISH 		"Pack-a-Punch"
+
+REFERENCE			PAP_HINT
+LANG_ENGLISH 		"Damage Increased"
+
+REFERENCE			PAP_HELLFIRE_TITLE
+LANG_ENGLISH 		"HELLFIRE"
+
+REFERENCE			PAP_HELLFIRE_HINT
+LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- Hellfire: Holding down the trigger for 2 seconds will apply Hellfire to all zombies struck by your rounds \n- Hellfire disintigrates any normal zombie after two seconds "
+
+REFERENCE			PAP_SHEER_COLD_TITLE
+LANG_ENGLISH 		"SHEER-COLD"
+
+REFERENCE			PAP_SHEER_COLD_HINT
+LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- Sheer-Cold: When zombie get too close, your bullets will afflict zombies with Sheer-Cold \n- Affected zombies are drastically slowed before eventually thawing out"
+
+REFERENCE			PAP_SHOCK_ROUNDS_TITLE
+LANG_ENGLISH 		"SHOCK ROUNDS"
+
+REFERENCE			PAP_SHOCK_ROUNDS_HINT
+LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- Shock Rounds - Random bullets in your magazine will shock zombies, stunning and killing them instantly"
+
+REFERENCE			PAP_BIG_DAMAGE_TITLE
+LANG_ENGLISH 		"BIG DAMAGE"
+
+REFERENCE			PAP_BIG_DAMAGE_HINT
+LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- In addition to the base damage increase, all rounds do an additional 50% damage"
+
+REFERENCE			PAP_BIG_HEADSHOT_DAMAGE_TITLE
+LANG_ENGLISH 		"BIG HEADSHOT DAMAGE"
+
+REFERENCE			PAP_BIG_HEADSHOT_DAMAGE_HINT
+LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- In addition to the base damage increase, all rounds do an additional 100% headshot damage \n- On snipers, this is 1000% times extra damage"
+
+REFERENCE			SHOTGUN_DAMAGE_TITLE
+LANG_ENGLISH 		"SHOTGUNS"
+
+REFERENCE			SHOTGUN_DAMAGE_HINT
+LANG_ENGLISH 		"- For each round you own a Shotgun, you do 10% more damage with all shotguns \n- All attrition is lost if you begin round without owning a shotgun"
+
+
 
 ENDMARKER

@@ -794,6 +794,11 @@ vending_weapon_upgrade()
 			}
 		}
 
+		if( IsSubStr(current_weapon, "upgraded") )
+			self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.double_cost );
+		else
+			self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.double_cost );
+
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.double_cost );
 		//self setvisibletoall();
 		flag_clear("pack_machine_in_use");
@@ -2648,7 +2653,7 @@ give_perk( perk, bought )
 	//iprintln(" Player " + self.entity_num );
 
 	self thread generate_perk_hint( perk );
-	
+
 	//Reimagined-Expanded
 	if( IsSubStr( perk, "_upgrade" ) )
 	{	

@@ -74,6 +74,7 @@ generate_hint( hint_code, hint_text, offset, font_size )
 
 	wait 4;
     text FadeOverTime( 2 );
+	wait 1;
 	text.alpha = 0;
 
 	text destroy_hud();
@@ -89,6 +90,42 @@ generate_perk_hint( perk )
 	
 	if( GetDvarInt( "ui_hud_perk_hints") == 0 )
 		return;
+
+	if( is_in_array(level.ARRAY_HELLFIRE_WEAPONS, perk))
+	{
+		perk = "specialty_pap_hellfire";
+	}
+	else if( is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, perk))
+	{
+		perk = "specialty_pap_sheer_cold";
+	}
+	else if( is_in_array(level.ARRAY_ELECTRIC_WEAPONS, perk))
+	{
+		perk = "specialty_pap_shock_rounds";
+	}
+	else if( is_in_array(level.ARRAY_BIGDMG_WEAPONS, perk))
+	{
+		perk = "specialty_pap_big_damage";
+	}
+	else if( is_in_array(level.ARRAY_BIGHEADSHOTDMG_WEAPONS, perk))
+	{
+		perk = "specialty_pap_big_headshot_damage";
+	}
+	else if( is_in_array(level.ARRAY_VALID_SHOTGUNS, perk))
+	{
+		perk = "specialty_shotgun_damage";
+	}
+
+	if( is_true( self.hints_activated[ perk ] ) )
+		return;
+
+	self notify( "perk_hint_end" );
+
+	self.hints_activated[ perk ] = true;
+
+	iprintLn( "notify: " + perk );
+
+	wait( 1 );
 
 	returnVultureVision = false;
 	if( self.vulture_vison_toggle )
@@ -129,7 +166,7 @@ generate_perk_hint( perk )
 	text.y += BASE_OFFSET;
     text.y += 20;
    
-	iprintLn( "Sending perk: " + perk );
+
     /* SET APPROPRIATE HINT */
 		switch( perk )
 		{
@@ -215,6 +252,35 @@ generate_perk_hint( perk )
 			title SetText( &"REIMAGINED_WWN_PRO_TITLE" );
 			break;
 
+		case "specialty_pap_hellfire":
+			text SetText( &"PAP_HELLFIRE_HINT" );
+			title SetText( &"PAP_HELLFIRE_TITLE" );
+			break;
+
+		case "specialty_pap_sheer_cold":
+			text SetText( &"REIMAGINED_PAP_SHEER_COLD_HINT" );
+			title SetText( &"REIMAGINED_PAP_SHEER_COLD_TITLE" );
+			break;
+
+		case "specialty_pap_shock_rounds":
+			text SetText( &"REIMAGINED_PAP_SHOCK_ROUNDS_HINT" );
+			title SetText( &"REIMAGINED_PAP_SHOCK_ROUNDS_TITLE" );
+			break;
+
+		case "specialty_pap_big_damage":
+			text SetText( &"REIMAGINED_PAP_BIG_DAMAGE_HINT" );
+			title SetText( &"REIMAGINED_PAP_BIG_DAMAGE_TITLE" );
+			break;
+
+		case "specialty_pap_big_headshot_damage":
+			text SetText( &"REIMAGINED_PAP_BIG_HEADSHOT_DAMAGE_HINT" );
+			title SetText( &"REIMAGINED_PAP_BIG_HEADSHOT_DAMAGE_TITLE" );
+			break;
+
+		case "specialty_shotgun_damage":
+			text SetText( &"REIMAGINED_SHOTGUN_DAMAGE_HINT" );
+			title SetText( &"REIMAGINED_\SHOTGUN_DAMAGE_TITLE" );
+			break;
 		}
 
 	text FadeOverTime( 1 );
@@ -223,7 +289,8 @@ generate_perk_hint( perk )
 	title FadeOverTime( 1 );
 	title.alpha = 1;
 
-	wait 7;
+	self waittill_notify_or_timeout( "perk_hint_end", 7 );
+	iprintLn( "Ending hint" );
 
     title FadeOverTime( 2 );
 	title.alpha = 0;
@@ -238,7 +305,11 @@ generate_perk_hint( perk )
 	text destroy_hud();
 }
 
+/*
 
+
+
+*/
 
 /*
 	###############################

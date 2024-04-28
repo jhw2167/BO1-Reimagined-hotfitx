@@ -783,6 +783,10 @@ reimagined_init_level()
 									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"						
 									 );
 
+	level.ARRAY_BIGDMG_WEAPONS = array( "commando_upgraded_zm_x2", "stoner63_upgraded_zm_x2" );
+	level.ARRAY_BIGHEADSHOTDMG_WEAPONS = array( "fnfal_upgraded_zm_x2", "m14_upgraded_zm", "psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2" );
+
+
 	//MISCELLANEOUS EFFECTS
 	level.VALUE_ZOMBIE_BLOOD_TIME = 30;
 	level.VALUE_ZOMBIE_KNOCKDOWN_TIME = 1.5;
@@ -883,6 +887,7 @@ reimagined_init_player()
 	self.gross_possible_points = 500;
 	self.spent_points = 0;
 
+	self.hints_activated = [];
 
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
@@ -3088,7 +3093,7 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("perk_slot_13", "");
 	self SetClientDvar("perk_slot_14", "");
 
-	self SetClientDvar( "ui_hud_perk_hints", 0 );
+	self SetClientDvar( "ui_hud_perk_hints", 1 );
 }
 
 
@@ -8746,6 +8751,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			//Snipers
 			case "psg1_upgraded_zm_x2":
 			case "l96a1_upgraded_zm_x2":
+				final_damage = int(final_damage * 2); //big damage
 				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
 					final_damage = int(final_damage * 5); //big damage
 				}
@@ -11511,6 +11517,7 @@ switch_weapons_notify()
 		while(self IsSwitchingWeapons())
 			wait_network_frame();
 		self notify("weapon_switch_complete");
+		self thread generate_perk_hint( self GetCurrentWeapon() );
 	}
 }
 
