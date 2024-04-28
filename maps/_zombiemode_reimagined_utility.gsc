@@ -52,7 +52,7 @@ generate_hint( hint_code, hint_text, offset )
 	text.vertAlign = "user_top";
 	text.foreground = true;
 	text.font = "default";
-	text.fontScale = 1.2;
+	text.fontScale = 1.6;
 	text.alpha = 0;
 	text.color = ( 1.0, 1.0, 1.0 );
 	text SetText( hint_text );

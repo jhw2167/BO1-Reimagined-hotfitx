@@ -6422,32 +6422,51 @@ setApocalypseOptions()
 print_apocalypse_options()
 {
 	flag_wait("begin_spawning");
+	wait(10);
 
 	players = GetPlayers();
+	offsets = array( 0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220 );
 	for(i=0; i<players.size; i++)
 	{
-		
-		if(level.apocalypse )
+		iprintLn("Player "+i);
+		j = 0;
+		if( level.apocalypse )
 			players[i] generate_hint_title(undefined, "Apocalypse Zombies");
 		else
 			players[i] generate_hint_title(undefined, "Classic Zombies");
 
+		
 		if( level.expensive_perks )
-			players[i] generate_hint(undefined, "Expensive Perks: On");
+			{ players[i] thread generate_hint(undefined, "Expensive Perks: On", offsets[j] ); j++; }
 		if( level.tough_zombies )
-			players[i] generate_hint(undefined, "Tough Zombies: On");
+			{ players[i] thread generate_hint(undefined, "Tough Zombies: On", offsets[j] ); j++; }
 		if( level.zombie_types )
-			players[i] generate_hint(undefined, "Zombie Types: On");
+			{ players[i] thread generate_hint(undefined, "Zombie Types: On", offsets[j] ); j++; }
 		if( level.bo2_perks )
-			players[i] generate_hint(undefined, "BO2 Perks: On");
+			{ players[i] thread generate_hint(undefined, "BO2 Perks: On", offsets[j] ); j++; }
 		if( level.extra_drops )
-			players[i] generate_hint(undefined, "Extra Drops: On");
+			{ players[i] thread generate_hint(undefined, "Extra Drops: On", offsets[j] ); j++; }
 		if( level.alt_bosses == 2 )
-			players[i] generate_hint(undefined, "Zombie Bosses: Tough");
+		{
+			players[i] thread generate_hint(undefined, "Zombie Bosses: Tough", offsets[j] ); 
+			j++;
+		}
 		else if( level.no_bosses )
-			players[i] generate_hint(undefined, "Zombie Bosses: None");
+		{
+			players[i] thread generate_hint(undefined, "Zombie Bosses: None", offsets[j] ); 
+			j++;
+		}
 		else
-			players[i] generate_hint(undefined, "Zombie Bosses: Normal");
+		{
+			players[i] thread generate_hint(undefined, "Zombie Bosses: Normal", offsets[j] ); 
+			j++;
+		}
+		
+		if( level.apocalypse )
+			players[i] generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j]);
+		else
+			players[i] generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j]);
+
 
 	}
 	
