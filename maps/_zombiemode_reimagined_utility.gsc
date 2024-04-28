@@ -234,8 +234,8 @@ generate_perk_hint( perk )
 	if( returnVultureVision )
 		self.vulture_vison_toggle = true;
 
-	title Delete();
-	text Delete();
+	title destroy_hud();
+	text destroy_hud();
 }
 
 

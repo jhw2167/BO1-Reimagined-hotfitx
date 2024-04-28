@@ -5622,18 +5622,19 @@ check_zombie_pause() {
 		players[i].ignoreme = true;
 	}
 			
-		while(GetDvarInt("zombie_pause") > 0) 
-		{
-			round_pause( 5 );
-		}
-		
-		players = get_players();
-		for(i=0;i<players.size;i++) {
-			players[i].ignoreme = false;
-		}	
+	while(GetDvarInt("zombie_pause") > 0) 
+	{
+		round_pause( 5 );
+	}
+	
+	players = get_players();
+	for(i=0;i<players.size;i++) {
+		players[i].ignoreme = false;
+	}	
 
-		level.countdown_hud settext("");
-		level.countdown_hud destroy_hud();
+	level.countdown_hud settext("");
+	level.countdown_hud destroy_hud();
+
 	}
 }
 
@@ -6362,7 +6363,7 @@ setApocalypseOptions()
 	//User did not choose options, default game
 	if( level.user_options == 0)
 	{
-		level.apocalypse = false;
+		level.apocalypse = true;
 		level.alt_bosses = 1;
 		level.no_bosses = false;
 		level.expensive_perks = false;
@@ -6465,12 +6466,15 @@ print_apocalypse_options()
 			j++;
 		}
 		
+		wait(0.5);
 		if( level.apocalypse )
-			players[i] generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j]);
+			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j]);
 		else
-			players[i] generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j]);
+			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j]);
+		j++;
 
-			players[i] generate_hint(undefined, "Further hints can be enabled in the settings", offsets[ offsets.size - 1]);
+		wait(1);
+		players[i] generate_hint(undefined, "In-Game Hints can be Enabled in the Settings", offsets[ j + 1 ]);
 	}
 	
 }

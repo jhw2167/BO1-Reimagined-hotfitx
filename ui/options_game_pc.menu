@@ -62,7 +62,7 @@
 
 			setDvar zombie_pause 0;
 			
-			setDvar zombie_apocalypse 0;
+			setDvar zombie_apocalypse 1;
 
 			setDvar reimagined_cheat 0;
 
@@ -285,7 +285,7 @@
 
 		FRAME_CHOICE_BUTTON_VIS( 34, "@REIMAGINED_INITIAL_MAGICBOX_CAPS", setdvar ui_options_game_popup "initial_box_locations"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
 		
-		FRAME_CHOICE_DVARFLOATLIST_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, { "@REIMAGINED_DIFFICULTY_EASY" 0 "@REIMAGINED_DIFFICULTY_HARD" 1 }, ;, ( dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1" ) )
+		FRAME_CHOICE_DVARFLOATLIST_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, { "@REIMAGINED_DIFFICULTY_HARD" 1 "@REIMAGINED_DIFFICULTY_EASY" 0 }, ;, ( dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1" ) )
 			
 			FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_PAUSE", zombie_pause, ;, dvarString(zombie_apocalypse) == "0" && dvarString( #"zombiemode" ) == "1" ) 
 
