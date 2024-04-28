@@ -38,7 +38,7 @@ place_packapunch()
 	machine_origin = (335, 18.25, 55.26);
 	level.pap_origin = machine_origin;
 	machine_angles = (0, 90, 0);
-	level.pap_angles = machine_angles;
+	level.pap_angles = (0, 0, 0);;
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "zombie_vending_packapunch" );
@@ -51,7 +51,7 @@ place_packapunch()
 	perk_trigger.script_label = "mus_perks_packa_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -75,7 +75,7 @@ place_divetonuke()
 	perk_trigger.script_label = "mus_perks_phd_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -99,7 +99,7 @@ place_deadshot()
 	perk_trigger.script_label = "mus_perks_deadshot_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -123,7 +123,7 @@ place_marathon()
 	perk_trigger.script_label = "mus_perks_stamin_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -150,7 +150,7 @@ place_martyrdom()
 	perk_trigger.script_label = "mus_perks_cherry_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -179,7 +179,7 @@ place_extraammo()
 	perk_trigger.script_label = "mus_perks_widows_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -203,7 +203,7 @@ place_chugabud()
 	perk_trigger.script_label = "mus_perks_whoswho_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -227,7 +227,7 @@ place_mulekick()
 	perk_trigger.script_label = "mus_perks_mulekick_sting";
 	perk_clip = Spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -251,7 +251,7 @@ place_vulture()
 	perk_trigger.script_label = "mus_perks_vulture_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -267,12 +267,12 @@ place_barriers()
 	side_origin = ( 600, -568, 56 );
 	level.verukt_barriers[0] = spawn( "script_model", side_origin );
 	level.verukt_barriers[0].angles = (0, 0, 0);
-	level.verukt_barriers[0] SetModel( "collision_geo_64x64x256" );
+	level.verukt_barriers[0] SetModel( "collision_geo_64x64x64" );
 	level.verukt_barriers[0] Hide();
 
 	level.verukt_barriers[1] = spawn( "script_model", side_origin + (-70, 0, 0) );
 	level.verukt_barriers[1].angles = (0, 0, 0);
-	level.verukt_barriers[1] SetModel( "collision_geo_64x64x256" );
+	level.verukt_barriers[1] SetModel( "collision_geo_64x64x64" );
 	level.verukt_barriers[1] Hide();
 
 	//Behind Barriers
@@ -281,7 +281,7 @@ place_barriers()
 	{
 		level.verukt_barriers[i+2] = spawn( "script_model", behind_origin + (0, 50 * i, 0) );
 		level.verukt_barriers[i+2].angles = (0, 0, 0);
-		level.verukt_barriers[i+2] SetModel( "collision_geo_64x64x256" );
+		level.verukt_barriers[i+2] SetModel( "collision_geo_64x64x64" );
 		level.verukt_barriers[i+2] Hide();
 	}
 	

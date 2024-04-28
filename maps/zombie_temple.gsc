@@ -1298,7 +1298,7 @@ zombie_temple_place_additionalprimaryweapon_machine()
 
 	machine_clip = spawn( "script_model", origin + (0, -10, 0) );
 	machine_clip.angles = (0, 0, 0);
-	machine_clip setmodel( "collision_geo_64x64x256" );
+	machine_clip setmodel( "collision_geo_64x64x64" );
 	machine_clip Hide();
 }
 

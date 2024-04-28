@@ -4284,12 +4284,12 @@ place_treasure_chest(script_noteworthy, origin, angles, start_exclude)
 	{
 		clip1 = Spawn( "script_model", origin + (forward * 16) + (right * 16) );
 		clip1.angles = angles;
-		clip1 SetModel( "collision_geo_64x64x256" );
+		clip1 SetModel( "collision_geo_64x64x64" );
 		clip1 Hide();
 
 		clip2 = Spawn( "script_model", origin + (forward * -16) + (right * 16) );
 		clip2.angles = angles;
-		clip2 SetModel( "collision_geo_64x64x256" );
+		clip2 SetModel( "collision_geo_64x64x64" );
 		clip2 Hide();
 	}
 

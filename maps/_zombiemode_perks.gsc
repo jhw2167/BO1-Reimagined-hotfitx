@@ -145,7 +145,7 @@ place_doubletap_machine()
 	{
 		machine_clip = spawn( "script_model", level.zombie_doubletap_machine_clip_origin );
 		machine_clip.angles = level.zombie_doubletap_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x256" );
+		machine_clip setmodel( "collision_geo_64x64x64" );
 		machine_clip Hide();
 	}
 
@@ -1264,7 +1264,7 @@ turn_revive_on()
 				machine[i].origin = origin;
 				perk_clip = spawn( "script_model", machine[i].origin );
 				perk_clip.angles = machine[0].angles;
-				perk_clip SetModel( "collision_geo_64x64x256" );
+				perk_clip SetModel( "collision_geo_64x64x64" );
 				perk_clip Hide();
 			}
 		}

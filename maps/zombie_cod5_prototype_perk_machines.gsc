@@ -51,7 +51,7 @@ register_perk_spawn( origin, angles )
 	}
 	perk_clip = Spawn( "script_model", origin );
 	perk_clip.angles = angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", origin, 0, 35, 64 );

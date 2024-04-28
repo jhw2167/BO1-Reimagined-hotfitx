@@ -47,7 +47,7 @@ place_divetonuke()
 	perk_trigger.script_label = "mus_perks_phd_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -71,7 +71,7 @@ place_deadshot()
 	perk_trigger.script_label = "mus_perks_deadshot_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -95,7 +95,7 @@ place_marathon()
 	perk_trigger.script_label = "mus_perks_stamin_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -119,7 +119,7 @@ place_martyrdom()
 	perk_trigger.script_label = "mus_perks_cherry_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -143,7 +143,7 @@ place_extraammo()
 	perk_trigger.script_label = "mus_perks_widows_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -167,7 +167,7 @@ place_chugabud()
 	perk_trigger.script_label = "mus_perks_whoswho_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -191,7 +191,7 @@ place_mulekick()
 	perk_trigger.script_label = "mus_perks_mulekick_sting";
 	perk_clip = Spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
@@ -215,7 +215,7 @@ place_vulture()
 	perk_trigger.script_label = "mus_perks_vulture_sting";
 	perk_clip = spawn( "script_model", machine_origin );
 	perk_clip.angles = machine_angles;
-	perk_clip SetModel( "collision_geo_64x64x256" );
+	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
 	bump_trigger = Spawn( "trigger_radius", machine_origin, 0, 35, 64 );
 	bump_trigger.script_activated = 1;
