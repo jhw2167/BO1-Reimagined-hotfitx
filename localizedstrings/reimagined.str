@@ -55,7 +55,7 @@ REFERENCE          	PERK_FASTRELOAD
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Speed Cola [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
 REFERENCE          	PERK_DOUBLETAP
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Double Tap [Cost: &&1]\n        or upgrade [Cost: &&2]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Double Tap 2.1 [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
 REFERENCE          	PERK_MARATHON
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Marathon [Cost: &&1]\n        or upgrade [Cost: &&2]"
@@ -64,7 +64,7 @@ REFERENCE          	PERK_DIVETONUKE
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy PhD Flopper [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
 REFERENCE          	PERK_DEADSHOT
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Deadshot Daiquiri [Cost: &&1]\n        or upgrade [Cost: &&2]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Deadshot Daiquiri 2.0 [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
 REFERENCE          	PERK_MULEKICK
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Mule Kick [Cost: &&1]\n        or upgrade [Cost: &&2]"
@@ -1167,7 +1167,101 @@ LANG_ENGLISH       	"EXTRA DROPS"
 REFERENCE          	ROUND_START
 LANG_ENGLISH       	"STARTING ROUND"
 
+REFERENCE          	QRV_PRO_TITLE
+LANG_ENGLISH       	"QuickRevive Pro"
+
 REFERENCE          	QRV_PRO_HINT
 LANG_ENGLISH       	"- Trigger zombie blood for revived players \n- Larger revive radius \n- Points are not lost while a player with Quick Revive Pro is near a downed player (Apocalypes mode only)"
+
+REFERENCE          	JUG_PRO_TITLE
+LANG_ENGLISH       	"Juggernog Pro"
+
+REFERENCE          	JUG_PRO_HINT
+LANG_ENGLISH       	"- Max health set to 325, permanently"
+
+REFERENCE 			SPD_PRO_TITLE
+LANG_ENGLISH 		"Speed Cola Pro"
+
+REFERENCE 			SPD_PRO_HINT
+LANG_ENGLISH 		"- Reloads any weapon not in your primary slot after 3.5 seconds \n- Drinking perks is extremely fast \n- Melee animation is extremely fast"
+
+REFERENCE 			DBT_PRK_TITLE
+LANG_ENGLISH 		"Double-Tap 2.1"
+
+REFERENCE 			DBT_PRK_HINT
+LANG_ENGLISH 		"- All bullet weapons do 20% increased damage"
+
+REFERENCE 			DBT_PRO_TITLE
+LANG_ENGLISH 		"Double-Tap 2.1 Pro"
+
+REFERENCE 			DBT_PRO_HINT
+LANG_ENGLISH 		"- All bullet weapons do 60% increased damage \n- Provides bullet penetration of up to 6 zombies"
+
+REFERENCE 			STM_PRO_TITLE
+LANG_ENGLISH 		"Stamina-Up Pro"
+
+REFERENCE 			STM_PRO_HINT
+LANG_ENGLISH 		"- When you melee then sprint, enter a ghost mode for 3 seconds allowing you to run through zombies \n- Further speed increase"
+
+REFERENCE 			PHD_PRO_TITLE
+LANG_ENGLISH 		"PhD Flopper Pro"
+
+REFERENCE 			PHD_PRO_HINT
+LANG_ENGLISH 		"- Larger splash area and damage with all explosive weapons and flop \n- Longer lasting Hellfire \n- Any dolphin dive will trigger PhD effects \n- Closest zombies to PhD explosion are knocked down, hellfire is applied"
+
+REFERENCE 			DST_PRK_TITLE
+LANG_ENGLISH 		"Deadshot Daiquiri 2.0"
+
+REFERENCE 			DST_PRK_HINT
+LANG_ENGLISH 		"- All bullet weapons do 100% increased headshot damage"
+
+REFERENCE 			DST_PRO_TITLE
+LANG_ENGLISH 		"Deadshot Daiquiri 2.0 Pro"
+
+REFERENCE 			DST_PRO_HINT
+LANG_ENGLISH 		"- All bullet weapons do 50% increased damage while ADS \n- Hitmarkers on hitting zombies \n- Each successive headshot gives your next shot an additional 5% damage, stackable"
+
+REFERENCE 			MUL_PRO_TITLE
+LANG_ENGLISH 		"Mule Kick Pro"
+
+REFERENCE 			MUL_PRO_HINT
+LANG_ENGLISH 		"- 3rd weapon is permanent \n- Rewards player a Max Ammo on purchase"
+
+REFERENCE 			ECH_PRK_TITLE
+LANG_ENGLISH 		"Electric Cherry 2.0"
+
+REFERENCE 			ECH_PRK_HINT
+LANG_ENGLISH 		"- Reloading your weapon emits an electric shock that stuns and damages nearby zombies \n- Each sequential reload will reduce Cherry's effectiveness \n- Cherry recharges fully every 30 seconds"
+
+REFERENCE 			ECH_PRO_TITLE
+LANG_ENGLISH 		"Electric Cherry 2.0 Pro"
+
+REFERENCE 			ECH_PRO_HINT
+LANG_ENGLISH 		"- When a zombie hits you, you take no damage and Cherry will trigger, 10s cooldown \n- Electric pulse effect is always full charge \n - Electric pulse may stun up to 12 enemies"
+
+REFERENCE 			VLT_PRK_TITLE
+LANG_ENGLISH 		"Vulture Aid 2.0"
+
+REFERENCE 			VLT_PRK_HINT
+LANG_ENGLISH 		"- Visualize all perks and drops on the map \n- Visual indicator of all bosses on the map - or monkeys \n- Visual indicator of the last few zombies remaining on the map \n- Press ADS + melee to disable vulture waypoints for perks and weapons \n- Knifing zombies rewards additional points \n- Occaissionally find small ammo drops"
+
+REFERENCE 			VLT_PRO_TITLE
+LANG_ENGLISH 		"Vulture Aid 2.0 Pro"
+
+REFERENCE 			VLT_PRO_HINT
+LANG_ENGLISH 		"- Zombies ignore you for the first 10 seconds every round \n- Drops you pick up last longer or retrigger \n- Zombies with drops will glow -\n Ammo drops reward more rounds"
+
+REFERENCE 			WWN_PRK_TITLE
+LANG_ENGLISH 		"Widows Wine 2.0"
+
+REFERENCE 			WWN_PRK_HINT
+LANG_ENGLISH 		"- HUD effect alerts you when a zombie is behind you \n- Bullets poison zombies, reducing them to half health over 8 seconds"
+
+REFERENCE 			WWN_PRO_TITLE
+LANG_ENGLISH 		"Widows Wine 2.0 Pro"
+
+REFERENCE 			WWN_PRO_HINT
+LANG_ENGLISH 		"- Replaces special grenade with Web Grenades that will slow all zombies in moderate radius \n- Poison reduces to 1/3 health over 15 seconds"
+
 
 ENDMARKER

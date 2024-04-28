@@ -11,7 +11,7 @@
 
 generate_hint_title( hint_title, hint_text )
 {
-      //Title
+    //Title
     title = NewClientHudElem( self );
 	title.alignX = "center";
 	title.alignY = "middle";
@@ -24,17 +24,19 @@ generate_hint_title( hint_title, hint_text )
 	title.color = (0.5, 0.0, 0.0);
 	title SetText( hint_text );
 
-    title.y += 60;
+    title.y += 120;
 
 	title FadeOverTime( 1 );
 	title.alpha = 1;
 
-    wait 2;
-    title FadeOverTime( 2 );
+    wait 4;
+    title FadeOverTime( 4 );
 	title.alpha = 0;
+
+	title destroy_hud();
 }
 
-generate_hint( hint_code, hint_text, offset )
+generate_hint( hint_code, hint_text, offset, font_size )
 {
     self endon( "death" );
 	self endon( "disconnect" );
@@ -44,6 +46,10 @@ generate_hint( hint_code, hint_text, offset )
     else
         y_offset = 0;
 
+	if( !isdefined( font_size ) )
+		font_size = 1.6;
+
+
     //Bullets
 	text = NewClientHudElem( self );
 	text.alignX = "center";
@@ -52,40 +58,181 @@ generate_hint( hint_code, hint_text, offset )
 	text.vertAlign = "user_top";
 	text.foreground = true;
 	text.font = "default";
-	text.fontScale = 1.6;
+	text.fontScale = font_size;
 	text.alpha = 0;
 	text.color = ( 1.0, 1.0, 1.0 );
     if( IsDefined( hint_code ) )
-        //text SetText( &"REIMAGINED_"+ hint_code );
-        //text SetText( &"REIMAGINED_QRV_PRO_HINT" );
-        text SetText( &"REIMAGINED_PERK_BABYJUGG", 1000 );
+		text SetText( hint_code );
     else
 	    text SetText( hint_text );
 
-	text.y += 80;
+	text.y += 140;
     text.y += y_offset;
 
 	text FadeOverTime( 1 );
 	text.alpha = 1;
 
-	wait 2;
+	wait 4;
     text FadeOverTime( 2 );
 	text.alpha = 0;
+
+	text destroy_hud();
 }
 
 
+generate_perk_hint( perk )
+{
+    self endon( "death" );
+	self endon( "disconnect" );
+	
+
+	returnVultureVision = false;
+	if( self.vulture_vison_toggle )
+	{
+		self.vulture_vison_toggle = false;
+		returnVultureVision = true;
+	}
+		
+	BASE_OFFSET = -100;
+
+    //Title
+    title = NewClientHudElem( self );
+	title.alignX = "center";
+	title.alignY = "middle";
+	title.horzAlign = "user_center";
+	title.vertAlign = "user_bottom";
+	title.foreground = true;
+	title.font = "boldFont";
+	title.fontScale = 1.6;
+	title.alpha = 0;
+	title.color = ( 1.0, 1.0, 1.0 );
+
+    title.y += BASE_OFFSET;
 
 
+    //Bullets
+	text = NewClientHudElem( self );
+	text.alignX = "center";
+	text.alignY = "middle";
+	text.horzAlign = "user_center";
+	text.vertAlign = "user_bottom";
+	text.foreground = true;
+	text.font = "default";
+	text.fontScale = 1.2;
+	text.alpha = 0;
+	text.color = ( 1.0, 1.0, 1.0 );
 
+	text.y += BASE_OFFSET;
+    text.y += 20;
+   
+	iprintLn( "Sending perk: " + perk );
+    /* SET APPROPRIATE HINT */
+		switch( perk )
+		{
+			//case "specialty_armorvest":
+		case "specialty_armorvest_upgrade":
+			text SetText( &"REIMAGINED_JUG_PRO_HINT" );
+			title SetText( &"REIMAGINED_JUG_PRO_TITLE" );
+			break;
 
+		//case "specialty_quickrevive":
+		case "specialty_quickrevive_upgrade":
+			text SetText( &"REIMAGINED_QRV_PRO_HINT" );
+			title SetText( &"REIMAGINED_QRV_PRO_TITLE" );
+			break;
 
+		//case "specialty_fastreload":
+		case "specialty_fastreload_upgrade":
+			text SetText( &"REIMAGINED_SPD_PRO_HINT" );
+			title SetText( &"REIMAGINED_SPD_PRO_TITLE" );
+			break;
 
+		case "specialty_rof":
+			text SetText( &"REIMAGINED_DBT_PRK_HINT" );
+			title SetText( &"REIMAGINED_DBT_PRK_TITLE" );
+			break;
+		case "specialty_rof_upgrade":
+			text SetText( &"REIMAGINED_DBT_PRO_HINT" );
+			title SetText( &"REIMAGINED_DBT_PRO_TITLE" );
+			break;
 
+		//case "specialty_endurance":
+		case "specialty_endurance_upgrade":
+			text SetText( &"REIMAGINED_STM_PRO_HINT" );
+			title SetText( &"REIMAGINED_STM_PRO_TITLE" );
+			break;
 
+		case "specialty_flakjacket_upgrade":
+		//case "specialty_flakjacket":
+			text SetText( &"REIMAGINED_PHD_PRO_HINT" );
+			title SetText( &"REIMAGINED_PHD_PRO_TITLE" );
+			break;
 
+		case "specialty_deadshot":
+			text SetText( &"REIMAGINED_DST_PRK_HINT" );
+			title SetText( &"REIMAGINED_DST_PRK_TITLE" );
+			break;
+		case "specialty_deadshot_upgrade":
+			text SetText( &"REIMAGINED_DST_PRO_HINT" );
+			title SetText( &"REIMAGINED_DST_PRO_TITLE" );
+			break;
 
+		case "specialty_additionalprimaryweapon_upgrade":
+		//case "specialty_additionalprimaryweapon":
+			text SetText( &"REIMAGINED_MUL_PRO_HINT" );
+			title SetText( &"REIMAGINED_MUL_PRO_TITLE" );
+			break;
+		case "specialty_bulletdamage":
+			text SetText( &"REIMAGINED_ECH_PRK_HINT" );
+			title SetText( &"REIMAGINED_ECH_PRK_TITLE" );
+			break;
+		case "specialty_bulletdamage_upgrade":	//Cherry
+		
+			text SetText( &"REIMAGINED_ECH_PRO_HINT" );
+			title SetText( &"REIMAGINED_ECH_PRO_TITLE" );
+			break;
+		case "specialty_altmelee":
+			text SetText( &"REIMAGINED_VLT_PRK_HINT" );
+			title SetText( &"REIMAGINED_VLT_PRK_TITLE" );
+			break;
 
+		case "specialty_altmelee_upgrade":	//Vulture
+			text SetText( &"REIMAGINED_VLT_PRO_HINT" );
+			title SetText( &"REIMAGINED_VLT_PRO_TITLE" );
+			break;
 
+		case "specialty_bulletaccuracy":
+			text SetText( &"REIMAGINED_WWN_PRK_HINT" );
+			title SetText( &"REIMAGINED_WWN_PRK_TITLE" );
+			break;
+
+		case "specialty_bulletaccuracy_upgrade":	//wine
+			text SetText( &"REIMAGINED_WWN_PRO_HINT" );
+			title SetText( &"REIMAGINED_WWN_PRO_TITLE" );
+			break;
+
+		}
+
+	text FadeOverTime( 1 );
+	text.alpha = 1;
+
+	title FadeOverTime( 1 );
+	title.alpha = 1;
+
+	wait 7;
+
+    title FadeOverTime( 2 );
+	title.alpha = 0;
+
+    text FadeOverTime( 2 );
+	text.alpha = 0;
+
+	if( returnVultureVision )
+		self.vulture_vison_toggle = true;
+
+	title destroy_hud();
+	text destroy_hud();
+}
 
 
 /*

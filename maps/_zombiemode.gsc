@@ -2162,6 +2162,7 @@ init_dvars()
 
 	SetDvar( "zm_mod_version", "1.10.0" );
 
+
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
 }
@@ -3087,6 +3088,8 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("perk_slot_12", "");
 	self SetClientDvar("perk_slot_13", "");
 	self SetClientDvar("perk_slot_14", "");
+
+	self SetClientDvar( "reimagined_hints", 0 );
 }
 
 
@@ -4757,7 +4760,7 @@ give_pro_perks( overrideToGiveAll )
 	{
 		level.max_perks = 20;
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//PERKS
 		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		return;
@@ -6425,17 +6428,18 @@ print_apocalypse_options()
 	wait(10);
 
 	players = GetPlayers();
-	offsets = array( 0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220 );
+	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220 );
 	for(i=0; i<players.size; i++)
 	{
 		iprintLn("Player "+i);
 		j = 0;
 		if( level.apocalypse )
-			players[i] generate_hint_title(undefined, "Apocalypse Zombies");
+			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies");
 		else
-			players[i] generate_hint_title(undefined, "Classic Zombies");
+			players[i] thread generate_hint_title(undefined, "Classic Zombies");
 
-		
+		wait (0.5);
+
 		if( level.expensive_perks )
 			{ players[i] thread generate_hint(undefined, "Expensive Perks: On", offsets[j] ); j++; }
 		if( level.tough_zombies )
@@ -6467,7 +6471,7 @@ print_apocalypse_options()
 		else
 			players[i] generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j]);
 
-
+			players[i] generate_hint(undefined, "Further hints can be enabled in the settings", offsets[ offsets.size - 1]);
 	}
 	
 }
