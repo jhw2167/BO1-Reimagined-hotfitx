@@ -80,11 +80,15 @@ generate_hint( hint_code, hint_text, offset, font_size )
 }
 
 
+/* PERK HINTS HANDLED IN _ZOMBIEMODE_FFOTD.CSC CLIENTSCRIPT */
+
 generate_perk_hint( perk )
 {
     self endon( "death" );
 	self endon( "disconnect" );
 	
+	if( GetDvarInt( "ui_hud_perk_hints") == 0 )
+		return;
 
 	returnVultureVision = false;
 	if( self.vulture_vison_toggle )
@@ -230,9 +234,10 @@ generate_perk_hint( perk )
 	if( returnVultureVision )
 		self.vulture_vison_toggle = true;
 
-	title destroy_hud();
-	text destroy_hud();
+	title Delete();
+	text Delete();
 }
+
 
 
 /*

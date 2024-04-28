@@ -1117,7 +1117,13 @@ REFERENCE          	PAUSE
 LANG_ENGLISH       	"PAUSE ZOMBIE SPAWNING"
 
 REFERENCE          	APOCALYPSE
-LANG_ENGLISH       	"APOCALYPSE MODE"
+LANG_ENGLISH       	"DIFFICULTY"
+
+REFERENCE          	DIFFICULTY_EASY
+LANG_ENGLISH       	"CLASSIC (NORMAL)"
+
+REFERENCE          	DIFFICULTY_HARD
+LANG_ENGLISH       	"APOCALYPSE (HARD)"
 
 REFERENCE          	ZOMBIE_CHEAT
 LANG_ENGLISH       	"ENABLE CHEATS"
@@ -1166,6 +1172,9 @@ LANG_ENGLISH       	"EXTRA DROPS"
 
 REFERENCE          	ROUND_START
 LANG_ENGLISH       	"STARTING ROUND"
+
+REFERENCE          	GAME_HINTS
+LANG_ENGLISH       	"REIMAGINED IN-GAME HINTS"
 
 REFERENCE          	QRV_PRO_TITLE
 LANG_ENGLISH       	"QuickRevive Pro"
@@ -1249,7 +1258,7 @@ REFERENCE 			VLT_PRO_TITLE
 LANG_ENGLISH 		"Vulture Aid 2.0 Pro"
 
 REFERENCE 			VLT_PRO_HINT
-LANG_ENGLISH 		"- Zombies ignore you for the first 10 seconds every round \n- Drops you pick up last longer or retrigger \n- Zombies with drops will glow -\n Ammo drops reward more rounds"
+LANG_ENGLISH 		"- Zombies ignore you for the first 10 seconds every round \n- Drops you pick up last longer or retrigger \n- Zombies with drops will glow \n- Ammo drops reward more rounds"
 
 REFERENCE 			WWN_PRK_TITLE
 LANG_ENGLISH 		"Widows Wine 2.0"

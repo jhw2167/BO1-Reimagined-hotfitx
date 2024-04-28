@@ -3071,7 +3071,6 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("perk_bar_02", "");
 	self SetClientDvar("perk_bar_03", "");
 
-
 	//Reimagined-Expanded, player perks
 	self SetClientDvar("perk_slot_00", "");
 	self SetClientDvar("perk_slot_01", "");
@@ -3089,7 +3088,7 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("perk_slot_13", "");
 	self SetClientDvar("perk_slot_14", "");
 
-	self SetClientDvar( "reimagined_hints", 0 );
+	self SetClientDvar( "ui_hud_perk_hints", 0 );
 }
 
 

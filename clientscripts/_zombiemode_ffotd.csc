@@ -504,6 +504,8 @@ handle_client_perk_hud_updates( clientnum, state )
 	} 
 	else if( IsSubStr( state, "vulture_hud" ) ) {
 		player_handle_vulture_hud( clientnum, state );
+	} else if( IsSubStr( state, "hud_hint" ) ) {
+		player_handle_hints( clientnum, state );
 	}
 	
 	return undefined;
@@ -649,4 +651,17 @@ player_handle_vulture_hud( clientnum, state )
 	else if(state == "vulture_hud_off") {
 		clientscripts\_zombiemode::vulture_toggle( clientnum, "0" );
 	}
+}
+
+//Handle Player Hints
+player_handle_hints( clientnum, state )
+{
+	//Need to extract "specialty_armorvest" from "hud_hint_specialty_armorvest",use GetSubStr
+	perk = GetSubStr( state, 8, state.size ); //Get "specialty_armorvest"
+	player = GetLocalPlayers()[ clientnum ];
+
+	//iprintlnbold("Perk: " + perk);
+	
+	//player thread generate_perk_hint( perk );
+	//Obselete until we want to do it on UI hud
 }

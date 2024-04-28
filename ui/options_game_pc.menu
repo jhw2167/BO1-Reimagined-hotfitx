@@ -81,6 +81,8 @@
 			setDvar zombie_perk_limit 5;
 			
 			setDvar zombie_round_start 1;
+
+			setDvar ui_hud_perk_hints 0;
 				
 
 			if(dvarString(com_maxfps) == "85") // default value
@@ -283,9 +285,11 @@
 
 		FRAME_CHOICE_BUTTON_VIS( 34, "@REIMAGINED_INITIAL_MAGICBOX_CAPS", setdvar ui_options_game_popup "initial_box_locations"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" )
 		
-		FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, ;, ( dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1" ) )
+		FRAME_CHOICE_DVARFLOATLIST_VIS( 35, "@REIMAGINED_APOCALYPSE", zombie_apocalypse, { "@REIMAGINED_DIFFICULTY_EASY" 0 "@REIMAGINED_DIFFICULTY_HARD" 1 }, ;, ( dvarString(zm_gamemode) == "survival" && dvarString( #"zombiemode" ) != "1" ) )
 			
 			FRAME_CHOICE_DVARYESNO_VIS( 35, "@REIMAGINED_PAUSE", zombie_pause, ;, dvarString(zombie_apocalypse) == "0" && dvarString( #"zombiemode" ) == "1" ) 
+
+			FRAME_CHOICE_DVARYESNO_VIS( 36, "@REIMAGINED_GAME_HINTS", ui_hud_perk_hints, ;, dvarString( #"zombiemode" ) == "1" ) 
 		
 		FRAME_CHOICE_BUTTON_VIS( 36, "@REIMAGINED_GAME_SETUP", setdvar ui_options_game_popup "reimagined_expanded_setup"; open mature_content_pc_disable_warning, dvarString(zm_gamemode) == "survival" 
 			&& dvarString( #"zombiemode" ) != "1"

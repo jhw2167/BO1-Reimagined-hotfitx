@@ -1840,7 +1840,6 @@ addProPerk( perk )
 	}
 	if (perk == "specialty_quickrevive_upgrade")
 	{
-		self thread generate_hint( perk , undefined, undefined, 1);
 		self.PRO_PERKS[ level.QRV_PRO ] = true;
 	}	
 	if (perk == "specialty_fastreload_upgrade") {
@@ -2649,6 +2648,7 @@ give_perk( perk, bought )
 	//iprintln(" Player " + self.entity_num );
 
 	self thread generate_perk_hint( perk );
+	
 	//Reimagined-Expanded
 	if( IsSubStr( perk, "_upgrade" ) )
 	{	
