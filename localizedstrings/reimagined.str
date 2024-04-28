@@ -1167,4 +1167,7 @@ LANG_ENGLISH       	"EXTRA DROPS"
 REFERENCE          	ROUND_START
 LANG_ENGLISH       	"STARTING ROUND"
 
+REFERENCE          	QRV_PRO_HINT
+LANG_ENGLISH       	"- Trigger zombie blood for revived players \n- Larger revive radius \n- Points are not lost while a player with Quick Revive Pro is near a downed player (Apocalypes mode only)"
+
 ENDMARKER

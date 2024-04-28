@@ -2,6 +2,7 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 #include maps\_zombiemode_net;
+#include maps\_zombiemode_reimagined_utility;
 
 init()
 {
@@ -1830,7 +1831,7 @@ playerHasPerk( perk )
 
 //player is player
 // perk is always _upgrade
-
+//HERE
 addProPerk( perk )
 {
 	if (perk == "specialty_armorvest_upgrade") {
@@ -1838,12 +1839,14 @@ addProPerk( perk )
 		self.PRO_PERKS[ level.JUG_PRO ] = true;
 	}
 	if (perk == "specialty_quickrevive_upgrade")
+	{
+		self thread generate_hint("QRV_PRO_HINT");
 		self.PRO_PERKS[ level.QRV_PRO ] = true;
+	}	
 	if (perk == "specialty_fastreload_upgrade") {
 		self.PRO_PERKS[ level.SPD_PRO ] = true;
 		self giveFastreloadUpgrade();
-	}
-		
+	}	
 	if (perk == "specialty_rof_upgrade")
 		self.PRO_PERKS[ level.DBT_PRO ] = true;
 	if (perk == "specialty_endurance_upgrade") {

@@ -55,12 +55,17 @@ generate_hint( hint_code, hint_text, offset )
 	text.fontScale = 1.6;
 	text.alpha = 0;
 	text.color = ( 1.0, 1.0, 1.0 );
-	text SetText( hint_text );
+    if( IsDefined( hint_code ) )
+        //text SetText( &"REIMAGINED_"+ hint_code );
+        //text SetText( &"REIMAGINED_QRV_PRO_HINT" );
+        text SetText( &"REIMAGINED_PERK_BABYJUGG", 1000 );
+    else
+	    text SetText( hint_text );
 
 	text.y += 80;
     text.y += y_offset;
 
-	text FadeOverTime( 0.1 );
+	text FadeOverTime( 1 );
 	text.alpha = 1;
 
 	wait 2;
