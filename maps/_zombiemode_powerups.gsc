@@ -131,7 +131,7 @@ init_powerups()
 	if( !level.mutators["mutator_noMagicBox"] )
 		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false);
+	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
 	add_zombie_powerup("free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
 
 	
@@ -486,11 +486,13 @@ get_next_powerup( drop_color )
 
 	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
-		//iprintln( "get_next_powerup: " + level.zombie_powerup_array[i] );
+		iprintln( "get_next_powerup: " + level.zombie_powerup_array[i] );
 	}
 	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
-		if(level.zombie_powerup_array[i].drop_color == drop_color) {
+		powerup_name = level.zombie_powerup_array[i];
+		localStruct = level.zombie_powerups[powerup_name];
+		if(localStruct.drop_color == drop_color) {
 			return level.zombie_powerup_array[i];
 		}
 	}
@@ -577,7 +579,7 @@ is_valid_powerup(powerup_name)
 	}
 	else if( powerup_name == "tesla" )					// never drops with regular powerups
 	{
-		return false;
+		return true;	//Reimagined-Expanded, implemented as "superpower", blue drop
 	}
 	else if( powerup_name == "random_weapon" )					// never drops with regular powerups
 	{
@@ -813,6 +815,8 @@ powerup_drop(drop_point, player, zombie)
 	//iprintln("SPAWNING DROP FROM POWERUP_DROP: " + type);
 	// This needs to go above the network_safe_spawn because that has a wait.
 	// Otherwise, multiple threads could attempt to drop powerups.
+
+	iprintLn("POWERUP_DROP: " + zombie.hasDrop);
 
 	level.powerup_drop_count++;
 	origin = drop_point + (0,0,40);
@@ -1172,6 +1176,7 @@ powerup_setup( powerup_override, drop_color )
 		self SetModel( struct.model_name );
 	}
 
+	/*
 	if(powerup == "tesla")
 	{
 		if(IsDefined(level.upgraded_tesla_reward) && level.upgraded_tesla_reward)
@@ -1186,6 +1191,7 @@ powerup_setup( powerup_override, drop_color )
 		self.base_weapon = self.weapon;
 		struct.weapon = self.weapon;
 	}
+	*/
 
 	//TUEY Spawn Powerup
 	playsoundatposition("zmb_spawn_powerup", self.origin);
@@ -1446,9 +1452,8 @@ powerup_grab()
 			if(self.powerup_name == "minigun" && IsDefined(players[i].has_tesla) && players[i].has_tesla)
 				continue;
 
-			//no picking up unupgraded waffe if upgraded waffe is active
-			if(self.powerup_name == "tesla" && IsDefined(players[i].has_tesla) && players[i].has_tesla && players[i] GetCurrentWeapon() == "tesla_gun_powerup_upgraded_zm" && self.weapon == "tesla_gun_powerup_zm")
-				continue;
+		
+		
 
 			//no picking up qed random weapon powerup if player the hasn't triggered it
 			if(self.powerup_name == "random_weapon" && !IsDefined(self.gg_powerup) && !is_true(self.weapon_powerup_grabbed))
@@ -3402,53 +3407,49 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	ent_player endon( "death" );
 	ent_player endon( "player_downed" );
 
-	weapon = powerup.weapon;
-
-	if ( !IsDefined( time ) )
-	{
-		time = 11; // no blink
-	}
-
-	// Just replenish the time if it's already active
-	if ( ent_player.zombie_vars[ "zombie_powerup_tesla_on" ] && (weapon == ent_player GetCurrentWeapon() && (IsDefined(ent_player.has_tesla) && ent_player.has_tesla) ))
-	{
-		ent_player maps\_zombiemode_weapons::give_max_ammo(weapon);
-
-		if ( ent_player.zombie_vars[ "zombie_powerup_tesla_time" ] < time )
-		{
-			ent_player.zombie_vars[ "zombie_powerup_tesla_time" ] = time;
-		}
+	if( is_true( self.superpower_active) )
 		return;
-	}
 
-	ent_player notify( "replace_weapon_powerup" );
+	self.superpower_active = true;
+
 	ent_player._show_solo_hud = true;
+
+	drop_time = 5;
+	if( ent_player maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
+	{
+		drop_time = 5;
+	}
+	
 
 	wait_network_frame();
 
-	// make sure weapons are replaced properly if the player is downed
-	level._zombie_tesla_powerup_last_stand_func = ::tesla_watch_gunner_downed;
-	ent_player.has_tesla = true;
-	ent_player.has_powerup_weapon = true;
+	//Reimagined-Expanded, override "Tesla" powerup to be a "Superpower"
 
-	ent_player increment_is_drinking();
-	ent_player._zombie_gun_before_tesla = ent_player GetCurrentWeapon();
+	//Record player perks
 
-	// give player a tesla
-	ent_player GiveWeapon( weapon, 0, ent_player maps\_zombiemode_weapons::get_pack_a_punch_weapon_options( weapon ) );
-	ent_player maps\_zombiemode_weapons::give_max_ammo(weapon);
-	ent_player SwitchToWeapon( weapon );
-
-	if(weapon == "tesla_gun_powerup_upgraded_zm" && ent_player HasWeapon("tesla_gun_powerup_zm"))
-	{
-		ent_player TakeWeapon("tesla_gun_powerup_zm");
+	current_perks = ent_player.purchased_perks;
+	
+	//Give player all PRO perks, if they don't have them already
+	for( i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++ ) {
+		ent_player maps\_zombiemode_perks::returnPerk( level.ARRAY_VALID_PRO_PERKS[i] );
+		wait(0.3);
 	}
 
-	ent_player.zombie_vars[ "zombie_powerup_tesla_on" ] = true;
+	wait( drop_time );
 
-	level thread tesla_weapon_powerup_countdown( ent_player, "tesla_time_over", weapon, time );
-	level thread tesla_weapon_powerup_replace( ent_player, "tesla_time_over", weapon );
-	level thread tesla_weapon_powerup_weapon_change( ent_player, "tesla_time_over", weapon );
+	//Take all Pro Perks
+	for(i = level.ARRAY_VALID_PRO_PERKS.size; i > -1 ; i--) {
+		ent_player maps\_zombiemode_perks::removePerk(level.ARRAY_VALID_PRO_PERKS[i]);
+		wait(0.1);
+	}
+
+	//Give player all perks they had before
+	for( i = 0; i < current_perks.size; i++ ) {
+		ent_player maps\_zombiemode_perks::returnPerk( current_perks[i] );
+		wait(0.3);
+	}
+
+	self.superpower_active = false;
 }
 
 tesla_weapon_powerup_countdown( ent_player, str_gun_return_notify, weapon, time )

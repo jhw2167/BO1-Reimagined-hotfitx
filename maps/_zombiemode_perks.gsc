@@ -1917,15 +1917,23 @@ returnPerk( perk )
 {
 	proPerk = false;
 	base_perk = perk;
+	hasBasePerk = self HasPerk( perk );
+	hasProPerk = false;
+
 	if( IsSubStr( perk, "_upgrade" ) )
 	{
 		proPerk = true;
 		len = "_upgrade".size;
 		base_perk = GetSubStr( perk, 0, perk.size - len );
+
+		hasBasePerk = self HasPerk( base_perk );
+		hasProPerk = self hasProPerk( perk );
 	}
 	
-	self give_perk( base_perk );
-	if( proPerk )
+	if( !hasBasePerk )
+		self give_perk( base_perk );
+
+	if( proPerk && !hasProPerk )
 		self give_perk( perk );
 }
 
@@ -1967,6 +1975,7 @@ removePerk( perk, removeOrDisableHud )
 			self.PRO_PERKS[perk] = false;
 
 			//Trigger notify pro perk + "_stop"
+			iprintLn( "NOTIFY: " + perk + "_stop" );
 			self notify( perk + "_stop" );
 			self notify( base_perk + "_stop" );
 			
@@ -3099,7 +3108,6 @@ manage_ui_perk_hud_interface( command, perk )
 		//self waittill( notify_message );	
 		wait 0.05;
 	}
-
 	self.perk_hud_queue_locked = true;
 
 	self manage_ui_perk_hud( command, perk );
@@ -3145,21 +3153,30 @@ manage_ui_perk_hud( command, perk )
 			perk_num = -1;
 			for( i=0; i < total_perks; i++ ) 
 			{
-				if( self.purchased_perks[i] == perk ) {
+				if( !IsDefined( self.purchased_perks[i] ) )
+					break;
+
+				if( IsSubStr(  self.purchased_perks[i], perk ) ) {
 					perk_num = i;
 					break;
 				}
 			}
+
+			iprintln( "Perk Hud Remove: " + perk + " " + perk_num );
+
+			if( perk_num == -1 )
+				return;
 			
 			for( i=perk_num; i < level.VALUE_MAX_AVAILABLE_PERKS; i++ ) 
 			{
-				self.purchased_perks[i] = self.purchased_perks[i+1];
 				if( i == total_perks )
 				{
 					self.purchased_perks[i] = undefined;
 					break;
 				}
-					
+
+				self.purchased_perks[i] = self.purchased_perks[i+1];
+
 			}
 			reset_all = true;
 			break;
@@ -3345,6 +3362,7 @@ perk_hud_create( perk )
 		self manage_ui_perk_hud_interface( "add", perk );
 	}
 
+/*
 	a = 1;
 	if( a==1 )
 		return;
@@ -3490,6 +3508,7 @@ perk_hud_create( perk )
 	self.perk_hud_num[self.perk_hud_num.size] = perk;
 
 	//self update_perk_hud();
+	*/
 }
 
 
@@ -5275,26 +5294,26 @@ init_vulture()
 
 					player player_vulture_zombie_normal_fx( standard_zombies );
 
-					/* Waypoints for powerup drops */
-					for( i = 0; i < level.vulture_track_current_powerups.size; i++ )
+				}
+
+				/* Waypoints for powerup drops */
+				for( i = 0; i < level.vulture_track_current_powerups.size; i++ )
+				{
+					powerup = level.vulture_track_current_powerups[i];
+					
+					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, powerup );
+
+					if( is_visible )
 					{
-						powerup = level.vulture_track_current_powerups[i];
-						
-						is_visible = check_waypoint_visible( player, powerup );
+						if( isDefined( powerup.player_waypoints[ num ] ) )
+							continue;
 
-						if( is_visible )
-						{
-							if( isDefined( powerup.player_waypoints[ num ] ) )
-								continue;
-
-							powerup.player_waypoints[ num ] = create_individual_waypoint( player, powerup );
-						}
-						else if ( isDefined( powerup.player_waypoints[ num ] ) )
-						{
-							destroy_individual_waypoint( powerup.player_waypoints[ num ], is_visible );
-						}
+						powerup.player_waypoints[ num ] = create_individual_waypoint( player, powerup );
 					}
-
+					else if ( isDefined( powerup.player_waypoints[ num ] ) )
+					{
+						destroy_individual_waypoint( powerup.player_waypoints[ num ], is_visible );
+					}
 				}
 
 			} //End Players FOR
@@ -5474,7 +5493,7 @@ init_vulture()
 			level endon( "vulture_powerup_reshuffle" ); 
 
 			self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
-			
+			iprintLn( "Powerup expired " + index );
 			level.vulture_track_current_powerups[ index ].is_active_powerup = false;
 			//level thread vulture_powerup_reshuffle( index );
 			//level notify( "vulture_powerup_reshuffle" );

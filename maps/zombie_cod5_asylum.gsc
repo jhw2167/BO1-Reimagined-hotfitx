@@ -619,6 +619,7 @@ include_powerups()
 	include_powerup( "bonfire_sale" );
 	include_powerup( "fire_sale" );
 	include_powerup( "free_perk" );	
+	include_powerup( "tesla" );
 }
 
 /*------------------------------------

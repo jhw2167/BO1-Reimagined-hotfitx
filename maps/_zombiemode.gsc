@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										 REMOVE_DEV_OVERRIDES*/
 	level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=5;	///
+	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
@@ -57,7 +57,7 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///
 	//level.apocalypse_override=true;		///
-	level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
 
@@ -509,7 +509,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 60; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 
 		if( isDefined(level.drop_rate_override) ) {
@@ -4760,14 +4760,8 @@ spectators_respawn()
 
 give_pro_perks( overrideToGiveAll )
 {
-	if( is_true( overrideToGiveAll ) )
-	{
-		level.max_perks = 20;
-		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
-		//PERKS
-		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
-		return;
+	if( is_true( overrideToGiveAll ) ) {
+		//level.max_perks = 20;
 	}
 	else
 		overrideToGiveAll = false;
@@ -4791,9 +4785,6 @@ give_pro_perks( overrideToGiveAll )
 		wait(0.5);
 	}
 
-	wait(15);
-
-	self maps\_zombiemode_perks::disablePerk( level.VLT_PRO, 10 );
 }
 
 spectator_respawn()
@@ -6403,7 +6394,7 @@ setApocalypseOptions()
 
 
 	//Not Implemented - coerce to false
-	level.extra_drops = false;
+	//level.extra_drops = false;
 
 	if(level.apocalypse) 
 	{		
