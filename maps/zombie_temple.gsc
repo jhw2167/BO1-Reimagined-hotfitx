@@ -481,6 +481,8 @@ include_powerups()
 	include_powerup( "empty_clip" ); 
 	include_powerup( "fire_sale" );
 	include_powerup( "free_perk" );
+
+	include_powerup( "tesla" );
 	
 }
 

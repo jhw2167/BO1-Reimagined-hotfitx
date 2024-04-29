@@ -651,6 +651,8 @@ include_powerups()
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
+
+	include_powerup( "tesla" );
 }
 
 above_couches_death()

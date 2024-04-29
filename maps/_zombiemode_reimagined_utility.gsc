@@ -24,7 +24,7 @@ generate_hint_title( hint_title, hint_text )
 	title.color = (0.5, 0.0, 0.0);
 	title SetText( hint_text );
 
-    title.y += 120;
+    title.y += 100;
 
 	title FadeOverTime( 1 );
 	title.alpha = 1;
@@ -36,7 +36,7 @@ generate_hint_title( hint_title, hint_text )
 	title destroy_hud();
 }
 
-generate_hint( hint_code, hint_text, offset, font_size )
+generate_hint( hint_code, hint_text, offset, wait_time )
 {
     self endon( "death" );
 	self endon( "disconnect" );
@@ -46,8 +46,8 @@ generate_hint( hint_code, hint_text, offset, font_size )
     else
         y_offset = 0;
 
-	if( !isdefined( font_size ) )
-		font_size = 1.6;
+	if( !isdefined( wait_time ) )
+		wait_time = 4;
 
 
     //Bullets
@@ -58,7 +58,7 @@ generate_hint( hint_code, hint_text, offset, font_size )
 	text.vertAlign = "user_top";
 	text.foreground = true;
 	text.font = "default";
-	text.fontScale = font_size;
+	text.fontScale = 1.6;
 	text.alpha = 0;
 	text.color = ( 1.0, 1.0, 1.0 );
     if( IsDefined( hint_code ) )
@@ -66,17 +66,17 @@ generate_hint( hint_code, hint_text, offset, font_size )
     else
 	    text SetText( hint_text );
 
-	text.y += 140;
+	text.y += 120;
     text.y += y_offset;
 
 	text FadeOverTime( 1 );
 	text.alpha = 1;
 
-	wait 4;
-    text FadeOverTime( 2 );
-	wait 1;
-	text.alpha = 0;
+	wait ( wait_time );
+    text FadeOverTime( 1 );
+	text.alpha = 0.5;
 
+	wait 1;
 	text destroy_hud();
 }
 

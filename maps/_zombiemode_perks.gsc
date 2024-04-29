@@ -4538,7 +4538,7 @@ player_watch_electric_cherry()
 {
 	while( self HasPerk( level.ECH_PRK ) )
 	{
-		self waittill( "reload_start" );
+		self waittill_any( "reload_start", level.ECH_PRK + "_stop" );
 
 		self thread electric_cherry_reload_attack( self.cherry_sequence );
 		if( self.cherry_sequence == 0 )
@@ -6269,6 +6269,12 @@ player_give_wine_grenades( stop_str )
 	self set_player_tactical_grenade( "bo3_zm_widows_grenade" );
 	
 	self thread player_watch_widows_grenade( stop_str );
+
+	self waittill( stop_str );
+
+	self TakeWeapon( "bo3_zm_widows_grenade" );
+	self set_player_tactical_grenade( undefined );
+	
 }
 	
 /*	 Handle Zombie close HUD  */
@@ -6740,7 +6746,6 @@ player_watch_widows_grenade( stop_str )
 {
 	self endon( "disconnect" );
 	self endon( "death" );
-	self endon( stop_str );
 
 	while( self hasProPerk( level.WWN_PRO ) )
 	{

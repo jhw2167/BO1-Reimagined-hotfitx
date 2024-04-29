@@ -432,6 +432,7 @@ include_powerups()
 	
 	include_powerup( "minigun" );
 	include_powerup( "free_perk" );
+	include_powerup( "tesla" );
 }
 
 

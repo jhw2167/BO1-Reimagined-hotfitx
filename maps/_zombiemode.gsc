@@ -6464,13 +6464,13 @@ print_apocalypse_options()
 		
 		wait(0.5);
 		if( level.apocalypse )
-			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j]);
+			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j], 4);
 		else
-			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j]);
+			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j], 4);
 		j++;
 
-		wait(1);
-		players[i] generate_hint(undefined, "In-Game Hints can be Enabled in the Settings", offsets[ j + 1 ]);
+		wait(4);
+		players[i] generate_hint(undefined, "In-Game Hints can be Enabled in the Settings", offsets[ j + 1 ], 2);
 	}
 	
 }

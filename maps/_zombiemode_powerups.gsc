@@ -1090,7 +1090,7 @@ powerup_setup( powerup_override, drop_color )
 
 	struct = level.zombie_powerups[powerup];
 
-	iprintln( "Setting up with struct: " + struct.model_name );
+	//iprintln( "Setting up with struct: " + struct.model_name );
 
 	if ( powerup == "random_weapon" )
 	{
@@ -1895,8 +1895,8 @@ start_special_pap( powerup, isUpgraded )
 	self shellshock( "electrocution", 1.25 );
 
 	if( isUpgraded )
-		wait 5;
-	wait 2;
+		wait 15;
+	wait 30;
 
 	//while pap in use, dont tp
 	while( flag("pack_machine_in_use") ) {
@@ -3414,10 +3414,10 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	ent_player._show_solo_hud = true;
 
-	drop_time = 5;
+	drop_time = 30;
 	if( ent_player maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
 	{
-		drop_time = 5;
+		drop_time = 45;
 	}
 	
 

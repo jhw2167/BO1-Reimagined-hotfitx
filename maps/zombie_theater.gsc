@@ -291,6 +291,8 @@ include_powerups()
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
 	include_powerup( "fire_sale" );
+
+	include_powerup( "tesla" );
 }
 
 add_powerups_after_round_1()
