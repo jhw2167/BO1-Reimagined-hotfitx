@@ -48,14 +48,14 @@ main()
 
 	//Overrides	
 	/* 										 */
-	level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=10;	///
+	//level.zombie_ai_limit_override=10;	///
+	level.starting_round_override=45;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=5;	///
+	//level.calculate_amount_override=5;	///
 	//level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -597,8 +597,10 @@ reimagined_init_level()
 	//PHD
 	level.TOTALTIME_PHD_PRO_COLLISIONS = 2; //2 seconds
 	level.VALUE_PHD_PRO_COLLISIONS_RANGE = 200; //Turn off collisions within 200 units
-	level.VALUE_PHD_PRO_DAMAGE = 50000; //Damage to zombies
-	level.VALUE_PHD_PRO_RADIUS_SCALE = 1.5; //times larger than original radius
+	level.VALUE_PHD_MIN_DAMAGE = 30000; //Damage to zombies
+	level.VALUE_PHD_MAX_DAMAGE = 60000; //Damage to zombies
+	level.VALUE_PHD_PRO_DAMAGE_SCALER = 3.5;
+	level.VALUE_PHD_PRO_RADIUS_SCALER = 1.2; //times larger than original radius
 
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE = 4;
 	level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE = 2;
@@ -981,6 +983,8 @@ reimagined_init_player()
 	self.previous_zomb_attacked_by=0;
 
 	//Perk Values
+	self.speedcola_swap_timeout = 10;	//Dont timeout any weaponswaps until SPD_PRO
+
 	self.cherry_sequence = 0;
 	self.cherry_defense = true;
 
@@ -5705,7 +5709,7 @@ reimagined_expanded_round_start()
 			level.VALUE_HORDE_SIZE = 24 + 6*level.players_size;
 			level.VALUE_HORDE_DELAY = 32 - 6*level.players_size; 
 
-		} else if( level.round_number < 30 )
+		} else if( level.round_number < 34 )
 		{
 			if( level.players_size == 1) {
 				level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; 
@@ -6471,7 +6475,7 @@ print_apocalypse_options()
 		j++;
 
 		wait(4);
-		players[i] generate_hint(undefined, "In-Game Hints can be toggled in the Settings", offsets[ j + 1 ], 2);
+		players[i] generate_hint(undefined, "In-Game Hints can be Toggled in the Settings", offsets[ j + 1 ], 2);
 	}
 	
 }
@@ -7809,6 +7813,15 @@ zombie_knockdown( wait_anim, upgraded )
 {
 	if( is_true(self.knockdown) )
 		return;
+
+	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
+		return;
+
+	if( !IsDefined(wait_anim) )
+		wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
+
+	if( !IsDefined(upgraded) )
+		upgraded = false;
 	
 	self.knockdown = true;
 	fall_anim = %ai_zombie_thundergun_hit_upontoback;

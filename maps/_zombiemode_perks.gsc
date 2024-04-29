@@ -1465,32 +1465,36 @@ divetonuke_explode( attacker, origin )
 	// tweakable vars
 	//iprintln("divetonuke_explode");
 	radius = level.zombie_vars["zombie_perk_divetonuke_radius"];
-	min_damage = level.zombie_vars["zombie_perk_divetonuke_min_damage"];
-	max_damage = level.zombie_vars["zombie_perk_divetonuke_max_damage"];
+	min_damage = level.VALUE_PHD_MIN_DAMAGE;
+	max_damage = level.VALUE_PHD_MAX_DAMAGE;
 
 	
 	//Perkapunch
 	if( attacker hasProPerk(level.PHD_PRO) ) //if player has specialty_flakjacket_upgraded,
 	{
 		//Increase radius and damage significantly
-		radius *= level.VALUE_PHD_PRO_RADIUS_SCALE;
-		min_damage = level.VALUE_PHD_PRO_DAMAGE / 2;
-		max_damage = level.VALUE_PHD_PRO_DAMAGE;
+		radius *= level.VALUE_PHD_PRO_RADIUS_SCALER;
+		min_damage *= level.VALUE_PHD_PRO_DAMAGE_SCALER;
+		max_damage *= level.VALUE_PHD_PRO_DAMAGE_SCALER;
 
 		PlayFx( level._effect["custom_large_explosion"], origin );
 		attacker PlaySound("zmb_phdflop_explo");
 		//Also apply hellfire to closest zombies, form _zombiemode_weaponeffects
 		//Get all zombies in radius
-		zombies = GetAiSpeciesArray( "axis", "all" );
+		zombies = get_array_of_closest( self.origin, GetAiSpeciesArray( "axis", "all" ) , undefined, undefined, radius );
 		for( i = 0; i < zombies.size; i++ ) 
 		{
 			if( is_boss_zombie( zombies[i].animname ) )
 				continue;
 
-			if( checkDist( self.origin, zombies[i].origin, level.VALUE_PHD_PRO_COLLISIONS_RANGE ) ) {
+			if( checkDist( self.origin, zombies[i].origin, level.VALUE_PHD_PRO_COLLISIONS_RANGE ) ) 
+			{
 				zombies[i] thread maps\_zombiemode_weapon_effects::bonus_fire_damage(
 					 zombies[i] , attacker, 0 , 2 );
 			}
+			
+			zombies[i] thread maps\_zombiemode::zombie_knockdown();
+			
 		}
 		
 	} else {
@@ -2025,6 +2029,7 @@ giveFastreloadUpgrade()
 {
 	//some indicator for fast reload complete
 	//self SetClientDvar("ui_show_stamina_ghost_indicator", "1");
+	self.speedcola_swap_timeout = 1;
 	self thread watch_fastreload_upgrade(level.SPD_PRO + "_stop");
 }
 
@@ -2566,7 +2571,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 
 
 		// do the drink animation
-		if( player HasPerk("specialty_fastreload") && !self hasProPerk(level.SPD_PRO) )
+		if( player HasPerk("specialty_fastreload") && !( player hasProPerk(level.SPD_PRO) ) )
 		{
 			player UnSetPerk("specialty_fastswitch");
 		}
@@ -2582,7 +2587,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 
 give_perk_think(player, gun, perk, cost)
 {
-	player waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
+	player waittill_any_or_timeout( player.speedcola_swap_timeout, "fake_death", "death", "player_downed", "weapon_change_complete" );
 
 	if ( !player maps\_laststand::player_is_in_laststand() && !is_true( player.intermission ) )
 	{
@@ -4383,17 +4388,23 @@ watch_fastreload_upgrade(perk_str)
 
 	while(1)
 	{
-		if(self.specialty_fastreload_upgrade)
-		{
-			//wait till player switches weapons
-			self waittill("weapon_switch_complete");
-			//iprintln("Observed weapon switch");	
+		
+		//wait till player switches weapons
+		self waittill("weapon_switch_complete");
+		//iprintln("Observed weapon switch");	
 
+		if(self hasProPerk( level.SPD_PRO ) )
+		{
 			self thread magicReload();
+		}
+		else
+		{
+			break;
 		}
 		wait(0.1);
 	}
 
+	self.speedcola_swap_timeout = 10;
 }
 
 magicReload()
@@ -5490,7 +5501,7 @@ init_vulture()
 			level endon( "vulture_powerup_reshuffle" ); 
 
 			self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
-			iprintLn( "Powerup expired " + index );
+
 			level.vulture_track_current_powerups[ index ].is_active_powerup = false;
 			//level thread vulture_powerup_reshuffle( index );
 			//level notify( "vulture_powerup_reshuffle" );
