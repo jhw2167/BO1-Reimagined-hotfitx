@@ -1416,6 +1416,27 @@ watch_pap_teleport_drops()
 
 	self endon( "end_game" );
 
+	
+	while(true)
+	{
+		zkeys = GetArrayKeys( level.zones );
+
+		zonesClosed = 0;
+		for( z=0; z<zkeys.size; z++ )
+		{
+			zone = level.zones[ zkeys[z] ];
+			if ( zone.is_enabled )
+				continue;
+
+			zonesClosed++;	
+		}
+
+		if( zonesClosed < 2 )
+			break;
+
+		wait(2);
+	}
+
 	while( true )
 	{
 		rounds_until_spawn = randomintrange( 1, 3 );

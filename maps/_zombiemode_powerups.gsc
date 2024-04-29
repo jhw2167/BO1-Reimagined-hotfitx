@@ -486,7 +486,7 @@ get_next_powerup( drop_color )
 
 	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
-		iprintln( "get_next_powerup: " + level.zombie_powerup_array[i] );
+		//iprintln( "get_next_powerup: " + level.zombie_powerup_array[i] );
 	}
 	for(i=0;i<level.zombie_powerup_array.size;i++) 
 	{
@@ -816,7 +816,7 @@ powerup_drop(drop_point, player, zombie)
 	// This needs to go above the network_safe_spawn because that has a wait.
 	// Otherwise, multiple threads could attempt to drop powerups.
 
-	iprintLn("POWERUP_DROP: " + zombie.hasDrop);
+	//iprintLn("POWERUP_DROP: " + zombie.hasDrop);
 
 	level.powerup_drop_count++;
 	origin = drop_point + (0,0,40);
@@ -1420,7 +1420,7 @@ powerup_grab()
 		//return;
 	}
 
-	iprintln( "grapping powerup: " + self.powerup_name );
+	//iprintln( "grabbing powerup: " + self.powerup_name );
 
 	self endon ("powerup_timedout");
 	self endon ("powerup_grabbed");
@@ -1531,8 +1531,7 @@ powerup_grab()
 						if( level.mapname == "zombie_cod5_asylum" )
 						{
 							players[i] thread start_special_pap( self );
-							players[i] thread powerup_vo( "bonus_points_solo" );
-							self.powerup_name = "bonus_points_player";
+							players[i] thread powerup_vo( "tesla" );
 							break;
 						}
 						else
@@ -1895,8 +1894,8 @@ start_special_pap( powerup, isUpgraded )
 	self shellshock( "electrocution", 1.25 );
 
 	if( isUpgraded )
-		wait 15;
-	wait 30;
+		wait 5;
+	wait 15;
 
 	//while pap in use, dont tp
 	while( flag("pack_machine_in_use") ) {
@@ -3407,10 +3406,10 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	ent_player endon( "death" );
 	ent_player endon( "player_downed" );
 
-	if( is_true( self.superpower_active) )
+	if( is_true( ent_player.superpower_active) )
 		return;
 
-	self.superpower_active = true;
+	ent_player.superpower_active = true;
 
 	ent_player._show_solo_hud = true;
 
@@ -3449,7 +3448,7 @@ tesla_weapon_powerup( ent_player, powerup, time )
 		wait(0.3);
 	}
 
-	self.superpower_active = false;
+	ent_player.superpower_active = false;
 }
 
 tesla_weapon_powerup_countdown( ent_player, str_gun_return_notify, weapon, time )

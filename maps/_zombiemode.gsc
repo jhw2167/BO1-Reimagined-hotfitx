@@ -47,7 +47,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										 /
+	/* 										 */
 	level.zombie_ai_limit_override=10;	///
 	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
@@ -509,7 +509,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 4; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 
 		if( isDefined(level.drop_rate_override) ) {
@@ -5334,22 +5334,22 @@ determine_horde_wait( count )
 
 		
 	if(      count > 0 
-		&& ( count % level.VALUE_HORDE_SIZE ) == 0  //
-		&& level.zombie_total >= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER 					//No horde wait if only 5 zombies left
-		&& level.zombie_total >= horde_threshold			//No horde wait if they need to kill zombs quickly
+		&& ( count % level.VALUE_HORDE_SIZE ) == 0  	//Reached a horde size
+		&& level.zombie_total >= horde_threshold		//No horde wait if less zombies than a horde remain
 		)
 		{
 			wait( level.VALUE_HORDE_DELAY );
 		}
 
 		//If less than 3/4 of horde, small delay
-		delay = 0.5 - 0.1 * level.players_size;
+		delay = 0.5 - ( 0.1 * level.players_size );
 		
-		if( level.zombie_total > ( level.VALUE_HORDE_SIZE * 0.25 ) )
+		
+		if( get_enemy_count() > ( level.VALUE_HORDE_SIZE * 0.25 ) )
 			delay *= 2;
-		else if( level.zombie_total > ( level.VALUE_HORDE_SIZE * 0.50 ) )
+		else if( get_enemy_count() > ( level.VALUE_HORDE_SIZE * 0.50 ) )
 			delay *= 4;
-		else if( level.zombie_total > ( level.VALUE_HORDE_SIZE * 0.75 ) )
+		else if( get_enemy_count() > ( level.VALUE_HORDE_SIZE * 0.75 ) )
 			delay = level.VALUE_ZOMBIE_SPAWN_DELAY;	
 
 		wait( delay );
@@ -5662,24 +5662,24 @@ reimagined_expanded_round_start()
 	{
 		if( level.round_number < 4 )
 		{
-			level.zombie_move_speed = 35;
+			level.zombie_move_speed = 25;	//down from 35
 			level.VALUE_ZOMBIE_SPAWN_DELAY = 4 - level.players_size * 0.75;
 
 			//MAX ZOMBIES
 			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 32, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
-			level.zombie_move_speed = 50;	//runners
+			level.zombie_move_speed = 40;	//runners, sparse sprinters
 			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 32, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( 10 + level.players_size * 2 );
 			level.VALUE_HORDE_DELAY = int( 10 - level.players_size * 2 ); 
 
-			level.VALUE_ZOMBIE_SPAWN_DELAY = 8 - (level.players_size * 3.5);
+			level.VALUE_ZOMBIE_SPAWN_DELAY = 2.5 - (level.players_size * 0.5);
 		}
 		else if(  level.round_number < 16 )
 		{
-			level.zombie_move_speed = 90;	//sprinters
+			level.zombie_move_speed = 50;	//runners, moderate sprinters, down from 90
 
 			if( level.players_size == 1) {
 				level.VALUE_ZOMBIE_SPAWN_DELAY = 2.5;
@@ -5694,7 +5694,7 @@ reimagined_expanded_round_start()
 
 		} else if(  level.round_number < 24 )
 		{
-			level.zombie_move_speed = 110;
+			level.zombie_move_speed = 60; //runners, many sprinters, down from 100
 			level.VALUE_ZOMBIE_SPAWN_DELAY = .5;
 
 			if( level.players_size == 1) {
@@ -5711,12 +5711,12 @@ reimagined_expanded_round_start()
 				level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; 
 			}
 
-			level.zombie_move_speed = 130;
+			level.zombie_move_speed = 95;
 			level.VALUE_HORDE_SIZE = 36 + 8*level.players_size;
 			level.VALUE_HORDE_DELAY = 16 - 2*level.players_size; 
 
 		} else {
-			level.zombie_move_speed = 150;
+			level.zombie_move_speed = 105;
 		}
 
 	} else	//(More) Regular zombies!
@@ -6471,7 +6471,7 @@ print_apocalypse_options()
 		j++;
 
 		wait(4);
-		players[i] generate_hint(undefined, "In-Game Hints can be Enabled in the Settings", offsets[ j + 1 ], 2);
+		players[i] generate_hint(undefined, "In-Game Hints can be toggled in the Settings", offsets[ j + 1 ], 2);
 	}
 	
 }
@@ -6679,6 +6679,9 @@ ai_calculate_health( round_number )
 
 	//Reimagined-Expanded - exponential health scaling
 	base = 800;
+	if( level.apocalypse )
+		base = 1000;
+	
 	rTenfactor = 0.30;
 	startHealth = 150;
 	logFactor = 4;

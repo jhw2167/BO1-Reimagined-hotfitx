@@ -1975,7 +1975,6 @@ removePerk( perk, removeOrDisableHud )
 			self.PRO_PERKS[perk] = false;
 
 			//Trigger notify pro perk + "_stop"
-			iprintLn( "NOTIFY: " + perk + "_stop" );
 			self notify( perk + "_stop" );
 			self notify( base_perk + "_stop" );
 			
@@ -3161,8 +3160,6 @@ manage_ui_perk_hud( command, perk )
 					break;
 				}
 			}
-
-			iprintln( "Perk Hud Remove: " + perk + " " + perk_num );
 
 			if( perk_num == -1 )
 				return;

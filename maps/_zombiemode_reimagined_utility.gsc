@@ -293,7 +293,6 @@ generate_perk_hint( perk )
 	title.alpha = 1;
 
 	self waittill_notify_or_timeout( "perk_hint_end", 7 );
-	iprintLn( "Ending hint" );
 
     title FadeOverTime( 2 );
 	title.alpha = 0;

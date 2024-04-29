@@ -1122,6 +1122,8 @@ black_hole_teleport( struct_dest, isGeneralTeleport )
 	// allow the funny biz
 	self EnableOffhandWeapons();
 	self EnableWeapons();
+	if( isGeneralTeleport )
+		wait(1);
 	self FreezeControls( false );
 
 	self thread slightly_delayed_player_response();
