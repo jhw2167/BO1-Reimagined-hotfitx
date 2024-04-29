@@ -47,7 +47,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										 REMOVE_DEV_OVERRIDES*/
+	/* 										 /
 	level.zombie_ai_limit_override=10;	///
 	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
@@ -509,7 +509,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 60; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 
 		if( isDefined(level.drop_rate_override) ) {
@@ -997,6 +997,7 @@ reimagined_init_player()
 
 	//Items and drops
 	self.zombie_vars[ "zombie_powerup_zombie_blood_time" ] = 0;
+	self.superpower_active = false;
 
 	//Threads
 	self thread wait_set_player_visionset();

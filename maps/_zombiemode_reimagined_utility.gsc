@@ -91,7 +91,7 @@ generate_perk_hint( perk )
 	if( GetDvarInt( "ui_hud_perk_hints") == 0 )
 		return;
 
-	if( self.superpower_active )
+	if( is_true( self.superpower_active ) )
 		return;
 
 	if( is_in_array(level.ARRAY_HELLFIRE_WEAPONS, perk))
