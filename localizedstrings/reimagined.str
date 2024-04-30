@@ -1252,7 +1252,7 @@ REFERENCE 			VLT_PRK_TITLE
 LANG_ENGLISH 		"Vulture Aid 2.0"
 
 REFERENCE 			VLT_PRK_HINT
-LANG_ENGLISH 		"- Visualize all perks and drops on the map \n- Visual indicator of all bosses on the map - or monkeys \n- Visual indicator of the last few zombies remaining on the map \n- Press ADS + melee to disable vulture waypoints for perks and weapons \n- Knifing zombies rewards additional points \n- Occaissionally find small ammo drops"
+LANG_ENGLISH 		"- Visualize perks, drops, and enemies on the map  \n- Press [{+speed_throw}] and [{+melee}] to toggle Vulture Waypoints \n- Knifing zombies rewards additional points \n- Occaissionally find small ammo drops"
 
 REFERENCE 			VLT_PRO_TITLE
 LANG_ENGLISH 		"Vulture Aid 2.0 Pro"

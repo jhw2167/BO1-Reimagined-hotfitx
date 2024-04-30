@@ -49,13 +49,13 @@ main()
 	//Overrides	
 	/* 										 */
 	//level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=45;	///
+	level.starting_round_override=11;	///
 	level.starting_points_override=100000;	///
-	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	level.drop_rate_override=2;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=5;	///
+	level.calculate_amount_override=2;	///
 	//level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -527,7 +527,7 @@ reimagined_init_level()
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
-	level.VALUE_THIEF_HEALTH_SCALAR = 30;	//this many times avg zombie max health of this round
+	level.VALUE_THIEF_HEALTH_SCALAR = 24;	//this many times avg zombie max health of this round
 
 	//Weapon Pap
 	level.VALUE_PAP_COST = 5000;
@@ -826,6 +826,19 @@ reimagined_init_level()
 	for(i=0;i<5;i++)  {
 		level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS[i] SetModel( "tag_origin" );
 	}
+
+	level.THRESHOLD_VRKT_ELECTRAP_DROP_HACK_RADIUS = 88;
+	level.MAP_VRKT_POWERUP_HACKS = [];
+
+	level.MAP_VRKT_POWERUP_HACKS["full_ammo"] = "free_perk";
+	level.MAP_VRKT_POWERUP_HACKS["insta_kill"] = "double_points";
+	level.MAP_VRKT_POWERUP_HACKS["carpenter"] = "nuke";
+	level.MAP_VRKT_POWERUP_HACKS["nuke"] = "insta_kill";
+	level.MAP_VRKT_POWERUP_HACKS["double_points"] = "carpenter";
+	level.MAP_VRKT_POWERUP_HACKS["tesla"] = "full_ammo";
+
+
+	
 
 	//Shino
 
@@ -6502,7 +6515,10 @@ pre_round_think()
 	if( IsDefined(level.starting_points_override) )
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 
-	/*					*/
+	/*	MAP SPECFIC				*/
+
+	level.asylum_array_powerup_hackables = [];
+
 	//iprintln("Apocalypse is: "+ level.apocalypse);
 	//iprintln("Alt Bosses is: "+ level.alt_bosses);
 	//iprintln("Expensive Perks is: "+ level.expensive_perks);

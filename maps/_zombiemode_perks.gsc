@@ -5440,7 +5440,10 @@ init_vulture()
 		{
 			while(1)
 			{
+
+				/*
 				powerup_notif = level waittill_any_return( "powerup_dropped" );
+				
 				//all_powerups = GetEntArray( "powerup", "classname" );
 				all_powerups = GetEntArray( "script_model", "classname" );
 				
@@ -5476,7 +5479,7 @@ init_vulture()
 
 				if( index == -1 )
 					continue;	
-					
+				
 				powerup = SpawnStruct();
 				powerup.origin 					= all_powerups[index].origin;
 				powerup.original_entity_number 	= all_powerups[index] GetEntityNumber();
@@ -5484,13 +5487,28 @@ init_vulture()
 
 				powerup.script_model = Spawn( "script_model", powerup.origin );
 				powerup.script_model linkto( powerup, "tag_origin", (0, 0, 10) );
-				//powerup.waypoint_name = "specialty_doublepoints_zombies";
 				powerup.waypoint_name = "specialty_instakill_zombies";
 				powerup.is_active_powerup = true;
+				*/
+
+				//Repeat above with powerupDrop
+				level waittill("powerup_dropped", powerupDrop);
+
+				powerup = SpawnStruct();
+				powerup.origin 					= powerupDrop.origin;
+				powerup.original_entity_number 	= powerupDrop GetEntityNumber();
+				powerup.name 					= powerupDrop.powerup_name;
+
+				powerup.script_model = Spawn( "script_model", powerup.origin );
+				powerup.script_model linkto( powerup, "tag_origin", (0, 0, 10) );
+				powerup.waypoint_name = "specialty_instakill_zombies";
+				powerup.is_active_powerup = true;
+				powerup.powerup = powerupDrop;
 
 				size = level.vulture_track_current_powerups.size;
 				level.vulture_track_current_powerups[ size ] = powerup;
-				all_powerups[index] thread vulture_watch_powerup_expiration( size );
+				//all_powerups[index] thread vulture_watch_powerup_expiration( size );
+				powerupDrop thread vulture_watch_powerup_expiration( size );
 			}
 			
 		}

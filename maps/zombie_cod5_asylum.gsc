@@ -933,6 +933,7 @@ activate_electric_trap(who)
 	{
 		wait_network_frame();
 		fire_points[i] thread electric_trap_fx(self);
+		fire_points[i] thread electric_trap_hack_powerup(self);
 	}
 
 	//do the damage
@@ -941,6 +942,87 @@ activate_electric_trap(who)
 	// reset the zapper model
 	level waittill("arc_done");
 	machine setmodel("zombie_zapper_power_box");
+}
+
+checkDist( a, b, dist )
+{
+	result = maps\_zombiemode::checkDist( a, b, dist );
+	return result;
+}
+
+electric_trap_hack_powerup( notify_ent )
+{
+	notify_ent endon("elec_done");
+
+	while(1)
+	{
+		wait( 2	);
+		//Existing powerup info
+		powerups = level.vulture_track_current_powerups;
+		if( !isDefined(powerups) || powerups.size < 1 )
+			continue;
+
+		for(i = 0; i < powerups.size; i++)
+		{
+			p = powerups[i];
+			if( isDefined(p) && p.is_active_powerup )
+			{
+				if( checkDist(p.origin, self.origin, level.THRESHOLD_VRKT_ELECTRAP_DROP_HACK_RADIUS ) )
+				{
+					size = level.asylum_array_powerup_hackables.size;
+					
+					level.asylum_array_powerup_hackables[size] = level.vulture_track_current_powerups[i];
+
+					playfx( level._effect["powerup_grabbed"], p.origin );
+					playfx( level._effect["powerup_grabbed_wave"], p.origin );
+
+					level.vulture_track_current_powerups[i].powerup notify("powerup_end");
+					level.vulture_track_current_powerups[i].powerup delete();
+					level.vulture_track_current_powerups[i].is_active_powerup = false;
+				}
+			}
+				
+		}
+	}
+}
+
+//Level watch hackable drops
+watch_electric_trap_hackable_powerups()
+{
+	self endon("end_game");
+
+	while(1)
+	{
+		level waittill( "arc_done" );
+		wait(2);
+		
+		total_hackables = level.asylum_array_powerup_hackables.size;
+		if(  total_hackables > 0 )
+		{
+			hackables = [];
+			for(i = 0; i < total_hackables; i++)
+			{
+				if( isDefined(level.asylum_array_powerup_hackables[i]) )
+				{
+					//Remove duplicates using .original_entity_number
+					struct = level.asylum_array_powerup_hackables[i];
+					num = "" + struct.original_entity_number;
+					hackables[num] = level.asylum_array_powerup_hackables[i];
+				}
+			}
+
+			//Non duplicate hackables
+			keys = GetArrayKeys(hackables);
+			for(i = 0; i < keys.size; i++)
+			{
+				new_drop = level.MAP_VRKT_POWERUP_HACKS[hackables[keys[i]].name];
+				maps\_zombiemode_powerups::specific_powerup_drop( new_drop, ( hackables[keys[i]].origin + (0,0,-40) )  );
+				wait 1;
+			}
+		}
+
+		level.asylum_array_powerup_hackables = [];
+	}
 }
 
 
@@ -1285,6 +1367,7 @@ master_electric_switch()
 	//activate perks-a-cola
 	level notify( "master_switch_activated" );
 	level thread watch_pap_teleport_drops();
+	level thread watch_electric_trap_hackable_powerups();
 	
 	fx_org delete();
 

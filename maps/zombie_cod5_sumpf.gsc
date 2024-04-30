@@ -416,6 +416,7 @@ include_powerups()
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
 
+	include_powerup( "free_perk" );
 	include_powerup( "tesla" );
 }
 //-------------------------------------------------------------------------------

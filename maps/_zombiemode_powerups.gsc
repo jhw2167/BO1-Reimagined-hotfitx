@@ -931,6 +931,8 @@ specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
 
 	level notify("powerup_dropped", powerup);
 
+	iprintLn( "Defined perk: " + isDefined(powerup) );
+
 	if ( IsDefined(powerup) )
 	{
 		iprintln("SPAWNING DROP FROM SPECIFIC_POWERUP_DROP: " + powerup_name + " origin " + powerup.origin );
