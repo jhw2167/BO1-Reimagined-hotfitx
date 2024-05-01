@@ -249,7 +249,7 @@ vending_randomization_effect( index )
 	PlaySoundAtPosition( "rando_start", machine.origin );
 	origin = machine.origin;
 	//index
-	//iprintLn( "Index: " + index );
+	//iprintln( "Index: " + index );
 	//iprintln( "At location: " + origin );
 	//iprintln( "Trigger origin: " + vending_triggers[trigInd].origin );
 	

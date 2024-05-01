@@ -126,7 +126,7 @@ generate_perk_hint( perk )
 
 	self.hints_activated[ perk ] = true;
 
-	iprintLn( "notify: " + perk );
+	iprintln( "notify: " + perk );
 
 	wait( 1 );
 
@@ -560,7 +560,7 @@ adjust( editing, adj )
 wait_print( msg, data )
 	{
 		flag_wait("begin_spawning");
-		iprintLn( msg );
+		iprintln( msg );
 		
 		if( IsDefined( data ) )
 		{

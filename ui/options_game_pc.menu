@@ -353,7 +353,7 @@
 		
 		CHOICE_DVARFLOATLIST_VIS( 1, "@REIMAGINED_ROUND_START", zombie_round_start,{ "1" 1 "10" 10 "15" 15 "20" 20 "30" 30 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 
-		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "5" 5 "10" 10 "0" 0  }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
+		CHOICE_DVARFLOATLIST_VIS(2, "@REIMAGINED_PERK_LIMIT", zombie_perk_limit, { "5" 5 "15" 15 "0" 0  }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		
 		CHOICE_DVARFLOATLIST_VIS(3, "@REIMAGINED_ALT_BOSSES", zombie_alt_bosses, { "@REIMAGINED_ALT_BOSSES_NORMAL" 1 "@REIMAGINED_ALT_BOSSES_NONE" 0 "@REIMAGINED_ALT_BOSSES_HARDER" 2 }, ;, when(dvarString("ui_options_game_popup") == "reimagined_expanded_setup"))
 		

@@ -491,7 +491,10 @@ init_weapon_upgrade()
 		|| !IsDefined( level.zombie_weapons[weapon_name] )
 		|| !IsDefined( getent( weapon_spawns[i].target, "targetname" ) )
 		 )
-			continue;
+		{ 
+				continue; //HERE
+		}
+		
 		hint_string = get_weapon_hint( weapon_spawns[i].zombie_weapon_upgrade );
 		cost = get_weapon_cost( weapon_spawns[i].zombie_weapon_upgrade );
 	
@@ -837,7 +840,7 @@ get_ammo_cost( weapon_name )
 	if( IsDefined( level.zombie_weapons[weapon_name].ammo_cost ) )
 		return level.zombie_weapons[weapon_name].ammo_cost;
 	
-	return 4500;
+	return 500;
 }
 
 get_is_in_box( weapon_name )
@@ -3608,7 +3611,7 @@ weapon_spawn_think()
 			{
 				if ( player has_upgrade( self.zombie_weapon_upgrade ) )
 				{
-					ammo_cost = 2500;
+					ammo_cost = 4500;
 				}
 				else
 				{

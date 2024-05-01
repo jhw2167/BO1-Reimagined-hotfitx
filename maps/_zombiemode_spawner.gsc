@@ -390,6 +390,13 @@ zombie_determine_drop()
 {
 		self endon("death");
 
+		if( level.total_drops_round >= level.THRESHOLD_MAX_DROPS )
+		{
+			self.hasDrop = "NONE";
+			return;
+		}
+			
+
 		total = 1000;
 		if( isDefined(level.zombie_round_total) )
 			total = level.zombie_round_total*10;
@@ -3131,6 +3138,13 @@ zombie_head_gib( attacker, means_of_death, tesla )
 	temp_array = [];
 	temp_array[0] = level._ZOMBIE_GIB_PIECE_INDEX_HEAD;
 	self gib( "normal", temp_array );
+
+	//Head gibbed zombies die in 5 seconds
+
+	if( self.health > 100 ) //base melee damage, zombie should be one knife if head gibbed
+		self DoDamage( self.health - 50, self.origin, attacker, undefined, means_of_death);
+
+	self thread damage_over_time( self.health + 50 , 5, attacker, means_of_death );
 }
 
 damage_over_time( dmg, delay, attacker, means_of_death )

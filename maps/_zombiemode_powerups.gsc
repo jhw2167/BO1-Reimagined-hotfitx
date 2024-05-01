@@ -816,7 +816,7 @@ powerup_drop(drop_point, player, zombie)
 	// This needs to go above the network_safe_spawn because that has a wait.
 	// Otherwise, multiple threads could attempt to drop powerups.
 
-	//iprintLn("POWERUP_DROP: " + zombie.hasDrop);
+	//iprintln("POWERUP_DROP: " + zombie.hasDrop);
 
 	level.powerup_drop_count++;
 	origin = drop_point + (0,0,40);
@@ -931,11 +931,8 @@ specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
 
 	level notify("powerup_dropped", powerup);
 
-	iprintLn( "Defined perk: " + isDefined(powerup) );
-
 	if ( IsDefined(powerup) )
 	{
-		iprintln("SPAWNING DROP FROM SPECIFIC_POWERUP_DROP: " + powerup_name + " origin " + powerup.origin );
 		powerup powerup_setup( powerup_name );
 
 		if(!permament)
@@ -1093,6 +1090,12 @@ powerup_setup( powerup_override, drop_color )
 	struct = level.zombie_powerups[powerup];
 
 	//iprintln( "Setting up with struct: " + struct.model_name );
+	if( !IsDefined( powerup ) )
+	{
+		iprintln( "No powerup found for drop color: " );
+		iprintln( drop_color );
+		return;
+	}
 
 	if ( powerup == "random_weapon" )
 	{
@@ -2934,10 +2937,11 @@ play_bonfiresale_audio()
 //******************************************************************************
 free_perk_powerup( item, player )
 {
-	level.max_perks++;
+	//level.max_perks++;
 	players = getplayers();
 	for ( i = 0; i < players.size; i++ )
 	{
+
 		if(level.gamemode != "survival" && players[i].vsteam != player.vsteam)
 		{
 			continue;
@@ -2947,6 +2951,7 @@ free_perk_powerup( item, player )
 		{
 			players[i] maps\_zombiemode_perks::give_random_perk();
 		}
+		players[i].perk_slots++;
 	}
 
 	if(level.gamemode != "survival")
@@ -3427,7 +3432,6 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	//Reimagined-Expanded, override "Tesla" powerup to be a "Superpower"
 
 	//Record player perks
-
 	current_perks = ent_player.purchased_perks;
 	
 	//Give player all PRO perks, if they don't have them already
@@ -3436,6 +3440,7 @@ tesla_weapon_powerup( ent_player, powerup, time )
 		wait(0.3);
 	}
 
+	//drop_time = 3; //dev
 	wait( drop_time );
 
 	//Take all Pro Perks
@@ -3451,6 +3456,8 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	}
 
 	ent_player.superpower_active = false;
+	ent_player.num_perks = current_perks.size;
+	iprintlnBold("current_perks.size: " + current_perks.size);
 }
 
 tesla_weapon_powerup_countdown( ent_player, str_gun_return_notify, weapon, time )

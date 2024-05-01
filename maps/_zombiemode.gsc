@@ -47,15 +47,15 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										 */
+	/* 										 /
 	//level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=11;	///
+	level.starting_round_override=32;	///
 	level.starting_points_override=100000;	///
-	level.drop_rate_override=2;		/// //Rate = Expected drops per round
+	level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	///
+	//level.calculate_amount_override=2;	///
 	//level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -274,6 +274,9 @@ post_all_players_connected()
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
 		players[i] thread watch_player_shotgun_attrition();
+
+		if( level.apocalypse )
+			players[i] thread watch_player_perkslots();
 	}
 	
 
@@ -472,7 +475,7 @@ reimagined_init_level()
 	level.VALUE_HORDE_DELAY = 10;			// Mini horde delays during between rounds
 	level.THRESHOLD_ZOMBIE_AI_LIMIT = 32;
 
-	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 100;	//up from 75
+	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 75;	//up from 75, down from 100
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 5;
 	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
@@ -586,7 +589,11 @@ reimagined_init_level()
 	/*	####################
 			PERK EFFECTS
 		####################
-	*/		
+	*/
+
+	//Damage over time, type, for poison and shock
+	level.VALUE_DAMAGETYPE_DOT = "MOD_DOT";
+	level.VALUE_DAMAGETYPE_SHOCK = "MOD_SHOCK";
 
 	//Stamina
 	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 2s to sprint and activate ghost
@@ -641,7 +648,7 @@ reimagined_init_level()
 	level.VALUE_CHERRY_SHOCK_MAX_ENEMIES = 8;
 	level.VALUE_CHERRY_SHOCK_MIN_ENEMIES = 2;
 
-	level.VALUE_CHERRY_PRO_DEFENSE_COOLDOWN = 12;	//cooldown for cherry defense
+	level.VALUE_CHERRY_PRO_DEFENSE_COOLDOWN = 30;	//cooldown for cherry defense
 	level.VALUE_CHERRY_PRO_SCALAR = 16/10;	//scales range, damage, max enemies by ~2
 
 	//Vulture
@@ -680,7 +687,8 @@ reimagined_init_level()
 		"china_lake_zm" ,
 		"explosivbe_bolt_upgraded_zm",
 		"humangun_zm",
-		"humangun_upgraded_zm"
+		"humangun_upgraded_zm",
+		"m1911_upgraded_zm"
 		);
 
 	//Vulture HUD Values
@@ -910,6 +918,7 @@ reimagined_init_player()
 	
 	//Perk Stuff
 	self.purchased_perks = [];
+	self.perk_slots = level.max_perks;
 	self.perk_hud_queue_num = 0;
 	self.perk_hud_queue_unlocks_num = 0;
 	self.perk_hud_queue_locked = false;
@@ -1103,6 +1112,7 @@ wait_set_player_visionset()
 		self give_pro_perks( true );
 	}
 
+	//self maps\zombie_cosmodrome::offhand_weapon_give_override( "zombie_black_hole_bomb" );
 
 	//Print entitity number and random char
 	//iprintln( "Entity Number: " + self.entity_num);
@@ -1504,6 +1514,23 @@ watch_player_shotgun_attrition()
 			wait(1);
 		}
 	}
+}
+
+watch_player_perkslots()
+{
+	while(1)
+	{
+		level waittill( "start_of_round" );
+
+		self waittill( "player_downed");
+
+		self.perk_slots-- ;
+
+		if( self.perk_slots < level.max_perks )
+			self.perk_slots = level.max_perks;
+		
+	}
+
 }
 
 //##############################################
@@ -5768,7 +5795,7 @@ reimagined_expanded_round_start()
 			switch( level.mapname ) 
 			{
 				case "zombie_cod5_prototype":
-				case "zombie_cod5_asylum":
+				//case "zombie_cod5_asylum":
 				case "zombie_cod5_sumpf":
 				case "zombie_cod5_factory":
 				case "zombie_theater":
@@ -6374,6 +6401,7 @@ chalk_round_over()
 //Reimagined-Expanded
 setApocalypseOptions()
 {
+	level.apocalypse = GetDvarInt("zombie_apocalypse");
 	//User did not choose options, default game
 	if( level.user_options == 0)
 	{
@@ -6390,6 +6418,7 @@ setApocalypseOptions()
 		level.starting_round = 1;
 	}
 
+	//Apocalypse variables defaults
 	if(level.apocalypse > 0 || IsDefined(level.apocalypse_override) )
 		level.apocalypse = true;
 	if(level.expensive_perks > 0 || level.apocalypse)
@@ -6420,7 +6449,10 @@ setApocalypseOptions()
 		level.server_cheats=false;
 		level.total_perks = 5;
 
-	} else if( level.server_cheats > 0) {
+	} 
+	else if( level.server_cheats > 0) 
+	{
+		//Cheats and apocalypse are mutually exclusive
 		level.server_cheats=true;
 		level.total_perks = 100;
 	}
@@ -6445,7 +6477,7 @@ print_apocalypse_options()
 	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220 );
 	for(i=0; i<players.size; i++)
 	{
-		iprintLn("Player "+i);
+		iprintln("Player "+i);
 		j = 0;
 		if( level.apocalypse )
 			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies");
@@ -7876,6 +7908,13 @@ zombie_knockdown( wait_anim, upgraded )
 //damage function
 actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
 {
+		iprintln("Weapon: " + weapon);
+	iprintln("Weapon Class: " + WeaponClass(weapon));
+	iprintln("Means of Death: " + meansofdeath);
+	iprintln("Inflictor: " + inflictor);
+	iprintln("Flags: " + flags);
+	iprintln("Has Drop: " + self.hasDrop);
+	
 	// WW (8/14/10) - define the owner of the monkey shot
 	if( weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_IMPACT" )
 	{
@@ -8679,8 +8718,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= 4;
 	}
 
-	//Non Shotgun bullet damage
-	if( meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET" || WeaponClass(weapon) == "spread")
+	//Bullet and shotgun bonus/perk damage
+	iprintln("Weapon: " + weapon);
+	iprintln("Weapon Class: " + WeaponClass(weapon));
+	iprintln("Means of Death: " + meansofdeath);
+	iprintln("Inflictor: " + inflictor);
+	iprintln("Flags: " + flags);
+	iprintln("Has Drop: " + self.hasDrop);
+	isShotgun = (WeaponClass(weapon) == "spread" && meansofdeath == "MOD_PISTOL_BULLET");
+	if( meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET" )
 	{	
 
 		// Hellfire Weapons

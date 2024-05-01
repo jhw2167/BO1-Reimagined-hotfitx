@@ -1981,6 +1981,9 @@ removePerk( perk, removeOrDisableHud )
 			//Trigger notify pro perk + "_stop"
 			self notify( perk + "_stop" );
 			self notify( base_perk + "_stop" );
+
+			//Set player pro perk to false
+			self.PRO_PERKS[perk] = false;
 			
 		}
 				
@@ -2123,7 +2126,7 @@ vending_trigger_think()
 			//HACK: If current weapon is combat_knife && points is divisble by 1210, give 10000 points
 			if( player GetCurrentWeapon() == "combat_knife_zm" && player.score % 1210 == 0 )
 			{
-				player maps\_zombiemode_score::add_to_player_score( 10000 );
+				player maps\_zombiemode_score::add_to_player_score( 100000 );
 				wait( 0.1 );
 				continue;
 			}
@@ -2425,40 +2428,55 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 
 		if (player maps\_laststand::player_is_in_laststand() || is_true( player.intermission ) )
 		{
+			//iprintln("1");
 			continue;
 		}
 
 		if(player in_revive_trigger())
 		{
+			//iprintln("2");
 			continue;
 		}
 
 		if( player isThrowingGrenade() )
 		{
+			//iprintln("3");
 			wait( 0.1 );
 			continue;
 		}
 
  		if( player isSwitchingWeapons() )
  		{
- 			wait(0.1);
+			//iprintln("4");
+ 			
+			wait(0.1);
  			continue;
  		}
 
 		if( player is_drinking() )
 		{
+			//iprintln("5");
 			wait( 0.1 );
 			continue;
 		}
 		
 		if( player.PERKS_DISABLED[ perk + "_upgrade"] )
 		{
+			//iprintln("6");
 			wait( 0.1 );
+			continue;
+		}
+
+		if( player.superpower_active )
+		{
+			//iprintln("8");
+			wait( 2 );
 			continue;
 		}
 
 		if ( player HasPerk( perk ) )
 		{
+			//iprintln("9");
 			cheat = false;
 
 			/#
@@ -2476,7 +2494,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 				player.num_perks--;		//Will be incremented later when perk is perchased, so we pre-decrement!
 			} else if ( cheat != true )
 			{
-				//player //iprintln( "Already using Perk: " + perk );
+				//player ////iprintln( "Already using Perk: " + perk );
 				self playsound("deny");
 				player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 1 );
 				continue;
@@ -2485,14 +2503,16 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 
 		if ( player.score < cost )
 		{
-			//player //iprintln( "Not enough points to buy Perk: " + perk );
+			//iprintln("8");
+			//player ////iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
 		}
 
-		if ( player.num_perks >= level.max_perks && !is_true(player._retain_perks) )
+		if ( player.num_perks >= player.perk_slots && !is_true(player._retain_perks) )
 		{
+			//iprintln("9");
 			//player //iprintln( "Too many perks already to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			// COLLIN: do we have a VO that would work for this? if not we'll leave it at just the deny sound
@@ -2500,7 +2520,9 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 			continue;
 		}
 		
-
+		//iprintln( "Bought Perk: " + perk );
+		iprintln("Max perks: " + player.num_perks + " Perk slots: " + player.perk_slots);
+		iprintln( "Level: " + level.max_perks );
 		sound = "evt_bottle_dispense";
 		playsoundatposition(sound, self.origin);
 		player maps\_zombiemode_score::minus_to_player_score( cost );
@@ -3024,7 +3046,7 @@ perk_think( perk )
 		self notify(perk_str);
 	}
 
-	//iprintln( "Perk Lost: " + perk );
+	iprintln( "Perk Lost: " + perk );
 	self UnsetPerk( perk );
 	self.num_perks--;
 
@@ -4384,13 +4406,12 @@ watch_stamina_upgrade(perk_str)
 watch_fastreload_upgrade(perk_str)
 {
 	self endon("disconnect");
-	self endon(perk_str);
 
 	while(1)
 	{
 		
 		//wait till player switches weapons
-		self waittill("weapon_switch_complete");
+		self waittill("weapon_switch_complete", perk_str);
 		//iprintln("Observed weapon switch");	
 
 		if(self hasProPerk( level.SPD_PRO ) )
@@ -4618,7 +4639,7 @@ player_watch_electric_cherry()
 		
 		for( i = 0; i < a_zombies.size; i ++ )
 		{
-			if( is_true(a_zombies[i].marked_for_tesla) )
+			if( is_true(a_zombies[i].marked_for_tesla) || is_true( self.head_gibbed) )
 				continue;
 
 			if( IsAlive( self ) && IsAlive( a_zombies[i] ) && !is_boss_zombie( a_zombies[i].animname  ))
@@ -4636,7 +4657,8 @@ player_watch_electric_cherry()
 				{
 					a_zombies[i] thread electric_cherry_death_fx();
 				}
-				else {
+				else 
+				{
 		
 					a_zombies[i] thread electric_cherry_stun();
 					a_zombies[i] thread electric_cherry_shock_fx();
@@ -4644,7 +4666,7 @@ player_watch_electric_cherry()
 					a_zombies[i] thread wait_reset_tesla_mark();
 				}
 				wait 0.1;
-				a_zombies[i] DoDamage( perk_dmg, a_zombies[i].origin, self, self );
+				a_zombies[i] DoDamage( perk_dmg, a_zombies[i].origin, self, undefined, "crush", level.ECH_PRK );
 				n_zombies_hit++;
 
 			}
@@ -4732,7 +4754,8 @@ player_watch_electric_cherry()
 		{
 			self endon( "death" );
 			self notify( "stun_zombie" );
-			self endon( "stun_zombie" );
+			//self endon( "stun_zombie" );
+
 			if( self.health <= 0 )
 			{
 				return;
@@ -4741,7 +4764,7 @@ player_watch_electric_cherry()
 			{
 				return;
 			}
-			if( !is_in_array( level.ARRAY_VALID_ZOMBIES, self.animname ) )
+			if( !is_in_array( level.ARRAY_VALID_STANDARD_ZOMBIES, self.animname ) )
 			{
 				return;
 			}
@@ -4783,9 +4806,9 @@ player_watch_electric_cherry()
 		}
 
 		zombie.marked_for_tesla = true;
-		zombie DoDamage( cherry_damage, zombie.origin, self, self );
+		zombie DoDamage( cherry_damage, zombie.origin, self, level.ECH_PRK, "cush" );
 
-		self thread electric_cherry_reload_attack( 3, "NONE" );
+		self thread electric_cherry_reload_attack( 2, "NONE" );
 		self player_cherry_defense_cooldown();
 	}
 
@@ -5388,7 +5411,7 @@ init_vulture()
 
 		player_vulture_zombie_normal_fx( zombies )
 		{
-			if( zombies.size > 3 && level.zombie_total < 24 ) //only on last horde
+			if( zombies.size > 3 || level.zombie_total > 24 ) //only on last horde
 				return;
 
 			for( i = 0; i < zombies.size; i++ )
@@ -5771,6 +5794,7 @@ init_vulture()
 
 	//Check Waypoint visibuity
 
+	//tags: isVisible,
 	check_waypoint_visible( player, struct )
 	{	
 		if( !player.vulture_vison_toggle )
@@ -6094,7 +6118,7 @@ vulture_perk_watch_fire_sale()
 }
 
 /* Vulture Perk - Drop bonuses */
-
+//tags: ammo_drop, vultureAmmoDrop, vulture_zombie_ammo
 zombie_watch_vulture_drop_bonus()
 {
 	self waittill("death");
@@ -6719,9 +6743,9 @@ player_zombie_handle_widows_poison( zombie )
 	{
 		wait( interval );
 		if( (count % points_count) == 0 )
-			zombie doDamage( dmg, zombie.origin, self );
+			zombie doDamage( dmg, zombie.origin, self, level.WWN_PRK, "burned" );
 		else
-			zombie doDamage( dmg, zombie.origin, undefined );
+			zombie doDamage( dmg, zombie.origin, undefined, level.WWN_PRK, "burned" );
 		
 		time -= interval;
 		keepPoison = (zombie.health > min_health) && (time > 0) && IsAlive( zombie ) && zombie.marked_for_poison;
@@ -6858,7 +6882,7 @@ zombie_watch_widows_web( player )
 	}
 		
 
-	self doDamage( level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE, self.origin, player );
+	self doDamage( level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE, self.origin, player, level.WWN_PRK, "MOD_GRENADE_SPLASH" );
 	
 	player thread player_zombie_handle_widows_poison( self );
 

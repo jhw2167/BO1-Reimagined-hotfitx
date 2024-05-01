@@ -558,6 +558,7 @@ include_weapons()
 
 	//bouncing betties
 	include_weapon("mine_bouncing_betty", false, true);
+	include_weapon("stielhandgranate", false, true);
 
 	// limited weapons
 	maps\_zombiemode_weapons::add_limited_weapon( "m1911_zm", 0 );
