@@ -411,6 +411,7 @@ zombie_determine_drop()
 		blue_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
 		red_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
 
+		//iprintln(" rand: " + rand);
 		//iprintln( "blue_rate: " + blue_rate + " red_rate: " + red_rate + " green_rate: " + green_rate);
 		//Not Acpocalypse/extra drops
 		if(level.extra_drops) 
@@ -444,6 +445,9 @@ zombie_determine_drop()
 			
 		if( self.hasDrop == "GREEN" || self.hasDrop == "BLUE" || self.hasDrop == "RED" ) 
 		{
+			iprintln( "zombie total: " + total);
+			iprintln(" rand: " + rand);
+			iprintln( "blue_rate: " + blue_rate + " red_rate: " + red_rate + " green_rate: " + green_rate);
 			level.total_drops_round++;
 			self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 			wait 0.5;

@@ -1180,7 +1180,7 @@ REFERENCE          	QRV_PRO_TITLE
 LANG_ENGLISH       	"QuickRevive Pro"
 
 REFERENCE          	QRV_PRO_HINT
-LANG_ENGLISH       	"- Trigger zombie blood for revived players \n- Larger revive radius \n- Points are not lost while a player with Quick Revive Pro is near a downed player (Apocalypes mode only)"
+LANG_ENGLISH       	"- Trigger zombie blood for revived players \n- Larger revive radius \n- Points are not lost while a player with Quick Revive Pro is near a downed player (Apocalypse mode only)"
 
 REFERENCE          	JUG_PRO_TITLE
 LANG_ENGLISH       	"Juggernog Pro"
@@ -1198,13 +1198,13 @@ REFERENCE 			DBT_PRK_TITLE
 LANG_ENGLISH 		"Double-Tap 2.1"
 
 REFERENCE 			DBT_PRK_HINT
-LANG_ENGLISH 		"- All bullet weapons do 20% increased damage"
+LANG_ENGLISH 		"- All bullet weapons do 50% increased damage"
 
 REFERENCE 			DBT_PRO_TITLE
 LANG_ENGLISH 		"Double-Tap 2.1 Pro"
 
 REFERENCE 			DBT_PRO_HINT
-LANG_ENGLISH 		"- All bullet weapons do 60% increased damage \n- Provides bullet penetration of up to 6 zombies"
+LANG_ENGLISH 		"- All bullet weapons do 100% increased damage \n- Provides bullet penetration of up to 6 zombies"
 
 REFERENCE 			STM_PRO_TITLE
 LANG_ENGLISH 		"Stamina-Up Pro"
@@ -1313,6 +1313,18 @@ LANG_ENGLISH 		"SHOTGUNS"
 
 REFERENCE			SHOTGUN_DAMAGE_HINT
 LANG_ENGLISH 		"- For each round you own a Shotgun, you do 10% more damage with all shotguns \n- All attrition is lost if you begin round without owning a shotgun"
+
+REFERENCE			SIDEARM_DAMAGE_TITLE
+LANG_ENGLISH 		"SIDEARMS"
+
+REFERENCE			SIDEARM_DAMAGE_HINT
+LANG_ENGLISH 		"- Pistols reward 33% more points than normal weapons on Apocalypse mode"
+
+REFERENCE			SNIPER_DAMAGE_TITLE
+LANG_ENGLISH 		"SNIPERS"
+
+REFERENCE			SNIPER_DAMAGE_HINT
+LANG_ENGLISH 		"- Snipers do massive damage to zombies \n- All sniper kills reward points as if they were headshot kills"
 
 
 

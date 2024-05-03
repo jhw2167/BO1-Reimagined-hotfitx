@@ -118,6 +118,16 @@ generate_perk_hint( perk )
 	{
 		perk = "specialty_shotgun_damage";
 	}
+	else if( is_in_array( level.ARRAY_VALID_SNIPERS, perk) )
+	{
+		perk = "specialty_sniper_damage";
+	}
+	//level.ARRAY_SIDEARMBONUS_WEAPONS
+	else if( is_in_array(level.ARRAY_SIDEARMBONUS_WEAPONS, perk) )
+	{
+		perk = "specialty_sidearm_bonus";
+	}
+
 
 	if( is_true( self.hints_activated[ perk ] ) )
 		return;
@@ -283,6 +293,19 @@ generate_perk_hint( perk )
 		case "specialty_shotgun_damage":
 			text SetText( &"REIMAGINED_SHOTGUN_DAMAGE_HINT" );
 			title SetText( &"REIMAGINED_\SHOTGUN_DAMAGE_TITLE" );
+			break;
+
+		case "specialty_sniper_damage":
+			text SetText( &"REIMAGINED_SNIPER_DAMAGE_HINT" );
+			title SetText( &"REIMAGINED_SNIPER_DAMAGE_TITLE" );
+			break;
+
+		case "specialty_sidearm_bonus":
+			if( level.apocalypse )
+			{
+				text SetText( &"REIMAGINED_SIDEARM_BONUS_HINT" );
+				title SetText( &"REIMAGINED_SIDEARM_BONUS_TITLE" );
+			}
 			break;
 		}
 

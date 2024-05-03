@@ -53,8 +53,8 @@ player_add_points( event, mod, hit_location, zombie)
 				} 
 				else 
 				{
-					player_points *= weapon_multiplier;
-					gross_possible_points *= weapon_multiplier;
+					player_points = Int( player_points * weapon_multiplier );
+					gross_possible_points = Int( gross_possible_points * weapon_multiplier );
 				}	
 				
 
@@ -99,7 +99,7 @@ player_add_points( event, mod, hit_location, zombie)
 			player_points = zombie_calculate_damage_points( level.apocalypse, zombie );
 			if( level.apocalypse ) 
 			{
-				weapon_multiplier = self weapon_points_multiplier( self getcurrentweapon(), mod );
+				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod, true );
 				if( weapon_multiplier < 1 ) 
 				{
 					self.gross_possible_points += player_points; //points u could have got if u had a better weapon
@@ -226,7 +226,7 @@ player_add_points( event, mod, hit_location, zombie)
 	}
 
 //Reimagined-Expanded
-weapon_points_multiplier( weapon, mod ) 
+weapon_points_multiplier( weapon, mod, isForDamage ) 
 {
 	multiplier = 1;
 	//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
@@ -234,9 +234,11 @@ weapon_points_multiplier( weapon, mod )
 			weapon = GetSubStr(weapon, 0, weapon.size-3);
 	}
 
-	if( !IsDefined( mod ) ) {
+	if( !IsDefined( mod ) )
 		mod = "MOD_UNKNOWN";
-	}
+	
+	if( !IsDefined( isForDamage ) )
+		isForDamage = false;
 
 	//if mod is melee, return 1
 	if( mod == "MOD_MELEE" )
@@ -249,8 +251,11 @@ weapon_points_multiplier( weapon, mod )
 		case "cz75_upgraded_zm":
 		case "cz75dw_upgraded_zm":
 		case "python_upgraded_zm":
-			if(isSubStr(mod, "BULLET")) {
-				multiplier = 2;	
+			if(isSubStr(mod, "BULLET")) 
+			{
+				multiplier = 1.33;
+				if( isForDamage )				
+					multiplier = 2;
 			}
 		break;
 
@@ -449,6 +454,13 @@ player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 				score = level.zombie_vars["zombie_score_bonus_head"];
 				break;
 		}
+
+		//Reimagined-Expanded - All sniper damage rewards headshot kill bonus
+		if( is_in_array(level.ARRAY_VALID_SNIPERS, weapon) ) 
+		{
+			score = level.zombie_vars["zombie_score_bonus_head"];
+		}
+		
 
 	} else {
 		//No bonus for shotguns, explosives, melee, wonder weapons

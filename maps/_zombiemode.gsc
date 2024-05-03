@@ -47,11 +47,11 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										 /
+	/* 										 */
 	//level.zombie_ai_limit_override=10;	///
 	level.starting_round_override=32;	///
 	level.starting_points_override=100000;	///
-	level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
@@ -409,14 +409,14 @@ reimagined_init_level()
 	{
 		level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10000000; //No threshold, theoretical max
 		if( i < 5 ) {
-			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 90;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 30;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 250;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 0;
 			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 0;
 		}
 		else if( i < 10 ) {
-			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 150;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 60;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 500;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 25;
@@ -510,10 +510,11 @@ reimagined_init_level()
 
 	//These are (expected drops per round * 10), so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 4; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 16;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 16;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 10; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
+	level.rand_drop_rate = [];
 
 		if( isDefined(level.drop_rate_override) ) {
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = level.drop_rate_override*10;
@@ -524,8 +525,8 @@ reimagined_init_level()
 
 	level.THRESHOLD_MAX_DROPS = 5;	//Max Drops allowed per round. Protects against bugs
 
-	level.THRESHOLD_MAX_POINTS_CARPENTER = 1000;
-	level.THRESHOLD_MAX_POINTS_NUKE = 2400;
+	level.THRESHOLD_MAX_POINTS_CARPENTER = 2000;
+	level.THRESHOLD_MAX_POINTS_NUKE = 4800;
 
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
@@ -623,8 +624,8 @@ reimagined_init_level()
 	level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK = 0.05;
 
 	//Double Tap
-	level.VALUE_DBT_DAMAGE_BONUS = 1.2;
-	level.VALUE_DBT_PRO_DAMAGE_BONUS = 1.6;
+	level.VALUE_DBT_DAMAGE_BONUS = 1.5;
+	level.VALUE_DBT_PRO_DAMAGE_BONUS = 2.0;
 	level.VALUE_DBT_UNITS = 5;
 	level.VALUE_DBT_PENN_DIST = 20;
 	level.THRESHOLD_DBT_MAX_DIST = 1000; //50*20=
@@ -795,6 +796,10 @@ reimagined_init_level()
 
 	level.ARRAY_BIGDMG_WEAPONS = array( "commando_upgraded_zm_x2", "stoner63_upgraded_zm_x2" );
 	level.ARRAY_BIGHEADSHOTDMG_WEAPONS = array( "fnfal_upgraded_zm_x2", "m14_upgraded_zm", "psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2" );
+	level.ARRAY_SIDEARMBONUS_WEAPONS = array( "cz75_zm", "cz75_upgraded_zm", "cz75_upgraded_zm_x2",
+											"cz75_dw_zm", "cz75_dw_upgraded_zm", "cz75_dw_upgraded_zm_x2",
+											 "python_zm", "python_upgraded_zm", "python_upgraded_zm_x2"
+											);
 
 
 	//MISCELLANEOUS EFFECTS
@@ -6731,7 +6736,7 @@ ai_calculate_health( round_number )
 
 	//Reimagined-Expanded - exponential health scaling
 	base = 800;
-	if( level.apocalypse )
+	if( level.tough_zombies )
 		base = 1000;
 	
 	rTenfactor = 0.30;
@@ -6753,7 +6758,7 @@ ai_calculate_health( round_number )
 		health *= level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 	}
 
-	//cap zombies health, first round of capped == 46
+	//cap zombies health, first round of capped == 41
 	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
 		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
@@ -6981,7 +6986,7 @@ reimagined_expanded_apocalypse_rounds()
 	self endon("end_of_round");
 
 	round = level.round_number;
-	wait_time = round; //Round 45 means you have 45 seconds to kill 45 zombies	
+	wait_time = round; 			//Round 45 means you have 45 seconds to kill 45 zombies	
 	zombs_threshold = round;
 
 	if( round <= level.THRESHOLD_MAX_APOCALYSE_ROUND ) 
@@ -8466,14 +8471,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "psg1_upgraded_zm":
-			final_damage = 85000;
-			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
+			final_damage = 90000;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")  )
 				final_damage *= 3;
 			break;
 		case "l96a1_upgraded_zm":
-			final_damage = 90000;
-			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
-				final_damage *= 3;
+			final_damage = 74000;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") )
+				final_damage *= 3.5;
 			break;
 		case "fnfal_upgraded_zm":
 			final_damage = 800;
@@ -10400,7 +10405,7 @@ player_apocalypse_stats( message, timeout )
 	}
 
 
-	headers = array( "Total Points", "Efficiency" );
+	headers = array( "Perk Slots", "Total Points", "Efficiency" );
 	totals = [];
 	efficiencies = [];
 
@@ -10408,12 +10413,16 @@ player_apocalypse_stats( message, timeout )
 	for( i = 0; i < players.size; i++ )
 	{
 		totals[i] = players[i].gross_points;
-		efficiencies[i] = players[i].gross_points / players[i].gross_possible_points;
+		base_points = self.kill_tracker * level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS;
+		gross = players[i].gross_points - base_points;
+		gross_possible = players[i].gross_possible_points - base_points;
+		//efficiencies[i] = players[i].gross_points / players[i].gross_possible_points;
+		efficiencies[i] = gross / gross_possible;
 	}
 
 	COL_OFFSET = 70;
 	VERT_OFFSET = 64;
-	HORZ_OFFSET = 40;
+	HORZ_OFFSET = 120;
 
 	if( players.size > 1 )
 	{
@@ -10450,7 +10459,7 @@ player_apocalypse_stats( message, timeout )
 	{
 		for( j = 0; j < players.size; j++ )
 		{
-			i = k + 2;
+			i = k + headers.size;
 			hudElems[i][j] = NewClienthudElem( self );
 			hudElems[i][j].alignX = "center";
 			hudElems[i][j].alignY = "middle";
@@ -10465,9 +10474,15 @@ player_apocalypse_stats( message, timeout )
 			hudElems[i][j].color = ( 1.0, 1.0, 1.0 );
 			if( k == 0 )
 			{
-				hudElems[i][j] SetText( totals[j] );
+				hudElems[i][j] SetText( players[j].perk_slots );
+				
 			}
-			else
+			else if( k == 1)
+			{
+				hudElems[i][j] SetText( totals[j] );
+				
+			}
+			else if( k == 2)
 			{
 				hudElems[i][j] SetText( Int( efficiencies[j] * 1000 ) / 10 );
 			}
@@ -10476,7 +10491,7 @@ player_apocalypse_stats( message, timeout )
 
 	self waittill_notify_or_timeout( message, timeout );
 
-	outer_size = headers.size + 2;
+	outer_size = headers.size * 2;
 
 	for( i = 0; i < outer_size; i++ )
 	{

@@ -5893,9 +5893,9 @@ init_vulture()
 			if( !IsAlive( struct ) )
 				return false;
 
-			//inPlayableArea = checkObjectInPlayableArea( struct );
-			//if( !inPlayableArea )
-				//return false;
+			inPlayableArea = checkObjectInPlayableArea( struct );
+			if( !inPlayableArea )
+				return false;
 
 			cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
 			

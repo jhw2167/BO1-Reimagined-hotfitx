@@ -3427,7 +3427,7 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	}
 	
 
-	wait_network_frame();
+	wait(2);	//in case player picks up perk bottle nearby
 
 	//Reimagined-Expanded, override "Tesla" powerup to be a "Superpower"
 
@@ -3457,7 +3457,7 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	ent_player.superpower_active = false;
 	ent_player.num_perks = current_perks.size;
-	iprintlnBold("current_perks.size: " + current_perks.size);
+	//iprintlnBold("current_perks.size: " + current_perks.size);
 }
 
 tesla_weapon_powerup_countdown( ent_player, str_gun_return_notify, weapon, time )
