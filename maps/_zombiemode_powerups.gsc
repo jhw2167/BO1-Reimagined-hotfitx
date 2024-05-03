@@ -131,17 +131,16 @@ init_powerups()
 	if( !level.mutators["mutator_noMagicBox"] )
 		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
-	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
 	add_zombie_powerup("free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
 
 	
-	//Blue Drops
+	//Blue Dropsdrop_item.hint = &"REIMAGINED_POWERUP_RESTOCK";
 	add_zombie_powerup("minigun", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
+	add_zombie_powerup( "tesla", "lightning_bolt", &"REIMAGINED_POWERUP_SUPERPOWER", true, false, false, undefined, "BLUE");
+	add_zombie_powerup( "restock",  	"zombie_ammocan",	&"REIMAGINED_POWERUP_RESTOCK", true, false, false, undefined, "BLUE");
 	/*
-	add_zombie_powerup("superpower", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
 	add_zombie_powerup("upgrade_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false, undefined, "BLUE");
 	add_zombie_powerup("quad_points", "zombie_x4_icon", &"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false, undefined, "BLUE");
-	add_zombie_powerup("max_ammo", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, false, undefined, "BLUE");
 	add_zombie_powerup("insta_kill", "zombie_skull", &"ZOMBIE_POWERUP_INSTA_KILL", false, false, false, undefined, "BLUE");
 	add_zombie_powerup("zombie_blood", "zombie_skull", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false, undefined, "BLUE");
 
@@ -1446,8 +1445,7 @@ powerup_grab()
 
 			// Don't let them grab the minigun, tesla, or random weapon if they're downed or reviving
 			//	due to weapon switching issues.
-			if ( (self.powerup_name == "minigun" || self.powerup_name == "tesla" || self.powerup_name == "random_weapon" || self.powerup_name == "upgrade_weapon" || 
-				self.powerup_name == "meat") &&
+			if ( is_true( self.solo )  &&
 				( players[i] maps\_laststand::player_is_in_laststand() || ( players[i] UseButtonPressed() && players[i] in_revive_trigger() ) ) )
 			{
 				continue;
@@ -1502,9 +1500,14 @@ powerup_grab()
 						players[i] thread powerup_vo("full_ammo");
 						if( level.vulture_is_upgraded_drop ) 
 							self thread delay_give_drop( players[i], "full_ammo", 
-							level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME );
-						
-							
+							level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME );	
+						break;
+
+					case "restock":
+						level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
+						players[i] thread powerup_vo("full_ammo");
+						if( level.vulture_is_upgraded_drop ) 
+							level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
 						break;
 
 					case "double_points":
@@ -1894,18 +1897,37 @@ start_special_pap( powerup, isUpgraded )
 
 	self.ignoreme = true;
 	level.pap_moving = false;
-	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );
-	self shellshock( "explosion", 1.25 );
-	self shellshock( "electrocution", 1.25 );
+	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );	
 
+	powerup_time = 15;
 	if( isUpgraded )
-		wait 5;
-	wait 15;
+		powerup_time = 20;
+
+	level.zombie_vars["zombie_powerup_bonfire_sale_time"] = powerup_time;
+	self.zombie_vars["zombie_powerup_bonfire_sale_time"] = powerup_time;
+	
+	level.zombie_vars["zombie_powerup_bonfire_sale_on"] = true;
+	self.zombie_vars["zombie_powerup_bonfire_sale_on"] = true;
+	
+	level thread toggle_bonfire_sale_on();
+
+	while ( level.zombie_vars["zombie_powerup_bonfire_sale_time"] > 0)
+	{
+		wait(0.1);
+		level.zombie_vars["zombie_powerup_bonfire_sale_time"] -= 0.1;
+		self.zombie_vars["zombie_powerup_bonfire_sale_time"] -= 0.1;	
+	}
 
 	//while pap in use, dont tp
 	while( flag("pack_machine_in_use") ) {
 		wait 0.5;
 	}
+
+	level.zombie_vars["zombie_powerup_bonfire_sale_on"] = false;
+	self.zombie_vars["zombie_powerup_bonfire_sale_on"] = false;
+	
+	level notify ( "bonfire_sale_off" );
+
 
 	level.pap_moving = true;
 	self.ignoreme = false;
@@ -1918,10 +1940,7 @@ start_special_pap( powerup, isUpgraded )
 	respawn.angles = self GetPlayerAngles();
 
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( respawn, true );
-
-	self shellshock( "electrocution", 1.25 );
 	//wait(2);
-	
 
 }
 
@@ -2356,7 +2375,7 @@ full_ammo_powerup_implementation( drop_item, player, player_num )
 		player thread powerup_vo("full_ammo");
 		drop_item = SpawnStruct();
 		drop_item.caution = false; //makes text red
-		drop_item.hint = &"ZOMBIE_POWERUP_MAX_AMMO";
+		drop_item.hint = &"REIMAGINED_POWERUP_RESTOCK";
 	}
 
 	players = get_players();

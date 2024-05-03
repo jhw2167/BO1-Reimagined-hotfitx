@@ -82,7 +82,7 @@
 			
 			setDvar zombie_round_start 1;
 
-			setDvar ui_hud_perk_hints 0;
+			setDvar ui_hud_perk_hints 1;
 				
 
 			if(dvarString(com_maxfps) == "85") // default value

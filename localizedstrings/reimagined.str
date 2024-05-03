@@ -22,7 +22,7 @@ REFERENCE           WEAPONCOSTAMMO
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Weapon [Cost: &&1], Ammo [Cost: &&2]"
 
 REFERENCE           WEAPONCOSTAMMO_UPGRADE
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Weapon [Cost: &&1], Ammo [Cost: &&2],\n                     Upgraded Ammo [Cost: 2500]"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Weapon [Cost: &&1], Ammo [Cost: &&2],\n                     Upgraded Ammo [Cost: 4500]"
 
 REFERENCE           WEAPONCOSTAMMO_UPGRADE_HACKED
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Upgraded Weapon [Cost: &&1], Ammo [Cost: &&2],\n                         Upgraded Ammo [Cost: &&3]"
@@ -1326,6 +1326,13 @@ LANG_ENGLISH 		"SNIPERS"
 REFERENCE			SNIPER_DAMAGE_HINT
 LANG_ENGLISH 		"- Snipers do massive damage to zombies \n- All sniper kills reward points as if they were headshot kills"
 
+
+//Drops
+REFERENCE			POWERUP_SUPERPOWER
+LANG_ENGLISH 		"SUPERPOWER!!"
+
+REFERENCE			POWERUP_RESTOCK
+LANG_ENGLISH 		"RESTOCK!!"
 
 
 ENDMARKER

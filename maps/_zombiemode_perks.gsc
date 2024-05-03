@@ -2016,6 +2016,7 @@ giveArmorVestUpgrade()
 	self thread watch_armorvest_upgrade(level.JUG_PRO + "_stop");
 }
 
+//giveMuleUpgrade
 giveAdditionalPrimaryWeaponUpgrade() 
 {
 	//Give player max ammo for all weapons
@@ -2079,10 +2080,10 @@ vending_trigger_think()
 	//Reimagined-Expanded babyjugg!
 	if ( IsDefined(perk) && perk == "specialty_extraammo" )
 	{
-		cost = 500;
+		cost = level.VALUE_BABYJUG_COST;
 		if(level.expensive_perks)
 		{
-			cost = 1000;
+			cost = level.VALUE_BABYJUG_EXP_COST;
 		}
 
 		self SetCursorHint( "HINT_NOICON" );
@@ -6717,9 +6718,11 @@ player_zombie_handle_widows_poison( zombie )
 
 	fraction = level.THRESHOLD_WIDOWS_POISON_MIN_HEALTH_FRACTION;
 	MAX_TIME = level.THRESHOLD_WIDOWS_POISON_MAX_TIME;
+	mod = "unknown";
 	if( self hasProPerk( level.WWN_PRO ) ) {
 		fraction = level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION;
 		MAX_TIME = level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME;
+		mod = "burned";
 	}
 
 	//min_health = fraction * zombie.maxhealth;
@@ -6739,13 +6742,14 @@ player_zombie_handle_widows_poison( zombie )
 	fx_count = 12;											//Every 3 seconds, play fx
 	count = 0;
 
+
 	while( keepPoison )
 	{
 		wait( interval );
 		if( (count % points_count) == 0 )
-			zombie doDamage( dmg, zombie.origin, self, level.WWN_PRK, "burned" );
+			zombie doDamage( dmg, zombie.origin, self, level.WWN_PRK, mod );
 		else
-			zombie doDamage( dmg, zombie.origin, undefined, level.WWN_PRK, "burned" );
+			zombie doDamage( dmg, zombie.origin, undefined, level.WWN_PRK, "dot" );
 		
 		time -= interval;
 		keepPoison = (zombie.health > min_health) && (time > 0) && IsAlive( zombie ) && zombie.marked_for_poison;

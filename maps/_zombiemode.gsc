@@ -47,9 +47,9 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										 */
+	/* 										*/
 	//level.zombie_ai_limit_override=10;	///
-	level.starting_round_override=32;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
@@ -512,7 +512,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 16;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 16;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 10; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 8; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -595,6 +595,10 @@ reimagined_init_level()
 	//Damage over time, type, for poison and shock
 	level.VALUE_DAMAGETYPE_DOT = "MOD_DOT";
 	level.VALUE_DAMAGETYPE_SHOCK = "MOD_SHOCK";
+
+	//Babyjug
+	level.VALUE_BABYJUG_COST = 1000;
+	level.VALUE_BABYJUG_EXP_COST = 2000;
 
 	//Stamina
 	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 2s to sprint and activate ghost
@@ -877,30 +881,40 @@ reimagined_init_level()
 
 
 	//Map Specific values
+	level.ARRAY_FREE_PERK_HINTS = [];
 
 	switch (Tolower(GetDvar(#"mapname")))
 {
     case "zombie_cod5_prototype":
         break;
     case "zombie_cod5_asylum":
+		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "(Electro)Shock Therapy!";
         break;
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
+		//level.ARRAY_FREE_PERK_HINTS["zombie_cod5_sumpf"] = "Swamp Lights!";
         break;
     case "zombie_cod5_factory":
+		//level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
         break;
     case "zombie_theater":
+		//level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
         break;
     case "zombie_pentagon":
+		//level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The Numbers, The Lab";
         break;
     case "zombie_cosmodrome":
+		level.ARRAY_FREE_PERK_HINTS["zombie_cosmodrome"] = "October 24, 1960";
         break;
     case "zombie_coast":
+		level.ARRAY_FREE_PERK_HINTS["zombie_coast"] = "Regicide!";
         break;
     case "zombie_temple":
+		level.ARRAY_FREE_PERK_HINTS["zombie_temple"] = "One Max Ammo and a Bullet";
         break;
     case "zombie_moon":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
+		//level.ARRAY_FREE_PERK_HINTS["zombie_temple"] = " 'Decompression in Tunnel 6' ";
         break;
 }
 
@@ -6408,6 +6422,7 @@ setApocalypseOptions()
 {
 	level.apocalypse = GetDvarInt("zombie_apocalypse");
 	//User did not choose options, default game
+	//level thread wait_print("Apocalypse: " , level.apocalypse);
 	if( level.user_options == 0)
 	{
 		level.apocalypse = true;
@@ -6422,6 +6437,10 @@ setApocalypseOptions()
 		level.server_cheats = false;
 		level.starting_round = 1;
 	}
+	
+	//level thread wait_print("User Ops: " , level.user_options);
+	//level thread wait_print("Server cheats: ", level.server_cheats);
+
 
 	//Apocalypse variables defaults
 	if(level.apocalypse > 0 || IsDefined(level.apocalypse_override) )
@@ -6473,16 +6492,29 @@ setApocalypseOptions()
 
 }
 
+
+wait_print( msg, data )
+{
+	flag_wait("begin_spawning");
+	if( isdefined( data ) )
+		iprintln( msg + " " + data );
+	else
+	{
+		iprintln( msg  + " undefined");
+	}
+	
+}
+
+
 print_apocalypse_options()
 {
 	flag_wait("begin_spawning");
 	wait(10);
 
 	players = GetPlayers();
-	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220 );
+	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280 );
 	for(i=0; i<players.size; i++)
 	{
-		iprintln("Player "+i);
 		j = 0;
 		if( level.apocalypse )
 			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies");
@@ -6526,6 +6558,11 @@ print_apocalypse_options()
 
 		wait(4);
 		players[i] generate_hint(undefined, "In-Game Hints can be Toggled in the Settings", offsets[ j + 1 ], 2);
+
+		wait(2);
+		if( IsDefined( level.ARRAY_FREE_PERK_HINTS[level.mapname] ))
+			players[i] generate_hint(undefined, "Free Perk Hint: " + level.ARRAY_FREE_PERK_HINTS[level.mapname],
+				 offsets[ offsets.size-1 ], 2);
 	}
 	
 }
@@ -7913,12 +7950,12 @@ zombie_knockdown( wait_anim, upgraded )
 //damage function
 actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
 {
-		iprintln("Weapon: " + weapon);
-	iprintln("Weapon Class: " + WeaponClass(weapon));
-	iprintln("Means of Death: " + meansofdeath);
-	iprintln("Inflictor: " + inflictor);
-	iprintln("Flags: " + flags);
-	iprintln("Has Drop: " + self.hasDrop);
+	//iprintln("Weapon: " + weapon);
+	//iprintln("Weapon Class: " + WeaponClass(weapon));
+	//iprintln("Means of Death: " + meansofdeath);
+	//iprintln("Inflictor: " + inflictor);
+	//iprintln("Flags: " + flags);
+	//iprintln("Has Drop: " + self.hasDrop);
 	
 	// WW (8/14/10) - define the owner of the monkey shot
 	if( weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_IMPACT" )
@@ -8724,13 +8761,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//Bullet and shotgun bonus/perk damage
-	iprintln("Weapon: " + weapon);
-	iprintln("Weapon Class: " + WeaponClass(weapon));
-	iprintln("Means of Death: " + meansofdeath);
-	iprintln("Inflictor: " + inflictor);
-	iprintln("Flags: " + flags);
-	iprintln("Has Drop: " + self.hasDrop);
-	isShotgun = (WeaponClass(weapon) == "spread" && meansofdeath == "MOD_PISTOL_BULLET");
 	if( meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET" )
 	{	
 

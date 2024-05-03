@@ -1123,7 +1123,12 @@ black_hole_teleport( struct_dest, isGeneralTeleport )
 	self EnableOffhandWeapons();
 	self EnableWeapons();
 	if( isGeneralTeleport )
+	{
+		self shellshock( "electrocution", 1.25 );
+		self shellshock( "explosion", 1.25 );
 		wait(1);
+	}
+		
 	self FreezeControls( false );
 
 	self thread slightly_delayed_player_response();

@@ -653,6 +653,7 @@ include_powerups()
 	include_powerup( "carpenter" );
 
 	include_powerup( "tesla" );
+	include_powerup( "restock" );
 }
 
 above_couches_death()

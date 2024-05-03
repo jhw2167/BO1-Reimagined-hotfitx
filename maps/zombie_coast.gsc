@@ -636,6 +636,7 @@ include_powerups()
 	//PreCacheItem( "tesla_gun_powerup_zm" );
 	//PrecacheItem( "tesla_gun_powerup_upgraded_zm" );
 	include_powerup( "tesla" );
+	include_powerup( "restock" );
 
 	include_powerup( "free_perk" );
 

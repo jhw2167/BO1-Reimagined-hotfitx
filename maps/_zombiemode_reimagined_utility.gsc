@@ -303,8 +303,8 @@ generate_perk_hint( perk )
 		case "specialty_sidearm_bonus":
 			if( level.apocalypse )
 			{
-				text SetText( &"REIMAGINED_SIDEARM_BONUS_HINT" );
-				title SetText( &"REIMAGINED_SIDEARM_BONUS_TITLE" );
+				text SetText( &"REIMAGINED_SIDEARM_DAMAGE_HINT" );
+				title SetText( &"REIMAGINED_SIDEARM_DAMAGE_TITLE" );
 			}
 			break;
 		}
@@ -579,7 +579,7 @@ adjust( editing, adj )
 	###############################
 */
 
-
+/*
 wait_print( msg, data )
 	{
 		flag_wait("begin_spawning");
@@ -591,6 +591,7 @@ wait_print( msg, data )
 		}
 		
 	}
+	*/
 
 	printHelper( a, b, c, d, e, f)
 	{

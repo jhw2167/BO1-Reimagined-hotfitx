@@ -483,6 +483,7 @@ include_powerups()
 	include_powerup( "free_perk" );
 
 	include_powerup( "tesla" );
+	include_powerup( "restock" );
 	
 }
 

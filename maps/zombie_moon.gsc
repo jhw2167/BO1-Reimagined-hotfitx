@@ -1527,6 +1527,7 @@ include_powerups()
 
 	include_powerup( "free_perk" );
 	include_powerup( "tesla" );
+	include_powerup( "restock" );
 
 	// for quantum bomb
 	include_powerup( "random_weapon" );
