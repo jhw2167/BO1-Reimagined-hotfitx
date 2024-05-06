@@ -55,7 +55,7 @@ main()
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	///
+	//level.calculate_amount_override=;	///
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -359,6 +359,11 @@ reimagined_init_player_depedent_values()
 	//level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
 	if ( isDefined( level.zombie_timeout_override ) )
 		level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = level.zombie_timeout_override;
+
+	//Map Specific
+
+	//Shino
+	level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME = 60 - (level.players_size * 12);
 }
 
 
@@ -1128,6 +1133,7 @@ watch_player_utility()
 		}
 
 		iprintln("Origin: " + self.origin);
+
 	}
 
 

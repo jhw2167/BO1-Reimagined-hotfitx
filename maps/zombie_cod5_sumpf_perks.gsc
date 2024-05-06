@@ -64,14 +64,94 @@ watch_swamplights()
 {
 	self endon( "end_game" );
 
+	zone_keys = GetArrayKeys( level.ARRAY_SWAMPLIGHTS_POS );
+
 	while( true )
 	{
-		wait( 120 );
-		//iprintln( "Swamplight spawned" );
+		rand_wait = RandomInt( 10, 20 );
+		//wait( 120 );
+		wait( 10 );
+		
+		total_swamplights = 3;
+		randomized_keys = array_randomize( zone_keys );
+		positions = [];
+
+		for(i=0; i < total_swamplights; i++)
+		{
+			positions[i] = randomint( 3 ); // 0, 1, 2
+			struct = Spawn("script_model", level.ARRAY_SWAMPLIGHTS_POS[ randomized_keys[i] ][ positions[i] ] );
+			struct SetModel( "tag_origin" );
+			isFullfilled = watch_spawn_swamplight( struct );
+			struct Delete();
+
+			if(!isFullfilled)
+				break;
+
+
+			if( i == total_swamplights - 1 )
+			{
+				idx = randomint( 3 );
+				dropLoc = level.ARRAY_SWAMPLIGHTS_POS[ randomized_keys[idx] ][ positions[idx] ];
+				maps\_zombiemode_powerups::specific_powerup_drop( "free_perk", dropLoc );
+				level waittill( "powerup_dropped", powerup );
+				watch_spawn_swamplight( powerup );
+			}
+				
+		}
+
 		//self thread spawn_random_perk();
 	}
 
 }
+
+watch_spawn_swamplight(struct)
+{
+	level endon( "end_game" );
+	level endon( "swamplight_expire" );
+
+	radius = 500;
+	level thread watch_swamplight_expire();
+
+	//Spawn_fx
+	iprintln( "Spawning swamplight" );
+	PlayFXOnTag(level._effect["lght_marker"], struct, "tag_origin");
+	PlayFXOnTag(level._effect["lght_marker_flare"], struct, "tag_origin");
+	if( IsDefined( struct.powerup_name ) )
+	{
+		iprintln( "Spawning powerup: " + struct.powerup_name );
+		return;
+	}
+
+	while( true )
+	{
+		level waittill("swamplight_zomb_sacraficed", zomb);
+		if( !IsDefined( zomb ) )
+			continue;
+
+		iprintln( "Zombie killed within swamplight" );
+		if( checkDist( zomb.origin, struct.origin, radius ) )
+		{
+			iprintln( "Close enough" );
+			return true;
+		}
+			
+		iprintln( "Not close enough" );
+	}
+
+	return false;
+}
+
+watch_swamplight_expire()
+{
+	wait( level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME );
+	iprintln( "Swamplight expired" );
+	self notify( "swamplight_expire" );
+}
+
+	checkDist(a, b, distance )
+	{
+		return maps\_zombiemode::checkDist( a, b, distance );
+	}
 
 watch_hanging_zombie_eye_glow()
 {
@@ -218,7 +298,7 @@ vending_randomization_effect( index )
 {
 	level endon( "end_game" );
 	level endon( "perks_swapping" );
-	
+
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;

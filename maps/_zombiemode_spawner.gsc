@@ -36,8 +36,20 @@ wait_zombie_eye_glow()
 	level endon( "end_game" );
 
 	level.fx_eye_glow = "eye_glow";
-	flag_wait( "power_on" );		//or level waittill("juggernog_on");
-	//level.fx_eye_glow = "eye_glow_purple";
+	//flag_wait( "power_on" );		//or level waittill("juggernog_on");
+	//level._effect["blue_eyes"]
+	
+	if( level.mapname=="zombie_moon" && !level.apocalypse )
+	{
+		level waittill( "start_launch" );
+		wait(15);
+		level.fx_eye_glow = "blue_eyes";
+	}
+	else
+	{
+		return;
+	}
+		
 
 	zombies = GetAiSpeciesArray( "axis", "all" );
 	
@@ -354,6 +366,8 @@ zombie_spawn_init( animname_set )
 zombie_on_death()
 {
 	self waittill_any("death", "zombie_delete" );
+	if( level.mapname == "zombie_cod5_sumpf")
+		level notify( "swamplight_zomb_sacraficed", self );
 
 	if( isDefined( self.hasDrop ) ) {
 		//cleanup handled in clienscripts
