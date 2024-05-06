@@ -500,7 +500,7 @@ handle_client_perk_hud_updates( clientnum, state )
 		return player_handle_mulekick_message( state );
 	}
 	else if( IsSubStr( state, "stamina_ghost" ) ) {
-		return player_handle_stamina_ghost( state );
+		return player_handle_stamina_ghost( clientnum, state );
 	} 
 	else if( IsSubStr( state, "vulture_hud" ) ) {
 		player_handle_vulture_hud( clientnum, state );
@@ -619,19 +619,23 @@ player_handle_mulekick_message( state )
 
 //Stamina
 
-player_handle_stamina_ghost ( state )
+player_handle_stamina_ghost ( clientnum, state )
 {
 
 	s = SpawnStruct();
 	s.menu_name = "stamina_ghost_indicator";
 	s.item_name = "stamina_ghost_indicator_image";
 	s.fade_time = 250;
+	player = GetLocalPlayers()[ clientnum ];
 
+	prev_vision = player._previous_vision;
 	if(state == "stamina_ghost_start") {
 		s.fade_type = "fadein";
+		player clientscripts\_zombiemode::zombie_vision_set_maps( prev_vision, "zbb", clientnum, 0.5 );
 	}
 	else if(state == "stamina_ghost_end") {
 		s.fade_type = "fadeout";
+		player clientscripts\_zombiemode::zombie_vision_set_maps( "zbb",  prev_vision, clientnum, 0.5 );
 	}
 
 	return s;

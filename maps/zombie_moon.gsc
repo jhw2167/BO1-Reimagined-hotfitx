@@ -862,6 +862,9 @@ vision_set_init()
 
 moon_set_custom_visionset( player )
 {
+	if( true )
+		return;
+		
 	in_nml = player checkPlayerOnMoon();
 	if ( in_nml )
 	{

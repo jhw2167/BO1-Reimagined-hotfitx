@@ -1780,6 +1780,17 @@ hasProPerk( perk )
 {
 	if ( !isDefined ( perk ) )
 		return "UNKOWN";
+
+	//If passing normal perk, convert to upgrade
+	if( IsSubStr( perk, "_upgrade" ) )
+	{
+		//nothing
+	}
+	else
+	{
+		perk = perk + "_upgrade";
+	}
+
 	
 	if (perk == "specialty_armorvest_upgrade")
 		return self.PRO_PERKS[ level.JUG_PRO ];
@@ -1936,6 +1947,8 @@ returnPerk( perk )
 	
 	if( !hasBasePerk )
 		self give_perk( base_perk );
+
+	wait( 1 );
 
 	if( proPerk && !hasProPerk )
 		self give_perk( perk );
@@ -4342,7 +4355,15 @@ watch_stamina_upgrade(perk_str)
 		//give player zombie blood
 		totaltime = level.TOTALTIME_STAMINA_PRO_GHOST;
 		self.ignoreme = true;
-		self VisionSetNaked( "zombie_blood", 0.5 );
+		if( IsDefined( level.set_custom_visionset_func ) )
+		{
+			//Handled in CSC
+		}
+		else
+		{
+			self VisionSetNaked( "zombie_blood", 0.5 );
+		}
+		
 		self setMoveSpeedScale( self.moveSpeed + 0.3 );
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_start");
 		
@@ -4358,12 +4379,14 @@ watch_stamina_upgrade(perk_str)
 		self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 
 		//iprintln("zombie visionset" + level.zombie_visionset);
+		
 		if( IsDefined( level.set_custom_visionset_func ) )
 			[[ level.set_custom_visionset_func ]]( self );
 		else if( IsDefined( level.zombie_visionset ) )
 			self VisionSetNaked( level.zombie_visionset, 0.5 );
-		else
+		else	
 			self VisionSetNaked( "undefined", 0.5 );
+			
 
 	}
 

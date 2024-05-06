@@ -9,8 +9,10 @@
     ###############################
 */
 
-generate_hint_title( hint_title, hint_text )
+generate_hint_title( hint_title, hint_text, time )
 {
+	if( !isdefined( time ) )
+		time = 4;
     //Title
     title = NewClientHudElem( self );
 	title.alignX = "center";
@@ -29,7 +31,7 @@ generate_hint_title( hint_title, hint_text )
 	title FadeOverTime( 1 );
 	title.alpha = 1;
 
-    wait 4;
+    wait(time);
     title FadeOverTime( 4 );
 	title.alpha = 0;
 
@@ -127,18 +129,24 @@ generate_perk_hint( perk )
 	{
 		perk = "specialty_sidearm_bonus";
 	}
+	else if( perk == "comat_knife_zm" || perk == "vorkuta_knife_sp" )
+	{
+		perk = "specialty_offhand_melee";
+	}
 
 
 	if( is_true( self.hints_activated[ perk ] ) )
 		return;
 
-	self notify( "perk_hint_end" );
-
 	self.hints_activated[ perk ] = true;
 
 	iprintln( "notify: " + perk );
 
-	wait( 1 );
+	while( self.new_perk_hint ) {
+		self waittill( "perk_hint_end" );
+	}
+	self.new_perk_hint = true;
+	iprintln( "performing: " + perk );
 
 	returnVultureVision = false;
 	if( self.vulture_vison_toggle )
@@ -307,6 +315,10 @@ generate_perk_hint( perk )
 				title SetText( &"REIMAGINED_SIDEARM_DAMAGE_TITLE" );
 			}
 			break;
+		case "specialty_offhand_melee":
+			text SetText( &"OFFHAND_MELEE_HINT" );
+			title SetText( &"OFFHAND_MELEE_TITLE" );
+			break;
 		}
 
 	text FadeOverTime( 1 );
@@ -315,7 +327,10 @@ generate_perk_hint( perk )
 	title FadeOverTime( 1 );
 	title.alpha = 1;
 
-	self waittill_notify_or_timeout( "perk_hint_end", 7 );
+	wait 7;
+	self.new_perk_hint = false;
+	self notify( "perk_hint_end" );
+
 
     title FadeOverTime( 2 );
 	title.alpha = 0;

@@ -435,14 +435,28 @@ randomize_perks_think()
 	level.perk_randomization_on = [];
 	//level.vulture_perk_custom_map_check = ::hidden_perk_waypoints;
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
-	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
+	//vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	vending_triggers = array_remove( vending_triggers, GetEnt( "vending_babyjugg", "target" ) );
 	
 	shino_zones_opened = array(0, 0, 0, 0);
 	last_perks = [];
+	addPackaPunchOnce = false;
 	while( true )
 	{
+		//Check to add PaP to vending triggers if all zones are opened
+		allZonesOpened = true;
+		for( i = 0; i < 4; i ++) {
+			allZonesOpened = allZonesOpened && is_true(shino_zones_opened[i]);
+		}
 		
+		if( allZonesOpened && !addPackaPunchOnce )
+		{
+			addPackaPunchOnce = true;
+			vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
+		}
+		/* ############# */
+		
+
 		curr_perks = [];
 		perk_list = array_randomize( vending_triggers );
 		//perk_list = vending_triggers;

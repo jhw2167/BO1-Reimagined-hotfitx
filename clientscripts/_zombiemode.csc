@@ -668,6 +668,15 @@ on_gib_event( localClientNum, type, locations )
 // Vision System
 //=========================================================================================================
 
+zombie_vision_set_maps(prev_vision, new_vision, clientnum, trans_time )
+{
+	if( IsDefined( level.map_visionset_function ) )
+	{ 
+		self [[ level.map_visionset_function ]]( prev_vision, new_vision, clientnum, trans_time );
+	}
+
+}
+
 zombie_vision_set_apply( str_visionset, int_priority, flt_transition_time, int_clientnum )
 {
 	self endon( "death" );

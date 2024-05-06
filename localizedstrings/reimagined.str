@@ -1182,6 +1182,12 @@ LANG_ENGLISH       	"QuickRevive Pro"
 REFERENCE          	QRV_PRO_HINT
 LANG_ENGLISH       	"- Trigger zombie blood for revived players \n- Larger revive radius \n- Points are not lost while a player with Quick Revive Pro is near a downed player (Apocalypse mode only)"
 
+REFERENCE          	JUG_PRK_TITLE
+LANG_ENGLISH       	"Juggernog"
+
+REFERENCE          	JUG_PRO_HINT
+LANG_ENGLISH       	"- Juggernog is now a luxury purchase"
+
 REFERENCE          	JUG_PRO_TITLE
 LANG_ENGLISH       	"Juggernog Pro"
 
@@ -1271,6 +1277,13 @@ LANG_ENGLISH 		"Widows Wine 2.0 Pro"
 
 REFERENCE 			WWN_PRO_HINT
 LANG_ENGLISH 		"- Replaces special grenade with Web Grenades that will slow all zombies in moderate radius \n- Poison reduces to 1/3 health over 15 seconds"
+
+REFERENCE			OFFHAND_MELEE_TITLE
+LANG_ENGLISH 		"Combat Knife/Fists"
+
+REFERENCE			OFFHAND_MELEE_HINT
+LANG_ENGLISH 		"- Hold '7' or 'D-PAD Down' to set your knife to your primary melee and your fists to your offhand weapon \n - Your knife does a minimum 25% max health damage to normal zombies"
+
 
 REFERENCE			PAP_TITLE
 LANG_ENGLISH 		"Pack-a-Punch"

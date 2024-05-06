@@ -31,6 +31,7 @@ randomize_vending_machines()
 	//level.perk_randomization_on = [];
 	//level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
 	level thread watch_randomize_vending_machines();
+	level thread watch_swamplights();
 }
 
 watch_randomize_vending_machines()
@@ -41,7 +42,7 @@ watch_randomize_vending_machines()
 	while( true )
 	{
 		rounds_until_swap = randomintrange( 1, 4 );
-		//rounds_until_swap = 1;
+		rounds_until_swap = 1;
 		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_swap; i++ )
 		{
@@ -54,6 +55,20 @@ watch_randomize_vending_machines()
 		//iprintln( "Randomizing vending machines" );
 		self notify( "perks_swapping" );
 		wait( 2 );
+	}
+
+}
+
+/* Free perks will spawn if you kill zombies within the swamp lights */
+watch_swamplights()
+{
+	self endon( "end_game" );
+
+	while( true )
+	{
+		wait( 120 );
+		//iprintln( "Swamplight spawned" );
+		//self thread spawn_random_perk();
 	}
 
 }
@@ -201,6 +216,9 @@ play_vending_vo( machine, origin )
 
 vending_randomization_effect( index )
 {
+	level endon( "end_game" );
+	level endon( "perks_swapping" );
+	
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 	level.ARRAY_SHINO_ZONE_OPENED[ index ] = true;

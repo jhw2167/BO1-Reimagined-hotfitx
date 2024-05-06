@@ -48,15 +48,15 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=10;	///
+	//level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=5;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=2;	///
-	//level.apocalypse_override=true;		///
+	level.calculate_amount_override=2;	///
+	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
@@ -510,7 +510,7 @@ reimagined_init_level()
 
 	//These are (expected drops per round * 10), so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 16;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 16;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 8; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
@@ -893,6 +893,24 @@ reimagined_init_level()
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
 		//level.ARRAY_FREE_PERK_HINTS["zombie_cod5_sumpf"] = "Swamp Lights!";
+		level.ARRAY_SWAMPLIGHTS_POS = [];
+		
+		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][0] = (7969, -455, -707);
+		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][1] = (8453, 122, -724);
+		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][2] = (9304, -768, -707);
+
+		level.ARRAY_SWAMPLIGHTS_POS["storage"][0] = (11852, -851, -706);
+		level.ARRAY_SWAMPLIGHTS_POS["storage"][1] = (10951, -279, -716);
+		level.ARRAY_SWAMPLIGHTS_POS["storage"][2] = (11329, -174, -740);
+
+		level.ARRAY_SWAMPLIGHTS_POS["doctor_hut"][0] = (11439, 1604, -743);
+		level.ARRAY_SWAMPLIGHTS_POS["doctor_hut"][1] = (10788, 2145, -723);
+		level.ARRAY_SWAMPLIGHTS_POS["doctor_hut"][2] = (10775, 3186, -696);
+
+		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][0] = (9188, 1490, -652);
+		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][1] = (8184, 2343, -677);
+		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][2] = (9026, 3068, -742);
+		
         break;
     case "zombie_cod5_factory":
 		//level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
@@ -930,6 +948,7 @@ reimagined_init_player()
 	self.spent_points = 0;
 
 	self.hints_activated = [];
+	self.new_perk_hint = false;
 
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
@@ -1118,8 +1137,9 @@ wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
 	
-	if(IsDefined(level.zombie_visionset)) {
-		self VisionSetNaked( level.zombie_visionset, 0.5 );
+	if(IsDefined(level.zombie_visionset)) 
+	{
+		//self VisionSetNaked( level.zombie_visionset, 0.5 );
 	} else {
 		//self VisionSetNaked( "zombie_neutral", 0.5 );
 	}
@@ -1136,7 +1156,9 @@ wait_set_player_visionset()
 	//Print entitity number and random char
 	//iprintln( "Entity Number: " + self.entity_num);
 
+	self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 	wait( 5 );
+	
 
 	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {
 		iprintln( "Perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] );
@@ -6497,7 +6519,9 @@ wait_print( msg, data )
 {
 	flag_wait("begin_spawning");
 	if( isdefined( data ) )
+	{
 		iprintln( msg + " " + data );
+	}
 	else
 	{
 		iprintln( msg  + " undefined");
@@ -6512,12 +6536,12 @@ print_apocalypse_options()
 	wait(10);
 
 	players = GetPlayers();
-	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280 );
+	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240 );
 	for(i=0; i<players.size; i++)
 	{
 		j = 0;
 		if( level.apocalypse )
-			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies");
+			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies", 8);
 		else
 			players[i] thread generate_hint_title(undefined, "Classic Zombies");
 
@@ -8256,20 +8280,38 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon != "tesla_gun_zm" && weapon != "tesla_gun_upgraded_zm" && weapon != "tesla_gun_powerup_zm" && weapon != "tesla_gun_powerup_upgraded_zm" && weapon != "freezegun_zm" && weapon != "freezegun_upgraded_zm")
 		{
 			// boss zombie types do not get damage scaling
-			if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
+			if( !is_boss_zombie(self.animname) )
 			{
-
 				if( is_true( attacker.divetonuke_damage ) ) {
 					return damage;
 				}
 
-				if( level.round_number < 10 )
-					final_damage = int(self.maxhealth / 2) + 1;
+				if( level.round_number < 15 )
+				{
+					final_damage = self.maxhealth;
+				}
+				else if( level.round_number < 25 )
+				{
+					final_damage = int(self.maxhealth / 2) + 10;
+				}
 				else
-					final_damage = int(self.maxhealth / 4) + 1;
+				{
+					final_damage = int(self.maxhealth / 4) + 10;
+				}
+				
+				min_damage = 20000;
+				if(attacker HasPerk(level.PHD_PRK))
+				{
+					min_damage *= 2;
+					final_damage *= 2;
+				}
 
 				if(attacker hasProPerk(level.PHD_PRO))
-					final_damage *= 3;
+				{
+					min_damage *= 2;
+					final_damage *= 1.5;	//Total 75% Max_heath_damage
+				}
+					
 			} 
 			else if( is_true( attacker.divetonuke_damage ) )
 			{
