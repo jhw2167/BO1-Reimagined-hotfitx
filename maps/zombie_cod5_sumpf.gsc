@@ -134,6 +134,8 @@ main()
 	SetSavedDvar( "r_lightGridContrast", .1 );
 
 	VisionSetNaked("zombie_sumpf", 0);
+
+	level thread watch_pap_available();
 }
 
 setup_water_physics()
@@ -1051,4 +1053,27 @@ turn_on_all_perks()
 	wait_network_frame();
 	level notify("divetonuke_on");
 	wait_network_frame();
+}
+
+watch_pap_available()
+{
+	level.is_pap_available = false;
+	while( !level.is_pap_available )
+	{
+		//Check to add PaP to vending triggers if all zones are opened
+		allZonesOpened = true;
+		for( i = 0; i < 4; i ++) {
+			allZonesOpened = allZonesOpened && is_true( level.ARRAY_SHINO_ZONE_OPENED[i] );		
+		}
+		
+		if( allZonesOpened )
+		{
+			level.is_pap_available = true;
+			break;
+		}
+
+		level waittill( "end_of_round" );
+	}
+
+	level notify( "pap_available" );
 }

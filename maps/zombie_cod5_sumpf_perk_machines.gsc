@@ -305,7 +305,7 @@ remove_set_perks( trigger )
 	anchor = Spawn( "script_model", model.origin );
 	anchor.angles = model.angles;
 	anchor SetModel( "tag_origin" );
-	clip EnableLinkTo();
+	//clip EnableLinkTo();
 	clip LinkTo( anchor );
 	trigger EnableLinkTo();
 	trigger LinkTo( anchor );
@@ -443,15 +443,8 @@ randomize_perks_think()
 	addPackaPunchOnce = false;
 	while( true )
 	{
-		//Check to add PaP to vending triggers if all zones are opened
-		allZonesOpened = true;
-		for( i = 0; i < 4; i ++) {
-			allZonesOpened = allZonesOpened && is_true(shino_zones_opened[i]);
-		}
-		
-		if( allZonesOpened && !addPackaPunchOnce )
+		if( level.is_pap_available )
 		{
-			addPackaPunchOnce = true;
 			vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 		}
 		/* ############# */
@@ -513,8 +506,10 @@ randomize_perks_think()
 
 		for( i = 0; i < 4; i ++ ) { shino_zones_opened[i] = level.ARRAY_SHINO_ZONE_OPENED[i]; }
 
-		for( i = 0; i < level.perk_spawn_location.size; i ++ ) {
-			level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
+		for( i = 0; i < level.perk_spawn_location.size; i ++ ) 
+		{
+			if( shino_zones_opened[i] )
+				level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
 		}
 
 		//Reset Triggers

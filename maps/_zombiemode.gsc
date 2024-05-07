@@ -55,7 +55,7 @@ main()
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=;	///
+	level.calculate_amount_override=15;	///
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -822,6 +822,8 @@ reimagined_init_level()
 	level.respawn_queue_num = 0;
 	level.respawn_queue_unlocks_num = 0;
 
+	level.is_pap_available = false;
+
 	//Real Time Perk Variables
 	level.vulture_using_perk_variable_locations = false;
 	level.vulture_track_current_pap_spot = undefined;	//undefined when not in map
@@ -1164,13 +1166,15 @@ wait_set_player_visionset()
 	//Print entitity number and random char
 	//iprintln( "Entity Number: " + self.entity_num);
 
-	self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+	//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 	wait( 5 );
 	
 
+	/*
 	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {
 		iprintln( "Perk: " + level.ARRAY_SHINO_PERKS_AVAILIBLE[ i ] );
 	}
+	*/
 
 
 }

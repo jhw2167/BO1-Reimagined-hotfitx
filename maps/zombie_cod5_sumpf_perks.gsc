@@ -15,24 +15,7 @@ randomize_vending_machines()
 		return;
 	
 	flag_init( "sumpf_perks" );
-	/*
-	for( i = 0; i < vending_machines.size; i ++ )
-	{
-		origin = start_locations[i].origin;
-		angles = start_locations[i].angles;
-		machine = vending_machines[i] get_vending_machine( start_locations[i] );
-		start_locations[i].origin = origin;
-		start_locations[i].angles = angles;
-		machine.origin = origin;
-		machine.angles = angles;
-		machine Hide();
-		vending_machines[i] trigger_on();
-	}
-	*/
-
-	//level thread watch_randomized_vending_machines();
-	//level.perk_randomization_on = [];
-	//level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
+	
 	level thread watch_randomize_vending_machines();
 	level thread watch_swamplights();
 
@@ -69,15 +52,18 @@ watch_swamplights()
 {
 	self endon( "end_game" );
 	iprintln( "ENTER SWAMPLIGHTS" );
+
+	level waittill( "pap_available" );
 	zone_keys = GetArrayKeys( level.ARRAY_SWAMPLIGHTS_POS );
 
-	wait_times = array(30, 60, 240, 300);
-	//wait_times = array(10, 5);
+
+	//wait_times = array(30, 60, 240, 300);
+	wait_times = array(10, 5);
 
 	while( true )
 	{
 		wait( array_randomize( wait_times )[0] );
-		//iprintln( "Waiting 10" );
+		iprintln( "Waiting 10" );
 		//wait(10);
 		
 		total_swamplights = 3;
