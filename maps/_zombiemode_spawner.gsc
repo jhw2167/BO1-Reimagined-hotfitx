@@ -366,9 +366,7 @@ zombie_spawn_init( animname_set )
 zombie_on_death()
 {
 	self waittill_any("death", "zombie_delete" );
-	if( level.mapname == "zombie_cod5_sumpf")
-		level notify( "swamplight_zomb_sacraficed", self );
-
+	
 	if( isDefined( self.hasDrop ) ) {
 		//cleanup handled in clienscripts
 	}

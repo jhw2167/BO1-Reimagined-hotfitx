@@ -575,10 +575,10 @@ perk_swap_fx( perk )
 //*
 hellhound_spawn_fx( origin )
 {
-	//PlayFX( level._effect[ "lightning_dog_spawn" ], origin );
 	PlaySoundAtPosition( "zmb_hellhound_prespawn", origin );
 	wait 1.5;
 	PlaySoundAtPosition( "zmb_hellhound_bolt", origin );
+	PlayFX( level._effect["poltergeist"], origin );
 	Earthquake( 0.5, 0.75, origin, 1000 );
 	PlayRumbleOnPosition( "explosion_generic", origin );
 	PlaySoundAtPosition( "zmb_hellhound_spawn", origin );

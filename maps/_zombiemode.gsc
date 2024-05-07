@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=5;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
@@ -915,6 +915,8 @@ reimagined_init_level()
 		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][0] = (9188, 1490, -652);
 		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][1] = (8184, 2343, -677);
 		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][2] = (9026, 3068, -742);
+
+		level.THRESHOLD_SHINO_SWAMPLIGHT_KILL_RADIUS = 64;
 		
         break;
     case "zombie_cod5_factory":
@@ -9102,8 +9104,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 		self.dmg_taken += int(final_damage);
 	}
-	
 
+	//Shino Special Behavior
+	if( level.mapname == "zombie_cod5_sumpf" && IsDefined( level.current_swamplight_struct ))
+	{
+		isLethalDamage = int(final_damage) >= self.health;
+		isNearSwamplight = checkDist( self.origin, level.current_swamplight_struct.origin, level.THRESHOLD_SHINO_SWAMPLIGHT_KILL_RADIUS );
+		if( isLethalDamage && isNearSwamplight)
+		{
+			level notify( "swamplight_zomb_sacraficed", self );
+			return 0;
+		}
+	}
+		
 	// return unchanged damage
 	//iPrintln( final_damage );
 	return int( final_damage );

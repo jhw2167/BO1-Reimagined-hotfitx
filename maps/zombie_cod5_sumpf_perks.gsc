@@ -11,7 +11,10 @@ solo_quick_revive_disable()
 
 randomize_vending_machines()
 {
-
+	if( is_true( flag( "sumpf_perks" ) ) )
+		return;
+	
+	flag_init( "sumpf_perks" );
 	/*
 	for( i = 0; i < vending_machines.size; i ++ )
 	{
@@ -32,6 +35,8 @@ randomize_vending_machines()
 	//level.vulture_perk_custom_map_check = ::hide_waypoint_until_perk_spawned;
 	level thread watch_randomize_vending_machines();
 	level thread watch_swamplights();
+
+	flag_set( "sumpf_perks" );
 }
 
 watch_randomize_vending_machines()
@@ -63,14 +68,17 @@ watch_randomize_vending_machines()
 watch_swamplights()
 {
 	self endon( "end_game" );
-
+	iprintln( "ENTER SWAMPLIGHTS" );
 	zone_keys = GetArrayKeys( level.ARRAY_SWAMPLIGHTS_POS );
+
+	wait_times = array(30, 60, 240, 300);
+	//wait_times = array(10, 5);
 
 	while( true )
 	{
-		rand_wait = RandomInt( 10, 20 );
-		//wait( 120 );
-		wait( 10 );
+		wait( array_randomize( wait_times )[0] );
+		//iprintln( "Waiting 10" );
+		//wait(10);
 		
 		total_swamplights = 3;
 		randomized_keys = array_randomize( zone_keys );
@@ -80,78 +88,149 @@ watch_swamplights()
 		{
 			positions[i] = randomint( 3 ); // 0, 1, 2
 			struct = Spawn("script_model", level.ARRAY_SWAMPLIGHTS_POS[ randomized_keys[i] ][ positions[i] ] );
-			struct SetModel( "tag_origin" );
+			struct.origin += (0, 0, 10);
+			struct.angles = (0, 0, 0);
+			struct SetModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+			struct NotSolid();
+			struct Hide();
+			
 			isFullfilled = watch_spawn_swamplight( struct );
-			struct Delete();
+			iprintln( isFullfilled );
 
-			if(!isFullfilled)
+			if( !is_true(isFullfilled) )
+			{
+				struct Delete();
 				break;
-
+			}
 
 			if( i == total_swamplights - 1 )
 			{
-				idx = randomint( 3 );
-				dropLoc = level.ARRAY_SWAMPLIGHTS_POS[ randomized_keys[idx] ][ positions[idx] ];
+				//idx = randomint( 3 );
+				dropLoc = level.ARRAY_SWAMPLIGHTS_POS[ randomized_keys[i] ][ positions[i] ];
 				maps\_zombiemode_powerups::specific_powerup_drop( "free_perk", dropLoc );
 				level waittill( "powerup_dropped", powerup );
-				watch_spawn_swamplight( powerup );
+	
+				//watch_spawn_swamplight( powerup );
+				//powerup Delete();
 			}
+
+			struct notify( "death" );
+			struct Delete();
 				
 		}
 
-		//self thread spawn_random_perk();
 	}
 
 }
 
+#using_animtree ( "generic_human" );
 watch_spawn_swamplight(struct)
 {
-	level endon( "end_game" );
+	level notify( "swamplight_expire" );
+	wait( 1 );
 	level endon( "swamplight_expire" );
 
-	radius = 500;
-	level thread watch_swamplight_expire();
-
+	thread watch_swamplight_expire( struct );
+	
 	//Spawn_fx
-	iprintln( "Spawning swamplight" );
-	PlayFXOnTag(level._effect["lght_marker"], struct, "tag_origin");
-	PlayFXOnTag(level._effect["lght_marker_flare"], struct, "tag_origin");
 	if( IsDefined( struct.powerup_name ) )
-	{
-		iprintln( "Spawning powerup: " + struct.powerup_name );
 		return;
-	}
 
 	while( true )
 	{
+		level.current_swamplight_struct = struct;
 		level waittill("swamplight_zomb_sacraficed", zomb);
-		if( !IsDefined( zomb ) )
+		level.current_swamplight_struct = undefined;
+		
+		if( !IsDefined( zomb ) || !IsAlive( zomb ) )
 			continue;
-
-		iprintln( "Zombie killed within swamplight" );
-		if( checkDist( zomb.origin, struct.origin, radius ) )
-		{
-			iprintln( "Close enough" );
-			return true;
-		}
+		
+		zomb zombie_handle_swamplight_fx();
+		return true;
 			
-		iprintln( "Not close enough" );
 	}
 
 	return false;
 }
 
-watch_swamplight_expire()
+	zombie_handle_swamplight_fx()
+	{
+	
+		//Sacrafice zombie
+		self.ignoreme = true;
+		self.ignoreall = true;
+		self disable_pain();
+		self thread magic_bullet_shield();
+		
+		self.animname = "dancer";
+		self thread beat_break( %ai_zombie_flinger_flail );
+
+		//Move zombie up
+		light_mover = Spawn( "script_model", self.origin );
+		light_mover.angles = self.angles;
+		light_mover SetModel( "tag_origin" );
+		self LinkTo( light_mover );
+		
+		move_dist = 64;
+		raise_time = 4;
+		light_mover MoveZ( move_dist, raise_time );
+
+		light_mover waittill_notify_or_timeout( "movedone", raise_time + 1 );
+
+		//Smite zombie
+		maps\zombie_cod5_sumpf_perk_machines::hellhound_spawn_fx( self.origin );
+
+		self thread stop_magic_bullet_shield();
+		self Unlink();
+		self DoDamage( self.health + 10, self.origin, undefined );
+		self Hide();
+		
+	}
+
+	//Rise zombie into the air and smite it
+	beat_break( str_anim )
+	{
+		self.ignoreall = true;
+		self.ignoreme = true;
+
+		while( IsDefined( self ) && IsAlive( self ) )
+		{
+			dance_anim = str_anim;
+			self SetFlaggedAnimKnobAllRestart( "dance_anim", dance_anim, %body, 1, .1, 1 );
+			animscripts\traverse\zombie_shared::wait_anim_length( dance_anim, .02 );
+		}
+	}
+	
+
+watch_swamplight_expire( struct )
 {
-	wait( level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME );
-	iprintln( "Swamplight expired" );
-	self notify( "swamplight_expire" );
+	level endon( "swamplight_expire" );
+
+	PlayFXOnTag(level._effect["lght_marker"], struct, "tag_origin");
+	PlayFXOnTag( level._effect["chest_light"], struct, "tag_origin");
+	
+	time = 0;
+	limit = level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME;
+	while( time < limit-1 && IsDefined( struct.origin ) )
+	{
+		PlayFX(level._effect["lght_marker_flare"], struct.origin);//, "tag_origin");
+		wait(3);
+		time += 3;
+	}
+	
+	//wait( level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME );
+	
+	level notify( "swamplight_expire" );
 }
 
 	checkDist(a, b, distance )
 	{
 		return maps\_zombiemode::checkDist( a, b, distance );
 	}
+
+
+
+
 
 watch_hanging_zombie_eye_glow()
 {

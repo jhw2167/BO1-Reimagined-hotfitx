@@ -1948,7 +1948,7 @@ returnPerk( perk )
 	if( !hasBasePerk )
 		self give_perk( base_perk );
 
-	wait( 1 );
+	wait( .2 );
 
 	if( proPerk && !hasProPerk )
 		self give_perk( perk );
@@ -3931,6 +3931,10 @@ perk_give_bottle_end( gun, perk )
 give_random_perk()
 {
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+
+	while( is_true( self.superpower_active ) ) {
+		wait( 1 );
+	}
 
 	perks = [];
 	for ( i = 0; i < vending_triggers.size; i++ )

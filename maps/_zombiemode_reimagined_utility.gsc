@@ -146,7 +146,6 @@ generate_perk_hint( perk )
 		self waittill( "perk_hint_end" );
 	}
 	self.new_perk_hint = true;
-	iprintln( "performing: " + perk );
 
 	returnVultureVision = false;
 	if( self.vulture_vison_toggle )
