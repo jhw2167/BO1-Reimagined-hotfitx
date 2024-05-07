@@ -1505,7 +1505,7 @@ powerup_grab()
 
 					case "restock":
 						level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
-						players[i] thread powerup_vo("full_ammo");
+						//players[i] thread powerup_vo("full_ammo");
 						if( level.vulture_is_upgraded_drop ) 
 							level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
 						break;
@@ -2369,7 +2369,8 @@ full_ammo_powerup_implementation( drop_item, player, player_num )
 {
 	//iprintln("Calling full ammo with player num: " + player_num + "");
 
-	if( drop_item == undefined )
+	//For Mule
+	if( !IsDefined(drop_item) )
 	{
 		//iprintln("Drop item is undefined");
 		player thread powerup_vo("full_ammo");
@@ -2386,7 +2387,7 @@ full_ammo_powerup_implementation( drop_item, player, player_num )
 			continue;
 		}
 		
-		//Reimagined-Expanded - allows us to give max ammo's to particular players
+		//Reimagined-Expanded - allows us to give max ammos to particular players
 		if( player_num != -1 && players[i].entity_num != player_num )
 		{
 			continue;
@@ -2968,7 +2969,7 @@ free_perk_powerup( item, player )
 
 		if ( !players[i] maps\_laststand::player_is_in_laststand() && !(players[i].sessionstate == "spectator") )
 		{
-			players[i] maps\_zombiemode_perks::give_random_perk();
+			players[i] thread maps\_zombiemode_perks::give_random_perk();
 		}
 		players[i].perk_slots++;
 	}

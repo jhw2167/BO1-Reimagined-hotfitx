@@ -129,7 +129,7 @@ generate_perk_hint( perk )
 	{
 		perk = "specialty_sidearm_bonus";
 	}
-	else if( perk == "comat_knife_zm" || perk == "vorkuta_knife_sp" )
+	else if( perk == "combat_knife_zm" || perk == "vorkuta_knife_sp" )
 	{
 		perk = "specialty_offhand_melee";
 	}
@@ -273,8 +273,8 @@ generate_perk_hint( perk )
 			break;
 
 		case "specialty_pap_hellfire":
-			text SetText( &"PAP_HELLFIRE_HINT" );
-			title SetText( &"PAP_HELLFIRE_TITLE" );
+			text SetText( &"REIMAGINED_PAP_HELLFIRE_HINT" );
+			title SetText( &"REIMAGINED_PAP_HELLFIRE_TITLE" );
 			break;
 
 		case "specialty_pap_sheer_cold":
@@ -315,8 +315,8 @@ generate_perk_hint( perk )
 			}
 			break;
 		case "specialty_offhand_melee":
-			text SetText( &"OFFHAND_MELEE_HINT" );
-			title SetText( &"OFFHAND_MELEE_TITLE" );
+			text SetText( &"REIMAGINED_OFFHAND_MELEE_HINT" );
+			title SetText( &"REIMAGINED_OFFHAND_MELEE_TITLE" );
 			break;
 		}
 

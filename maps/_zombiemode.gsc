@@ -51,7 +51,7 @@ main()
 	//level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
-	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
@@ -899,11 +899,11 @@ reimagined_init_level()
         break;
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
-		//level.ARRAY_FREE_PERK_HINTS["zombie_cod5_sumpf"] = "Swamp Lights!";
+		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_sumpf"] = "Swamp Lights";
 		level.ARRAY_SWAMPLIGHTS_POS = [];
 		
 		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][0] = (7969, -455, -707);
-		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][1] = (8453, 122, -724);
+		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][1] = (8521, -230, -724);
 		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][2] = (9304, -768, -707);
 
 		level.ARRAY_SWAMPLIGHTS_POS["storage"][0] = (11852, -851, -706);
@@ -955,6 +955,7 @@ reimagined_init_player()
 	self.gross_points = 500;
 	self.gross_possible_points = 500;
 	self.spent_points = 0;
+	self.kill_tracker = 0;
 
 	self.hints_activated = [];
 	self.new_perk_hint = false;
@@ -10521,14 +10522,19 @@ player_apocalypse_stats( message, timeout )
 
 	if( players.size > 1 )
 	{
-		HORZ_OFFSET += 2*COL_OFFSET; //Move over two columns
+		HORZ_OFFSET += COL_OFFSET; //Move over one columns
+		headers = array( "Perk Slots", undefined, "Total Points", "Efficiency" );
 	}
 
 	hudElems = [];
 	for( i = 0; i < headers.size; i++ )
 	{
+		if( !isdefined( hudElems[i] ) )
+			continue;					//Adding column for spacing
+		
 		for( j = 0; j < players.size; j++ )
 		{
+			
 			ent_num = players[j].entity_num;
 			hudElems[i][j] = NewClienthudElem( self );
 			hudElems[i][j].alignX = "center";
@@ -10552,6 +10558,9 @@ player_apocalypse_stats( message, timeout )
 
 	for( k = 0; k < headers.size; k++ )
 	{
+		if( !isdefined( hudElems[i] ) )
+			continue;					//Adding column for spacing
+		
 		for( j = 0; j < players.size; j++ )
 		{
 			i = k + headers.size;
