@@ -131,7 +131,8 @@ watch_spawn_swamplight(struct)
 		if( !IsDefined( zomb ) || !IsAlive( zomb ) )
 			continue;
 		
-		zomb zombie_handle_swamplight_fx();
+		//zomb zombie_handle_swamplight_fx();
+		zomb DoDamage( zomb.health + 10, zomb.origin, undefined );
 		return true;
 			
 	}

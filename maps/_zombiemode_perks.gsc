@@ -1194,7 +1194,7 @@ turn_revive_on()
 	machine_clip = undefined;
 
 	flag_wait( "all_players_connected" );
-	players = GetPlayers();
+	players = get_players();
 	if ( players.size == 1 || level.vsteams == "ffa" )
 	{
 		for( i = 0; i < machine.size; i++ )
@@ -4365,6 +4365,7 @@ watch_stamina_upgrade(perk_str)
 		}
 		else
 		{
+			//iprintln("zombie visionset" + level.zombie_visionset + " " + self.entity_num);
 			self VisionSetNaked( "zombie_blood", 0.5 );
 		}
 		
@@ -5663,17 +5664,19 @@ init_vulture()
 			//Utility
 			create_loop_fx_to_player( player, identifier, fx_var, origin, angles )
 			{
+				//iprintln( "Create Loop FX to player" );
+				//iprintln( "Player: " + player GetEntityNumber() );
 				str_origin = string( origin[0] ) + "|" + string( origin[1] ) + "|" + string( origin[2] );
 				str_angles = string( angles[0] ) + "|" + string( angles[1] ) + "|" + string( angles[2] );
 				str_clientstate = "fx|looping|start|" + identifier + "|" + fx_var + "|" + str_origin + "|" + str_angles;
-				self send_message_to_csc( "client_side_fx", str_clientstate );
+				player send_message_to_csc( "client_side_fx", str_clientstate );
 			}
 
 			destroy_loop_fx_to_player( player, identifier, delete_fx_immediately )
 			{
 				str_delete_fx_immediately = bool_to_string( delete_fx_immediately );
 				str_clientstate = "fx|looping|stop|" + identifier + "|" + str_delete_fx_immediately;
-				self send_message_to_csc( "client_side_fx", str_clientstate );
+				player send_message_to_csc( "client_side_fx", str_clientstate );
 			}
 
 			
@@ -6175,7 +6178,7 @@ zombie_watch_vulture_drop_bonus()
 	count_total_vulture_players()
 	{
 		total = 0;
-		players = GetPlayers();
+		players = get_players();
 		for( i = 0; i < players.size; i++ )
 		{
 			if( players[i] HasPerk( level.VLT_PRK ) )
@@ -6212,7 +6215,7 @@ zombie_watch_vulture_drop_bonus()
 		}
 
 		level.count_vulture_fx_drops_round++;
-		players = GetPlayers();
+		players = get_players();
 		for( i = 0; i < players.size; i++ ) 
 		{
 			if( players[i] HasPerk( level.VLT_PRK ) ) 

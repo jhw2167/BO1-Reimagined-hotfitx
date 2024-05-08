@@ -628,6 +628,9 @@ player_handle_stamina_ghost ( clientnum, state )
 	s.fade_time = 250;
 	player = GetLocalPlayers()[ clientnum ];
 
+	//iprintlnbold("Setting vision file for clientnum: " + clientnum);
+	//iprintlnbold( "Local entity number: " + player.entity_num );
+
 	prev_vision = player._previous_vision;
 	if(state == "stamina_ghost_start") {
 		s.fade_type = "fadein";

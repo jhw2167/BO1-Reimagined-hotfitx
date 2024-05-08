@@ -52,7 +52,7 @@ main()
 	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
 	level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	//level.zombie_timeout_override=10;	///
+	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=15;	///
@@ -899,7 +899,7 @@ reimagined_init_level()
         break;
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
-		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_sumpf"] = "Swamp Lights";
+		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_sumpf"] = "Swamp Lights!";
 		level.ARRAY_SWAMPLIGHTS_POS = [];
 		
 		level.ARRAY_SWAMPLIGHTS_POS["comm_room"][0] = (7969, -455, -707);
@@ -1218,7 +1218,7 @@ watch_player_button_press()
 					{ 
 						wait( 0.1 );
 					}
-					iprintln("Swapping Melee");
+					
 					self handle_swap_melee();
 					break;
 				}
@@ -1236,27 +1236,38 @@ watch_player_button_press()
 		/* APOCALYPSE SCOREBOARD */
 		if( level.apocalypse )
 		{
-			//if ( self ScoreButtonPressed() )
-			if( self buttonPressed( "TAB" ) )
+			isHost = (self GetEntityNumber() == 0);
+			
+			if(  self buttonPressed( "TAB" ) )
 			{
-				self player_handle_scoreboard("TAB");
-				wait(0.1);
+				if( self UseButtonPressed() || isHost )
+				{
+					self player_handle_scoreboard("TAB");
+					wait(0.1);
+				}
 			}
 
 			if( self buttonPressed( "BUTTON_BACK" ) )
 			{
-				self player_handle_scoreboard("BUTTON_BACK");
-				wait(0.1);
+				if( self UseButtonPressed() || isHost )
+				{
+					self player_handle_scoreboard("BUTTON_BACK");
+					wait(0.1);
+				}
 			}
 		}
 		
 		wait 0.1;
-		//wait(1);
+		wait(1);
 	}
 }
 
 	is_action_slot_pressed()
 	{
+		wep = self GetCurrentWeapon();
+		if( wep != "vorkuta_knife_sp" || wep != "combat_knife_zm" )
+			return false;
+
 		if( self ActionSlotTwoButtonPressed() )
 			return true;
 
@@ -8225,7 +8236,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	//ORIGIN_
-	iprintln("Origin: " + attacker.origin );
+	//iprintln("Origin: " + attacker.origin );
 	//iprintln("class: " + attacker.classname );
 	//iprintln("class: " + attacker.class );
 	/*
@@ -10522,14 +10533,14 @@ player_apocalypse_stats( message, timeout )
 
 	if( players.size > 1 )
 	{
-		HORZ_OFFSET += COL_OFFSET; //Move over one columns
-		headers = array( "Perk Slots", undefined, "Total Points", "Efficiency" );
+		HORZ_OFFSET += 2*COL_OFFSET; //Move over one columns
+		headers = array( "Perk Slots", "", "Total Points", "Efficiency" );
 	}
 
 	hudElems = [];
 	for( i = 0; i < headers.size; i++ )
 	{
-		if( !isdefined( hudElems[i] ) )
+		if( headers[i] == "" )
 			continue;					//Adding column for spacing
 		
 		for( j = 0; j < players.size; j++ )
@@ -10558,7 +10569,7 @@ player_apocalypse_stats( message, timeout )
 
 	for( k = 0; k < headers.size; k++ )
 	{
-		if( !isdefined( hudElems[i] ) )
+		if( headers[k] == "" )
 			continue;					//Adding column for spacing
 		
 		for( j = 0; j < players.size; j++ )
