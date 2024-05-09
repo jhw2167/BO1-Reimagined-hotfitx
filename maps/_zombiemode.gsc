@@ -516,8 +516,8 @@ reimagined_init_level()
 	//These are (expected drops per round * 10), so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 16;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 8; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -528,7 +528,11 @@ reimagined_init_level()
 			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
 		}
 
-	level.THRESHOLD_MAX_DROPS = 5;	//Max Drops allowed per round. Protects against bugs
+	level.VALUE_ZOMBIE_DROP_INCREMENT = 2.0;
+	level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND = 15;
+
+
+	level.THRESHOLD_MAX_DROPS = 8;	//Max Drops allowed per round. Protects against bugs
 
 	level.THRESHOLD_MAX_POINTS_CARPENTER = 2000;
 	level.THRESHOLD_MAX_POINTS_NUKE = 4800;
@@ -663,13 +667,13 @@ reimagined_init_level()
 
 	//Vulture
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;				//Up from 25
-	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.025;
-	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.04;
-	level.VALUE_VULTURE_MIN_AMMO_BONUS = 2;
-	level.VALUE_VULTURE_MAX_AMMO_BONUS = 25;
+	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.04;
+	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.06;
+	level.VALUE_VULTURE_MIN_AMMO_BONUS = 3;
+	level.VALUE_VULTURE_MAX_AMMO_BONUS = 40;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 50;			//1-1000, 5% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 75;			//1-1000, 5% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -823,6 +827,8 @@ reimagined_init_level()
 	level.respawn_queue_unlocks_num = 0;
 
 	level.is_pap_available = false;
+
+	level.drop_rate_adjustment = 0;
 
 	//Real Time Perk Variables
 	level.vulture_using_perk_variable_locations = false;
@@ -5861,7 +5867,7 @@ reimagined_expanded_round_start()
 			{
 				case "zombie_cod5_prototype":
 				//case "zombie_cod5_asylum":
-				case "zombie_cod5_sumpf":
+				//case "zombie_cod5_sumpf":
 				case "zombie_cod5_factory":
 				case "zombie_theater":
 				case "zombie_pentagon":
@@ -5870,6 +5876,16 @@ reimagined_expanded_round_start()
 			}
 			
 		}
+
+	//Drop Increment for later rounds
+	if( level.extra_drops )
+	{
+		if( level.round_number >= level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND )
+		{
+			level.drop_rate_adjustment = level.VALUE_ZOMBIE_DROP_INCREMENT * (level.round_number - level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND);	
+		}
+	}
+	
 
 
 	if(level.spawn_delay_override)

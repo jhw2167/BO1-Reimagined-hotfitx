@@ -428,6 +428,7 @@ zombie_determine_drop()
 		//Not Acpocalypse/extra drops
 		if(level.extra_drops) 
 		{
+			rand -= level.drop_rate_adjustment; // between  0 and 80, makes drops more frequent later
 			//Apocalypse or extra drops
 			if( rand < green_rate )
 			{
