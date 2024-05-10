@@ -508,7 +508,7 @@ randomize_perks_think()
 
 		for( i = 0; i < level.perk_spawn_location.size; i ++ ) 
 		{
-			if( shino_zones_opened[i] )
+			if( is_true( shino_zones_opened[i] ) )
 				level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
 		}
 

@@ -8146,6 +8146,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				self.water_damage = true;
 			}
 
+				//Shino Special Behavior
+			if( level.mapname == "zombie_cod5_sumpf" && IsDefined( level.current_swamplight_struct ))
+			{
+				isNearSwamplight = checkDist( self.origin, level.current_swamplight_struct.origin, level.THRESHOLD_SHINO_SWAMPLIGHT_KILL_RADIUS );
+				if( isNearSwamplight)
+				{
+					level notify( "swamplight_zomb_sacraficed", self );
+					return 0;
+				}
+			}
+
 			return self.maxhealth + 1000;
 		}
 	}

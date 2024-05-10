@@ -2432,6 +2432,8 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 	CONST_PERK = perk;
 	CONST_COST = cost;
 
+
+	iprintln(" Setting up trigger for: " + perk );
 	i =0;
 	for( ;; )
 	{
@@ -2508,7 +2510,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 				player.num_perks--;		//Will be incremented later when perk is perchased, so we pre-decrement!
 			} else if ( cheat != true )
 			{
-				//player ////iprintln( "Already using Perk: " + perk );
+				//player iprintln( "Already using Perk: " + perk );
 				self playsound("deny");
 				player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 1 );
 				continue;
@@ -2517,8 +2519,8 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 
 		if ( player.score < cost )
 		{
-			//iprintln("8");
-			//player ////iprintln( "Not enough points to buy Perk: " + perk );
+			//iprintln("10");
+			//player iprintln( "Not enough points to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			player maps\_zombiemode_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 			continue;
@@ -2526,7 +2528,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 
 		if ( player.num_perks >= player.perk_slots && !is_true(player._retain_perks) )
 		{
-			//iprintln("9");
+			//iprintln("11");
 			//player //iprintln( "Too many perks already to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
 			// COLLIN: do we have a VO that would work for this? if not we'll leave it at just the deny sound
@@ -2534,7 +2536,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 			continue;
 		}
 		
-		//iprintln( "Bought Perk: " + perk );
+		iprintln( "Bought Perk: " + perk );
 		iprintln("Max perks: " + player.num_perks + " Perk slots: " + player.perk_slots);
 		iprintln( "Level: " + level.max_perks );
 		sound = "evt_bottle_dispense";

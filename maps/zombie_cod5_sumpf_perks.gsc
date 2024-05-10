@@ -30,7 +30,7 @@ watch_randomize_vending_machines()
 	while( true )
 	{
 		rounds_until_swap = randomintrange( 1, 4 );
-		rounds_until_swap = 1;
+		//rounds_until_swap = 1;
 		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_swap; i++ )
 		{
@@ -57,13 +57,13 @@ watch_swamplights()
 	zone_keys = GetArrayKeys( level.ARRAY_SWAMPLIGHTS_POS );
 
 
-	//wait_times = array(30, 60, 240, 300);
-	wait_times = array(10, 5);
+	wait_times = array(30, 60, 240, 300);
+	//wait_times = array(10, 5);
 
 	while( true )
 	{
 		wait( array_randomize( wait_times )[0] );
-		iprintln( "Waiting 10" );
+		//iprintln( "Waiting 10" );
 		//wait(10);
 		
 		total_swamplights = 3;
@@ -131,7 +131,7 @@ watch_spawn_swamplight(struct)
 		if( !IsDefined( zomb ) || !IsAlive( zomb ) )
 			continue;
 		
-		//zomb zombie_handle_swamplight_fx();
+		zomb zombie_handle_swamplight_fx();
 		zomb DoDamage( zomb.health + 10, zomb.origin, undefined );
 		return true;
 			
@@ -363,7 +363,9 @@ play_vending_vo( machine, origin )
 vending_randomization_effect( index )
 {
 	level endon( "end_game" );
-	level endon( "perks_swapping" );
+	//level endon( "perks_swapping" ); -- cant use, perk_trigger doesnt delete
+
+	flag_set( "pack_machine_in_use" );	//Prevent multiple activations from doors openened on round end
 
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
@@ -476,7 +478,8 @@ vending_randomization_effect( index )
 	perk_trigger SetCursorHint( "HINT_NOICON" );
 	thread activate_vending_machine( true_model, origin, machine, vending_triggers[trigInd].script_noteworthy );
 
-	wait 3;
+	time_to_turn_machine_on = 3;
+	wait(time_to_turn_machine_on);
 
 	perk_trigger.script_noteworthy = vending_triggers[trigInd].script_noteworthy;
 	perk_trigger set_perk_buystring( vending_triggers[trigInd].script_noteworthy );
@@ -484,6 +487,7 @@ vending_randomization_effect( index )
 	level.pap_moving = true;
 	wait 0.1;
 	level.pap_moving = false;
+	flag_clear( "pack_machine_in_use" );
 
 	level waittill( "perks_swapping" );
 
@@ -496,6 +500,7 @@ vending_randomization_effect( index )
 	perk_trigger notify( "death" );
 	level.pap_moving = true;
 
+	iprintln( "delete perk_trigger: " + perk_trigger );
 	perk_trigger Delete();
 
 }
