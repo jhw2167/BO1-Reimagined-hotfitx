@@ -6505,7 +6505,10 @@ setApocalypseOptions()
 
 
 	//Apocalypse variables defaults
-	if(level.apocalypse > 0 || IsDefined(level.apocalypse_override) )
+	if( !is_true( level.apocalypse_override ) )
+		level.apocalypse = 0;
+	
+	if(level.apocalypse > 0 || is_true(level.apocalypse_override) )
 		level.apocalypse = true;
 	if(level.expensive_perks > 0 || level.apocalypse)
 		level.expensive_perks = true;
@@ -8528,6 +8531,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "m14_upgraded_zm":
+		case "m1garand_upgraded_zm":
 			final_damage = 1400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
@@ -8596,6 +8600,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "stoner63_upgraded_zm":
+		case "bar_upgraded_zm":
 			final_damage = 2100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
@@ -8617,9 +8622,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		//UPGRADED WAW WEAPONS
 		case "zombie_kar98k_upgraded":
+		case "springfield_upgraded_zm":
 			final_damage = 4200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 4;
 			break;
 		case "zombie_gewehr43_upgraded":
 			final_damage = 2240;

@@ -419,7 +419,7 @@ default_vending_precaching()
 		PreCacheModel( "zombie_vending_packapunch_on" );
 		PreCacheString( &"REIMAGINED_PERK_PACKAPUNCH");
 		PreCacheString( &"ZOMBIE_GET_UPGRADED" );
-		//level._effect[ "packapunch_fx" ] = LoadFX( "maps/zombie/fx_zombie_packapunch" );
+		level._effect[ "packapunch_fx" ] = LoadFX( "maps/zombie/fx_zombie_packapunch" );
 		level.pap_moving = false;
 		level thread turn_PackAPunch_on();
 	}
@@ -2432,8 +2432,6 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 	CONST_PERK = perk;
 	CONST_COST = cost;
 
-
-	iprintln(" Setting up trigger for: " + perk );
 	i =0;
 	for( ;; )
 	{

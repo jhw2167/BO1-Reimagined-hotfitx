@@ -30,7 +30,7 @@ watch_randomize_vending_machines()
 	while( true )
 	{
 		rounds_until_swap = randomintrange( 1, 4 );
-		//rounds_until_swap = 1;
+		rounds_until_swap = 1;
 		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_swap; i++ )
 		{

@@ -316,7 +316,6 @@ include_weapons()
 	include_weapon("china_lake_upgraded_zm", false);
 	include_weapon("crossbow_explosive_upgraded_zm", false);
 	include_weapon("knife_ballistic_upgraded_zm", false);
-	include_weapon( "zombie_type99_rifle_upgraded", false );
 	include_weapon( "ray_gun_upgraded_zm", false );
 	include_weapon( "zombie_fg42_upgraded", false );
 	include_weapon( "ithaca_upgraded_zm", false );
@@ -324,18 +323,20 @@ include_weapons()
 
 
 	//Single Shot
-	include_weapon( "karabin_zm", false );	
+	include_weapon( "karabin_zm", false );
+	include_weapon( "zombie_type99_rifle", false );
+	//include_weapon( "karabin_upgraded_zm", false );	
+	//Single Shot
 	include_weapon( "zombie_gewehr43", false, true );
 	include_weapon( "zombie_m1garand", false, true );
-	include_weapon( "zombie_m1carbine", false, true );
-	//include_weapon( "zombie_springfield", false, true );
-	//include_weapon( "zombie_kar98k", false, true );
+	include_weapon( "zombie_springfield", false, true );
+	include_weapon( "springfield_upgraded_zm", false );
+	include_weapon( "zombie_kar98k", false, true );
+	include_weapon( "zombie_kar98k_upgraded", false );
 	
 	include_weapon( "zombie_gewehr43_upgraded", false );
-	include_weapon( "zombie_m1garand_upgraded", false );
-	include_weapon( "zombie_m1carbine_upgraded", false );
-	include_weapon( "karabin_upgraded_zm", false );	
-	include_weapon( "m14_upgraded_zm", false );	
+	include_weapon( "m1garand_upgraded_zm", false );
+	
 	
 	//Shotguns
 	include_weapon( "zombie_shotgun", false, true );
@@ -344,6 +345,8 @@ include_weapons()
 	
 	//Full Auto
 	include_weapon( "zombie_bar", false, true );
+	include_weapon( "zombie_bar_bipod", false, true );
+	include_weapon( "bar_upgraded_zm", false );
 	include_weapon( "zombie_stg44", false, true );
 	include_weapon( "zombie_thompson", false, true );	
 	include_weapon( "mp40_zm", false, true );
@@ -351,7 +354,6 @@ include_weapons()
 	
 	
 	include_weapon( "zombie_thompson_upgraded", false );
-	include_weapon( "zombie_bar_upgraded", false );	
 	include_weapon( "zombie_stg44_upgraded", false );
 	include_weapon( "mp40_upgraded_zm", false );
 	include_weapon( "zombie_type100_smg_upgraded", false );
@@ -376,15 +378,15 @@ include_weapons()
 	precacheItem( "explosive_bolt_upgraded_zm" );
 
 
-
+	//
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_kar98k", "zombie_kar98k_upgraded", 						&"WAW_ZOMBIE_WEAPON_KAR98K_200", 				200,	"rifle");
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_type99_rifle", "zombie_kar98k_upgraded",					&"WAW_ZOMBIE_WEAPON_TYPE99_200", 			    200,	"rifle" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_type99_rifle", "springfield_upgraded_zm",					&"WAW_ZOMBIE_WEAPON_TYPE99_200", 			    200,	"rifle" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "karabin_zm", "springfield_upgraded_zm", 						&"WAW_ZOMBIE_WEAPON_KARABIN_200", 				200,	"rifle" );
 
 	// Semi Auto
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_gewehr43", "zombie_gewehr43_upgraded",						&"WAW_ZOMBIE_WEAPON_GEWEHR43_600", 				600,	"rifle" );
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1carbine","zombie_m1carbine_upgraded",						&"WAW_ZOMBIE_WEAPON_M1CARBINE_600",				600,	"rifle" );
-	//maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1garand", "zombie_m1garand_upgraded" ,						&"WAW_ZOMBIE_WEAPON_M1GARAND_600", 				600,	"rifle" );
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1garand", "m14_upgraded_zm" ,						&"WAW_ZOMBIE_WEAPON_M1GARAND_600", 				600,	"rifle" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1garand", "m1garand_upgraded_zm" ,						&"WAW_ZOMBIE_WEAPON_M1GARAND_600", 				600,	"rifle" );
 
 	maps\_zombiemode_weapons::add_zombie_weapon( "stielhandgranate", "", 						&"WAW_ZOMBIE_WEAPON_STIELHANDGRANATE_250", 		250,	"grenade", "", 250 );
 	maps\_zombiemode_weapons::add_zombie_weapon( "mine_bouncing_betty", "", &"WAW_ZOMBIE_WEAPON_SATCHEL_2000", 2000 );

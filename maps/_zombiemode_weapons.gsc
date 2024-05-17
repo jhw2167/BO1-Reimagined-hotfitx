@@ -489,7 +489,7 @@ init_weapon_upgrade()
 		if( !IsDefined(weapon_name) 
 		|| !IsDefined( level.zombie_weapons )
 		|| !IsDefined( level.zombie_weapons[weapon_name] )
-		|| !IsDefined( getent( weapon_spawns[i].target, "targetname" ) )
+		//|| !IsDefined( getent( weapon_spawns[i].target, "targetname" ) )
 		 )
 		{ 
 				continue; //HERE
