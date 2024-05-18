@@ -47,7 +47,7 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										*/
+	/* 										/
 	//level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=4;	///
 	level.starting_points_override=100000;	///
@@ -1278,7 +1278,7 @@ watch_player_button_press()
 	is_action_slot_pressed()
 	{
 		wep = self GetCurrentWeapon();
-		iprintln("Current Weapon: " + wep);
+		//iprintln("Current Weapon: " + wep);
 		//if( wep != "vorkuta_knife_sp" || wep != "combat_knife_zm" )
 			//return false;
 
