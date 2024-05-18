@@ -40,7 +40,7 @@ place_vulture()
 	perk_trigger.script_noteworthy = "specialty_altmelee";
 	perk_trigger.script_sound = "mus_perks_vulture_jingle";
 	perk_trigger.script_label = "mus_perks_vulture_sting";
-	perk_clip = spawn( "script_model", machine_origin );
+	perk_clip = spawn( "script_model", machine_origin + (0, 0, 30));
 	perk_clip.angles = machine_angles;
 	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
@@ -65,7 +65,7 @@ place_martyrdom()
 	perk_trigger.script_noteworthy = "specialty_bulletdamage";
 	perk_trigger.script_sound = "mus_perks_cherry_jingle";
 	perk_trigger.script_label = "mus_perks_cherry_sting";
-	perk_clip = spawn( "script_model", machine_origin );
+	perk_clip = spawn( "script_model", machine_origin + (0, 0, 30));
 	perk_clip.angles = machine_angles;
 	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
@@ -89,7 +89,7 @@ place_wine()
 	perk_trigger.script_noteworthy = "specialty_bulletaccuracy";
 	perk_trigger.script_sound = "mus_perks_widows_jingle";
 	perk_trigger.script_label = "mus_perks_widows_sting";
-	perk_clip = spawn( "script_model", machine_origin );
+	perk_clip = spawn( "script_model", machine_origin + (0, 0, 30));
 	perk_clip.angles = machine_angles;
 	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();

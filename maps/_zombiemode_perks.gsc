@@ -34,6 +34,7 @@ init()
 
 	// Perks-a-cola vending machine use triggers
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+	bump_triggers = GetEntArray( "audio_bump_trigger", "targetname" );
 
 	// Pack-A-Punch weapon upgrade machine use triggers
 	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
@@ -92,7 +93,7 @@ init()
 
 	array_thread( vending_triggers, ::vending_trigger_think );
 	array_thread( vending_triggers, ::electric_perks_dialog );
-	//array_thread( vending_triggers, ::bump_trigger_think );
+	array_thread( bump_triggers, ::bump_trigger_think );
 	
 	//level thread turn_PackAPunch_on();
 
@@ -2074,6 +2075,45 @@ disableSpeed( wait_time ) {
 		self disablePerk( level.SPD_PRO, 30 );
 }
 
+//Reimagined-Expanded, give people points for proning at vending machines
+bump_trigger_think()
+{
+	self endon("death");
+
+	//There is nothing unique about these triggers, so we use a crude hash
+	hash = randomint( 10000 );
+
+	while(1)
+	{
+		self waittill("trigger", player);
+
+		if(player in_revive_trigger())
+		{
+			wait( 0.1 );
+			continue;
+		}
+
+		if( is_true(player.perk_bumps_activated[""+hash]) )
+		{
+			wait( 0.1 );
+			continue;
+		}
+
+		if(player GetStance() == "prone")
+		{
+			player.perk_bumps_activated[""+hash] = true;
+			randInt = randomint( 4 );
+			wait(randInt);
+			player thread maps\_zombiemode_score::add_to_player_score( 100 );
+			wait( 0.1 );
+			continue;
+		}
+
+		wait( 0.1 );
+	}
+
+}
+
 vending_trigger_think()
 {
 	self endon("death");
@@ -2345,6 +2385,8 @@ vending_trigger_think()
 	{
 		case "specialty_armorvest_upgrade":
 		case "specialty_armorvest":
+			 if(level.expensive_perks)
+			 	cost = 4000;
 			self SetHintString( &"REIMAGINED_PERK_JUGGERNAUT", cost, upgrade_perk_cost );
 			break;
 

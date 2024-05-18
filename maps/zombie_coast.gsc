@@ -213,7 +213,7 @@ main()
 	//Reimagined-Expanded, don't need this, messes with zombie spawning with no bosses
 	//level thread coast_spawn_init_delay();
 
-	level thread maps\zombie_coast_fx:: manage_blizzard();
+	level thread maps\zombie_coast_fx::manage_blizzard();
 
 	//level thread rock_wall_barricade();
 
@@ -709,10 +709,17 @@ wait_for_power()
 
 	clientnotify("ZPO");	 // Zombie Power On.
 
-	master_switch waittill("rotatedone");
+
+	//master_switch waittill("rotatedone");
 	playfx(level._effect["switch_sparks"] ,getstruct("elec_switch_fx","targetname").origin);
 
 	master_switch playsound("zmb_turn_on");
+	
+
+	level thread maps\zombie_coast_fx::blizzard_tidyup();
+	wait(1);
+	level notify("kill_blizzard");
+	
 }
 
 //*****************************************************************************

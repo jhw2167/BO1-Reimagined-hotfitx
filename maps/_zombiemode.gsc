@@ -56,7 +56,7 @@ main()
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=15;	///
-	level.apocalypse_override=false;		///
+	level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
@@ -394,8 +394,8 @@ reimagined_init_level()
 	level.THRESHOLD_NOVA_CRAWLER_MAX_PORTION = 0.20;	//20% of zombies can be nova crawlers
 
 	//Apocalypse Auto round tick forward values
-	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_EARLY = 45;	//Seconds between zombies thresholds
-	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED = 60;	//Seconds between zombies thresholds rounds
+	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_EARLY = 30;	//Seconds between zombies thresholds
+	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED = 50;	//Seconds between zombies thresholds rounds
 	level.VALUE_APOCALYPSE_ROUND_TICK_TIME_LATE = 150;	//Seconds between zombies thresholds rounds -- not used, using RoundNumber
 	
 	level.THRESHOLD_MAX_APOCALYSE_ROUND = 35;	//After this round, behave the same
@@ -776,6 +776,8 @@ reimagined_init_level()
 
 	
 	//Bullet Effects
+	level.VALUE_PAP_WEAPON_BONUS_DAMAGE = 1.2;
+
 	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
@@ -964,6 +966,7 @@ reimagined_init_player()
 	self.kill_tracker = 0;
 
 	self.hints_activated = [];
+	self.perk_bumps_activated = [];
 	self.new_perk_hint = false;
 
 	//Bleedout
@@ -3184,7 +3187,7 @@ onPlayerConnect_clientDvars()
 	self SetClientDvar("hud_fade_ammodisplay", 0);
 
 	//Fog Off
-	self SetClientDvar("r_fog_settings", 0);
+	self SetClientDvar("r_fog_settings", 1);
 
 	//Reimagined-Expanded, baby perks go over health bar
 	self SetClientDvar("perk_bar_00", "");
@@ -7103,6 +7106,8 @@ reimagined_expanded_apocalypse_rounds()
 			zombs_threshold = level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[ round ];
 	}
 
+	wait(5);	//Give zombs some time to start spawning
+
 	remaining_zombies = level.zombie_total + get_enemy_count();
 	while( remaining_zombies > zombs_threshold )
 	{
@@ -8704,11 +8709,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//Reimagined-Expanded - Buff for early game weapons, they need it
 		//Disabling after nerf to health
 
-		/*
+		
 		if( !isSubStr(weapon, "_upgraded") ) {
-			final_damage *= 1.25;
+			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;
 		}
-		*/
+		
 		
 		// Death Machine - kills in 4 body shots or 2 headshots
 		if(weapon == "minigun_zm")
