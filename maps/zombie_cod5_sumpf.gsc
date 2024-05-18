@@ -363,6 +363,7 @@ include_weapons()
 
 	//bouncing betties
 	include_weapon("mine_bouncing_betty", false, true );
+	include_weapon("stielhandgranate", false, true);
 
 	include_weapon( "zombie_cymbal_monkey");
 

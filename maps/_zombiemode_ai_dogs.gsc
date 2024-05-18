@@ -141,7 +141,7 @@ dog_round_spawning()
 	players = get_players();
 	array_thread( players, ::play_dog_round );
 
-	max = players.size * 8;
+	max = 8 + ( (players.size - 1) * 4);
 
  /#
  	if( GetDvar( #"force_dogs" ) != "" )
@@ -151,12 +151,15 @@ dog_round_spawning()
  #/
 	//Reimagined-Expanded, intergrating dog rounds with normal rounds
 	level.zombie_dog_total = max;
+	/*
 	if( level.apocalypse )
 		level.zombie_total += max;
 	else
 		level.zombie_total = max;
+	*/
 	
-	
+	iprintln("Max dogs: " + max);
+	iprintln("Max zombies: " + level.zombie_total);
 
 	dog_health_increase();
 
@@ -187,7 +190,8 @@ dog_round_spawning()
 				ai.favoriteenemy = favorite_enemy;
 				spawn_loc thread dog_spawn_fx( ai, spawn_loc );
 				level.zombie_dog_total--;
-				level.zombie_total--;
+				//level.zombie_total--;
+				iprintln("Dog spawned 1 " + level.zombie_total + " " + level.zombie_dog_total);
 				count++;
 			}
 		}
@@ -201,8 +205,9 @@ dog_round_spawning()
 			{
 				ai.favoriteenemy = favorite_enemy;
 				spawn_point thread dog_spawn_fx( ai );
-				level.zombie_total--;
 				level.zombie_dog_total--;
+				//level.zombie_total--;
+				iprintln("Dog spawned 2 " + level.zombie_total + " " + level.zombie_dog_total);
 				count++;
 
 			}
@@ -410,6 +415,7 @@ dog_round_tracker()
 	// PI_CHANGE_BEGIN - JMA - making dog rounds random between round 5 thru 7
 	// NOTE:  RandomIntRange returns a random integer r, where min <= r < max
 	level.next_dog_round = randomintrange( 5, 7 );
+	//level.next_dog_round = 5; // debug
 	// PI_CHANGE_END
 
 	if(level.next_dog_round == 5)

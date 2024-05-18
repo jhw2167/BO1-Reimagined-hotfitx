@@ -49,13 +49,13 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=20;	///
+	level.starting_round_override=4;	///
 	level.starting_points_override=100000;	///
-	level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=15;	///
+	//level.calculate_amount_override=15;	///
 	level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
@@ -414,14 +414,14 @@ reimagined_init_level()
 	{
 		level.ARRAY_APOCALYPSE_ROUND_ZOMBIE_THRESHOLDS[i] = 10000000; //No threshold, theoretical max
 		if( i < 5 ) {
-			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 30;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 45;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 250;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 0;
 			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 0;
 		}
 		else if( i < 10 ) {
-			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 60;				//time in seconds
+			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = 70;				//time in seconds
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 500;
 
 			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 25;
@@ -666,7 +666,7 @@ reimagined_init_level()
 	level.VALUE_CHERRY_PRO_SCALAR = 16/10;	//scales range, damage, max enemies by ~2
 
 	//Vulture
-	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 25;				//Up from 25
+	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 30;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.04;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.06;
 	level.VALUE_VULTURE_MIN_AMMO_BONUS = 3;
@@ -823,6 +823,8 @@ reimagined_init_level()
 	level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS = array( "rebirth_hands_sp", "vorkuta_knife_sp" );
 
 	//Real Time Variables
+	level.zombie_dog_total = 0;
+
 	level.respawn_queue = [];
 	level.respawn_queue_locked = false;
 	level.respawn_queue_num = 0;
@@ -5586,6 +5588,9 @@ ai_calculate_amount()
 	{
 		level thread [[ level.zombie_total_set_func ]]();
 	}
+
+	iprintln( "Round " + level.round_number + " - " + level.zombie_round_total + " zombies" );
+	iprintln( "Total zombies: " + level.zombie_total );
 	
 }
 
@@ -6508,7 +6513,7 @@ setApocalypseOptions()
 
 
 	//Apocalypse variables defaults
-	if( !is_true( level.apocalypse_override ) )
+	if( IsDefined( level.apocalypse_override ) && !level.apocalypse_override )
 		level.apocalypse = 0;
 	
 	if(level.apocalypse > 0 || is_true(level.apocalypse_override) )
@@ -7082,6 +7087,11 @@ reimagined_expanded_apocalypse_bonus( giveBonus )
 		}
 }
 
+get_total_remaining_enemies()
+{
+	return level.zombie_total + get_enemy_count() + level.zombie_dog_total;
+}
+
 /*
 	Reimagined-Expanded apocalypse round formula, this code is called form a thread in round_wait function
 	- Before round 10, players have minimum alloted time to complete round, or it advances anyways
@@ -7108,10 +7118,10 @@ reimagined_expanded_apocalypse_rounds()
 
 	wait(5);	//Give zombs some time to start spawning
 
-	remaining_zombies = level.zombie_total + get_enemy_count();
+	remaining_zombies = get_total_remaining_enemies();
 	while( remaining_zombies > zombs_threshold )
 	{
-		remaining_zombies = level.zombie_total + get_enemy_count();
+		remaining_zombies = get_total_remaining_enemies();
 		wait( 0.5 );
 	}
 	
@@ -11200,7 +11210,7 @@ watch_faulty_rounds()
 	{
 		wait(1);
 		enemy_count = get_enemy_count();
-		if(enemy_count == 0)
+		if(enemy_count <= 0)
 			time_no_enemies++;
 		else
 			time_no_enemies = 0;
@@ -11230,7 +11240,7 @@ enemies_remaining_hud()
 	while(1)
 	{
 		players = get_players();
-		zombs = level.zombie_total + get_enemy_count();
+		zombs = get_total_remaining_enemies();
 
 		if( zombs <= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER && !notifyDespawnOnce ) {
 			level notify( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );

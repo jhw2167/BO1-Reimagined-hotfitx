@@ -486,13 +486,24 @@ init_weapon_upgrade()
 		}
 
 		weapon_name = weapon_spawns[i].zombie_weapon_upgrade;
-		if( !IsDefined(weapon_name) 
-		|| !IsDefined( level.zombie_weapons )
-		|| !IsDefined( level.zombie_weapons[weapon_name] )
-		//|| !IsDefined( getent( weapon_spawns[i].target, "targetname" ) )
+		if( !IsDefined(weapon_name) || !IsDefined( level.zombie_weapons ) )
+			continue;
+		
+		if( !IsDefined( level.zombie_weapons[weapon_name] )
+		|| !IsDefined( getent( weapon_spawns[i].target, "targetname" ) )
 		 )
 		{ 
+			setupWeaponOverrideForSpecificWeapons = ( weapon_name == "zombie_bar" );
+
+			if( setupWeaponOverrideForSpecificWeapons ) 
+			{
+				//Do setup anyways
+			}
+			else
+			{
 				continue; //HERE
+			}
+				
 		}
 		
 		hint_string = get_weapon_hint( weapon_spawns[i].zombie_weapon_upgrade );

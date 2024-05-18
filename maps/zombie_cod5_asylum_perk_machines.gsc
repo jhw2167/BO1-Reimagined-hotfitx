@@ -264,7 +264,7 @@ place_barriers()
 	level.verukt_barriers = [];
 
 	//Side Barriers
-	side_origin = ( 600, -568, 56 );
+	side_origin = ( 600, -568, 86 );
 	level.verukt_barriers[0] = spawn( "script_model", side_origin );
 	level.verukt_barriers[0].angles = (0, 0, 0);
 	level.verukt_barriers[0] SetModel( "collision_geo_64x64x64" );
@@ -276,7 +276,7 @@ place_barriers()
 	level.verukt_barriers[1] Hide();
 
 	//Behind Barriers
-	behind_origin = ( 300, -392, 61 );
+	behind_origin = ( 300, -392, 91 );
 	for(i = 0; i < 18; i++)
 	{
 		level.verukt_barriers[i+2] = spawn( "script_model", behind_origin + (0, 50 * i, 0) );

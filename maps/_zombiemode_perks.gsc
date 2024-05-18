@@ -2576,7 +2576,7 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost )
 			continue;
 		}
 		
-		iprintln( "Bought Perk: " + perk );
+		//iprintln( "Bought Perk: " + perk );
 		iprintln("Max perks: " + player.num_perks + " Perk slots: " + player.perk_slots);
 		iprintln( "Level: " + level.max_perks );
 		sound = "evt_bottle_dispense";
