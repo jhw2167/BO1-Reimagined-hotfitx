@@ -223,8 +223,12 @@ generate_perk_hint( perk )
 			title SetText( &"REIMAGINED_STM_PRO_TITLE" );
 			break;
 
+		case "specialty_flakjacket":
+			text SetText( &"REIMAGINED_PHD_PRK_HINT" );
+			title SetText( &"REIMAGINED_PHD_PRK_TITLE" );
+		
+			break;
 		case "specialty_flakjacket_upgrade":
-		//case "specialty_flakjacket":
 			text SetText( &"REIMAGINED_PHD_PRO_HINT" );
 			title SetText( &"REIMAGINED_PHD_PRO_TITLE" );
 			break;

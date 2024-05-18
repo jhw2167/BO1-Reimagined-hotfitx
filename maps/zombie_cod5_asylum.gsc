@@ -618,7 +618,7 @@ include_powerups()
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
 
-	include_powerup( "bonfire_sale" );
+	include_powerup( "pap_teleport" );
 	include_powerup( "fire_sale" );
 	include_powerup( "free_perk" );	
 	include_powerup( "tesla" );
@@ -1535,11 +1535,12 @@ watch_pap_teleport_drops()
 		}
 
 		seconds_wait = randomintrange( 10, 100 );
+		//seconds_wait = 10;
 		level waittill_any_or_timeout( "end_of_round", seconds_wait );
 		
 		drop_spot = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
 	
-		maps\_zombiemode_powerups::specific_powerup_drop( "bonfire_sale", drop_spot.origin );
+		maps\_zombiemode_powerups::specific_powerup_drop( "pap_teleport", drop_spot.origin );
 
 	}
 

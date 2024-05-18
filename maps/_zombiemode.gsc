@@ -56,7 +56,7 @@ main()
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///
-	level.apocalypse_override=true;		///
+	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
@@ -628,6 +628,8 @@ reimagined_init_level()
 
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE = 2;
 	level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE = 2;
+
+	level.VALUE_PHD_EXPL_BONUS_POINTS = 25;
 
 	//Speed
 	level.COOLDOWN_SPEED_PRO_RELOAD = 2.0;
@@ -1269,27 +1271,28 @@ watch_player_button_press()
 		}
 		
 		wait 0.1;
-		wait(1);
+		//wait(1);
 	}
 }
 
 	is_action_slot_pressed()
 	{
 		wep = self GetCurrentWeapon();
-		if( wep != "vorkuta_knife_sp" || wep != "combat_knife_zm" )
-			return false;
+		iprintln("Current Weapon: " + wep);
+		//if( wep != "vorkuta_knife_sp" || wep != "combat_knife_zm" )
+			//return false;
 
 		if( self ActionSlotTwoButtonPressed() )
 			return true;
 
 		
 		//PC
-		if( self buttonPressed( "7" ))
-			return true;
+		//if( self buttonPressed( "7" ))
+			//return true;
 
 		//XBOX
-		if( self buttonPressed( "DPAD_DOWN" ))
-			return true;
+		//if( self buttonPressed( "DPAD_DOWN" ))
+			//return true;
 
 		
 		return false;

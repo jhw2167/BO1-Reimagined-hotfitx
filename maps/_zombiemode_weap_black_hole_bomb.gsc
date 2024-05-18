@@ -1126,7 +1126,7 @@ black_hole_teleport( struct_dest, isGeneralTeleport )
 	{
 		self shellshock( "electrocution", 1.25 );
 		self shellshock( "explosion", 1.25 );
-		wait(1);
+		wait(0.5);
 	}
 		
 	self FreezeControls( false );

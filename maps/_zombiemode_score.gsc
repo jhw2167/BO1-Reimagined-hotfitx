@@ -429,6 +429,10 @@ quick_kill_bonus_points( zombie )
 
 player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 {
+	score = 0;
+
+	//iprintln( "Mod for zomb kill: ");
+	//iprintln( mod );
 	if( mod == "MOD_MELEE" )
 	{ 
 		score = level.zombie_vars["zombie_score_bonus_melee"];
@@ -438,7 +442,15 @@ player_add_points_kill_bonus( mod, hit_location, weapon, zombie )
 		return score;
 	}
 
-	score = 0;
+	if( mod == "MOD_EXPLOSIVE" || mod == "MOD_GRENADE_SPLASH"
+	 || mod == "MOD_PROJECTILE_SPLASH" || mod == "MOD_PROJECTILE" )
+	{ 
+		if( self HasPerk( level.PHD_PRK ) )
+			score += level.VALUE_PHD_EXPL_BONUS_POINTS;
+
+		return score;
+	}
+
 
 	//Headshot bonus
 	if( WeaponClass(weapon) == "spread" ) {
@@ -559,6 +571,7 @@ minus_to_player_score( points )
 
 	self.score -= points;
 	self.spent_points += points;
+	self.gross_possible_points += points;
 
 	// also set the score onscreen
 	self set_player_score_hud();

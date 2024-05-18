@@ -6573,57 +6573,42 @@ player_watch_widows_warning()
 
 		self playsound("chr_breathing_better");
 
+
+		/* Heaving warning accross the bottom doesnt look very good */
+		//self thread player_widows_create_warning( self, "left" );	
+		//self thread player_widows_create_warning( self, "center" );
+		//self thread player_widows_create_warning( self, "right" );
+
+		
+		//For heavy warning, large overlay,
+
 		overlay = newClientHudElem( self );
 		overlay.x = 0;
 		overlay.y = 0;
-		overlay setshader( "overlay_low_health", 640, 480 );
+		ht = 640;
+		wd = 480;
+		//sclale dimensions by 5%
+		ht = Int( ht*1.1 );
+		wd = Int( wd*1.1 );
+		overlay setshader( "overlay_low_health", ht, wd );
 		
 		overlay.alignX = "left";
 		overlay.alignY = "top";
 		overlay.horzAlign = "fullscreen";
 		overlay.vertAlign = "fullscreen";
 		
-		startAlpha = 1;
+		startAlpha = 0.6;
 		endAlpha = 0.5;
 		overlay.alpha = startAlpha;
 		overlay.color = ( 0.5, 0, 0.9 );
 		
-		self player_widows_handle_warning_fade( 0.5, 2, startAlpha, endAlpha, overlay );
+		self player_widows_handle_warning_fade( 0.5, 0.8, startAlpha, endAlpha, overlay );
 		
 		overlay Destroy();
+		
 	}
 
-	player_widows_create_warning( zomb )
-	{
-		//iprintln("Creating widows warning");
-		self player_widows_create_big_warning( zomb );
-		if( true )
-			return;
-		overlay = NewClientHudElem( self );
-		overlay setshader( "overlay_low_health_compass", 200, 75 );
-
-		overlay.x = 0;
-		overlay.y = 0;
-		
-		overlay.alignX = "center";	//works but just pushes to the left
-		overlay.alignY = "bottom";
-		overlay.horzAlign = "user_center";
-		overlay.vertAlign = "user_bottom";
-
-		//overlay.x += 0;
-		overlay.y -= 40;
-
-		startAlpha = 1;
-		endAlpha = 1;
-		overlay.alpha = startAlpha;
-		overlay.color = ( 0.4, 0, 0.9 );
-
-		self player_widows_handle_warning_fade( 0.5, 2, startAlpha, endAlpha, overlay );
-		
-		overlay Destroy();
-	}
-
-	player_widows_create_big_warning( zomb )
+	player_widows_create_warning( zomb, warning_dir_override )
 	{
 
 		//dir = self player_widows_calc_angle_behind_player( zomb );
@@ -6635,7 +6620,11 @@ player_watch_widows_warning()
 		origin = self.origin;
 		view_pos = self GetPlayerViewHeight();
 
-		if( checkDist( origin, zomb_origin, level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST ) )
+		if( IsDefined( warning_dir_override ))
+		{
+			dir = warning_dir_override;	
+		}
+		else if( checkDist( origin, zomb_origin, level.THRESHOLD_WIDOWS_ZOMBIE_CLOSE_HUD_BEHIND_DIST ) )
 		{
 			dir = "center";
 		}
@@ -6695,7 +6684,7 @@ player_watch_widows_warning()
 		overlay.alignY = "bottom";
 		overlay.vertAlign = "user_bottom";
 
-		overlay.y += 175;		//move down off screen
+		overlay.y += 190;		//move down off screen
 
 		overlay.alpha = 1;
 		startAlpha = 1;

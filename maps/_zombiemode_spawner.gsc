@@ -42,7 +42,7 @@ wait_zombie_eye_glow()
 	if( level.mapname=="zombie_moon" && !level.apocalypse )
 	{
 		level waittill( "start_launch" );
-		wait(15);
+		wait(5);
 		level.fx_eye_glow = "blue_eyes";
 	}
 	else
@@ -61,6 +61,7 @@ wait_zombie_eye_glow()
 			zombies[i] thread zombie_eye_glow();
 		}
 	}
+
 
 }
 

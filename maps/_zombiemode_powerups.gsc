@@ -122,6 +122,7 @@ init_powerups()
 	//"specialty_lightningbolt_zombies" );
 
 	/* GREEN DROPS */
+	//add_zombie_powerup( powerup_name, model_name, 		hint, 					solo, caution, zombie_grabbable, fx, drop_color )
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
 	add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
 	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
@@ -138,6 +139,7 @@ init_powerups()
 	add_zombie_powerup("minigun", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false, undefined, "BLUE");
 	add_zombie_powerup( "tesla", "lightning_bolt", &"REIMAGINED_POWERUP_SUPERPOWER", true, false, false, undefined, "BLUE");
 	add_zombie_powerup( "restock",  	"zombie_ammocan",	&"REIMAGINED_POWERUP_RESTOCK", true, false, false, undefined, "BLUE");
+	add_zombie_powerup( "pap_teleport",  	"zombie_pickup_bonfire",	&"REIMAGINED_POWERUP_PAP_TELEPORT", true, false, false, undefined, "BLUE");
 	/*
 	add_zombie_powerup("upgrade_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false, undefined, "BLUE");
 	add_zombie_powerup("quad_points", "zombie_x4_icon", &"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false, undefined, "BLUE");
@@ -565,6 +567,10 @@ is_valid_powerup(powerup_name)
 		}
 	}
 	else if ( powerup_name == "bonfire_sale" )	// never drops with regular powerups
+	{
+		return false;
+	}
+	else if ( powerup_name == "pap_teleport" )	// never drops with regular powerups
 	{
 		return false;
 	}
@@ -1536,17 +1542,14 @@ powerup_grab()
 						break;
 
 					case "bonfire_sale":
-						if( level.mapname == "zombie_cod5_asylum" )
-						{
-							players[i] thread start_special_pap( self );
-							players[i] thread powerup_vo( "tesla" );
-							break;
-						}
-						else
-						{
-							level thread start_bonfire_sale( self );
-							players[i] thread powerup_vo("firesale");
-						}
+						
+						level thread start_bonfire_sale( self );
+						players[i] thread powerup_vo("firesale");
+						break;
+
+					case "pap_teleport":
+						players[i] thread start_special_pap( self );
+						players[i] thread powerup_vo( "tesla" );
 						break;
 
 					case "minigun":
