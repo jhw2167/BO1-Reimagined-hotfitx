@@ -61,8 +61,8 @@ weapon,sp/zombie_perk_bottle
 
 //WAW WEAPONS
 weapon,sp/kar98k_scoped_zombie
-weapon,sp/zombie_doublebarrel_sawed
 weapon,sp/zombie_springfield
+weapon,sp/zombie_doublebarrel_sawed
 weapon,sp/zombie_m1garand
 weapon,sp/zombie_type99_rifle
 weapon,sp/zombie_bar

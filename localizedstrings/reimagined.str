@@ -1296,8 +1296,7 @@ REFERENCE			OFFHAND_MELEE_TITLE
 LANG_ENGLISH 		"Combat Knife/Fists"
 
 REFERENCE			OFFHAND_MELEE_HINT
-LANG_ENGLISH 		"- Hold '7' or 'D-PAD Down' to set your knife to your primary melee and your fists to your offhand weapon \n - Your knife does a minimum 25% max health damage to normal zombies"
-
+LANG_ENGLISH 		"- Press [{+speed_throw}] (ADS) with your knife out to swap offhand weapon \n - Your knife does a minimum 25% max health damage to zombies \n - Your fists will knock zombies down, allowing you to run past them"
 
 REFERENCE			PAP_TITLE
 LANG_ENGLISH 		"Pack-a-Punch"

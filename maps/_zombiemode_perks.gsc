@@ -1263,10 +1263,16 @@ turn_revive_on()
 			if(IsDefined(machine[i].classname) && machine[i].classname == "script_model")
 			{
 				machine[i].origin = origin;
-				perk_clip = spawn( "script_model", machine[i].origin );
+				perk_clip = spawn( "script_model", machine[i].origin + (0, 0, 30) );
 				perk_clip.angles = machine[0].angles;
 				perk_clip SetModel( "collision_geo_64x64x64" );
 				perk_clip Hide();
+
+				bump_trigger = Spawn( "trigger_radius", machine[i].origin, 0, 35, 64 );
+				bump_trigger.script_activated = 1;
+				bump_trigger.script_sound = "fly_bump_bottle";
+				bump_trigger.targetname = "audio_bump_trigger";
+				bump_trigger thread bump_trigger_think();
 			}
 		}
 	}
@@ -2033,8 +2039,9 @@ giveArmorVestUpgrade()
 //giveMuleUpgrade
 giveAdditionalPrimaryWeaponUpgrade() 
 {
-	//Give player max ammo for all weapons
-	level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, self, self.entity_num );
+	//Give player Restock - personal Max Ammo
+	if( !self.superpower_active )
+		level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, self, self.entity_num );
 }
 
 giveStaminaUpgrade()
@@ -2080,8 +2087,7 @@ bump_trigger_think()
 {
 	self endon("death");
 
-	//There is nothing unique about these triggers, so we use a crude hash
-	hash = randomint( 10000 );
+	hash = self GetEntityNumber();
 
 	while(1)
 	{
@@ -2102,8 +2108,7 @@ bump_trigger_think()
 		if(player GetStance() == "prone")
 		{
 			player.perk_bumps_activated[""+hash] = true;
-			randInt = randomint( 4 );
-			wait(randInt);
+			wait(1);
 			player thread maps\_zombiemode_score::add_to_player_score( 100 );
 			wait( 0.1 );
 			continue;

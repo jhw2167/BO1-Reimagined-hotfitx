@@ -1898,7 +1898,6 @@ start_special_pap( powerup, isUpgraded )
 	destination.origin = (640, 14, 61);
 	destination.angles = level.pap_angles + (0, -180, 0);
 
-	self.ignoreme = true;
 	level.pap_moving = false;
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );	
 
@@ -1933,9 +1932,7 @@ start_special_pap( powerup, isUpgraded )
 
 
 	level.pap_moving = true;
-	self.ignoreme = false;
-
-	wait 2;
+	self.ignoreme = true;
 
 	respawn_point = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
 	respawn = SpawnStruct();
@@ -1943,6 +1940,9 @@ start_special_pap( powerup, isUpgraded )
 	respawn.angles = self GetPlayerAngles();
 
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( respawn, true );
+	self VisionSetNaked( level.zombie_visionset, 0.5 );
+	wait 0.5;
+	self.ignoreme = false;
 	//wait(2);
 
 }

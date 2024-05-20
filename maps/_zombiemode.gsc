@@ -49,14 +49,14 @@ main()
 	//Overrides	
 	/* 										/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=4;	///
+	level.starting_round_override=41;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///
-	level.apocalypse_override=false;		///
+	level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///*/
 
 	setApocalypseOptions();
@@ -516,9 +516,9 @@ reimagined_init_level()
 	//These are (expected drops per round * 10), so "10" is 1 drop expected per round,
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 12;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6; //6;		//between 0-1000)	
-	level.VALUE_ZOMBIE_DROP_RATE_RED = 6;		//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 8;			//between 0-1000)
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 4; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
 		if( isDefined(level.drop_rate_override) ) {
@@ -528,8 +528,8 @@ reimagined_init_level()
 			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
 		}
 
-	level.VALUE_ZOMBIE_DROP_INCREMENT = 2.0;
-	level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND = 15;
+	level.VALUE_ZOMBIE_DROP_INCREMENT = 0.4;
+	level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND = 11;
 
 
 	level.THRESHOLD_MAX_DROPS = 8;	//Max Drops allowed per round. Protects against bugs
@@ -866,15 +866,18 @@ reimagined_init_level()
 	level.THRESHOLD_VRKT_ELECTRAP_DROP_HACK_RADIUS = 88;
 	level.MAP_VRKT_POWERUP_HACKS = [];
 
-	level.MAP_VRKT_POWERUP_HACKS["full_ammo"] = "free_perk";
+	
 	level.MAP_VRKT_POWERUP_HACKS["insta_kill"] = "double_points";
+	level.MAP_VRKT_POWERUP_HACKS["double_points"] = "carpenter";
 	level.MAP_VRKT_POWERUP_HACKS["carpenter"] = "nuke";
 	level.MAP_VRKT_POWERUP_HACKS["nuke"] = "insta_kill";
-	level.MAP_VRKT_POWERUP_HACKS["double_points"] = "carpenter";
+
 	level.MAP_VRKT_POWERUP_HACKS["tesla"] = "full_ammo";
+	level.MAP_VRKT_POWERUP_HACKS["full_ammo"] = "free_perk";
 
+	level.MAP_VRKT_POWERUP_HACKS["fire_sale"] = "restock";
+	level.MAP_VRKT_POWERUP_HACKS["restock"] = "fire_sale";
 
-	
 
 	//Shino
 
@@ -1211,38 +1214,30 @@ watch_player_button_press()
 	self handle_swap_melee();
 	wait( 0.2 );
 	self handle_swap_melee();
+	self SwitchToWeapon( self GetWeaponsListPrimaries()[0] );
 
 	while(1)
 	{
 		/* MELEE SWAP */
 		if( self is_action_slot_pressed() )
 		{
-			//iprintln("DPAD_DOWN pressed");
-			//hold for 1 second, while loop
-			time = 0;
-			
-			while( self is_action_slot_pressed()  )
-			{ 
-				wait( 0.1 );
-				time += 0.1;
-				if( time > .4 )
+			wep = self GetCurrentWeapon();
+			validWep = ( wep == "vorkuta_knife_sp" || wep == "combat_knife_zm" );
+			while( validWep )
+			{
+				wait 0.1;
+				wep = self GetCurrentWeapon();
+				validWep = ( wep == "vorkuta_knife_sp" || wep == "combat_knife_zm" );
+
+				if( self is_action_slot_pressed() )
 				{
-					while( self is_action_slot_pressed() || self isSwitchingWeapons() )
-					{ 
-						wait( 0.1 );
-					}
-					
 					self handle_swap_melee();
+					wait 0.5;
 					break;
 				}
+				
 			}
-
-			while( self is_action_slot_pressed() )
-			{ 
-				wait( 0.1 );
-			}
-
-			wait 2;
+			
 		}
 
 
@@ -1277,12 +1272,11 @@ watch_player_button_press()
 
 	is_action_slot_pressed()
 	{
-		wep = self GetCurrentWeapon();
-		//iprintln("Current Weapon: " + wep);
-		//if( wep != "vorkuta_knife_sp" || wep != "combat_knife_zm" )
-			//return false;
 
-		if( self ActionSlotTwoButtonPressed() )
+		//if( self ActionSlotTwoButtonPressed() )
+			//return true;
+
+		if( self AdsButtonPressed() )
 			return true;
 
 		
@@ -1331,13 +1325,14 @@ watch_player_button_press()
 		self GiveWeapon( new_equipment );
 
 		self SetActionSlot(2, "weapon", new_equipment );
+		self SetActionSlot(4, "weapon", old_equipment );
 		self set_player_melee_weapon( new_knife );
 
 		self.current_melee_weapon = new_knife;
 		self.offhand_melee_weapon = old_knife;
 
 		if( isDefined( primary_weapon ) )
-			self SwitchToWeapon( primary_weapon );
+			self SwitchToWeapon( new_equipment );
 
 	}
 
@@ -5295,7 +5290,8 @@ round_spawning()
 	}
 #/
 
-	//iprintln( "Round " + level.round_number + " starting" );
+	iprintln( "Calc health call " );
+	iprintln( "Round " + level.round_number + " starting" );
 	ai_calculate_health( level.round_number );
 
 	//CODER MOD: TOMMY K
@@ -5894,6 +5890,7 @@ reimagined_expanded_round_start()
 		if( level.round_number >= level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND )
 		{
 			level.drop_rate_adjustment = level.VALUE_ZOMBIE_DROP_INCREMENT * (level.round_number - level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND);	
+			iprintln( "Drop rate adjustment: " + level.drop_rate_adjustment );
 		}
 	}
 	
@@ -6824,30 +6821,8 @@ award_grenades_for_survivors()
 
 ai_calculate_health( round_number )
 {
-	if(level.gamemode == "snr" || level.gamemode == "gg")
-	{
-		return;
-	}
-
-	//odd rounds starting on 163 are insta kill rounds
-	if(round_number >= 163)
-	{
-		//don't let players exploit NML
-		if(is_true(flag("enter_nml")))
-		{
-			level.zombie_health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
-		}
-		else if(round_number % 2 == 1)
-		{
-			level.zombie_health = 150;
-		}
-		else
-		{
-			level.zombie_health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
-		}
-		return;
-	}
-
+	
+	iprintln("Zombie Health calculate: ");
 
 	//Reimagined-Expanded - exponential health scaling
 	base = 800;
@@ -6860,12 +6835,13 @@ ai_calculate_health( round_number )
 	exp_scale_rounds = 10;
 	
 	health = startHealth;
+	iprintln(health);
 	for ( i=2; i<=round_number; i++ )
 	{	
 		if(i == exp_scale_rounds)	
 			rTenfactor=1;
 		health += ( base * rTenfactor * ( i/logFactor ) );
-		//iprintln(health);	
+		iprintln(health);	
 	}
 
 	//Player zombie health multiplier
@@ -6876,15 +6852,17 @@ ai_calculate_health( round_number )
 	//cap zombies health, first round of capped == 41
 	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
 		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
-	}
-
+	}	
+	
+	zombie_totals_defined = isdefined(level.zombie_total) && isdefined(level.zombie_round_total);
 	apocalypse_health = ( round_number > level.THRESHOLD_MAX_APOCALYSE_ROUND ) && level.zombie_total > level.zombie_round_total;
-	if( level.apocalypse && apocalypse_health ) {
+	if( level.apocalypse && apocalypse_health  && zombie_totals_defined ) {
 		health *= ( level.zombie_total / level.zombie_round_total); //factor always >= 1
 	}
 	
 	//PRINT
-	//iprintln("Current health:  " + health);
+	iprintln("Current health print:  ");
+	iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
 }
 
@@ -7992,12 +7970,15 @@ zombie_knockdown( wait_anim, upgraded )
 	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
 		return;
 
+	if( self.animname != "zombie" )
+		return;
+
 	if( !IsDefined(wait_anim) )
 		wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 
 	if( !IsDefined(upgraded) )
 		upgraded = false;
-	
+
 	self.knockdown = true;
 	fall_anim = %ai_zombie_thundergun_hit_upontoback;
 	self SetPlayerCollision( 0 );
@@ -8041,6 +8022,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Inflictor: " + inflictor);
 	//iprintln("Flags: " + flags);
 	//iprintln("Has Drop: " + self.hasDrop);
+	iprintln("Final Damage 0: ");
 	
 	// WW (8/14/10) - define the owner of the monkey shot
 	if( weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_IMPACT" )
@@ -8108,6 +8090,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln( "Anim name: " + self.animname );
 	old_damage = damage;
 	final_damage = damage;
+	iprintln("Final Damage 1: " + final_damage);
 
 	if ( IsDefined( self.actor_damage_func ) )
 	{
@@ -8120,6 +8103,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		final_damage = [[ self.actor_full_damage_func ]]( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime );
 		//iprintln( " Full Custom damage function: " + final_damage );
 	}
+
+	iprintln("Final Damage 2: " + final_damage);
 
 	// debug
 	/#
@@ -8150,11 +8135,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		final_damage = int( final_damage * 1.5 );
 	}
 
+	iprintln("Final Damage 3: " + final_damage);
+
 	if((is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill)) && !is_true(self.magic_bullet_shield) && self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
 	{
 		// insta kill should not effect these weapons as they already are insta kill, causes special anims and scripted things to not work
 		no_insta_kill_on_weps = array("tesla_gun_zm", "tesla_gun_upgraded_zm", "tesla_gun_powerup_zm", "tesla_gun_powerup_upgraded_zm", "humangun_zm", "humangun_upgraded_zm", "microwavegundw_zm", "microwavegundw_upgraded_zm");
-
+		iprintln("Final Damage 3.5: " + final_damage);
 		if(!is_in_array(no_insta_kill_on_weps, weapon))
 		{
 			if ( !is_true( self.no_gib ) )
@@ -8283,6 +8270,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		return final_damage;
 	}
 
+	iprintln("Final Damage 5: " + final_damage);
+
 	//ORIGIN_
 	//iprintln("Origin: " + attacker.origin );
 	//iprintln("class: " + attacker.classname );
@@ -8343,6 +8332,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		return final_damage;
 	}
+
+	iprintln("Final Damage 5: " + final_damage);
 
 	// damage scaling for explosive weapons
 	// consistent damage and scales for zombies farther away from explosion better
@@ -8726,6 +8717,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( !isSubStr(weapon, "_upgraded") ) {
 			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;
 		}
+
+		iprintln("Final Damage 6: " + final_damage);
 		
 		
 		// Death Machine - kills in 4 body shots or 2 headshots
@@ -9150,6 +9143,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 
+	iprintln("Final Damage 7: " + final_damage);
 
 
 	

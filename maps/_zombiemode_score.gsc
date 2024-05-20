@@ -571,7 +571,8 @@ minus_to_player_score( points )
 
 	self.score -= points;
 	self.spent_points += points;
-	self.gross_possible_points += points;
+	if( points <= 250 )
+		self.gross_possible_points += points;
 
 	// also set the score onscreen
 	self set_player_score_hud();

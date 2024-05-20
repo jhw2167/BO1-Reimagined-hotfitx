@@ -420,8 +420,8 @@ zombie_determine_drop()
 		//print total and rand
 		//iprintln(" rand: " + rand);
 
-		green_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN / total ) * 1000);
-		blue_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE / total ) * 1000);
+		green_rate = Int( ( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN + level.drop_rate_adjustment ) / total ) * 1000);
+		blue_rate = Int( ( ( level.VALUE_ZOMBIE_DROP_RATE_BLUE +  level.drop_rate_adjustment ) / total ) * 1000);
 		red_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_RED / total ) * 1000);
 
 		//iprintln(" rand: " + rand);
@@ -429,7 +429,7 @@ zombie_determine_drop()
 		//Not Acpocalypse/extra drops
 		if(level.extra_drops) 
 		{
-			rand -= level.drop_rate_adjustment; // between  0 and 80, makes drops more frequent later
+			 // level.drop_rate_adjustment,  between  0 and 80, makes drops more frequent later
 			//Apocalypse or extra drops
 			if( rand < green_rate )
 			{
@@ -443,11 +443,11 @@ zombie_determine_drop()
 			{
 				self.hasDrop = "RED";
 			}
-
-		} else {
-			green_rate = Int( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL / total ) * 1000);
 			
-			if( rand < green_rate ) {
+		} else {
+				green_rate = Int( ( ( level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL + level.drop_rate_adjustment ) / total ) * 1000);
+			
+			if( rand < green_rate  ) {
 				self.hasDrop = "GREEN";
 				//iprintln("SUCESS: rand: " + rand + " < " + green_rate);
 			} 
@@ -469,7 +469,7 @@ zombie_determine_drop()
 			//zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
 			//zombie_drop_model LinkTo( self, "j_SpineLower" );
 
-			//iprintln("Zombie Drop 3: " + self.hasDrop);
+			iprintln("Zombie Drop 3: " + self.hasDrop);
 
 			//self.zombie_drop_model = zombie_drop_model;
 			//maps\_zombiemode_perks::vulture_pro_powerup_zombie_glow( self GetEntityNumber() );

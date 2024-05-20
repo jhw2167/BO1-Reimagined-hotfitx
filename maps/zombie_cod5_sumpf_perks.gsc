@@ -521,7 +521,7 @@ set_perk_buystring( script_notetworthy )
 	{
 	case "specialty_armorvest_upgrade":
 	case "specialty_armorvest":
-		cost = 2500;
+		cost = 4000;
 		break;
 
 	case "specialty_quickrevive_upgrade":
