@@ -442,6 +442,7 @@ zombie_determine_drop()
 			else if( rand < green_rate + blue_rate + red_rate )
 			{
 				self.hasDrop = "RED";
+				self.hasDrop = "NONE";
 			}
 			
 		} else {

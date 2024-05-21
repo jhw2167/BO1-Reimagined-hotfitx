@@ -1183,6 +1183,12 @@ LANG_ENGLISH       	"STARTING ROUND"
 REFERENCE          	GAME_HINTS
 LANG_ENGLISH       	"REIMAGINED IN-GAME HINTS"
 
+REFERENCE          	BABYJUGG_TITLE
+LANG_ENGLISH       	"Baby Jugg"
+
+REFERENCE          	BABYJUGG_HINT
+LANG_ENGLISH       	"- Health set to 140, permanently"
+
 REFERENCE          	QRV_PRO_TITLE
 LANG_ENGLISH       	"QuickRevive Pro"
 
@@ -1192,8 +1198,8 @@ LANG_ENGLISH       	"- Trigger zombie blood for revived players \n- Larger reviv
 REFERENCE          	JUG_PRK_TITLE
 LANG_ENGLISH       	"Juggernog"
 
-REFERENCE          	JUG_PRO_HINT
-LANG_ENGLISH       	"- Juggernog is now a luxury purchase"
+REFERENCE          	JUG_PRK_HINT
+LANG_ENGLISH       	"- That's a little pricey, maybe try Babyjug?"
 
 REFERENCE          	JUG_PRO_TITLE
 LANG_ENGLISH       	"Juggernog Pro"
@@ -1217,20 +1223,19 @@ REFERENCE 			DBT_PRO_TITLE
 LANG_ENGLISH 		"Double-Tap 2.0 Pro"
 
 REFERENCE 			DBT_PRO_HINT
-LANG_ENGLISH 		"- All bullet weapons do 100% increased damage \n- Provides bullet penetration of up to 6 zombies"
+LANG_ENGLISH 		"- All bullet weapons do 100% increased damage \n- Provides bullet penetration of up to 6 zombies \n-   - Improves Double Pack-a-Punch wepaon abilities"
 
 REFERENCE 			STM_PRO_TITLE
 LANG_ENGLISH 		"Stamina-Up Pro"
 
 REFERENCE 			STM_PRO_HINT
-LANG_ENGLISH 		"- When you melee then sprint, enter a ghost mode for 3 seconds allowing you to run through zombies \n- Further speed increase"
+LANG_ENGLISH 		"- When you melee then sprint, enter a ghost mode for 3 seconds allowing you to run through zombies \n- Further speed increase \n- Doubles melee damage"
 
 REFERENCE 			PHD_PRK_TITLE
 LANG_ENGLISH 		"PhD Flopper 2.0"
 
 REFERENCE 			PHD_PRK_HINT
-LANG_ENGLISH 		"- Immune to damage caused by explosive weapons \n- Explosions deal double damage to zombies \n- Killing zombies with explosive weapons or equipment rewards bonus points"
-
+LANG_ENGLISH 		"- Immune to damage caused by explosive weapons \n- Explosions deal double damage to zombies \n- Killing zombies with explosive weapons or equipment gives bonus points"
 
 REFERENCE 			PHD_PRO_TITLE
 LANG_ENGLISH 		"PhD Flopper 2.0 Pro"
@@ -1338,7 +1343,7 @@ REFERENCE			SHOTGUN_DAMAGE_TITLE
 LANG_ENGLISH 		"SHOTGUNS"
 
 REFERENCE			SHOTGUN_DAMAGE_HINT
-LANG_ENGLISH 		"- For each round you own a Shotgun, you do 10% more damage with all shotguns \n- All attrition is lost if you begin round without owning a shotgun"
+LANG_ENGLISH 		"- For each round you own a Shotgun, you do 10% more damage with all shotguns \n- All attrition is lost if you begin a round without owning a shotgun"
 
 REFERENCE			SIDEARM_DAMAGE_TITLE
 LANG_ENGLISH 		"SIDEARMS"

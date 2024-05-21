@@ -34,7 +34,7 @@ init()
 
 	// Perks-a-cola vending machine use triggers
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
-	bump_triggers = GetEntArray( "audio_bump_trigger", "targetname" );
+	//bump_triggers = GetEntArray( "audio_bump_trigger", "targetname" );
 
 	// Pack-A-Punch weapon upgrade machine use triggers
 	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
@@ -93,7 +93,7 @@ init()
 
 	array_thread( vending_triggers, ::vending_trigger_think );
 	array_thread( vending_triggers, ::electric_perks_dialog );
-	array_thread( bump_triggers, ::bump_trigger_think );
+	//array_thread( bump_triggers, ::bump_trigger_think );
 	
 	//level thread turn_PackAPunch_on();
 
@@ -1272,7 +1272,6 @@ turn_revive_on()
 				bump_trigger.script_activated = 1;
 				bump_trigger.script_sound = "fly_bump_bottle";
 				bump_trigger.targetname = "audio_bump_trigger";
-				bump_trigger thread bump_trigger_think();
 			}
 		}
 	}
@@ -2105,6 +2104,12 @@ bump_trigger_think()
 			continue;
 		}
 
+		if( self.perk == "specialty_armorvest" && level.apocalypse )
+		{
+			if( flag("power_on") )
+				player thread maps\_zombiemode_reimagined_utility::generate_perk_hint( self.perk );
+		}
+
 		if(player GetStance() == "prone")
 		{
 			player.perk_bumps_activated[""+hash] = true;
@@ -2209,6 +2214,7 @@ vending_trigger_think()
 			sound = "evt_bottle_dispense";
 			playsoundatposition(sound, self.origin);
 			player maps\_zombiemode_score::minus_to_player_score( cost );
+			player thread maps\_zombiemode_reimagined_utility::generate_perk_hint( "babyjugg" );
 
 			player playLocalSound("chr_breathing_hurt");
 			player thread maps\_gameskill::event_heart_beat( "panicked" , 1 );
@@ -2240,11 +2246,6 @@ vending_trigger_think()
 		return;
 	}
 
-	//Reimagined-Expanded - Do a no perk run!
-	if(level.max_perks == 0) {
-		return;
-	}
-
 	//player_print_msg( "Setting up perk: " + perk );
 
 	if(level.script != "zombie_cod5_sumpf")
@@ -2255,8 +2256,16 @@ vending_trigger_think()
 			if(IsDefined(machine[i].classname) && machine[i].classname == "script_model")
 			{
 				level thread add_bump_trigger(self.script_noteworthy, machine[i].origin);
+				bump_trigger = Spawn( "trigger_radius", machine[i].origin, 0, 35, 64 );
+				bump_trigger.perk = self.script_noteworthy;
+				bump_trigger thread bump_trigger_think();
 			}
 		}	
+	}
+
+	//Reimagined-Expanded - Do a no perk run!
+	if(level.max_perks == 0) {
+		return;
 	}
 
 	flag_init( "_start_zm_pistol_rank" );	
@@ -6315,14 +6324,45 @@ zombie_watch_vulture_drop_bonus()
 		vulture_drop_ammo_bonus()
 		{
 			str_weapon_current = self GetCurrentWeapon();
+			otherWeps = self GetWeaponsListPrimaries();
+			validAmmoWeapon = is_valid_ammo_bonus_weapon( str_weapon_current );
+			index = 0;
+			//HERE
+
+			while( !validAmmoWeapon )
+			{
+				str_weapon_current = otherWeps[index];
+
+				if( is_valid_ammo_bonus_weapon( str_weapon_current ) ) 
+				{
+					currentAmmo = self GetWeaponAmmoStock( str_weapon_current );
+					maxWepAmmo = WeaponMaxAmmo( str_weapon_current );
+
+					if( currentAmmo < maxWepAmmo )
+					{
+						validAmmoWeapon = true;
+						break;
+					}
+
+				}
+				
+				index++;
+				
+			}
+
 			if( str_weapon_current != "none" )
 			{
-				if( is_valid_ammo_bonus_weapon( str_weapon_current ) )
+				if( validAmmoWeapon )
 				{
 					n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
 					n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
 					ammo_fraction = RandomFloatRange( 0, level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION );
 					n_ammo_refunded = clamp( Int( n_ammo_count_max * ammo_fraction ), 1, n_ammo_count_max );
+
+					if( WeaponClass(str_weapon_current) == "spread" )
+					{
+						n_ammo_refunded = RandomIntRange( 1, 5 );
+					}
 
 					if( n_ammo_refunded < level.VALUE_VULTURE_MIN_AMMO_BONUS )
 						n_ammo_refunded = level.VALUE_VULTURE_MIN_AMMO_BONUS;

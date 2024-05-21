@@ -190,7 +190,14 @@ generate_perk_hint( perk )
     /* SET APPROPRIATE HINT */
 		switch( perk )
 		{
-			//case "specialty_armorvest":
+		case "babyjugg":
+			title SetText( &"REIMAGINED_BABYJUGG_TITLE" );
+			text SetText( &"REIMAGINED_BABYJUGG_HINT" );
+			break;
+		case "specialty_armorvest":
+			title SetText( &"REIMAGINED_JUG_PRK_TITLE" );
+			text SetText( &"REIMAGINED_JUG_PRK_HINT" );
+			break;
 		case "specialty_armorvest_upgrade":
 			text SetText( &"REIMAGINED_JUG_PRO_HINT" );
 			title SetText( &"REIMAGINED_JUG_PRO_TITLE" );

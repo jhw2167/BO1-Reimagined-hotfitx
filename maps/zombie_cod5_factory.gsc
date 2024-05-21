@@ -768,6 +768,8 @@ include_powerups()
 
 	include_powerup( "tesla" );
 	include_powerup( "restock" );
+PreCacheItem( "minigun_zm" );
+include_powerup( "minigun" );
 }
 
 

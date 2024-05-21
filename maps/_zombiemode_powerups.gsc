@@ -3436,8 +3436,13 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	ent_player endon( "death" );
 	ent_player endon( "player_downed" );
 
-	if( is_true( ent_player.superpower_active) )
-		return;
+	wait(0.5);	//in case player picks up perk bottle nearby
+
+	while( is_true( ent_player.superpower_active) )
+	{
+		level.stack_player_superpower = true;
+		wait( 0.1 );
+	}
 
 	ent_player.superpower_active = true;
 
@@ -3448,37 +3453,44 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	{
 		drop_time = 45;
 	}
-	
-
-	wait(2);	//in case player picks up perk bottle nearby
 
 	//Reimagined-Expanded, override "Tesla" powerup to be a "Superpower"
 
 	//Record player perks
 	current_perks = ent_player.purchased_perks;
-	
+
+	//Give player normal than upgraded perks in rapid succession
+	for( i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++ ) {
+		ent_player maps\_zombiemode_perks::returnPerk( level.ARRAY_VALID_PERKS[i] );
+		wait(0.05);
+	}
+
 	//Give player all PRO perks, if they don't have them already
 	for( i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++ ) {
 		ent_player maps\_zombiemode_perks::returnPerk( level.ARRAY_VALID_PRO_PERKS[i] );
-		wait(0.3);
+		wait(0.05);
 	}
 
 	//drop_time = 3; //dev
 	wait( drop_time );
 
 	//Take all Pro Perks
-	for(i = level.ARRAY_VALID_PRO_PERKS.size; i > -1 ; i--) {
-		ent_player maps\_zombiemode_perks::removePerk(level.ARRAY_VALID_PRO_PERKS[i]);
-		wait(0.1);
-	}
+	if( !level.stack_player_superpower)
+	{
+		for(i = level.ARRAY_VALID_PRO_PERKS.size; i > -1 ; i--) {
+			ent_player maps\_zombiemode_perks::removePerk(level.ARRAY_VALID_PRO_PERKS[i]);
+			wait(0.1);
+		}
 
 	//Give player all perks they had before
-	for( i = 0; i < current_perks.size; i++ ) {
-		ent_player maps\_zombiemode_perks::returnPerk( current_perks[i] );
-		wait(0.3);
+		for( i = 0; i < current_perks.size; i++ ) {
+			ent_player maps\_zombiemode_perks::returnPerk( current_perks[i] );
+			wait(0.1);
+		}
 	}
 
 	ent_player.superpower_active = false;
+	level.stack_player_superpower = false;
 	ent_player.num_perks = current_perks.size;
 	//iprintlnBold("current_perks.size: " + current_perks.size);
 }
