@@ -6881,15 +6881,17 @@ player_zombie_handle_widows_poison( zombie )
 	{
 		scale = 50;
 		forward = vector_scale( AnglesToForward( self.angles ), scale );
-		model = Spawn( "script_model", self.origin + forward );
-		model SetModel( "tag_origin" );
+		//model = Spawn( "script_model", self.origin + forward );
+		//model SetModel( "tag_origin" );
 		//model LinkTo( self, "tag_origin", forward );
-		model LinkTo( self, "tag_origin" );
+		//model LinkTo( self, "tag_origin" );
 		
 		condition = self.marked_for_poison && IsAlive( self );
 		time = 4;
 		interval = 0.25;
-		PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], model, "tag_origin" );
+		//PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], model, "tag_origin" );
+		//HERE
+		PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], self, "j_SpineLower" );
 		while( condition )
 		{
 			condition = self.marked_for_poison && IsAlive( self ) && time > 0;
@@ -6897,7 +6899,7 @@ player_zombie_handle_widows_poison( zombie )
 			time -= interval;
 		}
 
-		model Delete();
+		//model Delete();
 	}
 	
 //Handle Widows Grenades

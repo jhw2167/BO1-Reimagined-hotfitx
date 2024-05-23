@@ -55,7 +55,7 @@ main()
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=15;	///
+	level.calculate_amount_override=15;	///
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.dev_only=true;					///*/
@@ -1147,7 +1147,7 @@ watch_player_utility()
 		if( self buttonPressed("q")  && dev_only)
 		{
 			//_zombiemode_reimagined_utility
-			start_properk_placer();
+			//start_properk_placer();
 		}
 
 		wait(0.5);
@@ -1213,6 +1213,8 @@ wait_set_player_visionset()
 	//iprintln( "Entity Number: " + self.entity_num);
 
 	//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+	self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+	self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 	wait( 5 );
 	
 
@@ -5934,6 +5936,11 @@ reimagined_expanded_round_start()
 	
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
+	//Tracking
+	entity = Spawn( "script_model", (0, 0, 0) );
+	iprintln( "Spawning entity: " );
+	iprintln( "With Number: " + entity GetEntityNumber() );
+	entity delete();
 
 }
 

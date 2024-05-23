@@ -1899,6 +1899,7 @@ start_special_pap( powerup, isUpgraded )
 	destination.angles = level.pap_angles + (0, -180, 0);
 
 	level.pap_moving = false;
+	self.ignoreme = true;
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );	
 
 	powerup_time = 15;
@@ -1932,7 +1933,6 @@ start_special_pap( powerup, isUpgraded )
 
 
 	level.pap_moving = true;
-	self.ignoreme = true;
 
 	respawn_point = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
 	respawn = SpawnStruct();
@@ -3433,8 +3433,6 @@ minigun_watch_gunner_downed()
 tesla_weapon_powerup( ent_player, powerup, time )
 {
 	ent_player endon( "disconnect" );
-	ent_player endon( "death" );
-	ent_player endon( "player_downed" );
 
 	wait(0.5);	//in case player picks up perk bottle nearby
 

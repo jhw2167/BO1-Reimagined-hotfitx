@@ -291,6 +291,7 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 		grenadeOrAi waittill("explode");
 	}
 	
+	grenadeOrAi Delete();
 	
 	sound_ent = spawn( "script_origin", trigger.origin );
 	sound_ent playloopsound( "evt_napalm_fire", 1 );
@@ -300,6 +301,7 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 
 	if(!isDefined(trigger))
 	{
+		sound_ent delete();
 		return;
 	}
 
