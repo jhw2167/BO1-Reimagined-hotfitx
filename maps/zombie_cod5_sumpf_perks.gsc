@@ -30,7 +30,8 @@ watch_randomize_vending_machines()
 	while( true )
 	{
 		rounds_until_swap = randomintrange( 1, 4 );
-		//rounds_until_swap = 1;
+		if( is_true( level.dev_only))
+			rounds_until_swap = 1;
 		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_swap; i++ )
 		{
@@ -58,7 +59,8 @@ watch_swamplights()
 
 
 	wait_times = array(30, 60, 240, 300);
-	//wait_times = array(10, 5);
+	if( is_true( level.dev_only ) )
+		wait_times = array(10, 5);
 
 	while( true )
 	{
@@ -521,7 +523,9 @@ set_perk_buystring( script_notetworthy )
 	{
 	case "specialty_armorvest_upgrade":
 	case "specialty_armorvest":
-		cost = 4000;
+		cost = 2500;
+		if( level.expensive_perks )
+			cost = 4000;
 		break;
 
 	case "specialty_quickrevive_upgrade":

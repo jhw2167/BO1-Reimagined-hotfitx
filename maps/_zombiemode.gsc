@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=30;	///
+	level.starting_round_override=14;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -57,7 +57,9 @@ main()
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///
 	level.apocalypse_override=false;		///
-	//level.override_give_all_perks=true;	///*/
+	//level.override_give_all_perks=true;	///
+	level.dev_only=true;					///*/
+	
 
 	setApocalypseOptions();
 
@@ -2311,7 +2313,7 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "zm_mod_version", "1.10.0" );
+	SetDvar( "zm_mod_version", "2.0.0" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
