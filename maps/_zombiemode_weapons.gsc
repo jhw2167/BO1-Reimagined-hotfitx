@@ -312,7 +312,7 @@ init_weapons()
 
  	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
  	add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
- 	add_zombie_weapon( "psg1_zm",					"psg1_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"sniper",			"",		undefined );
+ 	//add_zombie_weapon( "psg1_zm",					"psg1_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"sniper",			"",		undefined );
  	add_zombie_weapon( "ppsh_zm",					"ppsh_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"smg",			"",		undefined );
 
  	add_zombie_weapon( "molotov_zm", 				undefined,								&"ZOMBIE_WEAPON_FRAG_GRENADE",			250,	"grenade",			"",		undefined );
@@ -2432,7 +2432,7 @@ treasure_chest_ChooseRandomWeapon( player )
 
 treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 {
-	if(IsDefined(player) && !IsDefined(player.already_got_weapons))
+	if(IsDefined(player) || !IsDefined( player.already_got_weapons ) || ( player.already_got_weapons.size > 5 )  )	//Back to regular randomness - Reimagined-Expanded
 		player.already_got_weapons = [];
 
 	keys = GetArrayKeys( level.zombie_weapons );
@@ -2464,6 +2464,20 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 		if(IsDefined(player) && is_in_array( player.already_got_weapons, keys[i] ))
 		{
 			continue;
+		}
+
+		//Special conditions
+		if( player maps\_zombiemode_perks::hasProPerk( level.WWN_PRO )  )
+		{
+			if( keys[i] == "zombie_quantum_bomb" 
+			|| keys[i] == "zombie_black_hole_bomb" 
+			|| keys[i] == "zombie_cymbal_monkey" 
+			|| keys[i] == "molotov_zm" 
+			)
+			{
+				continue;
+			}
+
 		}
 
 		filtered[filtered.size] = keys[i];
@@ -2535,6 +2549,7 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 	}
 
 	// finally, filter based on toggle mechanic
+	/*
 	if ( IsDefined( level.zombie_weapon_toggles ) )
 	{
 		keys2 = GetArrayKeys( level.zombie_weapon_toggles );
@@ -2551,6 +2566,7 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 			filtered = array_remove( filtered, keys2[q] );
 		}
 	}
+	*/
 
 	//just getting the new list of weapons a player can get from another call
 	if(IsDefined(empty) && empty)

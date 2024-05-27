@@ -1212,9 +1212,13 @@ wait_set_player_visionset()
 	//Print entitity number and random char
 	//iprintln( "Entity Number: " + self.entity_num);
 
-	//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
-	self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-	self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+	if( is_true( level.dev_only ) )
+	{
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+	}
+	
 	wait( 5 );
 	
 

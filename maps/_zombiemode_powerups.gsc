@@ -3436,10 +3436,10 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	wait(0.5);	//in case player picks up perk bottle nearby
 
-	while( is_true( ent_player.superpower_active) )
+	if( is_true( ent_player.superpower_active) )
 	{
 		level.stack_player_superpower = true;
-		wait( 0.1 );
+		return;
 	}
 
 	ent_player.superpower_active = true;
@@ -3460,35 +3460,46 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	//Give player normal than upgraded perks in rapid succession
 	for( i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++ ) {
 		ent_player maps\_zombiemode_perks::returnPerk( level.ARRAY_VALID_PERKS[i] );
-		wait(0.05);
+		wait(0.02);
 	}
 
 	//Give player all PRO perks, if they don't have them already
 	for( i = 0; i < level.ARRAY_VALID_PRO_PERKS.size; i++ ) {
 		ent_player maps\_zombiemode_perks::returnPerk( level.ARRAY_VALID_PRO_PERKS[i] );
-		wait(0.05);
+		wait(0.02);
 	}
 
-	//drop_time = 3; //dev
-	wait( drop_time );
+	if( is_true( level.dev_only ) )
+		drop_time = 5; //dev
+
+	time = 0;
+	while( time < drop_time )
+	{
+		if( is_true( level.stack_player_superpower ) )
+		{
+			drop_time += 45;
+			level.stack_player_superpower = false;
+		}
+		
+		time += 0.5;
+		wait(0.5);
+	}
+	
 
 	//Take all Pro Perks
-	if( !level.stack_player_superpower)
-	{
-		for(i = level.ARRAY_VALID_PRO_PERKS.size; i > -1 ; i--) {
-			ent_player maps\_zombiemode_perks::removePerk(level.ARRAY_VALID_PRO_PERKS[i]);
-			wait(0.1);
-		}
-
-	//Give player all perks they had before
-		for( i = 0; i < current_perks.size; i++ ) {
-			ent_player maps\_zombiemode_perks::returnPerk( current_perks[i] );
-			wait(0.1);
-		}
+	for(i = level.ARRAY_VALID_PRO_PERKS.size; i > -1 ; i--) {
+		ent_player maps\_zombiemode_perks::removePerk(level.ARRAY_VALID_PRO_PERKS[i]);
+		wait(0.1);
 	}
 
+	//Give player all perks they had before
+	for( i = 0; i < current_perks.size; i++ ) {
+		ent_player maps\_zombiemode_perks::returnPerk( current_perks[i] );
+		wait(0.1);
+	}
+
+
 	ent_player.superpower_active = false;
-	level.stack_player_superpower = false;
 	ent_player.num_perks = current_perks.size;
 	//iprintlnBold("current_perks.size: " + current_perks.size);
 }

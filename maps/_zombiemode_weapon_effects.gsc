@@ -357,6 +357,7 @@ bonus_fire_damage( zomb , player, radius, time)
 	
 	if(!isDefined(trigger) || radius == 0)
 	{
+		trigger Delete();
 		return;
 	}
 
