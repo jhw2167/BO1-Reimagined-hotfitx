@@ -1519,9 +1519,9 @@ divetonuke_explode( attacker, origin )
 
 	// WW (01/12/11): start clientsided effects - These client flags are defined in _zombiemode.gsc & _zombiemode.csc
 	// Used for zombie_dive2nuke_visionset() in _zombiemode.csc
-	attacker SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
+	//attacker SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
 	wait( 0.1 );
-	attacker ClearClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
+	//attacker ClearClientFlag( level._ZOMBIE_PLAYER_FLAG_DIVE2NUKE_VISION );
 }
 
 // WW (02-02-11): Deadshot
@@ -6302,9 +6302,9 @@ zombie_watch_vulture_drop_bonus()
 		//Self is drop
 		watch_player_vulture_drop_pickup( player )
 		{
-			create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
+			//create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
 			self vulture_drop_pickup( player );
-			destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
+			//destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
 			self SetInvisibleToPlayer( player, true );
 		}
 

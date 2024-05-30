@@ -384,6 +384,7 @@ ZPO_listener()
 // Zombie Eye Glow
 //=========================================================================================================
 
+/*
 createZombieEyes( localClientNum )
 {
 	if( IsDefined( self._eyeArray ) )
@@ -412,6 +413,7 @@ deleteZombieEyes( localClientNum )
 		}
 	}
 }
+*/
 
 on_player_connect( localClientNum )
 {
@@ -423,6 +425,7 @@ on_player_spawn( localClientNum )
 	ForceGameModeMappings( localClientNum, "default" );
 }
 
+/*
 on_zombie_spawn( localClientNum )
 {
 	self endon( "entityshutdown" );
@@ -454,6 +457,7 @@ zombie_eye_callback( localClientNum, hasEyes )
 		}
 	}
 }
+*/
 
 //=========================================================================================================
 // Perk Machine Lights ( Obsolete )

@@ -368,8 +368,8 @@ zombie_on_death()
 {
 	self waittill_any("death", "zombie_delete" );
 	
-	if( isDefined( self.hasDrop ) ) {
-		//cleanup handled in clienscripts
+	if( isDefined( self.zombie_drop_model ) ) {
+		self.zombie_drop_model Delete();
 	}
 		
 	if( isDefined( self.fx_eye_glow ) )
@@ -380,7 +380,7 @@ zombie_on_death()
 zombie_wait_determine_drop() 
 {
 	self endon("death");
-	/* I kinda like seeing zombies spawn with the glowy - Reinmagined-Expanded
+	/* I kinda like seeing zombies spawn with the glowy - Reimagined-Expanded
 	notInPlayableArea = true;
 	playable_area = getentarray("player_volume","script_noteworthy");
 	while( notInPlayableArea )
@@ -463,20 +463,29 @@ zombie_determine_drop()
 			//iprintln( "zombie total: " + total);
 			//iprintln(" rand: " + rand);
 			//iprintln( "blue_rate: " + blue_rate + " red_rate: " + red_rate + " green_rate: " + green_rate);
+
+			//iprintln("Zombie Drop 3: " + self.hasDrop);
+
 			level.total_drops_round++;
-			self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
-			wait 0.5;
-			self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
-			//zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
-			//zombie_drop_model LinkTo( self, "j_SpineLower" );
+			useClientSideFx = false;
+			if( useClientSideFx )
+			{
+				self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+				wait 0.5;
+				self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+			}
+			else
+			{
+				zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
+				zombie_drop_model LinkTo( self, "j_SpineLower" );
 
-			iprintln("Zombie Drop 3: " + self.hasDrop);
+				self.zombie_drop_model = zombie_drop_model;
+				PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
+			}
+			
 
-			//self.zombie_drop_model = zombie_drop_model;
-			//maps\_zombiemode_perks::vulture_pro_powerup_zombie_glow( self GetEntityNumber() );
-			//This needs to be in client csc for Vulture aid Pro, not for all to see
-			// -- PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
-			//PlayFXOnTag( level._effect["powerup_on"], self, "J_SpineLower" ); - this wont get deleted
+			
+			
 		}
 }
 
