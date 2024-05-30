@@ -876,7 +876,7 @@ moon_vision_set_choice( str_vision )
 			visionset_info[0] = level._dte_vision_set;
 			visionset_info[1] = level._dte_vision_set_priority;
 			break;
-		case "zbb":
+		case "zombie_blood":
 			visionset_info[0] = "zombie_blood";
 			visionset_info[1] = 100;
 			break;

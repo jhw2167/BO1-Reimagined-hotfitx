@@ -47,18 +47,21 @@ main()
 	level.server_cheats=GetDvarInt("reimagined_cheat");
 
 	//Overrides	
-	/* 										/
+	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=14;	///
+	level.starting_round_override=27;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=15;	///
-	level.apocalypse_override=false;		///
+	//level.calculate_amount_override=15;	///
+	level.apocalypse_override=true;		///
 	//level.override_give_all_perks=true;	///
 	level.dev_only=true;					///*/
+
+	// \give ppsh_upgraded_zm
+	// \give aug_acog_mk_upgraded_zm_x2
 	
 
 	setApocalypseOptions();
@@ -677,8 +680,8 @@ reimagined_init_level()
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 40;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 80;			//1-1000, 8% chance per zombie per player with vulture
-	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 500;//80;			//1-1000, 8% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_DROP_TIME = 5;//60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
 	level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME = 30;
@@ -1214,9 +1217,13 @@ wait_set_player_visionset()
 
 	if( is_true( level.dev_only ) )
 	{
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 	}
 	
 	wait( 5 );

@@ -2046,6 +2046,7 @@ giveAdditionalPrimaryWeaponUpgrade()
 giveStaminaUpgrade()
 {
 	self SetClientDvar("ui_show_stamina_ghost_indicator", "1");
+	self send_message_to_csc("hud_anim_handler", "stamina_ghost_end");
 	self thread watch_stamina_upgrade(level.STM_PRO + "_stop");
 }
 
@@ -6252,7 +6253,6 @@ zombie_watch_vulture_drop_bonus()
 
 		drop = Spawn( "script_model", origin + (0,0,40) );
 		drop SetModel( str_drop );
-		drop Show();
 
 		playable_area = getentarray("player_volume","script_noteworthy");
 		valid_drop = false;
@@ -6270,6 +6270,7 @@ zombie_watch_vulture_drop_bonus()
 			return;
 		}
 
+		drop Show();
 		level.count_vulture_fx_drops_round++;
 		players = get_players();
 		for( i = 0; i < players.size; i++ ) 

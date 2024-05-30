@@ -632,13 +632,18 @@ player_handle_stamina_ghost ( clientnum, state )
 	//iprintlnbold( "Local entity number: " + player.entity_num );
 
 	prev_vision = player._previous_vision;
+	prev_priority = player._previous_vision_priority;
+	iprintlnbold("Setting vision file for clientnum: " + clientnum);
+	iprintlnbold( "vision: " + player._previous_vision);
+	iprintlnbold( "priority: " + player._previous_vision_priority);
+
 	if(state == "stamina_ghost_start") {
 		s.fade_type = "fadein";
-		player clientscripts\_zombiemode::zombie_vision_set_maps( prev_vision, "zbb", clientnum, 0.5 );
+		player clientscripts\_zombiemode::zombie_vision_set_maps( undefined, "zombie_blood", clientnum, 0.5, 10 );
 	}
 	else if(state == "stamina_ghost_end") {
 		s.fade_type = "fadeout";
-		player clientscripts\_zombiemode::zombie_vision_set_maps( "zbb",  prev_vision, clientnum, 0.5 );
+		player clientscripts\_zombiemode::zombie_vision_set_maps( "zombie_blood",  prev_vision, clientnum, 0.5, prev_priority );
 	}
 
 	return s;

@@ -672,7 +672,7 @@ zombie_vision_set_maps(prev_vision, new_vision, clientnum, trans_time )
 {
 	if( IsDefined( level.map_visionset_function ) )
 	{ 
-		self [[ level.map_visionset_function ]]( prev_vision, new_vision, clientnum, trans_time );
+		self [[ level.map_visionset_function ]]( prev_vision, new_vision, clientnum, trans_time );	
 	}
 
 }
@@ -693,6 +693,8 @@ zombie_vision_set_apply( str_visionset, int_priority, flt_transition_time, int_c
 	{
 		flt_transition_time = 1;
 	}
+	self._previous_vision_priority = int_priority;
+	self._previous_vision = str_visionset;
 	already_in_array = false;
 	if( self._zombie_visionset_list.size != 0 )
 	{
@@ -764,6 +766,7 @@ zombie_vision_set_remove( str_visionset, flt_transition_time, int_clientnum )
 	}
 }
 
+//Higher number is higher priority
 zombie_highest_vision_set_apply()
 {
 	if( !IsDefined( self._zombie_visionset_list ) )
@@ -776,6 +779,7 @@ zombie_highest_vision_set_apply()
 	{
 		if( IsDefined( self._zombie_visionset_list[i].priority ) && self._zombie_visionset_list[i].priority > highest_score )
 		{
+			//iprintlnbold( "Setting vision to " + self._zombie_visionset_list[i].priority );
 			highest_score = self._zombie_visionset_list[i].priority;
 			highest_score_vision = self._zombie_visionset_list[i].vision_set;
 		}
@@ -1161,7 +1165,7 @@ init_zombie_blood()
 
 zblood_vision( localclientnum, state )
 {
-	iprintlnbold("zblood vision  :  " + localClientNum );
+	//iprintlnbold("zblood vision  :  " + localClientNum );
 	player = GetLocalPlayers()[ localclientnum ];
 	if( state == "1" )
 	{
@@ -1210,6 +1214,8 @@ init_client_side_fx()
 
 handle_client_side_fx( localClientNum, state, oldState )
 {
+	//iprintlnbold("handle_client_side_fx : " + state);
+	//iprintlnbold("handle_client_side_fx  SIZE : " + level.client_side_fx[ localClientNum ].size );
 	tokens = StrTok( state, "|" );
 	if( tokens[0] == "fx" )
 	{
@@ -1322,10 +1328,6 @@ init_vulture()
 	level.vulture_status = [];
 	for(i = 0; i < 4; i++) { level.vulture_status[i] = 0; }
 
-	//add_level_notify_callback( "vulture_active_1", ::vulture_toggle, "1" );
-	//add_level_notify_callback( "vulture_active_0", ::vulture_toggle, "0" );
-	//add_level_notify_callback( "vulture_stink_sound_1", ::sndvulturestink, "1" );
-	//add_level_notify_callback( "vulture_stink_sound_0", ::sndvulturestink, "0" );
 	level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP = 12;
 	
 	//Reimagined-Expanded -- callback for vultrure powerup fx

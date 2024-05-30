@@ -709,8 +709,11 @@ wait_for_power()
 
 
 	// Swap to the "power on" vision set
-	level.zombie_visionset = "zombie_cosmodrome";
-	VisionSetNaked( level.zombie_visionset, 2 );
+	//level.zombie_visionset = "zombie_cosmodrome";
+	level.zombie_visionset = "zombie_cosmodrome_powerON";
+	//level.set_custom_visionset_func = ::cosmodrome_custom_visionset_func;
+	//iprintln("zombie visionset" + level.zombie_visionset);
+	//VisionSetNaked( level.zombie_visionset, 2 );
 	
 	master_switch waittill("rotatedone");
 	playfx(level._effect["switch_sparks"] ,getstruct("elec_switch_fx","targetname").origin);
@@ -719,6 +722,11 @@ wait_for_power()
 	//master_switch playloopsound("amb_sparks_loop");
 	master_switch playsound("zmb_turn_on");
 	thread maps\zombie_cosmodrome_amb::power_clangs();
+}
+
+cosmodrome_custom_visionset_func()
+{
+	//handled in csc
 }
 
 ////////////////////////////////////////////////////////////////////////////
