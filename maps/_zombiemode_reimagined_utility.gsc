@@ -85,7 +85,7 @@ generate_hint( hint_code, hint_text, offset, wait_time )
 
 /* PERK HINTS HANDLED IN _ZOMBIEMODE_FFOTD.CSC CLIENTSCRIPT */
 
-generate_perk_hint( perk )
+generate_perk_hint( perkOrWeapon )
 {
     self endon( "death" );
 	self endon( "disconnect" );
@@ -96,51 +96,56 @@ generate_perk_hint( perk )
 	if( is_true( self.superpower_active ) )
 		return;
 
-	if( is_in_array(level.ARRAY_HELLFIRE_WEAPONS, perk))
+
+	if( perkOrWeapon == "rottweil72_upgraded_zm" )
 	{
-		perk = "specialty_pap_hellfire";
+		perkOrWeapon = "specialty_pap_hellfire_onhit";
 	}
-	else if( is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, perk))
+	else if( is_in_array(level.ARRAY_HELLFIRE_WEAPONS, perkOrWeapon))
 	{
-		perk = "specialty_pap_sheer_cold";
+		perkOrWeapon = "specialty_pap_hellfire";
 	}
-	else if( is_in_array(level.ARRAY_ELECTRIC_WEAPONS, perk))
+	else if( is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, perkOrWeapon))
 	{
-		perk = "specialty_pap_shock_rounds";
+		perkOrWeapon = "specialty_pap_sheer_cold";
 	}
-	else if( is_in_array(level.ARRAY_BIGDMG_WEAPONS, perk))
+	else if( is_in_array(level.ARRAY_ELECTRIC_WEAPONS, perkOrWeapon))
 	{
-		perk = "specialty_pap_big_damage";
+		perkOrWeapon = "specialty_pap_shock_rounds";
 	}
-	else if( is_in_array(level.ARRAY_BIGHEADSHOTDMG_WEAPONS, perk))
+	else if( is_in_array(level.ARRAY_BIGDMG_WEAPONS, perkOrWeapon))
 	{
-		perk = "specialty_pap_big_headshot_damage";
+		perkOrWeapon = "specialty_pap_big_damage";
 	}
-	else if( is_in_array(level.ARRAY_VALID_SHOTGUNS, perk))
+	else if( is_in_array(level.ARRAY_BIGHEADSHOTDMG_WEAPONS, perkOrWeapon))
 	{
-		perk = "specialty_shotgun_damage";
+		perkOrWeapon = "specialty_pap_big_headshot_damage";
 	}
-	else if( is_in_array( level.ARRAY_VALID_SNIPERS, perk) )
+	else if( is_in_array(level.ARRAY_VALID_SHOTGUNS, perkOrWeapon))
 	{
-		perk = "specialty_sniper_damage";
+		perkOrWeapon = "specialty_shotgun_damage";
+	}
+	else if( is_in_array( level.ARRAY_VALID_SNIPERS, perkOrWeapon) )
+	{
+		perkOrWeapon = "specialty_sniper_damage";
 	}
 	//level.ARRAY_SIDEARMBONUS_WEAPONS
-	else if( is_in_array(level.ARRAY_SIDEARMBONUS_WEAPONS, perk) )
+	else if( is_in_array(level.ARRAY_SIDEARMBONUS_WEAPONS, perkOrWeapon) )
 	{
-		perk = "specialty_sidearm_bonus";
+		perkOrWeapon = "specialty_sidearm_bonus";
 	}
-	else if( perk == "combat_knife_zm" || perk == "vorkuta_knife_sp" )
+	else if( perkOrWeapon == "combat_knife_zm" || perkOrWeapon == "vorkuta_knife_sp" )
 	{
-		perk = "specialty_offhand_melee";
+		perkOrWeapon = "specialty_offhand_melee";
 	}
 
-
-	if( is_true( self.hints_activated[ perk ] ) )
+	hintCode = perkOrWeapon;
+	if( is_true( self.hints_activated[ hintCode ] ) )
 		return;
 
-	self.hints_activated[ perk ] = true;
+	self.hints_activated[ hintCode ] = true;
 
-	iprintln( "notify: " + perk );
+	iprintln( "notify: " + hintCode );
 
 	while( self.new_perk_hint ) {
 		self waittill( "perk_hint_end" );
@@ -188,7 +193,7 @@ generate_perk_hint( perk )
    
 
     /* SET APPROPRIATE HINT */
-		switch( perk )
+		switch( hintCode )
 		{
 		case "babyjugg":
 			title SetText( &"REIMAGINED_BABYJUGG_TITLE" );
@@ -289,6 +294,11 @@ generate_perk_hint( perk )
 		case "specialty_pap_hellfire":
 			text SetText( &"REIMAGINED_PAP_HELLFIRE_HINT" );
 			title SetText( &"REIMAGINED_PAP_HELLFIRE_TITLE" );
+			break;
+
+		case "specialty_pap_hellfire_onhit":
+			text SetText( &"REIMAGINED_PAP_HELLFIRE_ONHIT_HINT" );
+			title SetText( &"REIMAGINED_PAP_HELLFIRE_ONHIT_TITLE" );
 			break;
 
 		case "specialty_pap_sheer_cold":

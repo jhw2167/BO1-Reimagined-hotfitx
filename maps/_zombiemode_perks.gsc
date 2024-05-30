@@ -1911,6 +1911,9 @@ disablePerk( perk, time )
 		return;
 	}
 
+	if( self.superpower_active )
+		return;
+
 	proPerk = false;
 	base_perk = perk;
 	if( IsSubStr( perk, "_upgrade" ) )
@@ -4660,7 +4663,8 @@ player_watch_electric_cherry()
 			self thread player_handle_eletric_cherry_cooldown();
 
 		self.cherry_sequence++;
-		self waittill_any_or_timeout( level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN, "reload");
+		//self waittill_any_or_timeout( level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN, "reload");
+		wait( level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN );
 	}
 
 }

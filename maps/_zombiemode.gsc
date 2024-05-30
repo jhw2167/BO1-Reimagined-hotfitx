@@ -662,7 +662,7 @@ reimagined_init_level()
 
 	//Cherry
 	level.VALUE_CHERRY_SHOCK_RELOAD_FX_TIME = 2;
-	level.VALUE_CHERRY_SHOCK_RANGE = 258;
+	level.VALUE_CHERRY_SHOCK_RANGE = 196;
 	level.VALUE_CHERRY_SHOCK_DMG = 65536; 	//2^16=65536
 	level.VALUE_CHERRY_SHOCK_SHORT_COOLDOWN = 4;
 	level.VALUE_CHERRY_SHOCK_LONG_COOLDOWN = 32;
@@ -676,12 +676,12 @@ reimagined_init_level()
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 40;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.03;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
-	level.VALUE_VULTURE_MIN_AMMO_BONUS = 4;
+	level.VALUE_VULTURE_MIN_AMMO_BONUS = 6;
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 40;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 500;//80;			//1-1000, 8% chance per zombie per player with vulture
-	level.VALUE_VULTURE_BONUS_DROP_TIME = 5;//60;					//60 seconds
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 40;			//1-1000, 4% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
 	level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME = 30;
@@ -722,6 +722,7 @@ reimagined_init_level()
 		"vorkuta_knife_sp",
 		"knife_ballistic_zm",
 		"knife_ballistic_upgraded_zm",
+		"knife_ballistic_upgraded_zm_x2",
 		//Misc
 		"claymore_zm",
 		"spikemore_zm",
@@ -1217,13 +1218,20 @@ wait_set_player_visionset()
 
 	if( is_true( level.dev_only ) )
 	{
-		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+
+		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+
+		//give knife_ballistic_upgraded_zm_x2
 	}
 	
 	wait( 5 );
@@ -8423,6 +8431,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					min_damage *= 2;
 					final_damage *= 1.5;	//Total 75% Max_heath_damage
 				}
+
+				if( final_damage < min_damage )
+					final_damage = min_damage;
 					
 			} 
 			else if( is_true( attacker.divetonuke_damage ) )

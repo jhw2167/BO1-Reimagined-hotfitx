@@ -1223,7 +1223,7 @@ REFERENCE 			DBT_PRO_TITLE
 LANG_ENGLISH 		"Double-Tap 2.0 Pro"
 
 REFERENCE 			DBT_PRO_HINT
-LANG_ENGLISH 		"- All bullet weapons do 100% increased damage \n- Provides bullet penetration of up to 6 zombies \n-   - Improves Double Pack-a-Punch wepaon abilities"
+LANG_ENGLISH 		"- All bullet weapons do 100% increased damage \n- Provides bullet penetration of up to 6 zombies \n- Improves Double Pack-a-Punch wepaon abilities"
 
 REFERENCE 			STM_PRO_TITLE
 LANG_ENGLISH 		"Stamina-Up Pro"
@@ -1314,6 +1314,13 @@ LANG_ENGLISH 		"HELLFIRE"
 
 REFERENCE			PAP_HELLFIRE_HINT
 LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- Hellfire: Holding down the trigger for 2 seconds will apply Hellfire to all zombies struck by your rounds \n- Hellfire disintigrates any normal zombie after two seconds "
+
+REFERENCE			PAP_HELLFIRE_ONHIT_TITLE
+LANG_ENGLISH 		"HELLFIRE"
+
+REFERENCE			PAP_HELLFIRE_ONHIT_HINT
+LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- Hellfire (on hit): Hellfire is applied to all zombies struck by your rounds \n- Hellfire disintigrates any normal zombie after two seconds "
+
 
 REFERENCE			PAP_SHEER_COLD_TITLE
 LANG_ENGLISH 		"SHEER-COLD"
