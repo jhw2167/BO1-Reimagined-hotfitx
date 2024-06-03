@@ -1,34 +1,69 @@
 
-array(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z)
-{
-	array = [];
-	if ( IsDefined( a ) ) array[ 0] = a; else return array;
-	if ( IsDefined( b ) ) array[ 1] = b; else return array;
-	if ( IsDefined( c ) ) array[ 2] = c; else return array;
-	if ( IsDefined( d ) ) array[ 3] = d; else return array;
-	if ( IsDefined( e ) ) array[ 4] = e; else return array;
-	if ( IsDefined( f ) ) array[ 5] = f; else return array;
-	if ( IsDefined( g ) ) array[ 6] = g; else return array;
-	if ( IsDefined( h ) ) array[ 7] = h; else return array;
-	if ( IsDefined( i ) ) array[ 8] = i; else return array;
-	if ( IsDefined( j ) ) array[ 9] = j; else return array;
-	if ( IsDefined( k ) ) array[10] = k; else return array;
-	if ( IsDefined( l ) ) array[11] = l; else return array;
-	if ( IsDefined( m ) ) array[12] = m; else return array;
-	if ( IsDefined( n ) ) array[13] = n; else return array;
-	if ( IsDefined( o ) ) array[14] = o; else return array;
-	if ( IsDefined( p ) ) array[15] = p; else return array;
-	if ( IsDefined( q ) ) array[16] = q; else return array;
-	if ( IsDefined( r ) ) array[17] = r; else return array;
-	if ( IsDefined( s ) ) array[18] = s; else return array;
-	if ( IsDefined( t ) ) array[19] = t; else return array;
-	if ( IsDefined( u ) ) array[20] = u; else return array;
-	if ( IsDefined( v ) ) array[21] = v; else return array;
-	if ( IsDefined( w ) ) array[22] = w; else return array;
-	if ( IsDefined( x ) ) array[23] = x; else return array;
-	if ( IsDefined( y ) ) array[24] = y; else return array;
-	if ( IsDefined( z ) ) array[25] = z;
-	return array;
+
+//utility function to define arrays, which I have turned into a gross thing 05/30/2024 - Jack
+array(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
+a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31, a32) {
+	
+    array = [];
+    if (IsDefined(a)) array[0] = a; else return array;
+    if (IsDefined(b)) array[1] = b; else return array;
+    if (IsDefined(c)) array[2] = c; else return array;
+    if (IsDefined(d)) array[3] = d; else return array;
+    if (IsDefined(e)) array[4] = e; else return array;
+    if (IsDefined(f)) array[5] = f; else return array;
+    if (IsDefined(g)) array[6] = g; else return array;
+    if (IsDefined(h)) array[7] = h; else return array;
+    if (IsDefined(i)) array[8] = i; else return array;
+    if (IsDefined(j)) array[9] = j; else return array;
+    if (IsDefined(k)) array[10] = k; else return array;
+    if (IsDefined(l)) array[11] = l; else return array;
+    if (IsDefined(m)) array[12] = m; else return array;
+    if (IsDefined(n)) array[13] = n; else return array;
+    if (IsDefined(o)) array[14] = o; else return array;
+    if (IsDefined(p)) array[15] = p; else return array;
+    if (IsDefined(q)) array[16] = q; else return array;
+    if (IsDefined(r)) array[17] = r; else return array;
+    if (IsDefined(s)) array[18] = s; else return array;
+    if (IsDefined(t)) array[19] = t; else return array;
+    if (IsDefined(u)) array[20] = u; else return array;
+    if (IsDefined(v)) array[21] = v; else return array;
+    if (IsDefined(w)) array[22] = w; else return array;
+    if (IsDefined(x)) array[23] = x; else return array;
+    if (IsDefined(y)) array[24] = y; else return array;
+    if (IsDefined(z)) array[25] = z; else return array;
+    if (IsDefined(a1)) array[26] = a1; else return array;
+    if (IsDefined(a2)) array[27] = a2; else return array;
+    if (IsDefined(a3)) array[28] = a3; else return array;
+    if (IsDefined(a4)) array[29] = a4; else return array;
+    if (IsDefined(a5)) array[30] = a5; else return array;
+    if (IsDefined(a6)) array[31] = a6; else return array;
+    if (IsDefined(a7)) array[32] = a7; else return array;
+    if (IsDefined(a8)) array[33] = a8; else return array;
+    if (IsDefined(a9)) array[34] = a9; else return array;
+    if (IsDefined(a10)) array[35] = a10; else return array;
+    if (IsDefined(a11)) array[36] = a11; else return array;
+    if (IsDefined(a12)) array[37] = a12; else return array;
+    if (IsDefined(a13)) array[38] = a13; else return array;
+    if (IsDefined(a14)) array[39] = a14; else return array;
+    if (IsDefined(a15)) array[40] = a15; else return array;
+    if (IsDefined(a16)) array[41] = a16; else return array;
+    if (IsDefined(a17)) array[42] = a17; else return array;
+    if (IsDefined(a18)) array[43] = a18; else return array;
+    if (IsDefined(a19)) array[44] = a19; else return array;
+    if (IsDefined(a20)) array[45] = a20; else return array;
+    if (IsDefined(a21)) array[46] = a21; else return array;
+    if (IsDefined(a22)) array[47] = a22; else return array;
+    if (IsDefined(a23)) array[48] = a23; else return array;
+    if (IsDefined(a24)) array[49] = a24; else return array;
+    if (IsDefined(a25)) array[50] = a25; else return array;
+    if (IsDefined(a26)) array[51] = a26; else return array;
+    if (IsDefined(a27)) array[52] = a27; else return array;
+    if (IsDefined(a28)) array[53] = a28; else return array;
+    if (IsDefined(a29)) array[54] = a29; else return array;
+    if (IsDefined(a30)) array[55] = a30; else return array;
+    if (IsDefined(a31)) array[56] = a31; else return array;
+    if (IsDefined(a32)) array[57] = a32;
+    return array;
 }
  
 add_to_array( array, item, allow_dupes )

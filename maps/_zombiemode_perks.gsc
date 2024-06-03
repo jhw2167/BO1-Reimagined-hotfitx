@@ -66,7 +66,6 @@ init()
 	}
 
 	//Perks machine
-	//load_fx();
 	default_vending_precaching();
 	if( !isDefined( level.custom_vending_precaching ) )
 	{
@@ -228,19 +227,7 @@ remove_bump_trigger(perk)
 	level send_message_to_csc("zombiemode_perks", perk + "|delete_bump");
 }
 
-load_fx()
-{
-	//Phd
-	level._effect["divetonuke_groundhit"] = LoadFx( "maps/zombie/fx_perk_phd" );
 
-	//Stamina
-
-	//Vulture
-
-	//Cherry
-
-
-}
 
 //
 //	Precaches all machines
@@ -327,12 +314,14 @@ default_vending_precaching()
 	{
 		level.zombiemode_divetonuke_perk_func = ::divetonuke_explode;
 
+		PrecacheRumble("explosion_generic");
 		PreCacheShader( "specialty_divetonuke_zombies" );
 		PreCacheShader( "specialty_divetonuke_zombies_pro" );
 		PreCacheModel( "zombie_vending_nuke" );
 		PreCacheModel( "zombie_vending_nuke_on" );
 		PreCacheString( &"REIMAGINED_PERK_DIVETONUKE" );
 		level._effect[ "divetonuke_light" ] = LoadFX( "misc/fx_zombie_cola_dtap_on" );
+		level._effect["divetonuke_groundhit"] = loadfx("maps/zombie/fx_zmb_phdflopper_exp");
 
 		set_zombie_var( "zombie_perk_divetonuke_radius", 500 ); // WW (01/12/2011): Issue 74726:DLC 2 - Zombies - Cosmodrome - PHD Flopper - Increase the radius on the explosion (Old: 150)
 		set_zombie_var( "zombie_perk_divetonuke_min_damage", 1550 );
@@ -1466,7 +1455,7 @@ turn_divetonuke_on()
 	level notify( "specialty_flakjacket_power_on" );
 }
 
-divetonuke_explode( attacker, origin )
+divetonuke_explode( attacker, origin, isDamaged )
 {
 	// tweakable vars
 	//iprintln("divetonuke_explode");
@@ -1474,9 +1463,13 @@ divetonuke_explode( attacker, origin )
 	min_damage = level.VALUE_PHD_MIN_DAMAGE;
 	max_damage = level.VALUE_PHD_MAX_DAMAGE;
 
+	if( !isDefined( isDamaged ) )
+		isDamaged = false;
 	
 	//Perkapunch
-	if( attacker hasProPerk(level.PHD_PRO) ) //if player has specialty_flakjacket_upgraded,
+	//if player has specialty_flakjacket_upgraded AND BIG JUMP
+	zombies = get_array_of_closest( self.origin, GetAiSpeciesArray( "axis", "all" ) , undefined, undefined, radius );
+	if( ( attacker hasProPerk(level.PHD_PRO) ) && isDamaged ) 
 	{
 		//Increase radius and damage significantly
 		radius *= level.VALUE_PHD_PRO_RADIUS_SCALER;
@@ -1485,9 +1478,11 @@ divetonuke_explode( attacker, origin )
 
 		PlayFx( level._effect["custom_large_explosion"], origin );
 		attacker PlaySound("zmb_phdflop_explo");
+		PlayRumbleOnPosition("explosion_generic", attacker.origin);
+		
 		//Also apply hellfire to closest zombies, form _zombiemode_weaponeffects
 		//Get all zombies in radius
-		zombies = get_array_of_closest( self.origin, GetAiSpeciesArray( "axis", "all" ) , undefined, undefined, radius );
+
 		for( i = 0; i < zombies.size; i++ ) 
 		{
 			if( is_boss_zombie( zombies[i].animname ) )
@@ -1499,14 +1494,31 @@ divetonuke_explode( attacker, origin )
 					 zombies[i] , attacker, 0 , 2 );
 			}
 			
-			zombies[i] thread maps\_zombiemode::zombie_knockdown();
-			
 		}
 		
 	} else {
 		//iprintln("divetonuke_explode");
 		PlayFx( level._effect["divetonuke_groundhit"], origin );
 		attacker PlaySound("wpn_grenade_explode");
+	}
+
+	if( attacker hasProPerk(level.PHD_PRO) )
+	{
+		for( i = 0; i < zombies.size; i++ ) 
+		{
+			if( is_boss_zombie( zombies[i].animname ) )
+				continue;
+
+			if( checkDist( self.origin, zombies[i].origin, level.VALUE_PHD_PRO_COLLISIONS_RANGE ) ) 
+			{
+				zombies[i] thread maps\_zombiemode::zombie_knockdown();
+			}
+
+			if( i > 3 )	
+				break;
+			
+		}
+	
 	}
 
 	// radius damage
@@ -4612,10 +4624,10 @@ watch_phd_upgrade(perk_str)
 			 level.VALUE_PHD_PRO_COLLISIONS_RANGE ); //total time, dist
 
 			 //while( self.divetoprone == 1 ) { wait_network_frame();}
-			 wait( 0.75 );
-
-			 if ( IsDefined( level.zombiemode_divetonuke_perk_func ) )
-				[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin );
+			 wait( 0.7 );
+			if ( IsDefined( level.zombiemode_divetonuke_perk_func ) )
+				[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin, false );
+			
 		}
 
 		wait(0.1);
@@ -4767,7 +4779,7 @@ player_watch_electric_cherry()
 		
 		wait_reset_tesla_mark()
 		{
-			wait 2;
+			wait( level.THRESHOLD_TESLA_SHOCK_TIME );
 			if( IsDefined( self ) && IsAlive( self ) )
 				self.marked_for_tesla = false;
 		}

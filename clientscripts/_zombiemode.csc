@@ -400,7 +400,9 @@ createZombieEyes( localClientNum )
 		}
 	} 
 }
+*/
 
+//Needed by clientscript/humangun.csc
 deleteZombieEyes( localClientNum )
 {
 	self vulture_eye_glow_callback_from_system( localClientNum );
@@ -413,7 +415,6 @@ deleteZombieEyes( localClientNum )
 		}
 	}
 }
-*/
 
 on_player_connect( localClientNum )
 {

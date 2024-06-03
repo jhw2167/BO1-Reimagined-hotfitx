@@ -369,6 +369,28 @@ reimagined_init_player_depedent_values()
 
 	//Shino
 	level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME = 60 - (level.players_size * 12);
+
+	//Real time late iniatialized variables
+
+	switch( level.mapname )
+	{
+		case "zombie_cod5_prototype":
+		case "zombie_cod5_asylum":
+		case "zombie_cod5_sumpf":
+		case "zombie_cod5_factory":
+			level._effect["divetonuke_groundhit"] = level._effect["betty_explode"];
+			break;
+		case "zombie_theater":
+		case "zombie_pentagon":
+    		level._effect["divetonuke_groundhit"] = level._effect[ "dog_gib" ];
+			break;
+		case "zombie_cosmodrome":
+    	case "zombie_coast":
+    	case "zombie_temple":
+		case "zombie_moon":
+			break;
+		
+	}
 }
 
 
@@ -816,6 +838,7 @@ reimagined_init_level()
 
 	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "cz75_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
+	level.THRESHOLD_TESLA_SHOCK_TIME = 3;
 
 	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2", "ithaca_upgraded_zm_x2");
 	level.RANGE_SHEERCOLD_DIST = 120;
@@ -1138,7 +1161,7 @@ watch_player_utility()
 	dev_only = true;
 	while(1)
 	{
-		if( self buttonPressed("v")  && dev_only)
+		if( self buttonPressed("f")  && dev_only)
 		{
 			self kill_all_utility();
 		}
@@ -1227,7 +1250,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
@@ -7754,7 +7777,8 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			{
 				if ( IsDefined( level.zombiemode_divetonuke_perk_func ) )
 				{
-					[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin );
+					iprintln( "divetonuke_perk_func" );
+					[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin, true );
 				}
 			}
 
@@ -8308,13 +8332,27 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				if( is_boss_zombie(self.animname) )
 					final_damage = 4000;
 				else
-					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.3);
+				{
+					self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 64, 1);
+					if( self.marked_for_tesla )
+						final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.3 );
+						
+				}
+					
 			} else if ( weapon == "knife_ballistic_upgraded_zm_x2" )
 			{
 				if( is_boss_zombie(self.animname) )
 					final_damage = 8000;
 				else
-					final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6 );
+				{
+					//\give knife_ballistic_upgraded_zm_x2
+					self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 1);
+					if( self.marked_for_tesla )
+						final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6 );
+									
+					wait(0.1);
+				}
+					
 			}
 
 			final_damage += base_knife_damage;
@@ -8545,14 +8583,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 2.5;
 			break;
 		case "psg1_zm":
-			final_damage = 36000;
+			final_damage = 44000;
+			
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 3;
 			break;
 		case "l96a1_zm":
-			final_damage = 44000;
+			final_damage = 36000;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
-				final_damage *= 3;
+				final_damage *= 3.5;
 			break;
 		//CLASSIC WEAPONS
 		case "zombie_kar98k":
@@ -8682,7 +8721,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "l96a1_upgraded_zm":
 			final_damage = 74000;
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") )
-				final_damage *= 3.5;
+				final_damage *= 4;
 			break;
 		case "fnfal_upgraded_zm":
 			final_damage = 800;
@@ -8843,13 +8882,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		
 		//Reimagined-Expanded - x2 Special Weapons
-		if(weapon == "knife_ballistic_upgraded_zm_x2" && !is_boss_zombie(self.animname))
-		{	
-			//Custom Wunderwaff thread
-			level thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 4);
-																//zomb, player, arc range, num arcs
-			wait(1);
-			return self.maxhealth + 1000; // should always kill
+		if(weapon == "knife_ballistic_upgraded_zm_x2") 
+		{
+			if(is_boss_zombie(self.animname)) { 
+			//nothing
+			} else 
+			{
+				attacker.bullet_electric=false;
+				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 3);
+																		//zomb, player, arc range, num arcs
+				wait(0.1);
+				if( self.marked_for_tesla )
+					final_damage = (self.health + 666);
+			}
 		}
 	}
 
@@ -8981,7 +9026,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			} else 
 			{
 				attacker.bullet_electric=false;
-				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 3);
+				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 2);
 																		//zomb, player, arc range, num arcs
 			}
 

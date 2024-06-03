@@ -633,9 +633,9 @@ player_handle_stamina_ghost ( clientnum, state )
 
 	prev_vision = player._previous_vision;
 	prev_priority = player._previous_vision_priority;
-	iprintlnbold("Setting vision file for clientnum: " + clientnum);
-	iprintlnbold( "vision: " + player._previous_vision);
-	iprintlnbold( "priority: " + player._previous_vision_priority);
+	//iprintlnbold("Setting vision file for clientnum: " + clientnum);
+	//iprintlnbold( "vision: " + player._previous_vision);
+	//iprintlnbold( "priority: " + player._previous_vision_priority);
 
 	if(state == "stamina_ghost_start") {
 		s.fade_type = "fadein";

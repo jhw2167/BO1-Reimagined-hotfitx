@@ -603,16 +603,30 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 	
 	arc_num = 1;
 
-	wait_network_frame();
+	//wait_network_frame();
 	
 	enemies = tesla_get_enemies_in_area( source_enemy.origin, distance, player );
-	source_enemy thread tesla_do_damage( source_enemy, 0, player, 1);
+	if( !self.marked_for_tesla )
+	{
+		source_enemy thread unmark_for_tesla( level.THRESHOLD_TESLA_SHOCK_TIME );
+		source_enemy thread tesla_do_damage( source_enemy, 0, player, 1);
+	}
+	else
+	{
+		source_enemy thread tesla_play_death_fx( arc_num );
+	}
+		
 	
 	for( i = 0; i < enemies.size; i++ )
 	{
-		if( i > arcs ) {
-			enemies[i].marked_for_tesla=false;
+		if( enemies[i].marked_for_tesla )
+		{
+			enemies[i] thread tesla_play_death_fx( arc_num );
 			continue;
+		}
+
+		if( arc_num > arcs ) {
+			break;
 		}
 		
 		if(enemies[i] == source_enemy) {
@@ -620,11 +634,18 @@ tesla_arc_damage( source_enemy, player, distance, arcs )
 		}
 		
 		enemies[i] thread tesla_do_damage( source_enemy, arc_num, player, 1);
+		enemies[i] thread unmark_for_tesla( level.THRESHOLD_TESLA_SHOCK_TIME );
 		arc_num++;
 	}
 	
 }
 
+unmark_for_tesla( time )
+{
+	wait( time );
+	if( IsDefined( self ) && IsAlive( self ) )
+		self.marked_for_tesla = false;
+}
 
 
 
@@ -671,7 +692,6 @@ tesla_get_enemies_in_area( origin, distance, player )
 			}
 
 			zombies[i].bonus_fx=true;
-			zombies[i].marked_for_tesla=true;
 			enemies[enemies.size] = zombies[i];
 		}
 	}
@@ -687,11 +707,7 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 	if ( arc_num > 1 )
 	{
 		time = RandomFloat( 0.2, 0.6 ) * arc_num;
-
-		if(upgraded)
-		{
-			time /= 1.5;
-		}
+		time /= 1.5;
 
 		wait time;
 	}
@@ -702,36 +718,9 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 		return;
 	}
 
-	if ( !self.isdog )
-	{
-		if( self.has_legs )
-		{
-			self.deathanim = random( level._zombie_tesla_death[self.animname] );
-		}
-		else
-		{
-			self.deathanim = random( level._zombie_tesla_crawl_death[self.animname] );
-		}
-	}
-	else
-	{
-		self.a.nodeath = undefined;
-	}
-
-	if( is_true( self.is_traversing))
-	{
-		self.deathanim = undefined;
-	}
 
 	if( source_enemy != self )
 	{
-		if ( player.tesla_arc_count > 3 )
-		{
-			wait_network_frame();
-			player.tesla_arc_count = 0;
-		}
-
-		player.tesla_arc_count++;
 		source_enemy tesla_play_arc_fx( self );
 	}
 
@@ -759,7 +748,45 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 		return;
 	}
 
-	self DoDamage( self.health + 666, origin, player );
+	dmg = self.health + 666;
+	if( arc_num > 0)
+		dmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH / arc_num;
+
+	if( self.health <= dmg ) 
+	{
+		self thread maps\_zombiemode_perks::electric_cherry_death_fx();
+
+			if ( !self.isdog )
+		{
+			if( self.has_legs )
+			{
+				self.deathanim = random( level._zombie_tesla_death[self.animname] );
+			}
+			else
+			{
+				self.deathanim = random( level._zombie_tesla_crawl_death[self.animname] );
+			}
+		}
+		else
+		{
+			self.a.nodeath = undefined;
+		}
+
+		if( is_true( self.is_traversing))
+		{
+			self.deathanim = undefined;
+		}
+	}
+	else 
+	{
+
+		self thread maps\_zombiemode_perks::electric_cherry_stun();
+		self thread maps\_zombiemode_perks::electric_cherry_shock_fx();
+
+	}
+
+	self.marked_for_tesla=true;
+	self DoDamage( dmg , origin, player );
 
 
 	if(!self.isdog)

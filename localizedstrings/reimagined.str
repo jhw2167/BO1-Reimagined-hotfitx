@@ -352,7 +352,7 @@ REFERENCE          	M1GARAND_UPGRADED
 LANG_ENGLISH        "BULLPUP T31"
 
 REFERENCE          	SPRINGFIELD_UPGRADED
-LANG_ENGLISH        "WINTERFELD"
+LANG_ENGLISH        "WINTERFIELD"
 
 
 
@@ -1271,7 +1271,7 @@ REFERENCE 			ECH_PRO_TITLE
 LANG_ENGLISH 		"Electric Cherry 2.0 Pro"
 
 REFERENCE 			ECH_PRO_HINT
-LANG_ENGLISH 		"- When a zombie hits you, you take no damage and Cherry will trigger, 10s cooldown \n- Electric pulse effect is always full charge \n - Electric pulse may stun up to 12 enemies"
+LANG_ENGLISH 		"- When a zombie hits you, you take no damage and Cherry will trigger, 10s cooldown \n- Electric pulse effect is always full charge \n- Electric pulse may stun up to 12 enemies"
 
 REFERENCE 			VLT_PRK_TITLE
 LANG_ENGLISH 		"Vulture Aid 2.0"
