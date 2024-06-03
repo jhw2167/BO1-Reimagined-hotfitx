@@ -276,8 +276,8 @@ include_weapons()
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	//include_weapon( "dragunov_zm" );					// ptrs41
-	//include_weapon( "dragunov_upgraded_zm", false );
+	include_weapon( "dragunov_zm" );					// ptrs41
+	include_weapon( "dragunov_upgraded_zm", false );
 	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 

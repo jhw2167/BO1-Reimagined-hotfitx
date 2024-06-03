@@ -4338,63 +4338,36 @@ ammo_give( weapon )
 //include new weapons
 init_includes()
 {
-	include_weapon("ak47_zm");
- 	include_weapon("stoner63_zm");
- 	//include_weapon("psg1_zm");
- 	include_weapon("ppsh_zm");
-	
-	include_weapon("bo3_zm_widows_grenade", false, true);
- 	include_weapon("falling_hands_zm", false);
 
- 	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
-	//if(vending_weapon_upgrade_trigger.size >= 1)
-	{
- 		include_weapon("ak47_ft_upgraded_zm", false);
-	 	include_weapon("stoner63_upgraded_zm", false);
-	 	//include_weapon("psg1_upgraded_zm", false);
-	 	include_weapon("ppsh_upgraded_zm", false);
-		
-	//Reimagined-Expanded
-	//All double PaP weapons:
-	// - no wall weapons
-	// - no wonder weapons
-		//include_weapon( "m14_upgraded_zm_x2", false );
-		//include_weapon( "rottweil72_upgraded_zm_x2", false );
-		//include_weapon( "m16_gl_upgraded_zm_x2", false );
-		//include_weapon( "gl_m16_upgraded_zm_x2", false );
-		include_weapon( "python_upgraded_zm_x2", false );
-		include_weapon( "cz75_upgraded_zm_x2", false );
-		include_weapon( "cz75dw_upgraded_zm_x2", false );
-		
-		include_weapon( "spectre_upgraded_zm_x2", false );
-		include_weapon( "spas_upgraded_zm_x2", false );
-		include_weapon( "hs10_upgraded_zm_x2", false );
-		
-		//include_weapon( "ithaca_upgraded_zm_x2", false );
-		include_weapon( "fnfal_upgraded_zm_x2", false );
-		include_weapon( "g11_lps_upgraded_zm_x2", false );
-		include_weapon( "famas_upgraded_zm_x2", false );
-		include_weapon( "aug_acog_mk_upgraded_zm_x2", false );
-		include_weapon( "mk_aug_upgraded_zm_x2", false );
-		include_weapon( "commando_upgraded_zm_x2", false );
-		include_weapon( "galil_upgraded_zm_x2", false );
-		include_weapon( "rpk_upgraded_zm_x2", false );
-		include_weapon( "hk21_upgraded_zm_x2", false );
-		include_weapon( "l96a1_upgraded_zm_x2", false );
-		include_weapon( "knife_ballistic_upgraded_zm_x2", false );
-		include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
-		//include_weapon( "explosive_bolt_upgraded_zm_x2", false );
+	//Pistols
+	include_weapon("cz75_upgraded_zm_x2");
 
-		include_weapon( "ppsh_upgraded_zm_x2", false );
-		include_weapon( "ak47_ft_upgraded_zm_x2", false );
-		include_weapon( "stoner63_upgraded_zm_x2", false );
-		//include_weapon( "psg1_upgraded_zm_x2", false );
-		
-		//include_weapon( "china_lake_upgraded_zm_x2", false );
-		//include_weapon( "m72_law_upgraded_zm_x2", false );
-	
-	
- 	}
+	//SMGS
+	include_weapon("ppsh_zm");
+	include_weapon("ppsh_upgraded_zm");
+	include_weapon("ppsh_upgraded_zm_x2");
+
+	//Shotguns
+	include_weapon("hs10_upgraded_zm_x2");
+
+	//ARs
+	include_weapon("galil_upgraded_zm_x2");
+	include_weapon("commando_upgraded_zm_x2");
+
+	//Mgs
+	include_weapon("stoner63_zm");
+	include_weapon("rpk_upgraded_zm_x2");
+	include_weapon("stoner63_upgraded_zm");
+	include_weapon("hk21_upgraded_zm_x2");
+
+	//Snipers
+	include_weapon("psg1_zm");
+	include_weapon("psg1_upgraded_zm");
+	include_weapon("dragunov_upgraded_zm_x2");
+
+	//Specials
+	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
+
 
  	if(IsDefined(level.script) && IsSubStr(level.script, "zombie_cod5"))
  	{

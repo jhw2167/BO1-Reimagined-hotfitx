@@ -589,3 +589,164 @@ add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COM
 
 */
 
+
+/*
+
+
+include_weapon("ak47_zm");
+ 	include_weapon("stoner63_zm");
+ 	//include_weapon("psg1_zm");
+ 	include_weapon("ppsh_zm");
+	
+	include_weapon("bo3_zm_widows_grenade", false, true);
+ 	include_weapon("falling_hands_zm", false);
+
+ 	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
+	//if(vending_weapon_upgrade_trigger.size >= 1)
+	{
+ 		include_weapon("ak47_ft_upgraded_zm", false);
+	 	include_weapon("stoner63_upgraded_zm", false);
+	 	//include_weapon("psg1_upgraded_zm", false);
+	 	include_weapon("ppsh_upgraded_zm", false);
+
+		//include_weapon( "m14_upgraded_zm_x2", false );
+		//include_weapon( "rottweil72_upgraded_zm_x2", false );
+		//include_weapon( "m16_gl_upgraded_zm_x2", false );
+		//include_weapon( "gl_m16_upgraded_zm_x2", false );
+		include_weapon( "python_upgraded_zm_x2", false );
+		include_weapon( "cz75_upgraded_zm_x2", false );
+		include_weapon( "cz75dw_upgraded_zm_x2", false );
+		
+		include_weapon( "spectre_upgraded_zm_x2", false );
+		include_weapon( "spas_upgraded_zm_x2", false );
+		include_weapon( "hs10_upgraded_zm_x2", false );
+		
+		//include_weapon( "ithaca_upgraded_zm_x2", false );
+		include_weapon( "fnfal_upgraded_zm_x2", false );
+		include_weapon( "g11_lps_upgraded_zm_x2", false );
+		include_weapon( "famas_upgraded_zm_x2", false );
+		include_weapon( "aug_acog_mk_upgraded_zm_x2", false );
+		include_weapon( "mk_aug_upgraded_zm_x2", false );
+		include_weapon( "commando_upgraded_zm_x2", false );
+		include_weapon( "galil_upgraded_zm_x2", false );
+		include_weapon( "rpk_upgraded_zm_x2", false );
+		include_weapon( "hk21_upgraded_zm_x2", false );
+		include_weapon( "l96a1_upgraded_zm_x2", false );
+		include_weapon( "knife_ballistic_upgraded_zm_x2", false );
+		include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
+		//include_weapon( "explosive_bolt_upgraded_zm_x2", false );
+
+		include_weapon( "ppsh_upgraded_zm_x2", false );
+		include_weapon( "ak47_ft_upgraded_zm_x2", false );
+		include_weapon( "stoner63_upgraded_zm_x2", false );
+		//include_weapon( "psg1_upgraded_zm_x2", false );
+		
+		//include_weapon( "china_lake_upgraded_zm_x2", false );
+		//include_weapon( "m72_law_upgraded_zm_x2", false );
+	
+	
+ 	}
+
+*/
+
+
+//Sort the include_weapons according to above categories too
+
+//Melee
+include_weapon("combat_knife_zm");
+include_weapon("combat_bowie_knife_zm");
+include_weapon("combat_sickle_knife_zm");
+include_weapon("rebirth_hands_sp");
+include_weapon("vorkuta_knife_sp");
+include_weapon("falling_hands_zm");
+
+//Grenades
+include_weapon("frag_grenade_zm");
+include_weapon("sticky_grenade_zm");
+include_weapon("claymore_zm");
+include_weapon("zombie_cymbal_monkey");
+include_weapon("zombie_black_hole_bomb");
+include_weapon("zombie_nesting_dolls");
+include_weapon("bo3_zm_widows_grenade");
+include_weapon("molotov_zm");
+include_weapon("stielhandgranate");
+include_weapon("mine_bouncing_betty");
+
+//MGs
+include_weapon("rpk_zm");
+include_weapon("stoner63_zm");
+include_weapon("hk21_zm");
+include_weapon("rpk_upgraded_zm");
+include_weapon("stoner63_upgraded_zm");
+include_weapon("hk21_upgraded_zm");
+include_weapon("rpk_upgraded_zm_x2");
+include_weapon("stoner63_upgraded_zm");
+include_weapon("hk21_upgraded_zm_x2");
+
+//Assault Rifles
+include_weapon("aug_acog_zm");
+include_weapon("galil_zm");
+include_weapon("commando_zm");
+include_weapon("fnfal_zm");
+include_weapon("g11_lps_zm");
+include_weapon("famas_zm");
+
+include_weapon("aug_acog_mk_upgraded_zm");
+include_weapon("galil_upgraded_zm");
+include_weapon("commando_upgraded_zm");
+include_weapon("fnfal_upgraded_zm");
+include_weapon("g11_lps_upgraded_zm");
+include_weapon("famas_upgraded_zm");
+
+include_weapon("galil_upgraded_zm_x2");
+include_weapon("commando_upgraded_zm_x2");
+
+
+//Shotguns
+include_weapon("spas_zm");
+include_weapon("hs10_zm");
+include_weapon("spas_upgraded_zm");
+include_weapon("hs10_upgraded_zm");
+
+include_weapon("hs10_upgraded_zm_x2");
+
+
+//SMGs
+include_weapon("spectre_zm");
+include_weapon("ppsh_zm");
+include_weapon("spectre_upgraded_zm");
+include_weapon("ppsh_upgraded_zm");
+
+include_weapon("ppsh_upgraded_zm_x2");
+
+//Sidearms
+include_weapon("python_zm");
+include_weapon("m1911_zm");
+include_weapon("cz75_zm");
+include_weapon("cz75dw_zm");
+
+include_weapon("python_upgraded_zm");
+include_weapon("m1911_upgraded_zm");
+include_weapon("cz75_upgraded_zm");
+include_weapon("cz75dw_upgraded_zm");
+
+include_weapon("cz75_upgraded_zm_x2");
+
+//Snipers
+//include_weapon("dragunov_zm");
+include_weapon("psg1_zm");
+
+include_weapon("l96a1_upgraded_zm");
+include_weapon("dragunov_upgraded_zm");
+include_weapon("psg1_upgraded_zm");
+
+include_weapon("dragunov_upgraded_zm_x2");
+
+//Launchers
+include_weapon("m72_law_zm");
+include_weapon("china_lake_zm");
+include_weapon("m72_law_upgraded_zm");
+include_weapon("china_lake_upgraded_zm");
+
+//Wall
+
