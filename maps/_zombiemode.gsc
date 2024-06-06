@@ -2705,6 +2705,8 @@ init_fx()
 	level._effect["headshot_nochunks"] 			= LoadFX( "misc/fx_zombie_bloodsplat" );
 	level._effect["chest_light"]		 		= LoadFX( "env/light/fx_ray_sun_sm_short" );
 
+	level._effect["bloodspurt"] 				= LoadFX( "misc/fx_zombie_bloodspurt" );
+
 	/*
 	
 	level._effect["fx_zombie_bar_break"]		= LoadFX( "maps/zombie/fx_zombie_bar_break" );
@@ -2714,7 +2716,7 @@ init_fx()
 
 
 	//Reimagined-Expanded - removed to avoid fx overload
-	//level._effect["bloodspurt"] 				= LoadFX( "misc/fx_zombie_bloodspurt" );
+	
 	//level._effect["tesla_head_light"]			= LoadFX( "maps/zombie/fx_zombie_tesla_neck_spurt");
 
 	level._effect["rise_burst_water"]			= LoadFX("maps/zombie/fx_zombie_body_wtr_burst");

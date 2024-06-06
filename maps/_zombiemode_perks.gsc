@@ -867,6 +867,8 @@ wait_for_player_to_take( player, weapon, packa_timer )
 	AssertEx( IsDefined( level.zombie_weapons[weapon].upgrade_name ), "wait_for_player_to_take: upgrade_weapon does not exist" );
 
 	upgrade_weapon = level.zombie_weapons[weapon].upgrade_name;
+	iprintln("Upgrade weapon to give: " + );
+	iprintln( upgrade_weapon );
 
 	self endon( "pap_timeout" );
 	while( true )

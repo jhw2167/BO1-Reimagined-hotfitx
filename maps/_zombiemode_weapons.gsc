@@ -585,11 +585,19 @@ init_weapons()
 
 	/**************************
 		New
+	Add these weapons:
+	uzi_zm
+	asp
+	ak47_zm
+	c:\Program Files (x86)\Steam\steamapps\common\Call of Duty Black Ops\raw\weapons\sp\skorpion_zm
 	**************************/
 	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",					1000,	"smg",				"",		undefined );
 	//add_zombie_weapon( "enfield",					"enfield",								&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
 	//add_zombie_weapon( "m60",						"m60",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"mg",				"",		undefined );
-	//add_zombie_weapon( "asp",						"asp",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	add_zombie_weapon( "asp",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	//{{WEAPON_INCLUDE}}
 
 	//Upgrade
 	add_zombie_weapon( "ak47_ft_upgraded_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
@@ -4347,6 +4355,8 @@ init_includes()
 {
 
 	//Pistols
+	include_weapon("asp_zm");			// \give asp_zm
+	include_weapon("asp_upgraded_zm");
 	include_weapon("cz75_upgraded_zm_x2");
 
 	//SMGS
@@ -4378,6 +4388,9 @@ init_includes()
 
 	//Specials
 	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
+
+	//New weapons
+	//{{WEAPON_INCLUDE}}
 
 
  	if(IsDefined(level.script) && IsSubStr(level.script, "zombie_cod5"))
