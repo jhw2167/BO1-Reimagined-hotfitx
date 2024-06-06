@@ -56,7 +56,7 @@ main()
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///
-	level.apocalypse_override=true;		///
+	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.dev_only=true;					///*/
 
@@ -836,6 +836,16 @@ reimagined_init_level()
 	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
+	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm");
+
+	//Also include unupgraded weapons e.g. m14_zm
+	level.ARRAY_WALL_WEAPONS = array( "m14_zm", "mpl_zm", "mp5k_zm", "mp40_zm", "ak74u_zm", "pm63_zm",
+									 "rottweil72_zm", "m16_gl_zm", "gl_m16_zm", "ithaca_zm",
+							"m14_upgraded_zm", "mpl_upgraded_zm", "mp5k_upgraded_zm", "mp40_upgraded_zm", 
+							"ak74u_upgraded_zm", "pm63_upgraded_zm", "rottweil72_upgraded_zm", "m16_gl_upgraded_zm",
+							"gl_m16_upgraded_zm", "ithaca_upgraded_zm", "bar_upgraded_zm", "m1garand_upgraded_zm", "springfield_upgraded_zm"
+	);
+
 	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "cz75_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 	level.THRESHOLD_TESLA_SHOCK_TIME = 3;
@@ -851,6 +861,7 @@ reimagined_init_level()
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
 
+
 	level.VALUE_EXPLOSIVE_BASE_DMG = 30000;
 	level.VALUE_EXPLOSIVE_UPGD_DMG_SCALE = 4;
 
@@ -859,7 +870,7 @@ reimagined_init_level()
 
 	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
 	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x max 4.5x damage
-	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
+	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm", "mk_aug_upgraded_zm",
 									 "zombie_doublebarrel", "zombie_doublebarrel_upgraded", "zombie_shotgun", "zombie_shotgun_upgraded",
 									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
 									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"						
@@ -1031,6 +1042,9 @@ reimagined_init_player()
 	self.hints_activated = [];
 	self.perk_bumps_activated = [];
 	self.new_perk_hint = false;
+	
+	//Default all are 0, 1 is pap, 2 is x2 pap, more...
+	self.packapunch_weapons = [];
 
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
@@ -1680,6 +1694,89 @@ watch_player_perkslots()
 
 }
 
+/*
+	1. Player just given weapon, set all pap values to 0
+	
+	Count number of upgrades on PaP weapon
+
+*/
+handle_player_packapunch(weapon, didUpgrade)
+{
+	iprintln("handle_player_packapunch: " + weapon + " ");
+	
+	if( !isDefined(weapon) )
+		return;
+
+	if( !isDefined(didUpgrade) )
+		didUpgrade = false;
+
+	state = 0;
+	upgraded_weapon_x2 = "";
+	upgraded_weapon = "";
+	base_weapon = "";
+
+	isWawWeapon = IsSubStr( weapon, "zombie_" );
+	isUpgraded = IsSubStr( weapon, "_upgraded" );
+	isDoubleUpgraded = IsSubStr( weapon, "_x2" );
+
+	upgradedWeaponString = "";
+
+	
+	if( isWawWeapon )
+	{
+		if( isUpgraded )
+			upgraded_weapon = weapon;
+		else
+			upgraded_weapon = level.zombie_weapons[weapon].upgrade_name;
+	}
+	else
+	{
+		if( isDoubleUpgraded )
+			upgraded_weapon = GetSubStr( weapon, 0, weapon.size - "_x2".size );
+		else if( isUpgraded )
+			upgraded_weapon = weapon;
+		else
+			upgraded_weapon = level.zombie_weapons[weapon].upgrade_name;
+	}
+
+
+	if( !didUpgrade )
+	{
+		/*****
+		Player just given weapon
+		*****/
+		if( isDoubleUpgraded )
+			state = 2;
+		else if( isUpgraded )
+			state = 1;
+		else
+			state = 0;
+
+	}
+	else
+	{
+		/*****
+		Player just upgraded weapon
+		*****/
+		if( isDoubleUpgraded )
+			state = self.packapunch_weapons[ upgraded_weapon ] + 1;
+		else if( isUpgraded )
+			state = self.packapunch_weapons[ upgraded_weapon ] + 1;
+		else
+			state = 1;
+	}
+
+	if( is_in_array( level.ARRAY_EXPLOSIVE_WEAPONS, weapon) )
+		state = 1;
+	
+	self.packapunch_weapons[upgraded_weapon] = state;
+	self.packapunch_weapons[upgraded_weapon + "_x2"] = state;
+	
+	iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
+
+}
+
+	
 //##############################################
 
 zombiemode_melee_miss()
@@ -8103,6 +8200,16 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Has Drop: " + self.hasDrop);
 	//iprintln("Final Damage 0: ");
 	
+	//Reimagined-Expanded, different implementation for double PaP
+	if( IsDefined( self.packapunch_weapons[ weapon ] ) )
+	{
+		if( self.packapunch_weapons[ weapon ] > 1 )
+		{
+			weapon += "_x2";
+		}
+	}
+	iprintln("Weapon damaging: " + weapon);
+	
 	// WW (8/14/10) - define the owner of the monkey shot
 	if( weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_IMPACT" )
 	{
@@ -8485,6 +8592,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	// damage for non-shotgun bullet weapons - deals the same amount of damage through walls and multiple zombies
 	// all body shots deal the same damage
 	// neck, head, and healmet shots all deal the same damage
+	
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
 	{
 		weaponName="";
@@ -8818,6 +8926,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//iprintln("Final Damage 6: " + final_damage);
+
+		if( IsSubStr( weapon, "x2" ) ) 
+		{
+			//flat 4x damage increase for double pap'ed weapon
+
+			if( IsSubStr( weapon, "zombie" ) || is_in_array( level.ARRAY_WALL_WEAPONS, weaponname ) )
+			{
+				final_damage *= 2;
+			} else {
+				final_damage *= 4;
+			}
+			
+		}
 		
 		
 		// Death Machine - kills in 4 body shots or 2 headshots
@@ -8844,140 +8965,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				}
 			}
 		}
-		
-	}
-
-	//projectile impact damage - all body shots deal the same damage
-	//neck, head, and healmet shots all deal the same damage
-	if(meansofdeath == "MOD_IMPACT")
-	{
-		if(weapon == "crossbow_explosive_zm")
-		{
-			final_damage = 750;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(weapon == "crossbow_explosive_upgraded_zm")
-		{
-			final_damage = 2250;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_bowie_zm" || weapon == "knife_ballistic_sickle_zm")
-		{
-			final_damage = 5000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(weapon == "knife_ballistic_upgraded_zm" || weapon == "knife_ballistic_bowie_upgraded_zm" || weapon == "knife_ballistic_sickle_upgraded_zm" ||
-				weapon == "knife_ballistic_upgraded_zm_x2")
-		{
-			final_damage = 10000;
-			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 4;
-		}
-		else if(is_lethal_grenade(weapon) || is_tactical_grenade(weapon))
-		{
-			final_damage = 30;
-		}
-		
-		//Reimagined-Expanded - x2 Special Weapons
-		if(weapon == "knife_ballistic_upgraded_zm_x2") 
-		{
-			if(is_boss_zombie(self.animname)) { 
-			//nothing
-			} else 
-			{
-				attacker.bullet_electric=false;
-				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 3);
-																		//zomb, player, arc range, num arcs
-				wait(0.1);
-				if( self.marked_for_tesla )
-					final_damage = (self.health + 666);
-			}
-		}
-	}
-
-	//Reimagined-Expanded - x2 Weapons
-	if(weapon == "crossbow_explosive_upgraded_zm_x2" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
-	{	
-
-		radius=level.VALUE_EXPLOSIVE_BASE_RANGE / 2;
-		dmg=level.VALUE_EXPLOSIVE_BASE_DMG*2;
-		hellfire_time=0; //Handled in weapon fx
-
-		if(attacker hasProPerk(level.PHD_PRO)) {
-			radius*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE;
-			dmg*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE;
-		}
-
-		attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
-		return self.maxhealth + 1000; // should always kill
-			
-	}
-	
-	///*
-	
-	//Reimagined-Expanded Hellfire spreads more hellfire
-	if(meansOfDeath=="hellfire" ) 
-	{
-		if( is_boss_zombie(self.animname) ) {
-			return 1000;
-		}
-
-		radius=level.VALUE_HELLFIRE_RANGE;
-		time=level.VALUE_HELLFIRE_TIME;
-		if(attacker hasProPerk(level.PHD_PRO)) {
-			radius*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE;
-			time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
-		}
-
-		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, radius, time);
-		wait(1);
-		return self.maxhealth + 1000; // should always kill 
-	}
-	
-	//Reimagined-Expanded, can china-lake be upgraded??
-	if(weapon == "m72_law_zm" || weapon == "china_lake_zm") 
-	{
-		radius=level.VALUE_EXPLOSIVE_BASE_RANGE;
-		dmg=level.VALUE_EXPLOSIVE_BASE_DMG;
-		hellfire_time=level.VALUE_HELLFIRE_TIME;
-
-		if(attacker hasProPerk(level.PHD_PRO)) {
-			radius*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE;
-			dmg*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE;
-			hellfire_time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
-		}
-
-		if(!IsDefined(self.explosive_marked))
-			self.explosive_marked = false;
-
-		//Hellfire
-		if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_upgraded_zm") 
-		{
-			if( !is_boss_zombie(self.animname) && !self.explosive_marked) {
-				attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
-				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, hellfire_time, attacker );
-				return self.maxhealth + 1000; // should always kill
-			} 
-		}
-
-		if ( is_boss_zombie(self.animname) )
-		{
-			final_damage = dmg/10; //against boss zombies
-		}
-	}
 
 
-	if( IsSubStr( weapon, "x2" ) ) {
-			//flat 4x damage increase for double pap'ed weapon
-			final_damage *= 4;
-	}
 
-	//Bullet and shotgun bonus/perk damage
-	if( meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET" )
-	{	
+		/************************************************
+
+					DOUBLE PAP SPECIAL EFFECTS
+
+		*************************************************/
 
 		// Hellfire Weapons
 		//  case "ppsh_upgraded_zm_x2":
@@ -9064,7 +9059,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "fnfal_upgraded_zm_x2":
 			case "m14_upgraded_zm":
 				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
-					final_damage = int(final_damage * 2); //big damage
+					final_damage = int(final_damage * 2); //big headshot damage
 				}
 			break;
 			
@@ -9226,8 +9221,135 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 		}
 
-	} //End "bullet dmg only" wrapping if statment
-	//	
+	
+		
+	}
+	//END BULLET DAMAGE
+
+	//projectile impact damage - all body shots deal the same damage
+	//neck, head, and healmet shots all deal the same damage
+	if(meansofdeath == "MOD_IMPACT")
+	{
+		if(weapon == "crossbow_explosive_zm")
+		{
+			final_damage = 750;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 4;
+		}
+		else if(weapon == "crossbow_explosive_upgraded_zm")
+		{
+			final_damage = 2250;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 4;
+		}
+		else if(weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_bowie_zm" || weapon == "knife_ballistic_sickle_zm")
+		{
+			final_damage = 5000;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 4;
+		}
+		else if(weapon == "knife_ballistic_upgraded_zm" || weapon == "knife_ballistic_bowie_upgraded_zm" || weapon == "knife_ballistic_sickle_upgraded_zm" ||
+				weapon == "knife_ballistic_upgraded_zm_x2")
+		{
+			final_damage = 10000;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 4;
+		}
+		else if(is_lethal_grenade(weapon) || is_tactical_grenade(weapon))
+		{
+			final_damage = 30;
+		}
+		
+		//Reimagined-Expanded - x2 Special Weapons
+		if(weapon == "knife_ballistic_upgraded_zm_x2") 
+		{
+			if(is_boss_zombie(self.animname)) { 
+			//nothing
+			} else 
+			{
+				attacker.bullet_electric=false;
+				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 3);
+																		//zomb, player, arc range, num arcs
+				wait(0.1);
+				if( self.marked_for_tesla )
+					final_damage = (self.health + 666);
+			}
+		}
+	}
+
+	//Reimagined-Expanded - x2 Weapons
+	if(weapon == "crossbow_explosive_upgraded_zm_x2" && meansofdeath == "MOD_GRENADE_SPLASH" && !is_boss_zombie(self.animname))
+	{	
+
+		radius=level.VALUE_EXPLOSIVE_BASE_RANGE / 2;
+		dmg=level.VALUE_EXPLOSIVE_BASE_DMG*2;
+		hellfire_time=0; //Handled in weapon fx
+
+		if(attacker hasProPerk(level.PHD_PRO)) {
+			radius*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE;
+			dmg*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE;
+		}
+
+		attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
+		return self.maxhealth + 1000; // should always kill
+			
+	}
+	
+	///*
+	
+	//Reimagined-Expanded Hellfire spreads more hellfire
+	if(meansOfDeath=="hellfire" ) 
+	{
+		if( is_boss_zombie(self.animname) ) {
+			return 1000;
+		}
+
+		radius=level.VALUE_HELLFIRE_RANGE;
+		time=level.VALUE_HELLFIRE_TIME;
+		if(attacker hasProPerk(level.PHD_PRO)) {
+			radius*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE;
+			time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
+		}
+
+		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, radius, time);
+		wait(1);
+		return self.maxhealth + 1000; // should always kill 
+	}
+	
+	//Reimagined-Expanded, can china-lake be upgraded??
+	if(weapon == "m72_law_zm" || weapon == "china_lake_zm") 
+	{
+		radius=level.VALUE_EXPLOSIVE_BASE_RANGE;
+		dmg=level.VALUE_EXPLOSIVE_BASE_DMG;
+		hellfire_time=level.VALUE_HELLFIRE_TIME;
+
+		if(attacker hasProPerk(level.PHD_PRO)) {
+			radius*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_RANGE_SCALE;
+			dmg*=level.VALUE_PHD_PRO_EXPLOSION_BONUS_DMG_SCALE;
+			hellfire_time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
+		}
+
+		if(!IsDefined(self.explosive_marked))
+			self.explosive_marked = false;
+
+		//Hellfire
+		if(weapon == "m72_law_upgraded_zm" || weapon == "china_lake_upgraded_zm") 
+		{
+			if( !is_boss_zombie(self.animname) && !self.explosive_marked) {
+				attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
+				level thread maps\_zombiemode_weapon_effects::napalm_fire_effects( self, 160, hellfire_time, attacker );
+				return self.maxhealth + 1000; // should always kill
+			} 
+		}
+
+		if ( is_boss_zombie(self.animname) )
+		{
+			final_damage = dmg/10; //against boss zombies
+		}
+	}
+
+
+	
 
 
 	//iprintln( "Final dmg for bullet guns: " + final_damage );

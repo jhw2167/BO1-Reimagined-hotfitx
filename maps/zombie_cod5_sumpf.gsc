@@ -325,7 +325,7 @@ include_weapons()
 	//Single Shot
 	include_weapon( "karabin_zm", false );
 	include_weapon( "zombie_type99_rifle", false );
-	//include_weapon( "karabin_upgraded_zm", false );	
+	//include_weapon( "karabin_upgraded_zm", false );
 	//Single Shot
 	include_weapon( "zombie_gewehr43", false, true );
 	include_weapon( "zombie_m1garand", false, true );

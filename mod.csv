@@ -49,8 +49,13 @@ weapon,sp/lower_equip_gasmask_zm
 weapon,sp/zombie_bullet_crouch
 weapon,sp/zombie_perk_bottle
 
+//New Weapons
+weapon,sp/ak47_zm
+weapon,sp/ft_ak47_upgraded_zm
+weapon,sp/ak47_ft_upgraded_zm
 
-//NEW WEAPONS
+
+//NEW Equip
 weapon,sp/molotov_zm
 
 weapon,sp/combat_knife_zm

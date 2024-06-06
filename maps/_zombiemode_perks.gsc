@@ -693,10 +693,11 @@ vending_weapon_upgrade()
 			
  			continue;
 		}
+		//Cannot be pap'd
 		if(vending_2x_blacklist(current_weapon)) {
 			continue;
 		}
-				
+
 
 		self.user = player;
 		flag_set("pack_machine_in_use");
@@ -810,20 +811,6 @@ vending_2x_blacklist(weapon) {
 			weapon == "sniper_explosive_bolt_upgraded_zm" ||										//scavenger
 			(IsSubStr( weapon, "sniper" ) && IsSubStr( weapon, "upgraded" )) ||						///scavenger
 			weapon == "humangun_upgraded_zm" ||														//human gun
-			( IsSubStr( weapon, "zombie" ) && IsSubStr( weapon, "upgraded" )) ||					//no double pap WaW weapons
-			weapon == "m14_upgraded_zm" ||
-			weapon == "mpl_upgraded_zm" ||
-			weapon == "mp5k_upgraded_zm" ||
-			weapon == "mp40_upgraded_zm" ||
-			weapon == "ak74u_upgraded_zm" ||
-			weapon == "pm63_upgraded_zm" ||
-			weapon == "rottweil72_upgraded_zm" ||
-			weapon == "m16_gl_upgraded_zm" ||
-			weapon == "gl_m16_upgraded_zm" ||
-			weapon == "ithaca_upgraded_zm" ||
-			weapon == "mk_aug_upgraded_zm" ||
-			weapon == "m72_law_zm" || 
-			weapon == "china_lake_zm" ||
 			weapon == "explosivbe_bolt_upgraded_zm")
 			{
 				return true;
@@ -950,7 +937,10 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				}
 
 				player SwitchToWeapon( upgrade_weapon );
+				player handle_player_packapunch(weapon, true);
 				player maps\_zombiemode_weapons::play_weapon_vo(upgrade_weapon);
+				
+				
 				return;
 			}
 		}
@@ -958,6 +948,10 @@ wait_for_player_to_take( player, weapon, packa_timer )
 	}
 }
 
+handle_player_packapunch(current_weapon, didUpgrade)
+{
+	self maps\_zombiemode::handle_player_packapunch(current_weapon, didUpgrade);
+}
 
 //	Waiting for the weapon to be taken
 //

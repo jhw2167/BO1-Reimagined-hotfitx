@@ -519,6 +519,7 @@ include_weapons()
 	include_weapon( "zombie_bar", false, true );
 	include_weapon( "zombie_bar_bipod", false, true );
 	include_weapon( "bar_upgraded_zm", false );
+	
 	include_weapon( "zombie_stg44", false, true );
 	include_weapon( "zombie_thompson", false, true );	
 	include_weapon( "mp40_zm", false, true );

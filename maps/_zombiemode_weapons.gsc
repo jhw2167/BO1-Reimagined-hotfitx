@@ -1106,9 +1106,15 @@ is_weapon_double_upgraded( weaponname )
 		return false;
 	}
 
-	//iprintln("Is weapon double upgraded: "+ IsSubStr( weaponname, "x2" ));
-	weaponname = ToLower( weaponname );
-	return IsSubStr( weaponname, "x2" );
+	if( IsDefined( self.packapunch_weapons[ weaponname ] ) )
+	{
+		return ( self.packapunch_weapons[ weaponname ] > 1 );
+	}
+	else
+	{
+		return false;
+	}
+
 }
 
 
@@ -3507,6 +3513,7 @@ treasure_chest_give_weapon( weapon_string )
 	}
 
 	self GiveWeapon( weapon_string, 0 );
+	self maps\_zombiemode::handle_player_packapunch(weapon_string, false);
 	self give_max_ammo(weapon_string, 1);
 	self SwitchToWeapon( weapon_string );
 
@@ -4353,6 +4360,10 @@ init_includes()
 	//ARs
 	include_weapon("galil_upgraded_zm_x2");
 	include_weapon("commando_upgraded_zm_x2");
+	include_weapon("ak47_zm");
+	include_weapon("ak47_ft_upgraded_zm");
+	include_weapon("ft_ak47_upgraded_zm");
+	
 
 	//Mgs
 	include_weapon("stoner63_zm");

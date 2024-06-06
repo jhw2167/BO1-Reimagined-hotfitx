@@ -342,6 +342,13 @@ generate_perk_hint( perkOrWeapon )
 			text SetText( &"REIMAGINED_OFFHAND_MELEE_HINT" );
 			title SetText( &"REIMAGINED_OFFHAND_MELEE_TITLE" );
 			break;
+
+		/* Specific Weapons */
+		case "m1911_upgraded_zm":
+			text SetText( &"REIMAGINED_PAP_M1911_HINT" );
+			title SetText( &"REIMAGINED_PAP_M1911_TITLE" );
+			break;
+
 		}
 
 	text FadeOverTime( 1 );
