@@ -1266,13 +1266,34 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
 		//give knife_ballistic_upgraded_zm_x2
 	}
 	
 	wait( 5 );
 	
+
+	stored_weapon_info = GetArrayKeys( level.zombie_weapons );
+	iprintln( "CALLING THE WEAPONS " );
+	iprintln( "Stored Weapons: " + stored_weapon_info.size );
+	iprintln( "ak47: " + level.zombie_weapons["ak47_zm"].weapon_name );
+	iprintln( "ak47: " + level.zombie_weapons["ak47_zm"].upgrade_name );
+	iprintln( "ak47: " + level.zombie_include_weapons[ "ak47_zm" ] );
+
+	iprintln( "asp: " + level.zombie_weapons["asp_zm"].weapon_name );
+	iprintln( "asp: " + level.zombie_weapons["asp_zm"].upgrade_name );
+	iprintln( "asp: " + level.zombie_include_weapons[ "asp_zm" ] );
+
+	/*
+	for( i = 0; i < stored_weapon_info.size; i++ )
+	{
+		iprintln( "Weapon: " + level.zombie_weapons[stored_weapon_info[i]].weapon_name );
+		iprintln( "Upgrade: " + level.zombie_weapons[stored_weapon_info[i]].upgrade_name );
+		iprintln( "Weapon: " + level.zombie_include_weapons[ stored_weapon_info[i] ] );
+	}
+	*/
+			
 
 	/*
 	for( i = 0; i < level.ARRAY_SHINO_PERKS_AVAILIBLE.size; i++ ) {

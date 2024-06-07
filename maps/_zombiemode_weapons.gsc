@@ -236,7 +236,6 @@ init_weapons()
 	// Zombify
 	//	PrecacheItem( "zombie_melee" );
 
-	//Z2 Weapons disabled for now
 	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
 
 	isWawMap = false;
@@ -591,12 +590,14 @@ init_weapons()
 	ak47_zm
 	c:\Program Files (x86)\Steam\steamapps\common\Call of Duty Black Ops\raw\weapons\sp\skorpion_zm
 	**************************/
+	add_zombie_weapon( "asp_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"pistol",			"",		undefined );
+	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	
 	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
-	add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",					1000,	"smg",				"",		undefined );
+	//add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",					1000,	"smg",				"",		undefined );
 	//add_zombie_weapon( "enfield",					"enfield",								&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
 	//add_zombie_weapon( "m60",						"m60",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"mg",				"",		undefined );
-	add_zombie_weapon( "asp",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
-	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
 	//{{WEAPON_INCLUDE}}
 
 	//Upgrade

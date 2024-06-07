@@ -486,6 +486,12 @@ xanim,ai_zombie_flinger_flail
 xanim,viewmodel_asp_sw_d2p_in
 xanim,viewmodel_asp_sw_d2p_loop
 xanim,viewmodel_asp_sw_d2p_out
+xanim,viewmodel_asp_sw_reload_empty
+xanim,viewmodel_asp_sw_reload
+xanim,viewmodel_asp_sw_first_raise
+xanim,viewmodel_asp_sw_ads_down
+xanim,viewmodel_asp_sw_ads_up
+xanim,viewmodel_asp_sw_ads_fire
 //{{NEW_XANIM_LINE}}
 
 //PLAYER ANIMS
