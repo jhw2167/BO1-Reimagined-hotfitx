@@ -1274,6 +1274,7 @@ wait_set_player_visionset()
 	wait( 5 );
 	
 
+	/*
 	stored_weapon_info = GetArrayKeys( level.zombie_weapons );
 	iprintln( "CALLING THE WEAPONS " );
 	iprintln( "Stored Weapons: " + stored_weapon_info.size );
@@ -1284,6 +1285,7 @@ wait_set_player_visionset()
 	iprintln( "asp: " + level.zombie_weapons["asp_zm"].weapon_name );
 	iprintln( "asp: " + level.zombie_weapons["asp_zm"].upgrade_name );
 	iprintln( "asp: " + level.zombie_include_weapons[ "asp_zm" ] );
+	*/
 
 	/*
 	for( i = 0; i < stored_weapon_info.size; i++ )
@@ -8541,7 +8543,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		return final_damage;
 	}
 
-	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" )
+	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" || weapon == "asp_upgraded_zm" )
 	{
 		min_factor = 4;
 		final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH / min_factor );
@@ -8655,6 +8657,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "ak74u_zm":
 		case "zombie_thompson":
 		case "mp40_zm":
+		case "asp_zm":
 			final_damage = 360;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
