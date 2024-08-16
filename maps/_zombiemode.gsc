@@ -48,14 +48,14 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=2;	///
+	level.zombie_ai_limit_override=2;	///
 	level.starting_round_override=27;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=15;	///
+	//level.calculate_amount_override=2;	///
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.dev_only=true;					///*/

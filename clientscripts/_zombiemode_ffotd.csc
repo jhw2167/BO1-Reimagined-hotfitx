@@ -38,6 +38,11 @@ include_weapons()
 {
 	include_weapon( "bo3_zm_widows_grenade", false );
 	include_weapon( "sticky_grenade_zm", false );
+	
+	include_weapon( "asp_zm" );
+	include_weapon( "asp_upgraded_zm" );
+	include_weapon( "uzi_zm" );
+	include_weapon( "uzi_upgraded_zm" );
 
 	if(GetDvar("mapname") == "zombie_cod5_prototype")
 	{

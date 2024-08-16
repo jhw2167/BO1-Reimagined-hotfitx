@@ -590,18 +590,18 @@ init_weapons()
 	ak47_zm
 	c:\Program Files (x86)\Steam\steamapps\common\Call of Duty Black Ops\raw\weapons\sp\skorpion_zm
 	**************************/
-	add_zombie_weapon( "asp_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"pistol",			"",		undefined );
-	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	add_zombie_weapon( "asp_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_ASP",				1000,	"pistol",			"",		undefined );
+	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_ASP",				1000,	"assault",			"",		undefined );
 	
-	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
-	//add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",					1000,	"smg",				"",		undefined );
+	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_AK47",				1000,	"assault",			"",		undefined );
+	add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_UZI",					1000,	"smg",				"",		undefined );
 	//add_zombie_weapon( "enfield",					"enfield",								&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
 	//add_zombie_weapon( "m60",						"m60",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"mg",				"",		undefined );
 	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
 	//{{WEAPON_INCLUDE}}
 
 	//Upgrade
-	add_zombie_weapon( "ak47_ft_upgraded_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
+	//add_zombie_weapon( "ak47_ft_upgraded_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
 
 	//Total: 4 base, 0 upgraded = 4
 	/***** END NEW *****/
@@ -4356,14 +4356,17 @@ init_includes()
 {
 
 	//Pistols
-	include_weapon("asp_zm");			// \give asp_zm
-	include_weapon("asp_upgraded_zm");
+	include_weapon("asp_zm");				// new
+	include_weapon("asp_upgraded_zm");		// new
 	include_weapon("cz75_upgraded_zm_x2");
 
 	//SMGS
 	include_weapon("ppsh_zm");
 	include_weapon("ppsh_upgraded_zm");
 	include_weapon("ppsh_upgraded_zm_x2");
+
+	include_weapon("uzi_zm");				// new
+	include_weapon("uzi_upgraded_zm");		// new
 
 	//Shotguns
 	include_weapon("hs10_upgraded_zm_x2");
