@@ -1045,6 +1045,7 @@ reimagined_init_player()
 	
 	//Default all are 0, 1 is pap, 2 is x2 pap, more...
 	self.packapunch_weapons = [];
+	self.weapon_taken_by_losing_additionalprimaryweapon = [];
 
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
@@ -1718,9 +1719,14 @@ watch_player_perkslots()
 }
 
 /*
-	1. Player just given weapon, set all pap values to 0
-	
-	Count number of upgrades on PaP weapon
+	"weapon" is "base weapon" that is going to be upgraded by PaP
+
+	1. Player given standard _zm weapon, _zm, _upgraded and x2 set to 0
+	2. Player given _upgraded weapon, _upgraded and x2 set to 1
+	3. Player given _x2 weapon, _upgraded and x2 set to 2
+
+	4. Player replaces _upgraded weapon with other _zm box weapon
+
 
 */
 handle_player_packapunch(weapon, didUpgrade)
@@ -8675,6 +8681,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.25;
 			break;
+		case "uzi_zm":
+		case "mac11_zm":
+		case "skorpion_zm":
+		final_damage = 420;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 1.50;
+			break;		
 		case "m16_zm":
 		case "g11_lps_zm":
 		case "famas_zm":
@@ -8827,9 +8840,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "spectre_upgraded_zm":
+		case "kiparis_upgraded_zm":
 			final_damage = 1200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
+			break;
+		case "uzi_upgraded_zm":
+		case "mac11_upgraded_zm":
+		case "skorpion_upgraded_zm":
+		final_damage = 2000;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 1.50;
 			break;
 		case "rpk_upgraded_zm":
 			final_damage = 1980;

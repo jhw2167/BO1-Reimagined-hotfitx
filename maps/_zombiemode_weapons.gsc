@@ -2704,6 +2704,19 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 
 		}
 
+		if( player.weapon_taken_by_losing_additionalprimaryweapon != undefined )
+		{
+			base_wep = player.weapon_taken_by_losing_additionalprimaryweapon;
+			if( IsSubStr( base_wep, "_x2" ) )
+				base_wep = GetSubStr( base_wep, 0, base_wep.size - "_x2".size );
+
+			if( IsSubStr( base_wep, "_upgraded" ) )
+				base_wep = GetSubStr( base_wep, 0, base_wep.size - "upgraded_zm".size ) + "_zm";
+
+			if( keys[i] == base_wep )
+				continue;
+		}
+
 		filtered[filtered.size] = keys[i];
 
 		/*num_entries = [[ level.weapon_weighting_funcs[keys[i]] ]]();
