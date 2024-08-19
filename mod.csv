@@ -53,12 +53,13 @@ weapon,sp/zombie_perk_bottle
 weapon,sp/ak47_zm
 weapon,sp/ft_ak47_upgraded_zm
 weapon,sp/ak47_ft_upgraded_zm
-
 weapon,sp/asp_zm
 weapon,sp/asp_upgraded_zm
-
 weapon,sp/uzi_zm
 weapon,sp/uzi_upgraded_zm
+
+weapon,sp/m60_zm
+weapon,sp/m60_upgraded_zm
 
 
 //NEW Equip

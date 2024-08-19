@@ -476,19 +476,23 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 
 	worldgun = spawn( "script_model", origin );
 	worldgun.angles  = angles+(0,90,0);
-	worldgun setModel( GetWeaponModel( level.zombie_weapons[current_weapon].upgrade_name ) );
-	worldgun useweaponhidetags( level.zombie_weapons[current_weapon].upgrade_name );
+	newGun = level.zombie_weapons[current_weapon].upgrade_name
+	if( !isDefined( newGun ) )
+		newGun = current_weapon;
+
+	worldgun setModel( GetWeaponModel( newGun ) );
+	worldgun useweaponhidetags( newGun );
 	worldgun moveto( interact_pos, 0.5, 0, 0 );
 	perk_trigger.worldgun = worldgun;
 
 	worldgundw = undefined;
-	if ( maps\_zombiemode_weapons::weapon_is_dual_wield( level.zombie_weapons[current_weapon].upgrade_name ) )
+	if ( maps\_zombiemode_weapons::weapon_is_dual_wield( newGun ) )
 	{
 		worldgundw = spawn( "script_model", origin + offsetdw );
 		worldgundw.angles  = angles+(0,90,0);
 
-		worldgundw setModel( maps\_zombiemode_weapons::get_left_hand_weapon_model_name( level.zombie_weapons[current_weapon].upgrade_name ) );
-		worldgundw useweaponhidetags( level.zombie_weapons[current_weapon].upgrade_name );
+		worldgundw setModel( maps\_zombiemode_weapons::get_left_hand_weapon_model_name( newGun ) );
+		worldgundw useweaponhidetags( newGun );
 		worldgundw moveto( interact_pos + offsetdw, 0.5, 0, 0 );
 		perk_trigger.worldgundw = worldgundw;
 	}
@@ -864,9 +868,14 @@ vending_weapon_upgrade_cost()
 wait_for_player_to_take( player, weapon, packa_timer )
 {
 	AssertEx( IsDefined( level.zombie_weapons[weapon] ), "wait_for_player_to_take: weapon does not exist" );
-	AssertEx( IsDefined( level.zombie_weapons[weapon].upgrade_name ), "wait_for_player_to_take: upgrade_weapon does not exist" );
+	//AssertEx( IsDefined( level.zombie_weapons[weapon].upgrade_name ), "wait_for_player_to_take: upgrade_weapon does not exist" );
 
 	upgrade_weapon = level.zombie_weapons[weapon].upgrade_name;
+
+	//Reimagined-Exapnded - Essentially, we use the already upgraded weapon as the new weapon for some weapons
+	if( !isDefined( upgrade_weapon ) ) 
+		upgrade_weapon = weapon;
+	
 	iprintln("Upgrade weapon to give: " );
 	iprintln( upgrade_weapon );
 

@@ -307,12 +307,14 @@ init_weapons()
 	add_zombie_weapon( "rpk_zm",					"rpk_upgraded_zm",						&"ZOMBIE_WEAPON_RPK",					4000,		"mg",				"",		undefined );
 	add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_STONER63",				4000,		"mg",				"",		undefined );
 	add_zombie_weapon( "hk21_zm",					"hk21_upgraded_zm",						&"ZOMBIE_WEAPON_HK21",					4000,		"mg",				"",		undefined );
+	add_zombie_weapon( "m60_zm",					"m60_upgraded_zm",						&"ZOMBIE_WEAPON_M60",					4000,		"mg",				"",		undefined );
 
 
 	//Upgrade
 	add_zombie_weapon( "rpk_upgraded_zm",					"rpk_upgraded_zm_x2",					&"ZOMBIE_WEAPON_RPK",					4000,		"mg",				"",		undefined );
-	add_zombie_weapon( "stoner63_upgraded_zm",				"stoner63_upgraded_zm",				&"ZOMBIE_WEAPON_STONER63",				4000,		"mg",				"",		undefined );
 	add_zombie_weapon( "hk21_upgraded_zm",					"hk21_upgraded_zm_x2",					&"ZOMBIE_WEAPON_HK21",					4000,		"mg",				"",		undefined );
+	//add_zombie_weapon( "stoner63_upgraded_zm",				"stoner63_upgraded_zm",				&"ZOMBIE_WEAPON_STONER63",				4000,		"mg",				"",		undefined );
+	//add_zombie_weapon( "m60_upgraded_zm",					"m60_upgraded_zm",					&"ZOMBIE_WEAPON_M60",					4000,		"mg",				"",		undefined );
 
 	//Total: 3 base, 3 upgraded, 2 x2 = 8
 	/***** END MGS *****/
@@ -4369,8 +4371,8 @@ init_includes()
 {
 
 	//Pistols
-	include_weapon("asp_zm");				// new
-	include_weapon("asp_upgraded_zm");		// new
+	include_weapon("asp_zm");				
+	include_weapon("asp_upgraded_zm");		
 	include_weapon("cz75_upgraded_zm_x2");
 
 	//SMGS
@@ -4378,8 +4380,8 @@ init_includes()
 	include_weapon("ppsh_upgraded_zm");
 	include_weapon("ppsh_upgraded_zm_x2");
 
-	include_weapon("uzi_zm");				// new
-	include_weapon("uzi_upgraded_zm");		// new
+	include_weapon("uzi_zm");				
+	include_weapon("uzi_upgraded_zm");		
 
 	//Shotguns
 	include_weapon("hs10_upgraded_zm_x2");
@@ -4393,10 +4395,13 @@ init_includes()
 	
 
 	//Mgs
-	include_weapon("stoner63_zm");
 	include_weapon("rpk_upgraded_zm_x2");
-	include_weapon("stoner63_upgraded_zm");
 	include_weapon("hk21_upgraded_zm_x2");
+	include_weapon("stoner63_zm");
+	include_weapon("stoner63_upgraded_zm");
+
+	include_weapon("m60_zm");
+	include_weapon("m60_upgraded_zm");
 
 	//Snipers
 	include_weapon("psg1_zm");

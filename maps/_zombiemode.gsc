@@ -846,7 +846,7 @@ reimagined_init_level()
 							"gl_m16_upgraded_zm", "ithaca_upgraded_zm", "bar_upgraded_zm", "m1garand_upgraded_zm", "springfield_upgraded_zm"
 	);
 
-	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "famas_upgraded_zm_x2", "cz75_upgraded_zm_x2");
+	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "cz75_upgraded_zm_x2", "stoner63_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 	level.THRESHOLD_TESLA_SHOCK_TIME = 3;
 
@@ -8729,6 +8729,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
 			break;
+		case "m60_zm":
+			final_damage = 1320;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 2;
+			break;
 		case "psg1_zm":
 			final_damage = 44000;
 			
@@ -8848,7 +8853,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "uzi_upgraded_zm":
 		case "mac11_upgraded_zm":
 		case "skorpion_upgraded_zm":
-		final_damage = 2000;
+		final_damage = 1450;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 1.50;
 			break;
@@ -8861,6 +8866,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 1800;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
+			break;
+		case "m60_upgraded_zm":
+			final_damage = 4000;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 2.5;
 			break;
 		case "stoner63_upgraded_zm":
 		case "bar_upgraded_zm":
@@ -9101,6 +9111,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 			case "commando_upgraded_zm_x2":
 			case "stoner63_upgraded_zm_x2":
+			case "m60_upgraded_zm_x2":
 					final_damage = int(final_damage * 1.5); //big damage
 			break;
 			case "fnfal_upgraded_zm_x2":

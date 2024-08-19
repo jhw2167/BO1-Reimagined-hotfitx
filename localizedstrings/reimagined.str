@@ -182,6 +182,9 @@ LANG_ENGLISH       	"PSA Death"
 REFERENCE          	UZI_UPGRADED
 LANG_ENGLISH       	"Uzizi"
 
+REFERENCE          	M60_UPGRADED
+LANG_ENGLISH       	"Mega-60"
+
 
 REFERENCE          	COMBAT_KNIFE
 LANG_ENGLISH       	"Combat Knife"
