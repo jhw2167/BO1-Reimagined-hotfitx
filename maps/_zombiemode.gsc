@@ -8979,8 +8979,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "zombie_doublebarrel_sawed":
 			final_damage = 3000 * ( damage / 160);
 			break;
+		case "ks23_zm":
+			final_damage = 5000 * ( damage / 160);
+			break;
 		case "ithaca_upgraded_zm":
 		case "zombie_doublebarrel_upgraded":
+		case "ks23_upgraded_zm":
 			final_damage = 10000 * ( damage / 300);
 			break;
 		case "spas_zm":

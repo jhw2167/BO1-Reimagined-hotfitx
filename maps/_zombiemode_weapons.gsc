@@ -417,11 +417,11 @@ init_weapons()
 
 	//Base
 	add_zombie_weapon( "m72_law_zm", 				"m72_law_upgraded_zm",					&"ZOMBIE_WEAPON_M72_LAW",	 			2000,	"launcher",			"",		undefined );
-	add_zombie_weapon( "china_lake_zm", 			"china_lake_upgraded_zm",				&"ZOMBIE_WEAPON_CHINA_LAKE", 			2000,	"launcher",			"",		undefined );
+	//add_zombie_weapon( "china_lake_zm", 			"china_lake_upgraded_zm",				&"ZOMBIE_WEAPON_CHINA_LAKE", 			2000,	"launcher",			"",		undefined );
 
 	//Upgrade - upgraded launchers get ammo back
-	add_zombie_weapon( "m72_law_upgraded_zm", 				"m72_law_upgraded_zm",					&"ZOMBIE_WEAPON_M72_LAW",	 			2000,	"launcher",			"",		undefined );
-	add_zombie_weapon( "china_lake_upgraded_zm", 			"china_lake_upgraded_zm",				&"ZOMBIE_WEAPON_CHINA_LAKE", 			2000,	"launcher",			"",		undefined );
+	//add_zombie_weapon( "m72_law_upgraded_zm", 				"m72_law_upgraded_zm",					&"ZOMBIE_WEAPON_M72_LAW",	 			2000,	"launcher",			"",		undefined );
+	//add_zombie_weapon( "china_lake_upgraded_zm", 			"china_lake_upgraded_zm",				&"ZOMBIE_WEAPON_CHINA_LAKE", 			2000,	"launcher",			"",		undefined );
 
 	//Total: 2 base, 2 upgraded = 4
 	/***** END LAUNCHERS *****/
@@ -601,7 +601,9 @@ init_weapons()
 	add_zombie_weapon( "m60_zm",					"m60_upgraded_zm",						&"ZOMBIE_WEAPON_M60",					4000,		"mg",				"",		undefined );
 
 	add_zombie_weapon( "makarov_zm",					"makarov_upgraded_zm",					&"ZOMBIE_WEAPON_MAKAROV",					50,		"pistol",			"",		undefined );
-	
+	add_zombie_weapon( "ks23_zm",					"ks23_upgraded_zm",						&"ZOMBIE_WEAPON_KS23",					50,		"shotgun",			"",		undefined );
+	//add_zombie_weapon( "kiparis_zm",					"kiparis_upgraded_zm",					&"ZOMBIE_WEAPON_KIPARIS",					50,		"smg",			"",		undefined );
+	//add_zombie_weapon( "mac11_zm",					"mac11_upgraded_zm",					&"ZOMBIE_WEAPON_MAC11",					50,		"smg",			"",		undefined );
 
 
 	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
@@ -4391,10 +4393,17 @@ init_includes()
 	include_weapon("ppsh_upgraded_zm_x2");
 
 	include_weapon("uzi_zm");				
-	include_weapon("uzi_upgraded_zm");		
-
+	include_weapon("uzi_upgraded_zm");
+	
+	//include_weapon("mac11_zm");
+	//include_weapon("mac11_upgraded_zm");
+	//include_weapon("kiparis_zm");
+	//include_weapon("kiparis_upgraded_zm");
+	
 	//Shotguns
 	//include_weapon("hs10_upgraded_zm_x2");
+	include_weapon("ks23_zm");
+	include_weapon("ks23_upgraded_zm");
 
 	//ARs
 	include_weapon("galil_upgraded_zm_x2");

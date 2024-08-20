@@ -120,6 +120,7 @@ a0,b1,c2,d3,e4,f5,g6,f7,g8,h9
 51,weapon,strela,weapon_camo_neutral,weapon_camo_neutral,,,,,
 52,weapon,uzi,cammo_gunmetal,cammo_gunplastic,mtl_t5_weapon_uzi,,,,
 53,weapon,wa2000,cammo_wood_tile_red,cammo_gunplastic,,,,,
+54,weapon,ks23,cammo_wood_tile_red,weapon_camo_neutral,mtl_t5_weapon_ks23,,,,
 ,,,,,,,,,
 54,weapon,freezegun,,,mtl_zombie_freeze_gun_body,mtl_zombie_freeze_gun_body_plastic,,,
 55,weapon,ray_gun,gold,gold,mtl_ray_gun,,,,
