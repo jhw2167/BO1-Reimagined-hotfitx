@@ -476,7 +476,7 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 
 	worldgun = spawn( "script_model", origin );
 	worldgun.angles  = angles+(0,90,0);
-	newGun = level.zombie_weapons[current_weapon].upgrade_name
+	newGun = level.zombie_weapons[current_weapon].upgrade_name;
 	if( !isDefined( newGun ) )
 		newGun = current_weapon;
 

@@ -846,17 +846,20 @@ reimagined_init_level()
 							"gl_m16_upgraded_zm", "ithaca_upgraded_zm", "bar_upgraded_zm", "m1garand_upgraded_zm", "springfield_upgraded_zm"
 	);
 
-	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2", "cz75_upgraded_zm_x2", "stoner63_upgraded_zm_x2");
+	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2",
+							 "cz75_upgraded_zm_x2", "cz75lh_upgraded_zm_x2", "stoner63_upgraded_zm_x2");
 	level.THRESHOLD_ELECTRIC_BULLETS = 5;
 	level.THRESHOLD_TESLA_SHOCK_TIME = 3;
 
-	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2", "ithaca_upgraded_zm_x2");
+	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2",
+							 "ithaca_upgraded_zm_x2");
 	level.RANGE_SHEERCOLD_DIST = 120;
 	level.THRESHOLD_SHEERCOLD_DIST = 50;
 	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
 	level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME = 3;
 
-	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2", "rottweil72_upgraded_zm");
+	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2",
+							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
 	level.THRESHOLD_HELLFIRE_TIME = 1.2;
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
@@ -870,18 +873,22 @@ reimagined_init_level()
 
 	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
 	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x max 4.5x damage
-	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm", "mk_aug_upgraded_zm",
+	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
 									 "zombie_doublebarrel", "zombie_doublebarrel_upgraded", "zombie_shotgun", "zombie_shotgun_upgraded",
 									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
-									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2"						
+									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2",
+									 "aug_acog_mk_upgraded_zm", "aug_acog_mk_upgraded_zm_x2", "mk_aug_upgraded_zm"
 									 );
 
-	level.ARRAY_BIGDMG_WEAPONS = array( "commando_upgraded_zm_x2", "stoner63_upgraded_zm_x2" );
+	level.ARRAY_BIGDMG_WEAPONS = array( "commando_upgraded_zm_x2", "stoner63_upgraded_zm_x2", "m60_upgraded_zm_x2" );
 	level.ARRAY_BIGHEADSHOTDMG_WEAPONS = array( "fnfal_upgraded_zm_x2", "m14_upgraded_zm", "psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2" );
 	level.ARRAY_SIDEARMBONUS_WEAPONS = array( "cz75_zm", "cz75_upgraded_zm", "cz75_upgraded_zm_x2",
 											"cz75_dw_zm", "cz75_dw_upgraded_zm", "cz75_dw_upgraded_zm_x2",
 											 "python_zm", "python_upgraded_zm", "python_upgraded_zm_x2"
 											);
+
+	level.ARRAY_EXECUTE_WEAPONS = array( "python_upgraded_zm_x2", "enfield_upgraded_zm_x2", "skorpionlh_upgraded_zm" );
+	level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH = 0.34 * level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 
 
 	//MISCELLANEOUS EFFECTS
@@ -1527,6 +1534,7 @@ watch_player_electric()
 		weapon = self getcurrentweapon();
 		if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon) )
 		{
+			iprintln( "Current weap: " + weapon  );
 			self watch_electric_trigger( weapon );
 			resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		}
@@ -1560,7 +1568,8 @@ watch_player_electric()
 				self.bullet_electric = true;
 			}
 				
-			wait(0.05);
+			iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
+			wait(0.5);
 		}
 
 		
@@ -8232,14 +8241,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Final Damage 0: ");
 	
 	//Reimagined-Expanded, different implementation for double PaP
-	if( IsDefined( self.packapunch_weapons[ weapon ] ) )
+	dwWeap = WeaponDualWieldWeaponName( weapon );
+	if( IsDefined( attacker.packapunch_weapons[ weapon ] ) )
 	{
-		if( self.packapunch_weapons[ weapon ] > 1 )
+		//if substring allready contains _x2, then exit for loop
+		if( isSubStr( weapon, "_x2" ) )	{
+			//nothing
+		}
+		else if( attacker.packapunch_weapons[ weapon ] > 1 )
 		{
 			weapon += "_x2";
 		}
 	}
+
 	iprintln("Weapon damaging: " + weapon);
+	iprintln( "dw weap: " + WeaponDualWieldWeaponName( weapon ) );
 	
 	// WW (8/14/10) - define the owner of the monkey shot
 	if( weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_IMPACT" )
@@ -8626,12 +8642,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
 	{
-		weaponName="";
+		
 		//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
+		
+		weaponName=weapon;
 		if( IsSubStr( weapon, "_x2" ) ) {
 				weaponName = GetSubStr(weapon, 0, weapon.size-3);
-		} else {
-			weaponName=weapon;
 		}
 		
 		
@@ -8708,6 +8724,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 470;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
+			break;
+		case "enfield_zm":
+			final_damage = 520;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 2;
 			break;
 		case "fnfal_zm":
 			final_damage = 520;
@@ -8893,6 +8914,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 8;
 			break;
+		case "enfield_upgraded_zm":
+			final_damage = 2240;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 4;
+			break;
 		//UPGRADED WAW WEAPONS
 		case "zombie_kar98k_upgraded":
 		case "springfield_upgraded_zm":
@@ -9036,6 +9062,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//  case "rpk_upgraded_zm_x2":
 		//  case "ak47_ft_upgraded_zm_x2":
 		//  case "rottweil72_upgraded_zm":
+		// case "cz75dw_upgraded_zm_x2":
+
 		if( (attacker.bullet_hellfire || weapon == "rottweil72_upgraded_zm") && !is_true( self.in_water ) ) 
 		{
 			if(is_boss_zombie(self.animname))
@@ -9069,7 +9097,25 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//	case "ak74u_upgraded_zm_x2":
 		//	case "aug_acog_mk_upgraded_zm_x2":
 		//	case "famas_upgraded_zm_x2":
+		//	case "cz75_upgraded_zm_x2":
+		//	case "cz75lh_upgraded_zm_x2":
 		//  "Balistic"
+
+		//Randomly give this weapon bullet electric if ads button is pressed
+		if( weapon == "cz75dw_upgraded_zm_x2" )
+		{
+
+			if( attacker AdsButtonPressed() )
+			{
+				threshold = 7 +  8 * int(attacker hasProPerk(level.DBT_PRO));
+				iprintln("Threshold: " + threshold);
+				if( RandomInt(100) < threshold ) 
+					attacker.bullet_electric = true;
+				else
+					attacker.bullet_electric = false;
+			}
+			
+		}
 		 
 		if(attacker.bullet_electric && !self.marked_for_tesla) 
 		{
@@ -9083,7 +9129,16 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 
 			final_damage = int(final_damage * 2);
-		}						
+		}
+
+		if( is_in_array(level.ARRAY_EXECUTE_WEAPONS, weapon) && !is_boss_zombie(self.animname) )
+		{
+			if( self.health < level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH )
+			{
+				final_damage = self.health;
+				return final_damage;
+			}
+		}
 
 		switch(weapon)
 		{
@@ -9092,6 +9147,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "aug_acog_mk_upgraded_zm_x2":
 			case "famas_upgraded_zm_x2":
 			case "cz75_upgraded_zm_x2":
+			case "cz75lh_upgraded_zm_x2":
 			//Handled Above
 			break;
 			
@@ -9099,6 +9155,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			case "ppsh_upgraded_zm_x2":
 			case "rpk_upgraded_zm_x2":
 			case "ak47_ft_upgraded_zm_x2":
+			case "cz75dw_upgraded_zm_x2":
 			//Handled Above
 			break;
 			

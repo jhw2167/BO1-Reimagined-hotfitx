@@ -60,6 +60,8 @@ weapon,sp/uzi_upgraded_zm
 
 weapon,sp/m60_zm
 weapon,sp/m60_upgraded_zm
+weapon,sp/enfield_zm
+weapon,sp/enfield_upgraded_zm
 
 
 //NEW Equip
@@ -73,7 +75,8 @@ weapon,sp/combat_sickle_knife_zm
 //DOUBLE PAP
 
 //Pistols
-weapon,sp/cz75_upgraded_zm_x2
+weapon,sp/cz75dw_upgraded_zm_x2
+weapon,sp/cz75lh_upgraded_zm_x2
 
 //SMGS
 weapon,sp/ppsh_zm
@@ -81,7 +84,7 @@ weapon,sp/ppsh_upgraded_zm
 weapon,sp/ppsh_upgraded_zm_x2
 
 //Shotguns
-weapon,sp/hs10_upgraded_zm_x2
+//weapon,sp/hs10_upgraded_zm_x2
 
 //ARs
 weapon,sp/galil_upgraded_zm_x2

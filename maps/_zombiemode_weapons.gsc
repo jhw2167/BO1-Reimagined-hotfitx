@@ -307,7 +307,6 @@ init_weapons()
 	add_zombie_weapon( "rpk_zm",					"rpk_upgraded_zm",						&"ZOMBIE_WEAPON_RPK",					4000,		"mg",				"",		undefined );
 	add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_STONER63",				4000,		"mg",				"",		undefined );
 	add_zombie_weapon( "hk21_zm",					"hk21_upgraded_zm",						&"ZOMBIE_WEAPON_HK21",					4000,		"mg",				"",		undefined );
-	add_zombie_weapon( "m60_zm",					"m60_upgraded_zm",						&"ZOMBIE_WEAPON_M60",					4000,		"mg",				"",		undefined );
 
 
 	//Upgrade
@@ -331,15 +330,16 @@ init_weapons()
 	add_zombie_weapon( "fnfal_zm",					"fnfal_upgraded_zm",					&"ZOMBIE_WEAPON_FNFAL",					1000,	"burstrifle",			"",		undefined );
 	add_zombie_weapon( "g11_lps_zm",				"g11_lps_upgraded_zm",					&"ZOMBIE_WEAPON_G11",					900,	"burstrifle",			"",		undefined );
 	add_zombie_weapon( "famas_zm",					"famas_upgraded_zm",					&"ZOMBIE_WEAPON_FAMAS",					50,		"burstrifle",			"",		undefined );
-
+	
 	//Upgrade
-	add_zombie_weapon( "aug_acog_mk_upgraded_zm",				"aug_acog_mk_upgraded_zm",				&"ZOMBIE_WEAPON_AUG",					1200,	"assault",			"",		undefined );
 	add_zombie_weapon( "galil_upgraded_zm",					"galil_upgraded_zm_x2",					&"ZOMBIE_WEAPON_GALIL",					1000,	"assault",			"",		undefined );
 	add_zombie_weapon( "commando_upgraded_zm",				"commando_upgraded_zm_x2",					&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
-	add_zombie_weapon( "fnfal_upgraded_zm",					"fnfal_upgraded_zm",					&"ZOMBIE_WEAPON_FNFAL",					1000,	"burstrifle",			"",		undefined );
-	add_zombie_weapon( "g11_lps_upgraded_zm",				"g11_lps_upgraded_zm",					&"ZOMBIE_WEAPON_G11",					900,	"burstrifle",			"",		undefined );
-	add_zombie_weapon( "famas_upgraded_zm",					"famas_upgraded_zm",					&"ZOMBIE_WEAPON_FAMAS",					50,		"burstrifle",			"",		undefined );
 
+	//add_zombie_weapon( "aug_acog_mk_upgraded_zm",				"aug_acog_mk_upgraded_zm",				&"ZOMBIE_WEAPON_AUG",					1200,	"assault",			"",		undefined );
+	//add_zombie_weapon( "fnfal_upgraded_zm",					"fnfal_upgraded_zm",					&"ZOMBIE_WEAPON_FNFAL",					1000,	"burstrifle",			"",		undefined );
+	//add_zombie_weapon( "g11_lps_upgraded_zm",				"g11_lps_upgraded_zm",					&"ZOMBIE_WEAPON_G11",					900,	"burstrifle",			"",		undefined );
+	//add_zombie_weapon( "famas_upgraded_zm",					"famas_upgraded_zm",					&"ZOMBIE_WEAPON_FAMAS",					50,		"burstrifle",			"",		undefined );
+	
 	//Total: 6 base, 6 upgraded, 2 x2 = 14
 	/***** END ASSAULT RIFLES *****/
 
@@ -353,9 +353,9 @@ init_weapons()
 
 	//Upgrade
 	add_zombie_weapon( "spas_upgraded_zm",					"spas_upgraded_zm_x2",						&"ZOMBIE_WEAPON_SPAS",					2000,		"shotgun",			"",		undefined );
-	add_zombie_weapon( "hs10_upgraded_zm",					"hs10_upgraded_zm_x2",						&"ZOMBIE_WEAPON_HS10",					50,			"shotgun",			"",		undefined );
+	//add_zombie_weapon( "hs10_upgraded_zm",					"hs10_upgraded_zm_x2",						&"ZOMBIE_WEAPON_HS10",					50,			"shotgun",			"",		undefined );
 
-	//Total: 2 base, 2 upgraded, 2 x2 = 6
+	//Total: 2 base, 2 upgraded, 2 x2 = 5
 	/***** END SHOTGUNS *****/
 
 
@@ -388,8 +388,8 @@ init_weapons()
 	//Upgrade
 	add_zombie_weapon( "python_upgraded_zm",				"python_upgraded_zm",					&"ZOMBIE_WEAPON_PYTHON",				2200,	"pistol",			"",		undefined );
 	add_zombie_weapon( "m1911_upgraded_zm",				"m1911_upgraded_zm",					&"ZOMBIE_WEAPON_M1911",					50,		"pistol",			"",		undefined );
-	add_zombie_weapon( "cz75_upgraded_zm",				"cz75_upgraded_zm_x2",					&"ZOMBIE_WEAPON_CZ75",					50,		"pistol",			"",		undefined );
-	add_zombie_weapon( "cz75dw_upgraded_zm",				"cz75dw_upgraded_zm",				&"ZOMBIE_WEAPON_CZ75DW",				50,		"dualwield",		"",		undefined );
+	add_zombie_weapon( "cz75dw_upgraded_zm",				"cz75dw_upgraded_zm_x2",				&"ZOMBIE_WEAPON_CZ75DW",				50,		"dualwield",		"",		undefined );
+	//add_zombie_weapon( "cz75_upgraded_zm",				"cz75_upgraded_zm_x2",					&"ZOMBIE_WEAPON_CZ75",					50,		"pistol",			"",		undefined );
 
 	//Total: 4 base, 4 upgraded, 1 x2 = 9
 	/***** END SIDEARMS *****/
@@ -597,8 +597,10 @@ init_weapons()
 	
 	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_AK47",				1000,	"assault",			"",		undefined );
 	add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_UZI",					1000,	"smg",				"",		undefined );
-	//add_zombie_weapon( "enfield",					"enfield",								&"ZOMBIE_WEAPON_COMMANDO",				1000,	"assault",			"",		undefined );
-	//add_zombie_weapon( "m60",						"m60",									&"ZOMBIE_WEAPON_COMMANDO",				1000,	"mg",				"",		undefined );
+	add_zombie_weapon( "enfield_zm",					"enfield_upgraded_zm",					&"ZOMBIE_WEAPON_ENFIELD",					50,		"burstrifle",			"",		undefined );
+	add_zombie_weapon( "m60_zm",					"m60_upgraded_zm",						&"ZOMBIE_WEAPON_M60",					4000,		"mg",				"",		undefined );
+
+
 	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
 	//{{WEAPON_INCLUDE}}
 
@@ -4373,7 +4375,8 @@ init_includes()
 	//Pistols
 	include_weapon("asp_zm");				
 	include_weapon("asp_upgraded_zm");		
-	include_weapon("cz75_upgraded_zm_x2");
+	include_weapon("cz75dw_upgraded_zm_x2");
+	include_weapon("cz75lh_upgraded_zm_x2");
 
 	//SMGS
 	include_weapon("ppsh_zm");
@@ -4384,7 +4387,7 @@ init_includes()
 	include_weapon("uzi_upgraded_zm");		
 
 	//Shotguns
-	include_weapon("hs10_upgraded_zm_x2");
+	//include_weapon("hs10_upgraded_zm_x2");
 
 	//ARs
 	include_weapon("galil_upgraded_zm_x2");
@@ -4392,6 +4395,9 @@ init_includes()
 	include_weapon("ak47_zm");
 	include_weapon("ak47_ft_upgraded_zm");
 	include_weapon("ft_ak47_upgraded_zm");
+
+	include_weapon("enfield_zm");
+	include_weapon("enfield_upgraded_zm");
 	
 
 	//Mgs
