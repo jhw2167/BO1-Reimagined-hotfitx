@@ -8255,7 +8255,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	iprintln("Weapon damaging: " + weapon);
-	iprintln( "dw weap: " + WeaponDualWieldWeaponName( weapon ) );
+	//iprintln( "dw weap: " + WeaponDualWieldWeaponName( weapon ) );
 	
 	// WW (8/14/10) - define the owner of the monkey shot
 	if( weapon == "crossbow_explosive_upgraded_zm" && meansofdeath == "MOD_IMPACT" )
@@ -8679,7 +8679,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "ak74u_zm":
 		case "zombie_thompson":
 		case "mp40_zm":
-		case "asp_zm":
+		case "makarov_zm":
 			final_damage = 360;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
@@ -8687,6 +8687,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "mpl_zm":
 		case "mp5k_zm":
 		case "pm63_zm":
+		case "asp_zm":
 			final_damage = 320;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
@@ -8810,6 +8811,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 5000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
+			break;
+		case "makarov_upgraded_zm":
+			final_damage = 2100;
+			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 4;
 			break;
 		case "m14_upgraded_zm":
 		case "m1garand_upgraded_zm":
@@ -9172,6 +9178,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					final_damage = int(final_damage * 1.5); //big damage
 			break;
 			case "fnfal_upgraded_zm_x2":
+			case "makarov_upgraded_zm_x2":
 			case "m14_upgraded_zm":
 				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
 					final_damage = int(final_damage * 2); //big headshot damage

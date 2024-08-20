@@ -100,7 +100,7 @@ a0,b1,c2,d3,e4,f5,g6,f7,g8,h9
 31,weapon,m72_law,weapon_camo_neutral,weapon_camo_neutral,mtl_t5_weapon_law,,,,
 32,weapon,mac11,cammo_gunmetal,cammo_gunmetal,mtl_t5_weapon_mac11,,,,
 33,weapon,mac11dw,cammo_gunmetal,cammo_gunmetal,mtl_t5_weapon_mac11,,,,
-34,weapon,makarov,weapon_camo_neutral,weapon_camo_neutral,,,,,
+34,weapon,makarov,weapon_camo_neutral,weapon_camo_neutral,mtl_t5_weapon_makarov,,,,
 35,weapon,makarovdw,weapon_camo_neutral,weapon_camo_neutral,,,,,
 36,weapon,mp5k,cammo_gunmetal,cammo_gunmetal,mtl_t5_weapon_mp5,,,,
 37,weapon,mpl,cammo_gunmetal,cammo_gunmetal,mtl_t5_weapon_mpl,,,,

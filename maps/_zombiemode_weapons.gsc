@@ -549,10 +549,10 @@ init_weapons()
 		
 
 	//Upgrade - No Double upgrades for specials except for crossbow
-	add_zombie_weapon( "crossbow_explosive_upgraded_zm",		"crossbow_explosive_upgraded_zm_x2",		&"ZOMBIE_WEAPON_CROSSBOW_EXPOLOSIVE",	10,		"crossbow",			"",		undefined );
-	add_zombie_weapon( "knife_ballistic_upgraded_zm",		"knife_ballistic_upgraded_zm",			&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		10,		"bowie",	"",		undefined );
+	//add_zombie_weapon( "crossbow_explosive_upgraded_zm",		"crossbow_explosive_upgraded_zm_x2",		&"ZOMBIE_WEAPON_CROSSBOW_EXPOLOSIVE",	10,		"crossbow",			"",		undefined );
+	//add_zombie_weapon( "knife_ballistic_upgraded_zm",		"knife_ballistic_upgraded_zm",			&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		10,		"bowie",	"",		undefined );
 
-	//Total: 2 base, 2 upgraded, 1 x2 = 5 + ( 4 WW )
+	//Total: 2 base, 2 upgraded, 0 x2 = 4 + ( 4 WW )
 	/***** END SPECIAL *****/
 
 
@@ -599,6 +599,9 @@ init_weapons()
 	add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_UZI",					1000,	"smg",				"",		undefined );
 	add_zombie_weapon( "enfield_zm",					"enfield_upgraded_zm",					&"ZOMBIE_WEAPON_ENFIELD",					50,		"burstrifle",			"",		undefined );
 	add_zombie_weapon( "m60_zm",					"m60_upgraded_zm",						&"ZOMBIE_WEAPON_M60",					4000,		"mg",				"",		undefined );
+
+	add_zombie_weapon( "makarov_zm",					"makarov_upgraded_zm",					&"ZOMBIE_WEAPON_MAKAROV",					50,		"pistol",			"",		undefined );
+	
 
 
 	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
@@ -4373,10 +4376,14 @@ init_includes()
 {
 
 	//Pistols
-	include_weapon("asp_zm");				
-	include_weapon("asp_upgraded_zm");		
 	include_weapon("cz75dw_upgraded_zm_x2");
 	include_weapon("cz75lh_upgraded_zm_x2");
+	
+	include_weapon("asp_zm");				
+	include_weapon("asp_upgraded_zm");		
+
+	include_weapon("makarov_zm");
+	include_weapon("makarov_upgraded_zm");
 
 	//SMGS
 	include_weapon("ppsh_zm");
@@ -4415,7 +4422,7 @@ init_includes()
 	include_weapon("dragunov_upgraded_zm_x2");
 
 	//Specials
-	include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
+	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
 
 	//New weapons
 	//{{WEAPON_INCLUDE}}
