@@ -4404,6 +4404,7 @@ init_includes()
 	//include_weapon("hs10_upgraded_zm_x2");
 	include_weapon("ks23_zm");
 	include_weapon("ks23_upgraded_zm");
+	include_weapon("ithaca_zm");
 
 	//ARs
 	include_weapon("galil_upgraded_zm_x2");

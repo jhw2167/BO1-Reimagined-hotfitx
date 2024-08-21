@@ -43,6 +43,8 @@ include_weapons()
 	include_weapon( "asp_upgraded_zm" );
 	include_weapon( "uzi_zm" );
 	include_weapon( "uzi_upgraded_zm" );
+	include_weapon( "ks23_zm" );
+	include_weapon( "ks23_upgraded_zm" );
 
 	if(GetDvar("mapname") == "zombie_cod5_prototype")
 	{
