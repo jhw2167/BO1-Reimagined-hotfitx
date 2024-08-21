@@ -506,6 +506,11 @@ xanim,viewmodel_asp_sw_first_raise
 xanim,viewmodel_asp_sw_ads_down
 xanim,viewmodel_asp_sw_ads_up
 xanim,viewmodel_asp_sw_ads_fire
+xanim,viewmodel_ks23_ads_rechamber
+xanim,viewmodel_ks23_reload_loop
+xanim,viewmodel_ks23_reload_in
+xanim,viewmodel_ks23_reload_out
+
 //{{NEW_XANIM_LINE}}
 
 //PLAYER ANIMS
