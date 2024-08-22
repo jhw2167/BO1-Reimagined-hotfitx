@@ -604,9 +604,11 @@ init_weapons()
 	add_zombie_weapon( "ks23_zm",					"ks23_upgraded_zm",						&"ZOMBIE_WEAPON_KS23",					50,		"shotgun",			"",		undefined );
 	//add_zombie_weapon( "kiparis_zm",					"kiparis_upgraded_zm",					&"ZOMBIE_WEAPON_KIPARIS",					50,		"smg",			"",		undefined );
 	//add_zombie_weapon( "mac11_zm",					"mac11_upgraded_zm",					&"ZOMBIE_WEAPON_MAC11",					50,		"smg",			"",		undefined );
+	
 
 
 	//add_zombie_weapon( weapon_name, 				upgrade_name, 							hint, 									cost, 	weaponVO, weaponVOresp, 	ammo_cost, add_without_include )
+	add_zombie_weapon( "sabertooth_zm", 				"sabertooth_upgraded_zm", 				&"ZOMBIE_WEAPON_SABERTOOTH", 			50, 	"pistol", 			"", 	undefined );
 	//{{WEAPON_INCLUDE}}
 
 	//Upgrade
@@ -4433,6 +4435,8 @@ init_includes()
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
+	include_weapon( "sabertooth_zm", false );
+	include_weapon( "sabertooth_upgraded_zm", false );
 
 	//New weapons
 	//{{WEAPON_INCLUDE}}

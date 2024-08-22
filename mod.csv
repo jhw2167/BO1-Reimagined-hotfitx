@@ -66,7 +66,9 @@ weapon,sp/makarov_zm
 weapon,sp/makarov_upgraded_zm
 weapon,sp/ks23_zm
 weapon,sp/ks23_upgraded_zm
-weapon,sp/ithaca_zm
+weapon,sp/sabertooth_zm
+weapon,sp/sabertooth_upgraded_zm
+//weapon,sp/ithaca_zm
 //weapon,sp/mac11_upgraded_zm
 
 
@@ -182,6 +184,7 @@ material,mtl_viet_zombie_napalm_body
 material,specialty_bo4hitmarker_white
 material,specialty_bo4hitmarker_red__
 material,punch_zm
+material,mtl_sabretooth
 
 
 material,hud_icon_pistol
@@ -444,6 +447,8 @@ xmodel,bo3_t7_ww_grenade_proj
 //Drops
 
 //Weapons
+xmodel,t5_weapon_sabretooth_viewmodel
+xmodel,t5_weapon_sabretooth_world
 //{{NEW_XMODEL_LINE}}
 
 //ANIMS
