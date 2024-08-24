@@ -188,6 +188,12 @@ LANG_ENGLISH       	"Mega-60"
 REFERENCE          	KS23_UPGRADED
 LANG_ENGLISH       	"KS-56"
 
+REFERENCE          	WEAPON_SABERTOOTH
+LANG_ENGLISH       	"Sabertooth"
+
+REFERENCE          	SABERTOOTH_UPGRADED
+LANG_ENGLISH       	"S-115 Dismemberer"
+
 
 REFERENCE          	COMBAT_KNIFE
 LANG_ENGLISH       	"Combat Knife"

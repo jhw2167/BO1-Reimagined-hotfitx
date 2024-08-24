@@ -345,6 +345,13 @@ generate_perk_hint( perkOrWeapon )
 
 		/* Specific Weapons */
 		case "m1911_upgraded_zm":
+			//Dont set if player is in last stand
+			if( self maps\_laststand::player_is_in_laststand() )
+			{
+				self.hints_activated[ "m1911_upgraded_zm" ] = false;
+				return;
+			}
+				
 			text SetText( &"REIMAGINED_PAP_M1911_HINT" );
 			title SetText( &"REIMAGINED_PAP_M1911_TITLE" );
 			break;

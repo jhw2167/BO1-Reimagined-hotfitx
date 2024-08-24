@@ -48,8 +48,8 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=27;	///
+	//level.zombie_ai_limit_override=2;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -836,7 +836,7 @@ reimagined_init_level()
 	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
-	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm");
+	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
 
 	//Also include unupgraded weapons e.g. m14_zm
 	level.ARRAY_WALL_WEAPONS = array( "m14_zm", "mpl_zm", "mp5k_zm", "mp40_zm", "ak74u_zm", "pm63_zm",
@@ -8225,6 +8225,8 @@ zombie_knockdown( wait_anim, upgraded )
 
 }
 
+
+
 //
 //		MUST return the value of the damage override
 //
@@ -8252,6 +8254,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			weapon += "_x2";
 		}
+	}
+
+	//Reimagined-Expanded, special weapon category implementations
+	//if the weapon is sabertooth and the means of death is MOD_RIFLE_BULLET, set meansOfDeath to "MOD_MELEE"
+	if( isSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_RIFLE_BULLET" )
+	{
+		meansofdeath = "MOD_MELEE";
 	}
 
 	iprintln("Weapon damaging: " + weapon);
@@ -8516,7 +8525,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= 2;
 		}
 
-		return final_damage;
+		//return final_damage;
 	}
 
 	//iprintln("Final Damage 5: " + final_damage);
@@ -8547,39 +8556,101 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if(weapon == "ray_gun_zm" )
 	{
 		min_factor = 8;
-		final_damage = 20000;
+		baseDmg = 20000;
+		rayDmg = 20000;
 
-		if( is_boss_zombie(self.animname) )
-			return final_damage / 10;
-
-		if( final_damage < self.health / min_factor )
-			final_damage = self.health / min_factor;
+		if( rayDmg < self.health / min_factor )
+			rayDmg = self.health / min_factor;
 		
 		if(attacker hasProPerk(level.PHD_PRO))
-			final_damage *= 2;
-
-				if(self.animname == "director_zombie")
-					self.dmg_taken += int(final_damage);
+			rayDmg *= 2;
 	
+		if( is_boss_zombie(self.animname) )
+			rayDmg = baseDmg / 10;
 
-		return final_damage;
+
+		final_damage = rayDmg;
+
 	}
 
 	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" || weapon == "asp_upgraded_zm" )
 	{
 		min_factor = 4;
-		final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH / min_factor );
+		basedDmg = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH / min_factor );
+		rayDmg = basedDmg;
 
 		if(attacker hasProPerk(level.PHD_PRO))
-			final_damage *= 2;
+			rayDmg *= 2;
 
 		if( is_boss_zombie(self.animname) )
-			return final_damage / 5;
+			rayDmg = basedDmg / 10;
 
-		if(self.animname == "director_zombie")
-				self.dmg_taken += int(final_damage);
+		final_damage = rayDmg;
+	}
 
-		return final_damage;
+
+	// no damage scaling for these wonder weps
+	iprintln("meansOfDeath: " + meansofdeath);
+	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" )
+	{
+		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.04;
+	
+		/*
+			For each of following criteria, increase damage by 50%
+		*/
+
+		//Is weapon upgraded
+		if( IsSubStr( weapon, "upgraded" ) ) 
+			baseDmg *= 1.5;
+		
+		//Is weapon double upgraded
+		if( IsSubStr( weapon, "_x2" ) )
+			baseDmg *= 1.5;
+
+		//Player has stamina upgraded
+		if( attacker hasProPerk(level.STM_PRO) )
+			baseDmg *= 1.5;
+
+		//Zombie is afflicted by shock or fire or poison
+		zombie_aflicted = is_true( self.marked_for_tesla ) 
+			|| is_true( self.marked_for_freeze ) 
+			|| is_true( self.marked_for_poison ) 
+			|| is_true( self.burned )
+			|| is_true( self.knockdown );
+		if( zombie_aflicted )
+			baseDmg *= 1.5;
+
+		/* 
+			Special Effects for upgraded and x2
+			Not applicable to boss zombies
+		*/
+
+		if( !is_boss_zombie(self.animname) )
+		{
+			//If upgraded, apply hellfire to all zombies
+			if( IsSubStr( weapon, "_x2" ) && !is_true( self.burned ) )
+			{
+				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
+			}
+			//If double upgraded, shock nearby zombies too
+			doKnockDownChance = IsSubStr( weapon, "upgraded" ) 
+				&& !is_true( self.knockdown )
+				&& !is_true( self.marked_for_tesla );
+
+			if( doKnockDownChance )
+			{
+				//25% chance to knock zombie down, else zombieStun
+				if( randomint(4) == 0 )
+					self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME );
+				
+			}
+
+		}
+		
+			
+		final_damage = baseDmg;
+		//iprintln("Final Damage 4: " + final_damage);
+		//return final_damage;
 	}
 
 	//iprintln("Final Damage 5: " + final_damage);
@@ -9073,6 +9144,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//  case "ak47_ft_upgraded_zm_x2":
 		//  case "rottweil72_upgraded_zm":
 		// case "cz75dw_upgraded_zm_x2":
+		// case "sabertooth_upgraded_zm_x2":
 
 		if( (attacker.bullet_hellfire || weapon == "rottweil72_upgraded_zm") && !is_true( self.in_water ) ) 
 		{
@@ -9080,7 +9152,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			{	//just double damage
 			} else
 			{
-				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, 1.5);
+				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
 														//zomb, player, radius, time
 			}
 			final_damage = int(final_damage * 2);

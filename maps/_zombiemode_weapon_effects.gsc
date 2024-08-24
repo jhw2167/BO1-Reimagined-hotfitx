@@ -340,6 +340,7 @@ bonus_fire_damage( zomb , player, radius, time)
 	//Set zomb on fire
 	PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
 	PlayFxOnTag( level._effect["character_fire_death_torso"], self, "J_SpineLower" );
+	self.burned = true;
 	self playsound("evt_zombie_ignite");
 	
 	//Wait for guy to die

@@ -166,7 +166,7 @@
 #ifdef CONSOLE
 			rect			-140 -82 54 27
 #else
-			rect			(-133 + COMPASSOFFSET) -72 50 50
+			rect			(-75 + COMPASSOFFSET) -48 70 40
 #endif
 			forecolor		1 1 1 1
 			ownerdraw		CG_PLAYER_HEAT_VALUE
