@@ -1264,7 +1264,7 @@ wait_set_player_visionset()
 	if( is_true( level.dev_only ) )
 	{
 
-		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
@@ -1274,7 +1274,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
 		//give knife_ballistic_upgraded_zm_x2
 	}

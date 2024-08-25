@@ -383,9 +383,9 @@ generate_perk_hint( perkOrWeapon )
 }
 
 /*
-
-
-
+	###############################
+		X2 Weapon Names
+	###############################
 */
 
 /*
@@ -545,6 +545,9 @@ editObject( object, i, j )
 
 }
 
+
+
+
 adjust( editing, adj )
 {
 	angles = self.angles;
@@ -630,6 +633,7 @@ adjust( editing, adj )
     GENERAL UTILITY
 	###############################
 */
+
 
 /*
 wait_print( msg, data )
