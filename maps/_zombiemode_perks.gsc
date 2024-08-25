@@ -430,7 +430,7 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 	PlayFx( level._effect["packapunch_fx"], origin+(0,1,-34), forward );
 
 	if( IsSubStr( current_weapon, "sabertooth" ) )
-		interact_pos += (0,0,20);
+		interact_pos += (0,0,10);
 
 	worldgun = spawn( "script_model", interact_pos );
 	worldgun.angles  = self.angles;

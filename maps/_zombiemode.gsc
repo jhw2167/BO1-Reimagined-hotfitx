@@ -1489,7 +1489,7 @@ watch_player_current_weapon()
 		iprintln("New Weapon: " + weapName );
 
 		ui_weapon_name = self maps\_zombiemode_reimagined_utility::getWeaponUiName( weapName );
-		self SetClientDvar( self, "ui_playerWeaponName", ui_weapon_name );
+		self SetClientDvar( "ui_playerWeaponName", ui_weapon_name );
 	
 
 	}
@@ -1829,7 +1829,9 @@ handle_player_packapunch(weapon, didUpgrade)
 		Player just upgraded weapon
 		*****/
 		if( isDoubleUpgraded )
-			state = self.packapunch_weapons[ upgraded_weapon ] + 1;
+			state = 2;
+		else if( isUpgraded && didUpgrade )
+			state = 2;
 		else if( isUpgraded )
 			state = self.packapunch_weapons[ upgraded_weapon ] + 1;
 		else
@@ -8625,7 +8627,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	// no damage scaling for these wonder weps
 	iprintln("meansOfDeath: " + meansofdeath);
-	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" )
+	inRange = checkDist( attacker.origin, self.origin, 100 );
+	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
 		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.04;
 	

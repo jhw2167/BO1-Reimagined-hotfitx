@@ -310,15 +310,17 @@
 		{
 			name			"weapnameraw"
 			type			ITEM_TYPE_TEXT
-			rect			(WEAPINFO_X+35) (WEAPINFO_Y+20) 1 1
+			rect			(WEAPINFO_X+55) (WEAPINFO_Y+20) 1 1
 			textalign		ITEM_ALIGN_RIGHT
-			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
 			textscale		TEXTSIZE_DEFAULT
 			textfont		UI_FONT_EXTRABIG
 			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
-			exp				text(  locString( dvarString("ui_playerWeaponName")) )
+			exp				text( dvarString("ui_playerWeaponName") )
 			visible			when(dvarString("ui_playerWeaponName") != "")
 			decoration
+			
+			
 		}
 
 		itemDef

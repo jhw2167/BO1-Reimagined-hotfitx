@@ -622,37 +622,40 @@ getWeaponUiName( weapon )
 
 	
 	wepName = "";
+	iprintln( "Lookup: " + weapon );
 	switch( weapon )
 	{
 		case "sabertooth_upgraded_zm_x2":
-			wepName = &"REIMAGINED_SABERTOOTH_UPGRADED_x2";
-			iprintln( "Ref: " + wepName );
+			wepName = "S-339 Disintegrator";
 		break;
 
 		case "crossbow_explosive_upgraded_zm_x2":
-			wepName = &"REIMAGINED_CROSSBOW_EXPLOSIVE_UPGRADED_x2";
+			wepName = "Deliverance";
 		break;
 
 		case "knife_ballistic_upgraded_zm_x2":
-			wepName = &"REIMAGINED_KNIFE_BALLISTIC_UPGRADED_x2";
+			wepName = "Krauss Defibrillator";
 		break;
-
-		case "ks23_upgraded_zm":
-			wepName = &"REIMAGINED_KS23_UPGRADED";
-		break;
+		
 		case "ks23_upgraded_zm_x2":
-			wepName = &"REIMAGINED_KS23_UPGRADED_x2";
+			wepName = "Shock Army Executioner";
 		break;
 
 		case "spas_upgraded_zm_x2":
-			wepName = &"REIMAGINED_SPAS_UPGRADED_x2";
+			wepName = "Spas-M24";
 		break;
 
 		case "hs10_upgraded_zm_x2":
-			wepName = &"REIMAGINED_HS10_UPGRADED_x2";
+			wepName = "Typhoid & Mary (Divorced)";
+		break;
+
+		case "ak47_upgraded_zm_x2":
+			wepName = "Blitzkrieg";
 		break;
 
 	}
+
+	iprintln( "DYNAMIC NAME: " + wepName );
 
 	return wepName;
 }
