@@ -389,6 +389,276 @@ generate_perk_hint( perkOrWeapon )
 */
 
 /*
+
+	REFERENCE          	WEAPON_SABERTOOTH
+LANG_ENGLISH       	"Sabertooth"
+
+REFERENCE          	SABERTOOTH_UPGRADED
+LANG_ENGLISH       	"S-115 Dismemberer"
+
+REFERENCE          	SABERTOOTH_UPGRADED
+LANG_ENGLISH       	"S-339 Incinerator"
+
+REFERENCE          	CROSSBOW_EXPLOSIVE_UPGRADED_X2
+LANG_ENGLISH        "Deliverance"
+
+REFERENCE          	KNIFE_BALLISTIC_UPGRADED_X2
+LANG_ENGLISH        "Krauss Defibrillator"
+
+
+REFERENCE          	KS23_UPGRADED
+LANG_ENGLISH       	"KS-56"
+
+REFERENCE          	KS23_UPGRADED_X2
+LANG_ENGLISH       	"Shock Army Executioner"
+
+REFERENCE          	SPAS_UPGRADED_X2
+LANG_ENGLISH       	"Spas-M24"
+
+REFERENCE          	HS10_UPGRADED_X2
+LANG_ENGLISH        "Typhoid & Mary (Divorced)"
+
+
+
+REFERENCE          	AK47_UPGRADED
+LANG_ENGLISH       	"The Red Mist"
+
+REFERENCE          	AK47_UPGRADED
+LANG_ENGLISH       	"Blitzkrieg"
+
+REFERENCE          	ENFIELD_UPGRADED
+LANG_ENGLISH       	"WINFIELD"
+
+REFERENCE          	ENFIELD_UPGRADED_X2
+LANG_ENGLISH       	"Bullpup Penatrator"
+
+REFERENCE          	AUG_UPGRADED_X2
+LANG_ENGLISH        "Shock & AUG"
+
+REFERENCE          	FAMAS_UPGRADED_X2
+LANG_ENGLISH        "G16-G-Infinite"
+
+REFERENCE          	FNFAL_UPGRADED_X2
+LANG_ENGLISH        "FN Peacemaker"
+
+REFERENCE          	G11_LPS_UPGRADED_X2
+LANG_ENGLISH        "Gone-11"
+
+REFERENCE          	GALIL_UPGRADED_X2
+LANG_ENGLISH        "Winter's Wail"
+
+REFERENCE          	COMMANDO_UPGRADED_X2
+LANG_ENGLISH        "The Feast"
+
+
+
+REFERENCE          	SPECTRE_UPGRADED_X2
+LANG_ENGLISH        "Wraith"
+
+REFERENCE          	PPSH_UPGRADED
+LANG_ENGLISH       	"The Reaper"
+
+REFERENCE          	PPSH_UPGRADED_X2
+LANG_ENGLISH       	"YTE SLAYA"
+
+REFERENCE          	UZI_UPGRADED
+LANG_ENGLISH       	"Uzizi"
+
+REFERENCE          	UZI_UPGRADED_X2
+LANG_ENGLISH       	"Uzizi "
+
+REFERENCE          	MAC11_UPGRADED
+LANG_ENGLISH       	"Killer & Psycho"
+
+REFERENCE          	MAC11_UPGRADED_X2
+LANG_ENGLISH       	"Turmoil Twins"
+
+
+REFERENCE          	ASP_UPGRADED
+LANG_ENGLISH       	"Another Side Piece"
+
+REFERENCE          	ASP_UPGRADED_X2
+LANG_ENGLISH       	"PSA Death"
+
+REFERENCE          	CZ75_DW_UPGRADED_X2
+LANG_ENGLISH        "Silhouette and Gamble"
+
+REFERENCE          	CZ75_UPGRADED_X2
+LANG_ENGLISH        "Silhouette"
+
+REFERENCE          	PYTHON_UPGRADED_X2
+LANG_ENGLISH        "Cobra's Frenzy"
+
+
+REFERENCE          	HK21_UPGRADED_X2
+LANG_ENGLISH        "H115 Oscillator"
+
+REFERENCE          	RPK_UPGRADED_X2
+LANG_ENGLISH        "Scorched Earch"
+
+REFERENCE          	M60_UPGRADED
+LANG_ENGLISH       	"Mega-60"
+
+REFERENCE          	M60_UPGRADED_X2
+LANG_ENGLISH       	"Big Daddy"
+
+
+
+REFERENCE          	PSG1_UPGRADED
+LANG_ENGLISH       	"Psychotic Salient Genius"
+
+REFERENCE          	PSG1_UPGRADED_X2
+LANG_ENGLISH       	"Serendipity"
+
+REFERENCE          	L96A1_UPGRADED_X2
+LANG_ENGLISH        "L115 Decimator"
+
+REFERENCE          	RAY_GUN_UPGRADED_X2
+LANG_ENGLISH        "RAY_GUN_UPGRADED_X2"
+
+REFERENCE          	CHINA_LAKE_UPGRADED_X2
+LANG_ENGLISH        "CHINA_LAKE_UPGRADED_X2"
+
+
+REFERENCE          	ROTTWEIL72_UPGRADED_X2
+LANG_ENGLISH        "ROTTWEIL72_UPGRADED_X2"
+
+REFERENCE          	ITHACA_UPGRADED_X2
+LANG_ENGLISH        "Destroyer"
+
+REFERENCE          	M14_UPGRADED_X2
+LANG_ENGLISH        "M14_UPGRADED_X2"
+
+REFERENCE          	M16_UPGRADED_X2
+LANG_ENGLISH        "M16_UPGRADED_X2"
+
+REFERENCE          	MP40_UPGRADED_X2
+LANG_ENGLISH        "MP40_UPGRADED_X2"
+
+REFERENCE          	MP5K_UPGRADED_X2
+LANG_ENGLISH        "MP5K_UPGRADED_X2"
+
+REFERENCE          	MPL_UPGRADED_X2
+LANG_ENGLISH        "MPL_UPGRADED_X2"
+
+REFERENCE          	PM63_UPGRADED_X2
+LANG_ENGLISH        "PM63_UPGRADED_X2"
+
+REFERENCE          	PM63_UPGRADED_X2
+LANG_ENGLISH        "PM63_UPGRADED_X2"
+
+REFERENCE          	AK74U_UPGRADED_X2
+LANG_ENGLISH        "AK74U_UPGRADED_X2"
+
+REFERENCE          	SHOTGUN_DOUBLE_BARRELED_UPGRADED
+LANG_ENGLISH        "SHOTGUN_DOUBLE_BARRELED_UPGRADED"
+
+REFERENCE          	FG42_UPGRADED_X2
+LANG_ENGLISH        "FG42_UPGRADED_X2"
+
+REFERENCE          	GEWEHR43_UPGRADED_X2
+LANG_ENGLISH        "GEWEHR43_UPGRADED_X2"
+
+REFERENCE          	KAR98K_UPGRADED_X2
+LANG_ENGLISH        "KAR98K_UPGRADED_X2"
+
+REFERENCE          	M1A1CARBINE_UPGRADED_X2
+LANG_ENGLISH        "M1A1CARBINE_UPGRADED_X2"
+
+REFERENCE          	SHOTGUN_UPGRADED_X2
+LANG_ENGLISH        "SHOTGUN_UPGRADED_X2"
+
+REFERENCE          	STG-44_UPGRADED
+LANG_ENGLISH        "STG-44_UPGRADED"
+
+REFERENCE          	THOMPSON_UPGRADED_X2
+LANG_ENGLISH        "THOMPSON_UPGRADED_X2"
+
+REFERENCE          	TYPE100_SMG_UPGRADED_X2
+LANG_ENGLISH        "TYPE100_SMG_UPGRADED_X2"
+
+
+REFERENCE          	BAR_UPGRADED
+LANG_ENGLISH        "THE STANDARD"
+
+REFERENCE          	M1GARAND_UPGRADED
+LANG_ENGLISH        "BULLPUP T31"
+
+REFERENCE          	SPRINGFIELD_UPGRADED
+LANG_ENGLISH        "WINTERFIELD"
+
+REFERENCE          	ENFIELD_UPGRADED
+LANG_ENGLISH        "WINFIELD"
+
+REFERENCE          	MAKAROV_UPGRADED
+LANG_ENGLISH        "PM Standartnyy"
+
+
+
+
+*/
+
+/*
+	method: getWeaponUiName
+
+	description: Returns the weapon name for the given weapon using the weapon file's string
+	and the number of PaP metadata
+
+*/
+getWeaponUiName( weapon )
+{
+
+	if( IsDefined( self.packapunch_weapons[ weapon ] ) )
+	{
+		//if substring allready contains _x2, nothing
+		if( isSubStr( weapon, "_x2" ) )	{
+			//nothing
+		}
+		else if( self.packapunch_weapons[ weapon ] > 1 )
+		{
+			weapon += "_x2";
+		}
+	}
+
+	
+	wepName = "";
+	switch( weapon )
+	{
+		case "sabertooth_upgraded_zm_x2":
+			wepName = &"REIMAGINED_SABERTOOTH_UPGRADED_x2";
+			iprintln( "Ref: " + wepName );
+		break;
+
+		case "crossbow_explosive_upgraded_zm_x2":
+			wepName = &"REIMAGINED_CROSSBOW_EXPLOSIVE_UPGRADED_x2";
+		break;
+
+		case "knife_ballistic_upgraded_zm_x2":
+			wepName = &"REIMAGINED_KNIFE_BALLISTIC_UPGRADED_x2";
+		break;
+
+		case "ks23_upgraded_zm":
+			wepName = &"REIMAGINED_KS23_UPGRADED";
+		break;
+		case "ks23_upgraded_zm_x2":
+			wepName = &"REIMAGINED_KS23_UPGRADED_x2";
+		break;
+
+		case "spas_upgraded_zm_x2":
+			wepName = &"REIMAGINED_SPAS_UPGRADED_x2";
+		break;
+
+		case "hs10_upgraded_zm_x2":
+			wepName = &"REIMAGINED_HS10_UPGRADED_x2";
+		break;
+
+	}
+
+	return wepName;
+}
+
+
+/*
 	###############################
 	PRO PERK PLACER
     ###############################

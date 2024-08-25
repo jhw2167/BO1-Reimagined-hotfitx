@@ -1171,6 +1171,7 @@ reimagined_init_player()
 	self thread wait_set_player_visionset();
 	self thread watch_player_utility();
 	self thread watch_player_button_press();
+	self thread watch_player_current_weapon();
 
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
@@ -1412,7 +1413,6 @@ watch_player_button_press()
 
 		
 		
-//HERE
 	handle_swap_melee()
 	{
 		
@@ -1465,6 +1465,38 @@ watch_player_button_press()
 
 		self notify( "apocalypse_stats_end" );
 	}
+
+
+/*
+	Watch Changes in player's current weapon
+	- Certain weapon effects are triggered by the current weapon
+	- Player weapon name dyanmically set in hud due to doube PaP complexities
+*/
+watch_player_current_weapon()
+{
+	self endon("disconnect");
+	self endon("death");
+	self endon("end_game");
+
+	weapName = self GetCurrentWeapon();
+	while(1)
+	{
+		/* Update Weapon Name in UI */
+		iprintln("Current Weapon: " + weapName);
+
+		self waittill("weapon_change");
+		weapName = self GetCurrentWeapon();
+		iprintln("New Weapon: " + weapName );
+
+		ui_weapon_name = self maps\_zombiemode_reimagined_utility::getWeaponUiName( weapName );
+		self SetClientDvar( self, "ui_playerWeaponName", ui_weapon_name );
+	
+
+	}
+}
+
+
+
 
 //Reimagined-Expanded -- check of obj is in range
 checkDist( a, b, distance)
@@ -3307,7 +3339,9 @@ onPlayerConnect_clientDvars()
 		"player_backSpeedScale", "1",
 		"player_strafeSpeedScale", "1",
 		"player_sprintStrafeSpeedScale", "1",
-		"cg_hudDamageIconTime", "2500" );
+		"cg_hudDamageIconTime", "2500",
+		"ui_playerWeaponName", ""
+		 );
 
 	self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
 
