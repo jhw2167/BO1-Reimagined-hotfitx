@@ -67,7 +67,7 @@ handle_double_pap_uzi( cost )
 			keys[keys.size] = i;
 	}
 
-	new_type = keys[randomInt(keys.size-1)];
+	new_type = keys[randomInt(keys.size)];
 	self.weap_options["uzi_upgraded_zm_x2"] = new_type;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array_remove( level.ARRAY_HELLFIRE_WEAPONS, UZI_WEAPON );
@@ -96,7 +96,7 @@ handle_double_pap_uzi( cost )
 	}
 
 	//Refund the player half the cost of the weapon
-	self thread maps\_zombiemode_score::player_add_points( "refund", cost / 2 );
+	self maps\_zombiemode_score::add_to_player_score( int(cost / 2), true);
 
 	return new_type;
 }

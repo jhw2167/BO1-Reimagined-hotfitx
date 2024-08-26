@@ -860,11 +860,11 @@ reimagined_init_level()
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2",
 							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
-	level.THRESHOLD_HELLFIRE_TIME = 1.2;
+	level.THRESHOLD_HELLFIRE_TIME = 1.6;	//Player holds trigger for 1.6 seconds to activate Hellfire
 	level.VALUE_HELLFIRE_RANGE = 20;
-	level.VALUE_HELLFIRE_TIME = 2;
+	level.VALUE_HELLFIRE_TIME = 1.2;		//Hellfire lasts while on the ground
 
-	level.ARRAY_POISON_WEAPONS = array();
+	level.ARRAY_POISON_WEAPONS = array();	//Uzi added dynamically
 
 
 	level.VALUE_EXPLOSIVE_BASE_DMG = 30000;
@@ -1576,12 +1576,12 @@ watch_player_electric()
 
 	while(1)
 	{
-		weapon = self getcurrentweapon();
-		weapon = self get_upgraded_weapon_string( weapon );
+		og_weapon = self getcurrentweapon();
+		weapon = self get_upgraded_weapon_string( og_weapon );
 		if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon) )
 		{
-			iprintln( "Current weap: " + weapon  );
-			self watch_electric_trigger( weapon );
+			iprintln( "Current weap: " + og_weapon  );
+			self watch_electric_trigger( og_weapon );
 			resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		}
 		self.bullet_electric = false;
@@ -1594,9 +1594,7 @@ watch_player_electric()
 		self endon("weapon_switch");
 		self endon("reload_start");
 
-		//Get Max clip size of weapon
-		clip_size = WeaponClipSize(weapon);
-
+		clip_size = WeaponClipSize( weapon );
 		total_eletric_bullets = level.THRESHOLD_ELECTRIC_BULLETS;
 		if( self hasProPerk(level.DBT_PRO) )
 			total_eletric_bullets *= 2;
@@ -1659,8 +1657,10 @@ watch_player_hellfire()
 		while(1)
 		{
 			time = 0;
-			while( (self AttackButtonPressed()) )
+			while( self AttackButtonPressed() )
 			{
+				if( self.is_reloading )
+					break;
 				
 				if( time >= total_hellfire_time )
 				{
@@ -1668,6 +1668,7 @@ watch_player_hellfire()
 				}
 				time += 0.05;	
 				wait(0.05);
+
 			}
 			self.bullet_hellfire = false;
 			wait(0.1);

@@ -622,7 +622,6 @@ getWeaponUiName( weapon )
 
 	
 	wepName = "";
-	iprintln( "Lookup: " + weapon );
 	switch( weapon )
 	{
 		case "sabertooth_upgraded_zm_x2":
