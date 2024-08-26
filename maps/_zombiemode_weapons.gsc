@@ -352,7 +352,7 @@ init_weapons()
 	add_zombie_weapon( "hs10_zm",					"hs10_upgraded_zm",						&"ZOMBIE_WEAPON_HS10",					50,			"shotgun",			"",		undefined );
 
 	//Upgrade
-	add_zombie_weapon( "spas_upgraded_zm",					"spas_upgraded_zm_x2",						&"ZOMBIE_WEAPON_SPAS",					2000,		"shotgun",			"",		undefined );
+	//add_zombie_weapon( "spas_upgraded_zm",					"spas_upgraded_zm_x2",						&"ZOMBIE_WEAPON_SPAS",					2000,		"shotgun",			"",		undefined );
 	//add_zombie_weapon( "hs10_upgraded_zm",					"hs10_upgraded_zm_x2",						&"ZOMBIE_WEAPON_HS10",					50,			"shotgun",			"",		undefined );
 
 	//Total: 2 base, 2 upgraded, 2 x2 = 5

@@ -477,6 +477,20 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 
 	self playsound( "zmb_perks_packa_ready" );
 
+	//Reimagined-Expanded
+	//If gun is the upgraded uzi, get model index specially
+	modelIndex = 0;
+	if( IsSubStr( current_weapon, "upgraded" ) )
+		modelIndex = 1;
+	
+	
+	if( current_weapon == "uzi_upgraded_zm" )
+	{
+		iprintln("Uzi upgrade");
+		modelIndex = self maps\_zombiemode_weapon_effects::handle_double_pap_uzi();
+		iprintln("Done " + modelIndex);
+	}
+
 	worldgun = spawn( "script_model", origin );
 	worldgun.angles  = angles+(0,90,0);
 	newGun = level.zombie_weapons[current_weapon].upgrade_name;
@@ -566,21 +580,11 @@ vending_machine_trigger_think()
 					//iprintln("5");
 		 			self SetInvisibleToPlayer( players[i], true );
 		 		}
-				else if ( !packInUseByThisPlayer && !IsDefined( level.zombie_include_weapons[current_weapon] ) )
+				else if ( !packInUseByThisPlayer && ! players[i] check_pap_permitted( current_weapon ) )
 				{
 					//iprintln("6");
 					self SetInvisibleToPlayer( players[i], true );
-				}
-				else if ( !packInUseByThisPlayer && players[i] maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
-				{
-					//iprintln("7");
-					self SetInvisibleToPlayer( players[i], true );
-				}
-				else if ( !packInUseByThisPlayer && vending_2x_blacklist(current_weapon) )
-				{
-					//iprintln("8");
-					self SetInvisibleToPlayer( players[i], true );
-				}
+				}	
 				else
 				{
 					//iprintln("9");
@@ -590,6 +594,35 @@ vending_machine_trigger_think()
 		}
 		wait(0.05);
 	}
+}
+
+/*
+
+Put these conditions in this method:
+	- weapon must be defined
+	- uzi may always be pap'd
+	- weapon may not be double pap'd
+	- certain weapons are blacklisted from double pap
+
+*/
+
+check_pap_permitted( weapon )
+{
+
+	if( !isDefined( level.zombie_include_weapons[weapon] ) ) 
+		return false;
+	
+	if( weapon == "uzi_upgraded_zm" ) {
+		//NOTHING, weapon can always be papped again
+	}
+	else if( self maps\_zombiemode_weapons::is_weapon_double_upgraded( weapon ) )
+		return false;
+
+	if( vending_2x_blacklist( weapon ) )
+		return false;
+
+	return true;
+
 }
 
 //
@@ -644,7 +677,7 @@ vending_weapon_upgrade()
 			player maps\_laststand::player_is_in_laststand() ||
 			is_true( player.intermission ) ||
 			player isThrowingGrenade() ||
-			player maps\_zombiemode_weapons::is_weapon_double_upgraded( current_weapon ) )
+			! player check_pap_permitted( current_weapon ) )
 		{
 			wait( 0.1 );
 			continue;
@@ -700,11 +733,7 @@ vending_weapon_upgrade()
 			
  			continue;
 		}
-		//Cannot be pap'd
-		if(vending_2x_blacklist(current_weapon)) {
-			continue;
-		}
-
+		
 
 		self.user = player;
 		flag_set("pack_machine_in_use");

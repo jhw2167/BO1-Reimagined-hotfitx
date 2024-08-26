@@ -40,6 +40,68 @@ hasProPerk( perk ) {
 }
 
 
+/** Weapon Effects **/
+
+/*
+	Method: handle_double_pap_uzi
+	Parameters:
+		self - player
+
+	Description:
+		Handles the effects of the double PaP Uzi weapon
+			self.
+*/	
+handle_double_pap_uzi( cost )
+{
+
+	UZI_WEAPON = "uzi_upgraded_zm_x2";
+	current_type = self.weap_options["uzi_upgraded_zm_x2"];
+
+	//Choose new type from following:
+	// level.WEAPON_UZI_TYPES = array( "", "Flame", "Freeze", "Shock", "Pestilence" );
+
+	//Build array of valid keys
+	keys = [];
+	for( i = 1; i < level.WEAPON_UZI_TYPES.size; i++ ) {
+		if( i != current_type )
+			keys[keys.size] = i;
+	}
+
+	new_type = keys[randomInt(keys.size-1)];
+	self.weap_options["uzi_upgraded_zm_x2"] = new_type;
+
+	level.ARRAY_HELLFIRE_WEAPONS = array_remove( level.ARRAY_HELLFIRE_WEAPONS, UZI_WEAPON );
+	level.ARRAY_SHEERCOLD_WEAPONS = array_remove( level.ARRAY_SHEERCOLD_WEAPONS, UZI_WEAPON );
+	level.ARRAY_ELECTRIC_WEAPONS = array_remove( level.ARRAY_ELECTRIC_WEAPONS, UZI_WEAPON );
+	level.ARRAY_POISON_WEAPONS = array_remove( level.ARRAY_POISON_WEAPONS, UZI_WEAPON );
+
+	switch( level.WEAPON_UZI_TYPES[new_type] ) 
+	{
+		case "Flame":
+			level.ARRAY_HELLFIRE_WEAPONS[level.ARRAY_HELLFIRE_WEAPONS.size] = UZI_WEAPON;
+			break;
+		case "Freeze":
+			level.ARRAY_SHEERCOLD_WEAPONS[level.ARRAY_SHEERCOLD_WEAPONS.size] = UZI_WEAPON;
+			break;
+		case "Shock":
+			level.ARRAY_ELECTRIC_WEAPONS[level.ARRAY_ELECTRIC_WEAPONS.size] = UZI_WEAPON;
+			break;
+		case "Pestilence":
+			level.ARRAY_POISON_WEAPONS[level.ARRAY_POISON_WEAPONS.size] = UZI_WEAPON;
+			break;
+
+		default:
+			iprintln("Invalid uzi weapon type");
+			break;
+	}
+
+	//Refund the player half the cost of the weapon
+	self thread maps\_zombiemode_score::player_add_points( "refund", cost / 2 );
+
+	return new_type;
+}
+
+
 /** DOUBLETAP PRO ZOMBIE PENETRATION DAMAGE **/
 
 //Thread called on player

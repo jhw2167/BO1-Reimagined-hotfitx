@@ -642,7 +642,7 @@ getWeaponUiName( weapon )
 		break;
 
 		case "spas_upgraded_zm_x2":
-			wepName = "Spas-M24";
+			wepName = "Spaz-M24";
 		break;
 
 		case "hs10_upgraded_zm_x2":
@@ -651,6 +651,47 @@ getWeaponUiName( weapon )
 
 		case "ak47_upgraded_zm_x2":
 			wepName = "Blitzkrieg";
+		break;
+
+		case "enfield_upgraded_zm_x2":
+			wepName = "Bullpup Penetrator";
+		break;
+
+		case "aug_upgraded_zm_x2":
+			wepName = "Shock & AUG";
+		break;
+
+		case "famas_upgraded_zm_x2":
+			wepName = "G16-G-Infinite";
+		break;
+
+		case "fnfal_upgraded_zm_x2":
+			wepName = "The Peacemaker";
+		break;
+
+		case "g11_lps_upgraded_zm_x2":
+			wepName = "Gone-11";
+		break;
+
+		case "galil_upgraded_zm_x2":
+			wepName = "Winter's Wail";
+		break;
+
+		case "commando_upgraded_zm_x2":
+			wepName = "The Feast";
+		break;
+
+		case "spectre_upgraded_zm_x2":
+			wepName = "Wraith";
+		break;
+
+		case "ppsh_upgraded_zm_x2":
+			wepName = "Y0TE SLAYA";
+		break;
+
+		case "uzi_upgraded_zm_x2":
+			type = level.WEAPON_UZI_TYPES[ self.weap_options["uzi_upgraded_zm_x2"] ];
+			wepName = "Uzizi " + type;
 		break;
 
 	}

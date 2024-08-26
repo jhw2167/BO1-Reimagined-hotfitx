@@ -864,6 +864,8 @@ reimagined_init_level()
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 2;
 
+	level.ARRAY_POISON_WEAPONS = array();
+
 
 	level.VALUE_EXPLOSIVE_BASE_DMG = 30000;
 	level.VALUE_EXPLOSIVE_UPGD_DMG_SCALE = 4;
@@ -889,6 +891,13 @@ reimagined_init_level()
 
 	level.ARRAY_EXECUTE_WEAPONS = array( "python_upgraded_zm_x2", "enfield_upgraded_zm_x2", "skorpionlh_upgraded_zm" );
 	level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH = 0.34 * level.THRESHOLD_MAX_ZOMBIE_HEALTH;
+
+
+	//WEAPON VARIABLES
+	level.WEAPON_SABERTOOTH_RANGE = 128;
+
+	//Uzi
+	level.WEAPON_UZI_TYPES = array( "", "Flame", "Freeze", "Shock", "Pestilence" );
 
 
 	//MISCELLANEOUS EFFECTS
@@ -1053,6 +1062,10 @@ reimagined_init_player()
 	//Default all are 0, 1 is pap, 2 is x2 pap, more...
 	self.packapunch_weapons = [];
 	self.weapon_taken_by_losing_additionalprimaryweapon = [];
+
+	self.weap_options = [];
+	self.weap_options["uzi_upgraded_zm_x2"] = 0;
+	self.weap_options["spas_upgraded_zm_x2"] = 0;
 
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
@@ -1564,6 +1577,7 @@ watch_player_electric()
 	while(1)
 	{
 		weapon = self getcurrentweapon();
+		weapon = self get_upgraded_weapon_string( weapon );
 		if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon) )
 		{
 			iprintln( "Current weap: " + weapon  );
@@ -1615,6 +1629,7 @@ watch_player_hellfire()
 	while(1)
 	{
 		weapon = self getcurrentweapon();
+		weapon = self get_upgraded_weapon_string( weapon );
 		if( is_in_array( level.ARRAY_HELLFIRE_WEAPONS , weapon) )
 		{
 			self watch_hellfire_trigger();
@@ -1628,10 +1643,11 @@ watch_player_hellfire()
 
 	watch_hellfire_trigger()
 	{
-		//iprintln("watch_hellfire_trigger");
+		iprintln("watch_hellfire_trigger");
 		self endon("weapon_switch");
 		self endon("reload_start");
 
+	
 		if( isDefined(self.buttonpressed_attack) )
 			self.buttonpressed_attack = false;
 
@@ -1666,6 +1682,7 @@ watch_player_sheercold()
 	while(1)
 	{
 		weapon = self getcurrentweapon();
+		weapon = self get_upgraded_weapon_string( weapon );
 		if( is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) )
 		{
 			self watch_sheercold_trigger();
@@ -1757,6 +1774,23 @@ watch_player_perkslots()
 		
 	}
 
+}
+
+get_upgraded_weapon_string( weapon )
+{
+	if( IsDefined( self.packapunch_weapons[ weapon ] ) )
+	{
+		//if substring allready contains _x2, then exit for loop
+		if( isSubStr( weapon, "_x2" ) )	{
+			//nothing
+		}
+		else if( self.packapunch_weapons[ weapon ] > 1 )
+		{
+			weapon += "_x2";
+		}
+	}
+
+	return weapon;
 }
 
 /*
@@ -8280,17 +8314,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	dwWeap = WeaponDualWieldWeaponName( weapon );
-	if( IsDefined( attacker.packapunch_weapons[ weapon ] ) )
-	{
-		//if substring allready contains _x2, then exit for loop
-		if( isSubStr( weapon, "_x2" ) )	{
-			//nothing
-		}
-		else if( attacker.packapunch_weapons[ weapon ] > 1 )
-		{
-			weapon += "_x2";
-		}
-	}
+	weapon = attacker get_upgraded_weapon_string( weapon );
 
 	//Reimagined-Expanded, special weapon category implementations
 	//if the weapon is sabertooth and the means of death is MOD_RIFLE_BULLET, set meansOfDeath to "MOD_MELEE"
@@ -8627,7 +8651,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	// no damage scaling for these wonder weps
 	iprintln("meansOfDeath: " + meansofdeath);
-	inRange = checkDist( attacker.origin, self.origin, 100 );
+	inRange = checkDist( attacker.origin, self.origin, level.WEAPON_SABERTOOTH_RANGE );
 	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
 		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.04;
@@ -8667,7 +8691,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			//If upgraded, apply hellfire to all zombies
 			if( IsSubStr( weapon, "_x2" ) && !is_true( self.burned ) )
 			{
-				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
+				//25% chance to apply hellfire to zombie
+				if( randomint(4) == 0 )
+					self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
 			}
 			//If double upgraded, shock nearby zombies too
 			doKnockDownChance = IsSubStr( weapon, "upgraded" ) 
@@ -8676,7 +8702,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 			if( doKnockDownChance )
 			{
-				//25% chance to knock zombie down, else zombieStun
+				//25% chance to knock zombie down
 				if( randomint(4) == 0 )
 					self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME );
 				
@@ -9185,6 +9211,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( (attacker.bullet_hellfire || weapon == "rottweil72_upgraded_zm") && !is_true( self.in_water ) ) 
 		{
+			//iprintln("Hellfire Damage");
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
 			} else
@@ -9432,7 +9459,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//Widows Wine posion damage
-		if( attacker HasPerk( level.WWN_PRK ))
+		if( attacker HasPerk( level.WWN_PRK ) || is_in_array(level.ARRAY_POISON_WEAPONS , weapon) )
 		{
 			valid_zomb = is_in_array(level.ARRAY_WIDOWS_VALID_POISON_ZOMBIES, self.animname) && !is_true(self.marked_for_poison);
 			if( valid_zomb ) 
