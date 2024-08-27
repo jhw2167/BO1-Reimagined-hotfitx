@@ -206,7 +206,7 @@ REFERENCE          	KS23_UPGRADED_X2
 LANG_ENGLISH       	"Shock Army Executioner"
 
 REFERENCE          	SPAS_UPGRADED_X2
-LANG_ENGLISH       	"Spas-M24"
+LANG_ENGLISH       	"Spontaneity"
 
 REFERENCE          	HS10_UPGRADED_X2
 LANG_ENGLISH        "Typhoid & Mary (Divorced)"
@@ -379,9 +379,6 @@ LANG_ENGLISH        "BULLPUP T31"
 
 REFERENCE          	SPRINGFIELD_UPGRADED
 LANG_ENGLISH        "WINTERFIELD"
-
-REFERENCE          	ENFIELD_UPGRADED
-LANG_ENGLISH        "WINFIELD"
 
 REFERENCE          	MAKAROV_UPGRADED
 LANG_ENGLISH        "PM Standartnyy"
@@ -1380,7 +1377,32 @@ REFERENCE			PAP_M1911_TITLE
 LANG_ENGLISH 		"Mustang & Sally"
 
 REFERENCE			PAP_M1911_HINT
-LANG_ENGLISH 		"- Can be re-Pack-a-Punch'd indefinitely to refill ammo"
+LANG_ENGLISH 		"Can be re-Pack-a-Punch'd indefinitely to refill ammo"
+
+REFERENCE			PAP_UZIZI_TITLE
+LANG_ENGLISH 		"Elemental UZIZIs"
+
+REFERENCE			PAP_UZIZI_HINT
+LANG_ENGLISH 		"The Uzi has 4 elemental variants and can be re-Pack-a-Punch'd indefinitely"
+
+REFERENCE			PAP_FAMAS_TITLE
+LANG_ENGLISH 		"G16-G-Infinite"
+
+REFERENCE			PAP_FAMAS_HINT
+LANG_ENGLISH 		"Regenerates ammo over time"
+
+REFERENCE			PAP_SPAS_TITLE
+LANG_ENGLISH 		"Spas-M24"
+
+REFERENCE			PAP_SPAS_HINT
+LANG_ENGLISH 		"A different bonus ammo type has a chance of being assigned every reload"
+
+REFERENCE			PAP_SPECTRE_TITLE
+LANG_ENGLISH 		"Wraith"
+
+REFERENCE			PAP_SPECTRE_HINT
+LANG_ENGLISH 		"Up to 4x damage bonus from isolating zombies"
+
 
 REFERENCE			SHOTGUN_DAMAGE_TITLE
 LANG_ENGLISH 		"SHOTGUNS"
@@ -1396,6 +1418,11 @@ LANG_ENGLISH 		"- Pistols reward 33% more points than normal weapons on Apocalyp
 
 REFERENCE			SNIPER_DAMAGE_TITLE
 LANG_ENGLISH 		"SNIPERS"
+
+REFERENCE			SNIPER_DAMAGE_HINT
+LANG_ENGLISH 		"SNIPERS"
+
+
 
 
 //Drops

@@ -127,7 +127,7 @@ generate_perk_hint( perkOrWeapon )
 	}
 	else if( is_in_array( level.ARRAY_VALID_SNIPERS, perkOrWeapon) )
 	{
-		perkOrWeapon = "specialty_sniper_damage";
+		//perkOrWeapon = "specialty_sniper_damage"; //Not necessary
 	}
 	//level.ARRAY_SIDEARMBONUS_WEAPONS
 	else if( is_in_array(level.ARRAY_SIDEARMBONUS_WEAPONS, perkOrWeapon) )
@@ -354,6 +354,18 @@ generate_perk_hint( perkOrWeapon )
 				
 			text SetText( &"REIMAGINED_PAP_M1911_HINT" );
 			title SetText( &"REIMAGINED_PAP_M1911_TITLE" );
+			break;
+
+		//for uzi
+		case "uzi_upgraded_zm_x2":
+			text SetText( &"REIMAGINED_PAP_UZIZI_HINT" );
+			title SetText( &"REIMAGINED_PAP_UZIZI_TITLE" );
+			break;
+
+		//for famas
+		case "famas_upgraded_zm_x2":
+			text SetText( &"REIMAGINED_PAP_FAMAS_HINT" );
+			title SetText( &"REIMAGINED_PAP_FAMAS_TITLE" );
 			break;
 
 		}
@@ -587,9 +599,6 @@ LANG_ENGLISH        "BULLPUP T31"
 REFERENCE          	SPRINGFIELD_UPGRADED
 LANG_ENGLISH        "WINTERFIELD"
 
-REFERENCE          	ENFIELD_UPGRADED
-LANG_ENGLISH        "WINFIELD"
-
 REFERENCE          	MAKAROV_UPGRADED
 LANG_ENGLISH        "PM Standartnyy"
 
@@ -641,7 +650,7 @@ getWeaponUiName( weapon )
 		break;
 
 		case "spas_upgraded_zm_x2":
-			wepName = "Spaz-M24";
+			wepName = "Spontaneity";
 		break;
 
 		case "hs10_upgraded_zm_x2":
@@ -680,8 +689,13 @@ getWeaponUiName( weapon )
 			wepName = "The Feast";
 		break;
 
+
 		case "spectre_upgraded_zm_x2":
 			wepName = "Wraith";
+		break;
+
+		case "kiparis_upgraded_zm_x2":
+			wepName = "Little John";
 		break;
 
 		case "ppsh_upgraded_zm_x2":
@@ -691,6 +705,50 @@ getWeaponUiName( weapon )
 		case "uzi_upgraded_zm_x2":
 			type = level.WEAPON_UZI_TYPES[ self.weap_options["uzi_upgraded_zm_x2"] ];
 			wepName = "Uzizi " + type;
+		break;
+
+		case "mac11_upgraded_zm_x2":
+			wepName = "Turmoil Twins";
+		break;
+
+		case "asp_upgraded_zm_x2":
+			wepName = "PSA Death";
+		break;
+
+		case "cz75_dw_upgraded_zm_x2":
+			wepName = "Silhouette and Gamble";
+		break;
+
+		case "cz75_upgraded_zm_x2":
+			wepName = "Silhouette";
+		break;
+
+		case "python_upgraded_zm_x2":
+			wepName = "Cobra's Frenzy";
+		break;
+
+		case "makarov_upgraded_zm_x2":
+			wepName = "Winter's Uzhas";
+		break;
+
+		case "hk21_upgraded_zm_x2":
+			//wepName = "H115 Oscillator";
+		break;
+
+		case "rpk_upgraded_zm_x2":
+			//wepName = "Scorched Earth";
+		break;
+
+		case "m60_upgraded_zm_x2":
+			wepName = "Big Daddy";
+		break;
+
+		case "psg1_upgraded_zm_x2":
+			wepName = "Serendipity";
+		break;
+
+		case "l96a1_upgraded_zm_x2":
+			wepName = "L115 Decimator";
 		break;
 
 	}

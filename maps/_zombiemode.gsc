@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=20;	///
+	level.starting_round_override=40;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -279,6 +279,9 @@ post_all_players_connected()
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
 		players[i] thread watch_player_shotgun_attrition();
+
+		players[i] thread watch_player_weapon_special_bonuses();
+
 
 		if( level.apocalypse )
 			players[i] thread watch_player_perkslots();
@@ -852,7 +855,7 @@ reimagined_init_level()
 	level.THRESHOLD_TESLA_SHOCK_TIME = 3;
 
 	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2",
-							 "ithaca_upgraded_zm_x2");
+							 "ithaca_upgraded_zm_x2", "makarov_upgraded_zm_x2");
 	level.RANGE_SHEERCOLD_DIST = 120;
 	level.THRESHOLD_SHEERCOLD_DIST = 50;
 	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
@@ -865,6 +868,8 @@ reimagined_init_level()
 	level.VALUE_HELLFIRE_TIME = 1.2;		//Hellfire lasts while on the ground
 
 	level.ARRAY_POISON_WEAPONS = array();	//Uzi added dynamically
+
+	level.VALUE_AMMOTYPE_BONUS_DAMAGE = 1.25;
 
 
 	level.VALUE_EXPLOSIVE_BASE_DMG = 30000;
@@ -1279,7 +1284,7 @@ wait_set_player_visionset()
 	{
 
 		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
@@ -1582,8 +1587,8 @@ watch_player_electric()
 		{
 			iprintln( "Current weap: " + og_weapon  );
 			self watch_electric_trigger( og_weapon );
-			resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		}
+		resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		self.bullet_electric = false;
 		wait(0.1);
 	}
@@ -1612,7 +1617,7 @@ watch_player_electric()
 				self.bullet_electric = true;
 			}
 				
-			iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
+			//iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
 			wait(0.5);
 		}
 
@@ -1632,8 +1637,9 @@ watch_player_hellfire()
 		{
 			self watch_hellfire_trigger();
 			self.bullet_hellfire = false;
-			resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		}
+
+		resp = self waittill_any_return( "weapon_switch_complete", "reload" );
 		self.bullet_hellfire = false;
 		wait(0.1);
 	}
@@ -1759,6 +1765,144 @@ watch_player_shotgun_attrition()
 		}
 	}
 }
+
+
+/*
+
+	Watch player weapon for special bonuses
+	- famas_x2 - regenerates ammo over time
+	- Uzizi_x2 - has elemental effects, no action here
+	- spas_x2  - each time player reloads, they get a new elemental bonus
+	- spectre_x2 - When less than 6 zombies around, player gets x2 damage boost, less than 3, x4
+*/
+
+watch_player_weapon_special_bonuses()
+{
+
+	while(1)
+	{
+		//Get all players weapons and check if they are a shotgun
+		weapon = self GetCurrentWeapon();
+		weapon = self get_upgraded_weapon_string( weapon );
+
+		switch( weapon )
+		{
+			case "famas_upgraded_zm_x2":
+				self watch_famas_x2();
+				break;
+			case "uzi_upgraded_zm_x2":
+				//Nothing
+				break;
+			case "spas_upgraded_zm_x2":
+				self watch_spas_x2();
+				self.bullet_hellfire = false;
+				self.bullet_sheercold = false;
+				self.bullet_electric = false;
+				break;
+			case "spectre_upgraded_zm_x2":
+				//self watch_spectre_x2();
+				break;
+		}
+		
+		wait(0.1);
+	}
+
+}
+		/*
+			- While stock ammo is less than max ammo, regenerate ammo each 0.25 seconds
+			- base rate is 25% chance of 1 ammo each tick
+			- if player has DBT_PRO, add 10% chance
+			- if player is below 90 stock ammo, add 10% chance
+		*/
+		watch_famas_x2()
+		{
+			self endon("weapon_switch");
+			self endon("reload_start");
+			wep = "famas_upgraded_zm";	//x2 weapon file doesnt actually exist
+
+			stock = self GetWeaponAmmoStock( wep );
+			while( stock < WeaponMaxAmmo( wep ) )
+			{
+
+				baseRate = 8;
+
+				if( self hasProPerk(level.DBT_PRO) )
+					baseRate -= 1;
+
+				if( stock < 181 )
+					baseRate -= 2;
+
+				if( stock < 91 )
+					baseRate -= 3;
+
+				stock = self GetWeaponAmmoStock( wep );
+				if( randomInt( baseRate ) == 0 )
+					self SetWeaponAmmoStock( wep, stock+1);
+
+				wait(0.25);
+			}
+			
+			
+
+		}
+
+		/*
+			- Each time player reloads, they get a new elemental bonus
+			- 10% chance of hellfire, 10% chance of sheercold, 10% chance of electric
+			- If player has DBT_PRO, add 10% chance
+		*/
+		watch_spas_x2()
+		{
+			self endon("weapon_switch");
+
+			typesArray = array( "hellfire", "electric", "sheercold", "none", "none", "none" );
+			if( !self hasProPerk(level.DBT_PRO) )
+			{
+				for(i=6;i<10;i++) {
+					typesArray[i] = "none";
+				}
+			}
+				
+			
+		
+			while(1)
+			{
+				self waittill("reload"); //end of reload
+
+				self.bullet_hellfire = false;
+				self.bullet_sheercold = false;
+				self.bullet_electric = false;
+
+				wep = "spas_upgraded_zm";	//x2 weapon file doesnt actually exist
+				currentClip = self GetWeaponAmmoClip( wep );
+				maxClip = WeaponClipSize( wep );
+
+				threshold = 0.75;
+				if( maxClip * threshold < currentClip )
+					continue;	//No ammo type for gaming the system			
+				
+
+				typeString = typesArray[ randomInt( typesArray.size ) ];
+				switch( typeString )
+				{
+					case "hellfire":
+						self.bullet_hellfire = true;
+						break;
+					case "sheercold":
+						self.bullet_sheercold = true;
+						break;
+					case "electric":
+						self.bullet_electric = true;
+						break;
+				}
+
+				iprintln("New Elemental Bonus: " + typeString);
+				
+			}
+
+		}
+	
+
 
 watch_player_perkslots()
 {
@@ -8315,6 +8459,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	dwWeap = WeaponDualWieldWeaponName( weapon );
+	baseWeapon = weapon;
 	weapon = attacker get_upgraded_weapon_string( weapon );
 
 	//Reimagined-Expanded, special weapon category implementations
@@ -8634,7 +8779,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	}
 
-	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" || weapon == "asp_upgraded_zm" )
+	if( weapon == "ray_gun_upgraded_zm" || weapon == "m1911_upgraded_zm" )
 	{
 		min_factor = 4;
 		basedDmg = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH / min_factor );
@@ -9212,7 +9357,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( (attacker.bullet_hellfire || weapon == "rottweil72_upgraded_zm") && !is_true( self.in_water ) ) 
 		{
-			//iprintln("Hellfire Damage");
+			iprintln("Hellfire Damage");
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
 			} else
@@ -9220,15 +9365,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
 														//zomb, player, radius, time
 			}
-			final_damage = int(final_damage * 2);
+			final_damage = int(final_damage * level.VALUE_AMMOTYPE_BONUS_DAMAGE);
 		}
 		
 		// Sheercold Weapons
 		//	case "spectre_upgraded_zm_x2":
 		//	case "hk21_upgraded_zm_x2":
 		//	case "galil_upgraded_zm_x2":
-		if( attacker.bullet_sheercold && is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) ) 
+		if( attacker.bullet_sheercold )
+			//&& is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) ) 
 		{	
+			iprintln("SheerCold Damage");
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
 			} else if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) 
@@ -9237,7 +9384,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				wait(0.05);
 			}
 
-			final_damage = int(final_damage * 2);
+			final_damage = int(final_damage * level.VALUE_AMMOTYPE_BONUS_DAMAGE);
 		}
 
 		//Shock Weapons
@@ -9255,7 +9402,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if( attacker AdsButtonPressed() )
 			{
 				threshold = 7 +  8 * int(attacker hasProPerk(level.DBT_PRO));
-				iprintln("Threshold: " + threshold);
+				//iprintln("Threshold: " + threshold);
 				if( RandomInt(100) < threshold ) 
 					attacker.bullet_electric = true;
 				else
@@ -9264,18 +9411,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 		}
 		 
-		if(attacker.bullet_electric && !self.marked_for_tesla) 
+		if(attacker.bullet_electric && ! is_true( self.marked_for_tesla ) ) 
 		{
+			iprintln("Electric Damage");
 			if(is_boss_zombie(self.animname)) { 
 			//nothing
 			} else 
 			{
-				attacker.bullet_electric=false;
+				if( weaponClass(baseWeapon) != "spread" )
+					attacker.bullet_electric=false;
+				
 				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 256, 2);
 																		//zomb, player, arc range, num arcs
 			}
 
-			final_damage = int(final_damage * 2);
+			final_damage = int(final_damage * level.VALUE_AMMOTYPE_BONUS_DAMAGE);
 		}
 
 		if( is_in_array(level.ARRAY_EXECUTE_WEAPONS, weapon) && !is_boss_zombie(self.animname) )
@@ -9351,7 +9501,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			
 		}
 
-		if(attacker HasPerk( level.DST_PRK ) && WeaponClass(weapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
+		if(attacker HasPerk( level.DST_PRK ) && WeaponClass(baseWeapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
 		{
 			final_damage = int(final_damage * 2);
 		}
@@ -9359,7 +9509,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//iprintln( "Final dmg after main perks: " + final_damage );
 
 		//Reimagined-Expanded -- Deadshot Hitmarkers
-		if( attacker hasProPerk(level.DST_PRO) ) //&& WeaponClass(weapon) != "spread" ) 
+		if( attacker hasProPerk(level.DST_PRO) ) //&& WeaponClass(baseWeapon) != "spread" ) 
 		{
 			//Flat damage increase for ADS
 			if( attacker AdsButtonPressed() )
@@ -9417,7 +9567,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//Shotgun Bonus Damage
-		if( WeaponClass(weapon) == "spread" ) 
+		if( WeaponClass(baseWeapon) == "spread" ) 
 		{
 			final_damage *= attacker.shotgun_attrition;
 			if( is_boss_zombie(self.animname) ) {
@@ -9580,7 +9730,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 	
 	//Reimagined-Expanded, can china-lake be upgraded??
-	if(weapon == "m72_law_zm" || weapon == "china_lake_zm") 
+	if(weapon == "m72_law_zm" || weapon == "china_lake_zm" || weapon == "asp_upgraded_zm" ) 
 	{
 		radius=level.VALUE_EXPLOSIVE_BASE_RANGE;
 		dmg=level.VALUE_EXPLOSIVE_BASE_DMG;

@@ -368,7 +368,7 @@ init_weapons()
 	add_zombie_weapon( "ppsh_zm",					"ppsh_upgraded_zm",						&"ZOMBIE_WEAPON_PPSh",					1000,		"smg",				"",		undefined );
 
 	//Upgrade
-	add_zombie_weapon( "spectre_upgraded_zm",				"spectre_upgraded_zm",					&"ZOMBIE_WEAPON_SPECTRE",				50,		"smg",				"",		undefined );
+	add_zombie_weapon( "spectre_upgraded_zm",				"spectre_upgraded_zm_x2",					&"ZOMBIE_WEAPON_SPECTRE",				50,		"smg",				"",		undefined );
 	add_zombie_weapon( "ppsh_upgraded_zm",					"ppsh_upgraded_zm_x2",						&"ZOMBIE_WEAPON_PPSh",					1000,		"smg",				"",		undefined );
 
 	//Total: 2 base, 2 upgraded, 1 x2 = 5
@@ -4393,6 +4393,8 @@ init_includes()
 	include_weapon("ppsh_zm");
 	include_weapon("ppsh_upgraded_zm");
 	include_weapon("ppsh_upgraded_zm_x2");
+	include_weapon("spectre_upgraded_zm_x2");
+	
 
 	include_weapon("uzi_zm");				
 	include_weapon("uzi_upgraded_zm");
