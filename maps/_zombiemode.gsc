@@ -1068,9 +1068,16 @@ reimagined_init_player()
 	self.packapunch_weapons = [];
 	self.weapon_taken_by_losing_additionalprimaryweapon = [];
 
+	//Weapons
 	self.weap_options = [];
 	self.weap_options["uzi_upgraded_zm_x2"] = 0;
-	self.weap_options["spas_upgraded_zm_x2"] = 0;
+
+	self.bullet_hellfire = false;
+	self.bullet_sheercold = false;
+	self.bullet_electric = false;
+	self.bullet_poison = false;
+	self.bullet_isolate = false;
+
 
 	//Bleedout
 	self SetClientDvar( "player_lastStandBleedoutTime", level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME );
@@ -1800,7 +1807,12 @@ watch_player_weapon_special_bonuses()
 				self.bullet_electric = false;
 				break;
 			case "spectre_upgraded_zm_x2":
-				//self watch_spectre_x2();
+				self watch_spectre_x2();
+				self.bullet_isolate = false;
+				break;
+
+			case "mk_aug_upgraded_zm":
+				self watch_mk_aug();
 				break;
 		}
 		
@@ -1896,12 +1908,62 @@ watch_player_weapon_special_bonuses()
 						break;
 				}
 
-				iprintln("New Elemental Bonus: " + typeString);
+				//iprintln("New Elemental Bonus: " + typeString);
 				
 			}
 
 		}
 	
+
+		/*
+			- Aug Masterkey is always electric
+		*/
+		watch_mk_aug()
+		{
+			self endon("weapon_switch_complete");
+			//Only on souble upgraded aug
+			baseAug = self get_upgraded_weapon_string( "aug_acog_mk_upgraded_zm" );
+			if( !IsSubStr( baseAug, "_x2" ) ) {
+				//mk_aug_upgraded_zm
+				self waittill("weapon_switch");
+				return;
+			}
+				
+			self.bullet_electric = true;
+			while(1)
+			{
+				wait(0.1);
+			}
+		}
+
+
+
+		/*
+			- Wraith up to 4x damage bonus on isolated zombies
+
+		*/
+		watch_spectre_x2()
+		{
+			self endon("weapon_switch");
+
+			wep = "spectre_upgraded_zm_x2";	//x2 weapon file doesnt actually exist
+			while(1)
+			{
+
+				self.bullet_hellfire = false;
+				self.bullet_sheercold = false;
+				self.bullet_electric = false;
+
+				//Get all zombies in range
+				zombies = getZombiesInRange( 384 );
+				if( zombies.size < 3 )
+					self.bullet_isolate = true;
+				else
+					self.bullet_isolate = false;
+
+					wait(0.1);
+			}
+		}
 
 
 watch_player_perkslots()
@@ -1951,7 +2013,7 @@ get_upgraded_weapon_string( weapon )
 */
 handle_player_packapunch(weapon, didUpgrade)
 {
-	iprintln("handle_player_packapunch: " + weapon + " ");
+	//iprintln("handle_player_packapunch: " + weapon + " ");
 	
 	if( !isDefined(weapon) )
 		return;
@@ -2023,7 +2085,7 @@ handle_player_packapunch(weapon, didUpgrade)
 	self.packapunch_weapons[upgraded_weapon] = state;
 	self.packapunch_weapons[upgraded_weapon + "_x2"] = state;
 	
-	iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
+	//iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
 
 }
 
@@ -6313,9 +6375,9 @@ reimagined_expanded_round_start()
 		if( level.round_number >= level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND )
 		{
 			level.drop_rate_adjustment = level.VALUE_ZOMBIE_DROP_INCREMENT * (level.round_number - level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND);	
-			iprintln( "Drop rate adjustment: " + level.drop_rate_adjustment );
-			iprintln( "Drop rate BLUE: " + (level.VALUE_ZOMBIE_DROP_RATE_BLUE + level.drop_rate_adjustment) );
-			iprintln( "Drop rate GREEN: " + (level.VALUE_ZOMBIE_DROP_RATE_GREEN + level.drop_rate_adjustment) );
+			//iprintln( "Drop rate adjustment: " + level.drop_rate_adjustment );
+			//iprintln( "Drop rate BLUE: " + (level.VALUE_ZOMBIE_DROP_RATE_BLUE + level.drop_rate_adjustment) );
+			//iprintln( "Drop rate GREEN: " + (level.VALUE_ZOMBIE_DROP_RATE_GREEN + level.drop_rate_adjustment) );
 		}
 	}
 	
@@ -6331,10 +6393,10 @@ reimagined_expanded_round_start()
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
 	//Tracking
-	entity = Spawn( "script_model", (0, 0, 0) );
-	iprintln( "Spawning entity: " );
-	iprintln( "With Number: " + entity GetEntityNumber() );
-	entity delete();
+	//entity = Spawn( "script_model", (0, 0, 0) );
+	//iprintln( "Spawning entity: " );
+	//iprintln( "With Number: " + entity GetEntityNumber() );
+	//entity delete();
 
 }
 
@@ -7265,7 +7327,7 @@ ai_calculate_health( round_number )
 	exp_scale_rounds = 10;
 	
 	health = startHealth;
-	iprintln(health);
+	//iprintln(health);
 	for ( i=2; i<=round_number; i++ )
 	{	
 		if(i == exp_scale_rounds)	
@@ -8796,7 +8858,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 
 	// no damage scaling for these wonder weps
-	iprintln("meansOfDeath: " + meansofdeath);
+	//iprintln("meansOfDeath: " + meansofdeath);
 	inRange = checkDist( attacker.origin, self.origin, level.WEAPON_SABERTOOTH_RANGE );
 	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
@@ -9260,6 +9322,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage = 3000 * ( damage / 160);
 			break;
 		case "ks23_zm":
+		case "mk_aug_upgraded_zm":
 			final_damage = 5000 * ( damage / 160);
 			break;
 		case "ithaca_upgraded_zm":
@@ -9346,6 +9409,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					DOUBLE PAP SPECIAL EFFECTS
 
 		*************************************************/
+
+		// Isolate Bonus damage Weapons
+		//  case "spectre_upgraded_zm_x2":
+		if( attacker.bullet_isolate ) {
+			iprintln("Isolate Damage");
+			final_damage *= 2;
+		}
 
 		// Hellfire Weapons
 		//  case "ppsh_upgraded_zm_x2":

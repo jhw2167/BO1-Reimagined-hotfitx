@@ -1401,7 +1401,7 @@ REFERENCE			PAP_SPECTRE_TITLE
 LANG_ENGLISH 		"Wraith"
 
 REFERENCE			PAP_SPECTRE_HINT
-LANG_ENGLISH 		"Up to 4x damage bonus from isolating zombies"
+LANG_ENGLISH 		"- 2x damage bonus from isolating zombies\n- Applies Sheercold when zombies get too close"
 
 
 REFERENCE			SHOTGUN_DAMAGE_TITLE

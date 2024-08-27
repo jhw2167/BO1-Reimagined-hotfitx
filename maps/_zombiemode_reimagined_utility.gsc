@@ -101,6 +101,21 @@ generate_perk_hint( perkOrWeapon )
 	{
 		perkOrWeapon = "specialty_pap_hellfire_onhit";
 	}
+	else if( perkOrWeapon == "spas_upgraded_zm_x2" ) {
+		//nothing
+	}
+	else if( perkOrWeapon == "spectre_upgraded_zm_x2" ) {
+		//nothing
+	}
+	else if( perkOrWeapon == "famas_upgraded_zm_x2" ) {
+		//nothing
+	}
+	else if( perkOrWeapon == "uzi_upgraded_zm_x2" ) {
+		//nothing
+	}
+	else if( perkOrWeapon == "mac11_upgraded_zm_x2" ) {
+		//nothing
+	}
 	else if( is_in_array(level.ARRAY_HELLFIRE_WEAPONS, perkOrWeapon))
 	{
 		perkOrWeapon = "specialty_pap_hellfire";
@@ -665,7 +680,7 @@ getWeaponUiName( weapon )
 			wepName = "Bullpup Penetrator";
 		break;
 
-		case "aug_upgraded_zm_x2":
+		case "aug_acog_mk_upgraded_zm_x2":
 			wepName = "Shock & AUG";
 		break;
 
