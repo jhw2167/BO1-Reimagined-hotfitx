@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=24;	///
+	level.starting_round_override=42;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -1813,6 +1813,10 @@ watch_player_weapon_special_bonuses()
 			case "mk_aug_upgraded_zm":
 				self watch_mk_aug();
 				break;
+
+			case "asp_upgraded_zm_x2":
+				self watch_asp_x2();
+				break;
 		}
 		
 		self thread generate_perk_hint( weapon );
@@ -1851,7 +1855,7 @@ watch_player_weapon_special_bonuses()
 				if( randomInt( baseRate ) == 0 )
 					self SetWeaponAmmoStock( wep, stock+1);
 
-				wait(0.25);
+				wait(0.2);
 			}
 			
 			
@@ -1867,33 +1871,29 @@ watch_player_weapon_special_bonuses()
 		{
 			self endon("weapon_switch");
 
-			typesArray = array( "hellfire", "electric", "sheercold", "none", "none", "none" );
-			if( !self hasProPerk(level.DBT_PRO) )
-			{
-				for(i=6;i<10;i++) {
-					typesArray[i] = "none";
-				}
-			}
-				
-			
+			wep = "spas_upgraded_zm";	//x2 weapon file doesnt actually exist
+			maxClip = WeaponClipSize( wep );
+
+			threshold = 8;
+			if( self hasProPerk(level.DBT_PRO) )
+				threshold += 4;
+
 		
 			while(1)
 			{
-				self waittill("reload"); //end of reload
-
+				
 				self.bullet_hellfire = false;
 				self.bullet_sheercold = false;
 				self.bullet_electric = false;
 
-				wep = "spas_upgraded_zm";	//x2 weapon file doesnt actually exist
+				//Wait until half clip is left to give bonus ammo type
 				currentClip = self GetWeaponAmmoClip( wep );
-				maxClip = WeaponClipSize( wep );
-
-				threshold = 0.75;
-				if( maxClip * threshold < currentClip )
-					continue;	//No ammo type for gaming the system			
+				if(  threshold < currentClip ) {
+					wait(0.1);
+					continue;
+				}
 				
-
+				typesArray = array( "hellfire", "electric", "sheercold", "none" );
 				typeString = typesArray[ randomInt( typesArray.size ) ];
 				switch( typeString )
 				{
@@ -1908,7 +1908,9 @@ watch_player_weapon_special_bonuses()
 						break;
 				}
 
-				//iprintln("New Elemental Bonus: " + typeString);
+				iprintln("New Elemental Bonus: " + typeString);
+
+				self waittill("reload"); //end of reload
 				
 			}
 
@@ -1965,6 +1967,32 @@ watch_player_weapon_special_bonuses()
 			}
 		}
 
+
+		/*
+			- ASP triggers nuke thread
+		*/
+		watch_asp_x2()
+		{
+			self endon("weapon_switch");
+
+			wep = "asp_upgraded_zm_x2";	//x2 weapon file doesnt actually exist
+			stock = self GetWeaponAmmoStock( wep );
+			while( stock > 0 )
+			{
+				stock = self GetWeaponAmmoStock( wep );
+				if( self AttackButtonPressed() )
+				{
+					drop_item = SpawnStruct();
+					drop_item.origin = self GetWeaponMuzzlePoint();
+					drop_item.fx = "misc/fx_zombie_mini_nuke_hotness";
+					level thread maps\_zombiemode_powerups::nuke_powerup( drop_item, self, false );
+					self SetWeaponAmmoStock( wep, stock-1);
+					wait(4);
+				}
+				wait(0.1);
+			}
+			
+		}
 
 
 watch_player_perkslots()
@@ -2081,7 +2109,14 @@ handle_player_packapunch(weapon, didUpgrade)
 	}
 
 	if( is_in_array( level.ARRAY_EXPLOSIVE_WEAPONS, weapon) )
-		state = 1;
+	{
+		//ASP is allowed to be upgraded again
+		if( weapon == "asp_upgraded_zm" && didUpgrade )
+			state = 2;
+		else
+			state = 1;
+		
+	}
 	
 	self.packapunch_weapons[upgraded_weapon] = state;
 	self.packapunch_weapons[upgraded_weapon + "_x2"] = state;

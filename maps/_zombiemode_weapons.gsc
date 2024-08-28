@@ -593,7 +593,7 @@ init_weapons()
 	c:\Program Files (x86)\Steam\steamapps\common\Call of Duty Black Ops\raw\weapons\sp\skorpion_zm
 	**************************/
 	add_zombie_weapon( "asp_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_ASP",				1000,	"pistol",			"",		undefined );
-	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm",									&"ZOMBIE_WEAPON_ASP",				1000,	"assault",			"",		undefined );
+	add_zombie_weapon( "asp_upgraded_zm",						"asp_upgraded_zm_x2",									&"ZOMBIE_WEAPON_ASP",				1000,	"assault",			"",		undefined );
 	
 	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_AK47",				1000,	"assault",			"",		undefined );
 	add_zombie_weapon( "uzi_zm", 					"uzi_upgraded_zm",						&"ZOMBIE_WEAPON_UZI",					1000,	"smg",				"",		undefined );
@@ -4385,6 +4385,7 @@ init_includes()
 	
 	include_weapon("asp_zm");				
 	include_weapon("asp_upgraded_zm");		
+	include_weapon("asp_upgraded_zm_x2");
 
 	include_weapon("makarov_zm");
 	include_weapon("makarov_upgraded_zm");

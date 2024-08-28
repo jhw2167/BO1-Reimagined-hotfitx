@@ -2181,10 +2181,14 @@ powerup_timeout()
 }
 
 // kill them all!
-nuke_powerup( drop_item, grabber )
+nuke_powerup( drop_item, grabber, give_points )
 {
+	if( !isDefined( give_points ) ) 
+		give_points = true;
+
 	zombies = getaispeciesarray("axis");
 	location = drop_item.origin;
+	
 
 	PlayFx( drop_item.fx, location );
 	level thread nuke_flash();
@@ -2257,7 +2261,8 @@ nuke_powerup( drop_item, grabber )
 			continue;
 		}
 
-		players[i] maps\_zombiemode_score::player_add_points( "nuke_powerup", 400 );
+		if( give_points )
+			players[i] maps\_zombiemode_score::player_add_points( "nuke_powerup", 400 );
 	}
 
 	if(level.gamemode != "survival")

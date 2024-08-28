@@ -404,7 +404,7 @@ get_favorite_enemy()
 dog_health_increase()
 {
 	//Reimagined-Expanded, dog health will be one fourth zombie health
-	level.dog_health = int( level.zombie_health / 4 );
+	level.dog_health = int( level.zombie_health * 0.60  );
 }
 
 

@@ -116,6 +116,9 @@ generate_perk_hint( perkOrWeapon )
 	else if( perkOrWeapon == "mac11_upgraded_zm_x2" ) {
 		//nothing
 	}
+	else if( perkOrWeapon == "ks23_upgraded_zm_x2" ) {
+		//nothing
+	}
 	else if( is_in_array(level.ARRAY_HELLFIRE_WEAPONS, perkOrWeapon))
 	{
 		perkOrWeapon = "specialty_pap_hellfire";
@@ -127,6 +130,10 @@ generate_perk_hint( perkOrWeapon )
 	else if( is_in_array(level.ARRAY_ELECTRIC_WEAPONS, perkOrWeapon))
 	{
 		perkOrWeapon = "specialty_pap_shock_rounds";
+	}
+	else if( is_in_array(level.ARRAY_EXECUTE_WEAPONS, perkOrWeapon))
+	{
+		perkOrWeapon = "specialty_pap_execute";
 	}
 	else if( is_in_array(level.ARRAY_BIGDMG_WEAPONS, perkOrWeapon))
 	{
@@ -336,6 +343,11 @@ generate_perk_hint( perkOrWeapon )
 			title SetText( &"REIMAGINED_PAP_BIG_HEADSHOT_DAMAGE_TITLE" );
 			break;
 
+		case "specialty_pap_execute":
+			text SetText( &"REIMAGINED_PAP_EXECUTE_HINT" );
+			title SetText( &"REIMAGINED_PAP_EXECUTE_TITLE" );
+			break;
+
 		case "specialty_shotgun_damage":
 			text SetText( &"REIMAGINED_SHOTGUN_DAMAGE_HINT" );
 			title SetText( &"REIMAGINED_\SHOTGUN_DAMAGE_TITLE" );
@@ -381,6 +393,18 @@ generate_perk_hint( perkOrWeapon )
 		case "famas_upgraded_zm_x2":
 			text SetText( &"REIMAGINED_PAP_FAMAS_HINT" );
 			title SetText( &"REIMAGINED_PAP_FAMAS_TITLE" );
+			break;
+
+		//for mac11
+		case "mac11_upgraded_zm_x2":
+			text SetText( &"REIMAGINED_PAP_MAC11_HINT" );
+			title SetText( &"REIMAGINED_PAP_MAC11_TITLE" );
+			break;
+
+		//for ks23
+		case "ks23_upgraded_zm_x2":
+			text SetText( &"REIMAGINED_PAP_KS23_HINT" );
+			title SetText( &"REIMAGINED_PAP_KS23_TITLE" );
 			break;
 
 		}
@@ -661,7 +685,7 @@ getWeaponUiName( weapon )
 		break;
 		
 		case "ks23_upgraded_zm_x2":
-			wepName = "Shock Army Executioner";
+			wepName = "Shock Army Exterminator";
 		break;
 
 		case "spas_upgraded_zm_x2":

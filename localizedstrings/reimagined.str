@@ -203,7 +203,7 @@ REFERENCE          	KS23_UPGRADED
 LANG_ENGLISH       	"KS-56"
 
 REFERENCE          	KS23_UPGRADED_X2
-LANG_ENGLISH       	"Shock Army Executioner"
+LANG_ENGLISH       	"Shock Army Exterminator"
 
 REFERENCE          	SPAS_UPGRADED_X2
 LANG_ENGLISH       	"Spontaneity"
@@ -1373,6 +1373,13 @@ LANG_ENGLISH 		"BIG HEADSHOT DAMAGE"
 REFERENCE			PAP_BIG_HEADSHOT_DAMAGE_HINT
 LANG_ENGLISH 		"- All Double Pack-a-Punched weapons receive a flat 4x damage increase \n- In addition to the base damage increase, all rounds do an additional 100% headshot damage \n- On snipers, this is 1000% times extra damage"
 
+REFERENCE			PAP_EXECUTE_TITLE
+LANG_ENGLISH 		"EXECUTE"
+
+REFERENCE			PAP_EXECUTE_HINT
+LANG_ENGLISH 		"Excutes non-boss zombies that are sufficiently low health"
+
+
 REFERENCE			PAP_M1911_TITLE
 LANG_ENGLISH 		"Mustang & Sally"
 
@@ -1380,28 +1387,36 @@ REFERENCE			PAP_M1911_HINT
 LANG_ENGLISH 		"Can be re-Pack-a-Punch'd indefinitely to refill ammo"
 
 REFERENCE			PAP_UZIZI_TITLE
-LANG_ENGLISH 		"Elemental UZIZIs"
+LANG_ENGLISH 		"ELEMENTS OF UZIZI"
 
 REFERENCE			PAP_UZIZI_HINT
-LANG_ENGLISH 		"The Uzi has 4 elemental variants and can be re-Pack-a-Punch'd indefinitely"
+LANG_ENGLISH 		"Can be re-Pack-a-Punch'd exchange between Uzizi Elements"
 
 REFERENCE			PAP_FAMAS_TITLE
-LANG_ENGLISH 		"G16-G-Infinite"
+LANG_ENGLISH 		"G16-G-INFINITE"
 
 REFERENCE			PAP_FAMAS_HINT
 LANG_ENGLISH 		"Regenerates ammo over time"
 
 REFERENCE			PAP_SPAS_TITLE
-LANG_ENGLISH 		"Spas-M24"
+LANG_ENGLISH 		"SPONTANEITY"
 
 REFERENCE			PAP_SPAS_HINT
-LANG_ENGLISH 		"A different bonus ammo type has a chance of being assigned every reload"
+LANG_ENGLISH 		"When low on ammo, a bonus ammotype is assigned randomly"
 
 REFERENCE			PAP_SPECTRE_TITLE
 LANG_ENGLISH 		"Wraith"
 
 REFERENCE			PAP_SPECTRE_HINT
 LANG_ENGLISH 		"- 2x damage bonus from isolating zombies\n- Applies Sheercold when zombies get too close"
+
+REFERENCE			PAP_KS23_TITLE
+LANG_ENGLISH 		"SHOCK ARMY EXTERMINATOR"
+
+REFERENCE			PAP_KS23_HINT
+LANG_ENGLISH 		"Shocks and instantly oblitherates any animal zombie variant (Nova Crawlers, monkeys, dogs)"
+
+
 
 
 REFERENCE			SHOTGUN_DAMAGE_TITLE
