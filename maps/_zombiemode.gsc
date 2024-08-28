@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=40;	///
+	level.starting_round_override=24;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -836,7 +836,8 @@ reimagined_init_level()
 	//Bullet Effects
 	level.VALUE_PAP_WEAPON_BONUS_DAMAGE = 1.2;
 
-	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm");
+	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2",
+				 "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm" );
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
 	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
@@ -1507,11 +1508,9 @@ watch_player_current_weapon()
 	while(1)
 	{
 		/* Update Weapon Name in UI */
-		iprintln("Current Weapon: " + weapName);
 
 		self waittill("weapon_change");
 		weapName = self GetCurrentWeapon();
-		iprintln("New Weapon: " + weapName );
 
 		ui_weapon_name = self maps\_zombiemode_reimagined_utility::getWeaponUiName( weapName );
 		self SetClientDvar( "ui_playerWeaponName", ui_weapon_name );
@@ -1816,7 +1815,8 @@ watch_player_weapon_special_bonuses()
 				break;
 		}
 		
-		wait(0.1);
+		self thread generate_perk_hint( weapon );
+		self waittill_any("reload_start", "reload", "weapon_switch", "weapon_switch_complete"  );
 	}
 
 }
@@ -1964,6 +1964,7 @@ watch_player_weapon_special_bonuses()
 					wait(0.1);
 			}
 		}
+
 
 
 watch_player_perkslots()
@@ -9402,6 +9403,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 		}
 
+		if(weapon == "ks23_upgraded_zm_x2")
+		{
+			if( is_boss_zombie(self.animname) ) {
+				//nothing
+			}
+			else if ( self.animname == "zombie" ) {
+				//nothing
+			}
+			else {	//All special zombie types - dog, monkey, crawer are exectuted and electrecuted
+				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 2);
+			}
+				
+		}
 
 
 		/************************************************
@@ -12472,7 +12486,6 @@ switch_weapons_notify()
 		while(self IsSwitchingWeapons())
 			wait_network_frame();
 		self notify("weapon_switch_complete");
-		self thread generate_perk_hint( self GetCurrentWeapon() );
 	}
 }
 

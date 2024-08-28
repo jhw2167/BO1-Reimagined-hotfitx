@@ -312,7 +312,7 @@
 			type			ITEM_TYPE_TEXT
 			rect			(WEAPINFO_X+7) (WEAPINFO_Y+20) 1 1
 			textalign		ITEM_ALIGN_RIGHT
-			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
 			textscale		TEXTSIZE_DEFAULT
 			textfont		UI_FONT_EXTRABIG
 			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
