@@ -863,7 +863,7 @@ reimagined_init_level()
 	level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME = 3;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2",
-							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2", "dragunov_upgraded_zm_x2");
+							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
 	level.THRESHOLD_HELLFIRE_TIME = 1.6;	//Player holds trigger for 1.6 seconds to activate Hellfire
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 1.2;		//Hellfire lasts while on the ground
@@ -1790,6 +1790,9 @@ watch_player_weapon_special_bonuses()
 		//Get all players weapons and check if they are a shotgun
 		weapon = self GetCurrentWeapon();
 		weapon = self get_upgraded_weapon_string( weapon );
+		
+		iprintln( "Do Hint! " + weapon );
+		self thread generate_perk_hint( weapon );
 
 		switch( weapon )
 		{
@@ -1812,6 +1815,7 @@ watch_player_weapon_special_bonuses()
 
 			case "mk_aug_upgraded_zm":
 				self watch_mk_aug();
+				self.bullet_electric = false;
 				break;
 
 			case "asp_upgraded_zm_x2":
@@ -1820,11 +1824,11 @@ watch_player_weapon_special_bonuses()
 
 			case "dragunov_upgraded_zm_x2":
 				self watch_dragunov_x2();
+				self.bullet_hellfire = false;
 				break;
 		}
 		
-		self thread generate_perk_hint( weapon );
-		self waittill_any("reload_start", "reload", "weapon_switch", "weapon_switch_complete"  );
+		wait(0.5);
 	}
 
 }
@@ -1844,10 +1848,10 @@ watch_player_weapon_special_bonuses()
 			while( stock < WeaponMaxAmmo( wep ) )
 			{
 
-				baseRate = 8;
+				baseRate = 10;
 
 				if( self hasProPerk(level.DBT_PRO) )
-					baseRate -= 1;
+					baseRate -= 2;
 
 				if( stock < 181 )
 					baseRate -= 2;
@@ -1859,7 +1863,7 @@ watch_player_weapon_special_bonuses()
 				if( randomInt( baseRate ) == 0 )
 					self SetWeaponAmmoStock( wep, stock+1);
 
-				wait(0.2);
+				wait(0.1);
 			}
 			
 			
@@ -1878,9 +1882,9 @@ watch_player_weapon_special_bonuses()
 			wep = "spas_upgraded_zm";	//x2 weapon file doesnt actually exist
 			maxClip = WeaponClipSize( wep );
 
-			threshold = 8;
+			threshold = 6;
 			if( self hasProPerk(level.DBT_PRO) )
-				threshold += 4;
+				threshold += 2;
 
 		
 			while(1)
@@ -7372,11 +7376,11 @@ ai_calculate_health( round_number )
 	//iprintln("Zombie Health calculate: ");
 
 	//Reimagined-Expanded - exponential health scaling
-	base = 800;
+	base = 1000;
 	if( level.tough_zombies )
-		base = 1000;
+		base = 1150;
 	
-	rTenfactor = 0.30;
+	rTenfactor = 0.28;
 	startHealth = 150;
 	logFactor = 4;
 	exp_scale_rounds = 10;

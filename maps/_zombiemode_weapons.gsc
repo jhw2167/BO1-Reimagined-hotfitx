@@ -404,9 +404,9 @@ init_weapons()
 	add_zombie_weapon( "psg1_zm",					"psg1_upgraded_zm",						&"ZOMBIE_WEAPON_PSG1",					2500,		"sniper",			"",		undefined );
 
 	//Upgrade
-	add_zombie_weapon( "l96a1_upgraded_zm",					"l96a1_upgraded_zm",					&"ZOMBIE_WEAPON_L96A1",					50,		"sniper",			"",		undefined );
+	//add_zombie_weapon( "l96a1_upgraded_zm",					"l96a1_upgraded_zm",					&"ZOMBIE_WEAPON_L96A1",					50,		"sniper",			"",		undefined );
 	//add_zombie_weapon( "dragunov_upgraded_zm",				"dragunov_upgraded_zm_x2",					&"ZOMBIE_WEAPON_DRAGUNOV",				2500,		"sniper",			"",		undefined );
-	add_zombie_weapon( "psg1_upgraded_zm",					"psg1_upgraded_zm",						&"ZOMBIE_WEAPON_PSG1",					2500,		"sniper",			"",		undefined );
+	//add_zombie_weapon( "psg1_upgraded_zm",					"psg1_upgraded_zm",						&"ZOMBIE_WEAPON_PSG1",					2500,		"sniper",			"",		undefined );
 
 	//Total: 3 base, 3 upgraded, 1 x2 = 7
 	/***** END SNIPERS *****/

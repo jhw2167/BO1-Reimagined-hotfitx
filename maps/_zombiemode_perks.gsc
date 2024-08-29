@@ -980,8 +980,9 @@ wait_for_player_to_take( player, weapon, packa_timer )
 					player maps\_zombiemode_weapons::give_max_ammo(upgrade_weapon, 1);
 				}
 
-				player SwitchToWeapon( upgrade_weapon );
 				player handle_player_packapunch(weapon, true);
+				player SwitchToWeapon( upgrade_weapon );
+				player notify("weapon_upgrade_complete");
 				player maps\_zombiemode_weapons::play_weapon_vo(upgrade_weapon);
 				
 				

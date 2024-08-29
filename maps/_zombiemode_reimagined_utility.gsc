@@ -101,6 +101,10 @@ generate_perk_hint( perkOrWeapon )
 	{
 		perkOrWeapon = "specialty_pap_hellfire_onhit";
 	}
+	else if( perkOrWeapon == "dragunov_upgraded_zm_x2" ) 
+	{
+		perkOrWeapon = "specialty_pap_hellfire_onhit";
+	}
 	else if( perkOrWeapon == "spas_upgraded_zm_x2" ) {
 		//nothing
 	}
@@ -405,6 +409,12 @@ generate_perk_hint( perkOrWeapon )
 		case "ks23_upgraded_zm_x2":
 			text SetText( &"REIMAGINED_PAP_KS23_HINT" );
 			title SetText( &"REIMAGINED_PAP_KS23_TITLE" );
+			break;
+
+		//for spas
+		case "spas_upgraded_zm_x2":
+			text SetText( &"REIMAGINED_PAP_SPAS_HINT" );
+			title SetText( &"REIMAGINED_PAP_SPAS_TITLE" );
 			break;
 
 		}
@@ -799,7 +809,7 @@ getWeaponUiName( weapon )
 
 	}
 
-	iprintln( "DYNAMIC NAME: " + wepName );
+	//iprintln( "DYNAMIC NAME: " + wepName );
 
 	return wepName;
 }
