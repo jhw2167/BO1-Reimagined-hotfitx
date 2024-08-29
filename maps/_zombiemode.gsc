@@ -529,7 +529,7 @@ reimagined_init_level()
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
 
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_RADIUS = 128;
-	level.ARRAY_DESPAWN_ZOMBIES_VALID= array("zombie", "quad_zombie");
+	level.ARRAY_VALID_DESPAWN_ZOMBIES= array("zombie", "quad_zombie");
 	
 	level.VALUE_ZOMBIE_QUICK_KILL_BONUS = 25;	//25 points per zombie killed before it despawns
 	level.VALUE_ZOMBIE_QUICK_KILL_ROUND_INCREMENT = 5; //goes up every 5 rounds
@@ -8220,7 +8220,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			}
 				
 
-			if( is_true(eAttacker.is_zombie) )
+			if( is_true(eAttacker.is_zombie) || is_true( eAttacker.isDog )  )
 			{
 				if( isDefined(eAttacker.zombie_hash) )
 				{
@@ -8237,6 +8237,10 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 					}
 					
 				}
+				else {
+					eAttacker.zombie_hash = randomint(level.VALUE_ZOMBIE_HASH_MAX);
+				}
+
 				self.stats["damage_taken"] += iDamage;
 			}
 
@@ -8273,6 +8277,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		}
 	}
 	finalDamage = iDamage;
+	
 
 	// claymores and freezegun shatters, like bouncing betties, harm no players
 	if ( is_placeable_mine( sWeapon ) || sWeapon == "freezegun_zm" || sWeapon == "freezegun_upgraded_zm" )

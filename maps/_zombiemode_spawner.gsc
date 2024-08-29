@@ -279,7 +279,7 @@ zombie_spawn_init( animname_set )
 		//Reimagined-Expanded, despawn zombies if they are not damaged for a period
 		if(
 		level.tough_zombies
-		&& is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname)
+		&& is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname)
 		&& level.round_number > 5
 		&& level.zombie_total > 5 ) 
 		{
@@ -290,7 +290,7 @@ zombie_spawn_init( animname_set )
 		if(
 		( level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND )
 		&& ( !self.respawn_zombie )
-		&& ( is_in_array(level.ARRAY_DESPAWN_ZOMBIES_VALID, self.animname) )
+		&& ( is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname) )
 		&& ( level.total_drops_round < level.THRESHOLD_MAX_DROPS )
 		)
 			self thread zombie_wait_determine_drop();
