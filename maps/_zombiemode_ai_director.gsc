@@ -875,6 +875,83 @@ director_watch_damage()
 	self thread director_leave_map( exit, self.in_water );
 }
 
+/*
+	method: director_run_to_exit
+
+	Descr: The director zombie runs away from the provided "source" point
+	to an "exit" point that is determined. If the source is too close to the
+	exit, the director will run to a new exit point that is further away.
+
+	params:
+		self - director
+		source - the point the director is running away from
+
+*/
+director_run_to_exit( sourcePlayer, fake_exit )
+{
+	self endon( "death" );
+	self endon( "zombie_start_traverse" );
+
+	// get the exit point
+	exit = self [[ level.director_find_exit ]]();
+
+	if( isDefined( fake_exit ) )
+		exit = fake_exit;
+
+	iprintln( "exit = " + exit );
+	if( !isDefined( exit ) )
+		return;
+
+	
+	//Directory Prep for special goal
+	self notify( "disable_activation" );
+	self notify( "disable_buff" );
+	self notify( "director_run_change" );
+
+	self notify( "stop_find_flesh" );
+	self notify( "zombie_acquire_enemy" );
+
+
+	// get the distance from the source to the exit
+	MAX_TRIES = 5;
+	try = 0;
+	while ( checkDist( sourcePlayer.origin, exit, 512 ) && try < MAX_TRIES )
+	{
+		exit = sourcePlayer [[ level.director_find_exit ]]();
+		try++;
+	}
+
+	// run to the exit
+	iprintln( "running to exit" );
+	self.fake_exit = exit;
+	self thread [[ level.director_exit_level ]]( exit, false );
+
+	//When he arrives, stop exit sequence
+	self waittill( "goal" );
+	self notify( "stop_exit" );
+	iprintln( "STOP exit" );
+
+	wait(3);
+	self.ignore_transition = undefined;
+	self.following_player = false;
+
+	/*
+
+	if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
+			 		is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
+			 		is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) || is_true( zomb.water_scream ) 
+				  )
+
+	*/
+
+}
+
+	checkDist( point1, point2, threshold )
+	{
+		return maps\_zombiemode::checkDist( point1, point2, threshold );
+	}
+
+
 //-----------------------------------------------------------------------------------------------
 // stumble anim and fx
 //-----------------------------------------------------------------------------------------------
@@ -1040,6 +1117,7 @@ director_zombie_think()
 	self BloodImpact( "hero" );
 
 	self thread director_zombie_update();
+	level.director_zombie = self;
 }
 
 //-----------------------------------------------------------------------------------------------

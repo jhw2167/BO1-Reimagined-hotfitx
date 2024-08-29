@@ -406,6 +406,7 @@ coast_director_exit_level( exit, calm )
 	self.goalradius = 32;
 	self SetGoalPos( exit.origin );
 	self waittill( "goal" );
+	wait( 0.5 );
 
 	self OrientMode( "face angle", exit.angles[1] );
 	time = 0;
@@ -500,13 +501,20 @@ coast_director_find_exit()
 	location = undefined;
 	dist = 1000000;
 
+	randKeys = array();
+	for ( i = 0; i < level.water.size; i++ ) {
+		randKeys[ randKeys.size ] = i;
+	}
+
+	randKeys = array_randomize( randKeys );
 	for ( i = 0; i < level.water.size; i++ )
 	{
-		if ( isDefined( level.water[i].target ) )
+		key = randKeys[i];
+		if ( isDefined( level.water[key].target ) )
 		{
 			//if ( level.zones[ level.water[i].script_noteworthy ].is_enabled )
 
-			point = getstruct( level.water[i].target, "targetname" );
+			point = getstruct( level.water[key].target, "targetname" );
 			zone_enabled = check_point_in_active_zone( point.origin );
 			if ( zone_enabled )
 			{
@@ -574,7 +582,11 @@ coast_director_sliding( slide_node )
 
 	self thread coast_director_delay_transition( 3 );
 
-	if ( isDefined( self.exit ) )
+	if ( isDefined( self.fake_exit ) )
+	{
+		self thread maps\_zombiemode_ai_director::director_run_to_exit( self, self.fake_exit );
+	}
+	else if ( isDefined( self.exit ) )
 	{
 		self thread coast_director_exit_level( self.exit, self.calm );
 	}

@@ -872,7 +872,7 @@ reimagined_init_level()
 							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
 	level.THRESHOLD_HELLFIRE_TIME = 1.8;		//Player holds trigger for 1.6 seconds to activate Hellfire
 	level.THRESHOLD_HELLFIRE_KILL_TIME = 4;		//Hellfire kills in 4 seconds
-	level.VALUE_HELLFIRE_RANGE = 20;
+	level.VALUE_HELLFIRE_RANGE = 25;
 	level.VALUE_HELLFIRE_TIME = 1.2;			//Hellfire lasts while on the ground
 
 	level.ARRAY_POISON_WEAPONS = array();	//Uzi added dynamically
@@ -1262,7 +1262,8 @@ watch_player_utility()
 		zombies = GetAiSpeciesArray( "axis", "all" );
 		for(i=0;i<zombies.size;i++)
 		{
-			zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
+			if( !is_boss_zombie( zombies[i].animname ) )
+				zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
 		}
 
 		iprintln("Origin: " + self.origin);
@@ -1671,7 +1672,7 @@ watch_player_hellfire()
 		//Reduce level.THRESHOLD_HELLFIRE_TIME by half if player has pro DBT
 		total_hellfire_time = level.THRESHOLD_HELLFIRE_TIME;
 		if( self hasProPerk(level.DBT_PRO) )
-			total_hellfire_time /= 2;
+			total_hellfire_time = total_hellfire_time - 0.6;
 
 		while(1)
 		{
@@ -1840,8 +1841,13 @@ watch_player_weapon_special_bonuses()
 				self.bullet_hellfire = false;
 				break;
 
+			case "sabertooth_zm":
 			case "sabertooth_upgraded_zm":
-				//self watch_sabertooth();
+			case "sabertooth_upgraded_zm_x2":
+			//if the map is zombie coast
+			iprintln( "1: " );
+			if( level.mapname == "zombie_coast" )
+				self watch_sabertooth();
 				break;
 		}
 
@@ -1988,8 +1994,6 @@ watch_player_weapon_special_bonuses()
 		}
 
 
-
-
 		/*
 			- Wraith up to 4x damage bonus on isolated zombies
 
@@ -2059,6 +2063,50 @@ watch_player_weapon_special_bonuses()
 				wait(0.1);
 			}
 		}
+
+
+		/*
+			- Sabertooth makes George run away from player
+		*/
+		watch_sabertooth()
+		{
+			self endon("weapon_switch");
+			wep = "sabertooth_upgraded_zm";	//x2 weapon file doesnt actually exist
+			iprintln( "2: " );
+
+			if( !isDefined( level.director_zombie ) )
+				return;
+
+			//Check director failsages
+			zomb = level.director_zombie;
+
+			iprintln( "3: " );
+			while(1)
+			{
+				self waittill("weapon_fired");
+
+				if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
+			 		is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
+			 		is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) || is_true( zomb.water_scream ) 
+				  )
+				return;
+
+				iprintln( "4: " );
+				if( checkDist( self.origin, zomb.origin, 512 ) )
+				{
+					iprintln( "5: " );
+					zomb.ignoreall = true;
+					zomb maps\_zombiemode_ai_director::director_run_to_exit( self );
+					zomb.ignoreall = false;
+					wait(12);
+					break;
+				}
+					
+			}
+		}
+
+
+
 
 
 watch_player_perkslots()
