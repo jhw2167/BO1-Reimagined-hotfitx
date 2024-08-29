@@ -564,6 +564,10 @@ LANG_ENGLISH       	"Serendipity"
 REFERENCE          	L96A1_UPGRADED_X2
 LANG_ENGLISH        "L115 Decimator"
 
+REFERENCE          	DRAGUNOV_UPGRADED_X2
+LANG_ENGLISH        "Zmei's Breath"
+
+
 REFERENCE          	RAY_GUN_UPGRADED_X2
 LANG_ENGLISH        "RAY_GUN_UPGRADED_X2"
 
@@ -789,6 +793,9 @@ getWeaponUiName( weapon )
 		case "l96a1_upgraded_zm_x2":
 			wepName = "L115 Decimator";
 		break;
+
+		case "dragunov_upgraded_zm_x2":
+			wepName = "Zmei's Breath";
 
 	}
 

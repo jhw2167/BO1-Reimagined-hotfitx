@@ -388,7 +388,7 @@ init_weapons()
 	//Upgrade
 	add_zombie_weapon( "python_upgraded_zm",				"python_upgraded_zm",					&"ZOMBIE_WEAPON_PYTHON",				2200,	"pistol",			"",		undefined );
 	add_zombie_weapon( "m1911_upgraded_zm",				"m1911_upgraded_zm",					&"ZOMBIE_WEAPON_M1911",					50,		"pistol",			"",		undefined );
-	add_zombie_weapon( "cz75dw_upgraded_zm",				"cz75dw_upgraded_zm_x2",				&"ZOMBIE_WEAPON_CZ75DW",				50,		"dualwield",		"",		undefined );
+	//add_zombie_weapon( "cz75dw_upgraded_zm",				"cz75dw_upgraded_zm_x2",				&"ZOMBIE_WEAPON_CZ75DW",				50,		"dualwield",		"",		undefined );
 	//add_zombie_weapon( "cz75_upgraded_zm",				"cz75_upgraded_zm_x2",					&"ZOMBIE_WEAPON_CZ75",					50,		"pistol",			"",		undefined );
 
 	//Total: 4 base, 4 upgraded, 1 x2 = 9
@@ -405,7 +405,7 @@ init_weapons()
 
 	//Upgrade
 	add_zombie_weapon( "l96a1_upgraded_zm",					"l96a1_upgraded_zm",					&"ZOMBIE_WEAPON_L96A1",					50,		"sniper",			"",		undefined );
-	add_zombie_weapon( "dragunov_upgraded_zm",				"dragunov_upgraded_zm_x2",					&"ZOMBIE_WEAPON_DRAGUNOV",				2500,		"sniper",			"",		undefined );
+	//add_zombie_weapon( "dragunov_upgraded_zm",				"dragunov_upgraded_zm_x2",					&"ZOMBIE_WEAPON_DRAGUNOV",				2500,		"sniper",			"",		undefined );
 	add_zombie_weapon( "psg1_upgraded_zm",					"psg1_upgraded_zm",						&"ZOMBIE_WEAPON_PSG1",					2500,		"sniper",			"",		undefined );
 
 	//Total: 3 base, 3 upgraded, 1 x2 = 7
@@ -4380,8 +4380,8 @@ init_includes()
 {
 
 	//Pistols
-	include_weapon("cz75dw_upgraded_zm_x2");
-	include_weapon("cz75lh_upgraded_zm_x2");
+	//include_weapon("cz75dw_upgraded_zm_x2");
+	//include_weapon("cz75lh_upgraded_zm_x2");
 	
 	include_weapon("asp_zm");				
 	include_weapon("asp_upgraded_zm");		

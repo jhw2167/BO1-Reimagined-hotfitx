@@ -863,7 +863,7 @@ reimagined_init_level()
 	level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME = 3;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2",
-							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
+							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2", "dragunov_upgraded_zm_x2");
 	level.THRESHOLD_HELLFIRE_TIME = 1.6;	//Player holds trigger for 1.6 seconds to activate Hellfire
 	level.VALUE_HELLFIRE_RANGE = 20;
 	level.VALUE_HELLFIRE_TIME = 1.2;		//Hellfire lasts while on the ground
@@ -1817,6 +1817,10 @@ watch_player_weapon_special_bonuses()
 			case "asp_upgraded_zm_x2":
 				self watch_asp_x2();
 				break;
+
+			case "dragunov_upgraded_zm_x2":
+				self watch_dragunov_x2();
+				break;
 		}
 		
 		self thread generate_perk_hint( weapon );
@@ -1992,6 +1996,21 @@ watch_player_weapon_special_bonuses()
 				wait(0.1);
 			}
 			
+		}
+
+		/*
+			- Dragunov gets permanent hellfire
+		*/
+		watch_dragunov_x2()
+		{
+			self endon("weapon_switch_complete");
+
+			wep = "dragunov_upgraded_zm_x2";	//x2 weapon file doesnt actually exist
+			while(1)
+			{
+				self.bullet_hellfire = true;
+				wait(0.1);
+			}
 		}
 
 
@@ -9134,9 +9153,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
+		case "dragunov_zm":
+			final_damage = 26000;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
+				final_damage *= 3;
+			break;
 		case "psg1_zm":
 			final_damage = 44000;
-			
 			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && !is_boss_zombie(self.animname) )
 				final_damage *= 3;
 			break;
@@ -9281,6 +9304,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		case "bar_upgraded_zm":
 			final_damage = 2100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
+				final_damage *= 3;
+			break;
+		case "dragunov_upgraded_zm":
+			final_damage = 58000;
+			if( (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")  )
 				final_damage *= 3;
 			break;
 		case "psg1_upgraded_zm":

@@ -85,8 +85,8 @@ weapon,sp/combat_sickle_knife_zm
 //New / Overriden weapons
 
 //Pistols
-weapon,sp/cz75dw_upgraded_zm_x2
-weapon,sp/cz75lh_upgraded_zm_x2
+//weapon,sp/cz75dw_upgraded_zm_x2
+//weapon,sp/cz75lh_upgraded_zm_x2
 
 //SMGS
 weapon,sp/ppsh_zm
