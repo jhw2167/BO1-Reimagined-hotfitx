@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=42;	///
+	level.starting_round_override=32;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
@@ -361,7 +361,7 @@ reimagined_init_player_depedent_values()
 	if( !isDefined(level.players_size) )
 		level.players_size = GetPlayers().size;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 300000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 
 	
 	//level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
@@ -520,6 +520,8 @@ reimagined_init_level()
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
 	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
+
+	level.VALUE_ZOMBIE_DOG_HEALTH_PORTION = 0.6;
 
 	level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER = 5;
 	level.STRING_MIN_ZOMBS_REMAINING_NOTIFY = "MIN_ZOMBS_REMAINING_NOTIFY";		//level message when < 5 zombies remain
@@ -735,6 +737,8 @@ reimagined_init_level()
 		"humangun_zm",
 		"humangun_upgraded_zm",
 		"m1911_upgraded_zm",
+		"asp_upgraded_zm",
+		"asp_upgraded_zm_x2",
 		//Add all combnat knives and fists
 		"knife_zm",
 		"combat_knife_zm",
@@ -1791,7 +1795,7 @@ watch_player_weapon_special_bonuses()
 		weapon = self GetCurrentWeapon();
 		weapon = self get_upgraded_weapon_string( weapon );
 		
-		iprintln( "Do Hint! " + weapon );
+		//iprintln( "Do Hint! " + weapon );
 		self thread generate_perk_hint( weapon );
 
 		switch( weapon )
@@ -8591,6 +8595,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	iprintln("Weapon damaging: " + weapon);
+	iprintln("Health: " + self.maxhealth);
 	//iprintln( "dw weap: " + WeaponDualWieldWeaponName( weapon ) );
 	
 	// WW (8/14/10) - define the owner of the monkey shot

@@ -55,10 +55,6 @@ init()
 
 	level thread dog_clip_monitor();
 
-	if(level.gamemode != "survival")
-	{
-		level.dog_health = 1600;
-	}
 }
 
 
@@ -107,7 +103,7 @@ dog_spawner_init()
 	}
 
 	assert( dogs.size > 0 );
-	level.dog_health = 100;
+	level.dog_health = int( level.zombie_health * level.VALUE_ZOMBIE_DOG_HEALTH_PORTION  );
 
 	array_thread( dogs, ::add_spawn_function, ::dog_init );
 
@@ -403,8 +399,8 @@ get_favorite_enemy()
 
 dog_health_increase()
 {
-	//Reimagined-Expanded, dog health will be one fourth zombie health
-	level.dog_health = int( level.zombie_health * 0.60  );
+	//Reimagined-Expanded, dog health as percent of normal zombie health
+	level.dog_health = int( level.zombie_health * level.VALUE_ZOMBIE_DOG_HEALTH_PORTION  );
 }
 
 
@@ -444,6 +440,7 @@ dog_round_tracker()
 
 		if ( level.round_number == level.next_dog_round )
 		{
+			dog_health_increase();
 			level.music_round_override = true;
 			old_spawn_func = level.round_spawn_func;
 			old_wait_func  = level.round_wait_func;
@@ -893,6 +890,7 @@ special_dog_spawn( spawners, num_to_spawn )
 
 	spawn_point = undefined;
 	count = 0;
+	dog_health_increase();
 	while ( count < num_to_spawn )
 	{
 		//update the player array.

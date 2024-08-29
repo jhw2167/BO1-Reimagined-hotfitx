@@ -34,7 +34,7 @@ init_no_mans_land()
 	level.initial_spawn = true;
 	level.nml_didteleport = false;
 
-	level.nml_dog_health = 150;
+	level.dog_health = int( level.zombie_health * level.VALUE_ZOMBIE_DOG_HEALTH_PORTION  );
 
 	//level._effect[ "lightning_dog_spawn" ]	= Loadfx( "maps/zombie/fx_zombie_dog_lightning_buildup" );
 
@@ -1123,26 +1123,9 @@ nml_ramp_up_zombies()
 
 nml_dog_health_increase()
 {
-	if( level.nml_timer < 4)
-	{
-		level.nml_dog_health = 150;
-	}
-	else if( level.nml_timer >= 4 && level.nml_timer < 6) //80 seconds.
-	{
-		level.nml_dog_health = 400;
-	}
-	else if( level.nml_timer >= 6 && level.nml_timer < 15 ) //2 minutes
-	{
-		level.nml_dog_health = 800;
-	}
-	else if( level.nml_timer >= 15 && level.nml_timer < 30 ) // 5 minutes
-	{
-		level.nml_dog_health = 1200;
-	}
-	else if(level.nml_timer >= 30)//10 minutes or more
-	{
-		level.nml_dog_health = 1600;
-	}
+	//Reimagined-Expanded, dog health as percent of normal zombie health
+	level.dog_health = int( level.zombie_health * level.VALUE_ZOMBIE_DOG_HEALTH_PORTION  );
+	level.nml_dog_health = level.dog_health;
 }
 
 nml_shouldSideStep()
