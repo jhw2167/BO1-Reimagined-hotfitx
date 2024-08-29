@@ -250,6 +250,9 @@ zombie_spawn_init( animname_set )
 	self.marked_for_freeze=false;
 	self.marked_for_tesla=false;
 	self.marked_for_poison=false;
+	self.burned = false;
+	self.knockdown = false;
+	self.is_water = false;
 	self.widows_posion_bullet_count = 0;
 
 	if(self.animname == "zombie" ) 

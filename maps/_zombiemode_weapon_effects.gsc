@@ -394,23 +394,36 @@ bonus_fire_damage( zomb , player, radius, time)
 	if( !isDefined( radius ) )
 		radius = 0;
 
-	if( !isDefined( self ) || !IsAlive( self ) || is_true( self.in_water )) {
+	if( !isDefined( self ) 
+		|| !IsAlive( self ) 
+		|| self.animname == "zombie_dog"
+		|| is_true( self.burned )
+		) {
 		//Dead or in water
 		return;
 	}
 
+	if( is_true( self.in_water ) )
+	{
+		self.burned = false;
+		return;
+	}
+
 	//Set zomb on fire
+	self.burned = true;
 	PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
 	PlayFxOnTag( level._effect["character_fire_death_torso"], self, "J_SpineLower" );
-	self.burned = true;
 	self playsound("evt_zombie_ignite");
 	
 	//Wait for guy to die
 	self thread delayed_bonus_fire_damage( player );
 
 	origin = self.origin;
-	while( !IsDefined( self ) || !IsAlive( self ) ) {	
+	while( IsAlive( self ) ) 
+	{	
 		origin = self.origin;
+		if( !IsDefined( self ) )
+			return;
 		wait(0.1);
 	}
 	
@@ -448,11 +461,19 @@ bonus_fire_damage( zomb , player, radius, time)
 
 delayed_bonus_fire_damage( player )
 {
-	wait(2);
-	
-	if( !is_true( self.in_water ) ) {
-		self DoDamage( self.maxHealth + 1000, self.origin, player );
+	time=0;
+	inc = level.THRESHOLD_HELLFIRE_KILL_TIME / 16;
+	while( time < level.THRESHOLD_HELLFIRE_KILL_TIME )
+	{
+		if( !IsDefined( self ) || !IsAlive( self ) || is_true( self.in_water ) )
+			return;
+			
+		self DoDamage( int( self.maxHealth / 16 ), self.origin );	
+		time+=inc;
+		wait(inc);
 	}
+	
+	self DoDamage( self.maxHealth + 1000, self.origin, player );	
 }
 
 

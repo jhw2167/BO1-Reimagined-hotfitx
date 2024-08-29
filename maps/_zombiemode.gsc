@@ -67,6 +67,7 @@ main()
 	setApocalypseOptions();
 
 	//for tracking stats
+	level.zombie_health = 150;
 	level.zombies_timeout_spawn = 0;
 	level.zombies_timeout_playspace = 0;
 	level.zombies_timeout_undamaged = 0;
@@ -840,8 +841,9 @@ reimagined_init_level()
 	//Bullet Effects
 	level.VALUE_PAP_WEAPON_BONUS_DAMAGE = 1.2;
 
-	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2",
-				 "psg1_upgraded_zm", "l96a1_upgraded_zm", "psg1_zm", "l96a1_zm" );
+	level.ARRAY_VALID_SNIPERS = array("psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2", "dragunov_upgraded_zm_x2",
+				 			"psg1_upgraded_zm", "l96a1_upgraded_zm", "dragunov_upgraded_zm",
+							 "psg1_zm", "l96a1_zm", "dragunov_zm" );
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
 	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
@@ -868,9 +870,10 @@ reimagined_init_level()
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2",
 							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
-	level.THRESHOLD_HELLFIRE_TIME = 1.6;	//Player holds trigger for 1.6 seconds to activate Hellfire
+	level.THRESHOLD_HELLFIRE_TIME = 1.8;		//Player holds trigger for 1.6 seconds to activate Hellfire
+	level.THRESHOLD_HELLFIRE_KILL_TIME = 4;		//Hellfire kills in 4 seconds
 	level.VALUE_HELLFIRE_RANGE = 20;
-	level.VALUE_HELLFIRE_TIME = 1.2;		//Hellfire lasts while on the ground
+	level.VALUE_HELLFIRE_TIME = 1.2;			//Hellfire lasts while on the ground
 
 	level.ARRAY_POISON_WEAPONS = array();	//Uzi added dynamically
 
@@ -1294,7 +1297,7 @@ wait_set_player_visionset()
 
 	if( is_true( level.dev_only ) )
 	{
-
+		//GIVE PERKS
 		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
@@ -1784,6 +1787,11 @@ watch_player_shotgun_attrition()
 	- Uzizi_x2 - has elemental effects, no action here
 	- spas_x2  - each time player reloads, they get a new elemental bonus
 	- spectre_x2 - When less than 6 zombies around, player gets x2 damage boost, less than 3, x4
+	- mk_aug - always electric
+	- asp_x2 - triggers nuke
+	- dragunov_x2 - hellfire on hit
+	- ak47 ft - hellfire on hit
+	- sabertooth - george runs away from player
 */
 
 watch_player_weapon_special_bonuses()
@@ -1827,15 +1835,44 @@ watch_player_weapon_special_bonuses()
 				break;
 
 			case "dragunov_upgraded_zm_x2":
-				self watch_dragunov_x2();
+				iprintln( "Watch hellfire: " + weapon );
+				self watch_dragunov_ak47_x2();
 				self.bullet_hellfire = false;
 				break;
+
+			case "sabertooth_upgraded_zm":
+				//self watch_sabertooth();
+				break;
 		}
+
+		if( is_in_array( level.ARRAY_VALID_SNIPERS, weapon) )
+			self watch_global_sniper_damage();
 		
 		wait(0.5);
 	}
 
 }
+
+		/*
+			- Whenever a sniper is fired, 10 dmg is done to all zombies on the map
+		*/
+		watch_global_sniper_damage()
+		{
+			self endon("weapon_switch");
+
+			wep = self GetCurrentWeapon();
+			while(1)
+			{
+				self waittill("weapon_fired");
+				iprintln( "Sniper Fired: " + wep );
+				zombies = getZombiesInRange( 99999 );
+				for(i=0;i<zombies.size;i++) {
+					zombies[i] DoDamage( 10, zombies[i].origin );
+				}
+			}
+		}
+
+
 		/*
 			- While stock ammo is less than max ammo, regenerate ammo each 0.25 seconds
 			- base rate is 25% chance of 1 ammo each tick
@@ -1952,6 +1989,7 @@ watch_player_weapon_special_bonuses()
 
 
 
+
 		/*
 			- Wraith up to 4x damage bonus on isolated zombies
 
@@ -2008,12 +2046,13 @@ watch_player_weapon_special_bonuses()
 
 		/*
 			- Dragunov gets permanent hellfire
+			- AK47 underbarrel gets permanent hellfire
 		*/
-		watch_dragunov_x2()
+		watch_dragunov_ak47_x2()
 		{
 			self endon("weapon_switch_complete");
 
-			wep = "dragunov_upgraded_zm_x2";	//x2 weapon file doesnt actually exist
+			
 			while(1)
 			{
 				self.bullet_hellfire = true;
@@ -8594,8 +8633,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		meansofdeath = "MOD_MELEE";
 	}
 
-	iprintln("Weapon damaging: " + weapon);
-	iprintln("Health: " + self.maxhealth);
+	//iprintln("Weapon damaging: " + weapon);
+	//iprintln("Health: " + self.maxhealth);
 	//iprintln( "dw weap: " + WeaponDualWieldWeaponName( weapon ) );
 	
 	// WW (8/14/10) - define the owner of the monkey shot
@@ -9499,7 +9538,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		// Isolate Bonus damage Weapons
 		//  case "spectre_upgraded_zm_x2":
 		if( attacker.bullet_isolate ) {
-			iprintln("Isolate Damage");
+			//iprintln("Isolate Damage");
 			final_damage *= 2;
 		}
 
@@ -9513,11 +9552,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( (attacker.bullet_hellfire || weapon == "rottweil72_upgraded_zm") && !is_true( self.in_water ) ) 
 		{
-			iprintln("Hellfire Damage");
+			//iprintln("Hellfire Damage");
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
 			} else
 			{
+				radius=level.VALUE_HELLFIRE_RANGE;
+				time=level.VALUE_HELLFIRE_TIME;
+				if(attacker hasProPerk(level.PHD_PRO)) {
+					radius*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_RANGE_SCALE;
+					time*=level.VALUE_PHD_PRO_HELLFIRE_BONUS_TIME_SCALE;
+				}
 				self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
 														//zomb, player, radius, time
 			}
@@ -9531,7 +9576,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( attacker.bullet_sheercold )
 			//&& is_in_array(level.ARRAY_SHEERCOLD_WEAPONS, weapon) ) 
 		{	
-			iprintln("SheerCold Damage");
+			//iprintln("SheerCold Damage");
 			if(is_boss_zombie(self.animname))
 			{	//just double damage
 			} else if( !IsDefined(self.marked_for_freeze) || !self.marked_for_freeze ) 
@@ -9569,7 +9614,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		 
 		if(attacker.bullet_electric && ! is_true( self.marked_for_tesla ) ) 
 		{
-			iprintln("Electric Damage");
+			//iprintln("Electric Damage");
 			if(is_boss_zombie(self.animname)) { 
 			//nothing
 			} else 
@@ -9635,6 +9680,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			//Snipers
 			case "psg1_upgraded_zm_x2":
 			case "l96a1_upgraded_zm_x2":
+			case "dragunov_upgraded_zm_x2":
 				final_damage = int(final_damage * 2); //big damage
 				if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
 					final_damage = int(final_damage * 5); //big damage
@@ -9757,10 +9803,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 			//Zombie knockdown
 			if( final_damage >= self.health ) {
-			return int( final_damage );
+				//no knockdown
 			}
-
-			if( final_damage > int(self.maxhealth / 4) && (self.health > self.max_health / 2) ) {
+			else if( IsSubStr(weapon, "dragunov") ) {
+				//no knockdown
+			}
+			else if( final_damage > int(self.maxhealth / 4) && (self.health > self.max_health / 2) ) {
 				self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME, false );
 			}			
 		}
@@ -9867,11 +9915,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	///*
 	
 	//Reimagined-Expanded Hellfire spreads more hellfire
-	if(meansOfDeath=="hellfire" ) 
+	if(meansOfDeath=="hellfire" || weapon == "ft_ak47_upgraded_zm" ) 
 	{
+		iprintln("1");
+		self.in_water = false;
+		if( is_true( self.burned ) || is_true( self.in_water ) )
+			return 10;
+
+		iprintln("2");
 		if( is_boss_zombie(self.animname) ) {
 			return 1000;
 		}
+
+		iprintln("3");
 
 		radius=level.VALUE_HELLFIRE_RANGE;
 		time=level.VALUE_HELLFIRE_TIME;
@@ -9881,8 +9937,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, radius, time);
-		wait(1);
-		return self.maxhealth + 1000; // should always kill 
+		final_damage = 10;
+		iprintln("4");
 	}
 	
 	//Reimagined-Expanded, can china-lake be upgraded??
