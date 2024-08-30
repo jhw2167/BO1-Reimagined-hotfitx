@@ -382,7 +382,7 @@ coast_director_reenter_level()
 //--------------------------------------------------------------
 // director leaves through the water
 //--------------------------------------------------------------
-coast_director_exit_level( exit, calm )
+coast_director_exit_level( exit, calm, partialExit )
 {
 	self endon( "death" );
 	self endon( "stop_exit" );
@@ -406,6 +406,9 @@ coast_director_exit_level( exit, calm )
 	self.goalradius = 32;
 	self SetGoalPos( exit.origin );
 	self waittill( "goal" );
+	if( is_true( partialExit ) )
+		return;
+		
 	wait( 0.5 );
 
 	self OrientMode( "face angle", exit.angles[1] );

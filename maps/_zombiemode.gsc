@@ -48,14 +48,14 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=2;	///
-	level.starting_round_override=32;	///
+	level.zombie_ai_limit_override=1;	///allowed on map
+	level.starting_round_override=1;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=2;	///
+	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.dev_only=true;					///*/
@@ -1217,7 +1217,7 @@ watch_player_utility()
 	dev_only = true;
 	while(1)
 	{
-		if( self buttonPressed("f")  && dev_only)
+		if( self buttonPressed("g")  && dev_only)
 		{
 			self kill_all_utility();
 		}
@@ -1313,6 +1313,21 @@ wait_set_player_visionset()
 
 		//give knife_ballistic_upgraded_zm_x2
 	}
+	//self.ignoreme = true;
+
+	/*
+	/give sabertooth_zm
+	/give famas_upgraded_zm
+	/give m60_upgraded_zm
+	/give enfield_zm
+	/give uzi_upgraded_zm
+	/give ks23_zm
+	/give psg1_zm
+	/give knife_ballistic_upgraded_zm
+	/give stoner_zm
+	//DO G11
+
+	*/
 	
 	wait( 5 );
 	
@@ -1599,7 +1614,7 @@ watch_player_electric()
 		weapon = self get_upgraded_weapon_string( og_weapon );
 		if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon) )
 		{
-			iprintln( "Current weap: " + og_weapon  );
+			//iprintln( "Current weap: " + og_weapon  );
 			self watch_electric_trigger( og_weapon );
 		}
 		resp = self waittill_any_return( "weapon_switch_complete", "reload" );
@@ -1631,7 +1646,7 @@ watch_player_electric()
 				self.bullet_electric = true;
 			}
 				
-			//iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
+			iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
 			wait(0.5);
 		}
 
@@ -1845,7 +1860,6 @@ watch_player_weapon_special_bonuses()
 			case "sabertooth_upgraded_zm":
 			case "sabertooth_upgraded_zm_x2":
 			//if the map is zombie coast
-			iprintln( "1: " );
 			if( level.mapname == "zombie_coast" )
 				self watch_sabertooth();
 				break;
@@ -2072,7 +2086,7 @@ watch_player_weapon_special_bonuses()
 		{
 			self endon("weapon_switch");
 			wep = "sabertooth_upgraded_zm";	//x2 weapon file doesnt actually exist
-			iprintln( "2: " );
+			//iprintln( "2: " );
 
 			if( !isDefined( level.director_zombie ) )
 				return;
@@ -2080,25 +2094,24 @@ watch_player_weapon_special_bonuses()
 			//Check director failsages
 			zomb = level.director_zombie;
 
-			iprintln( "3: " );
+			//iprintln( "3: " );
 			while(1)
 			{
 				self waittill("weapon_fired");
 
 				if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
 			 		is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
-			 		is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) || is_true( zomb.water_scream ) 
+			 		is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) ||
+					 is_true( zomb.water_scream )  || is_true( zomb.ground_hit ) || is_true( zomb.solo_last_stand )
 				  )
 				return;
 
-				iprintln( "4: " );
+				//iprintln( "4: " );
 				if( checkDist( self.origin, zomb.origin, 512 ) )
 				{
-					iprintln( "5: " );
-					zomb.ignoreall = true;
+					//iprintln( "5: " );
 					zomb maps\_zombiemode_ai_director::director_run_to_exit( self );
-					zomb.ignoreall = false;
-					wait(12);
+					wait(1);
 					break;
 				}
 					

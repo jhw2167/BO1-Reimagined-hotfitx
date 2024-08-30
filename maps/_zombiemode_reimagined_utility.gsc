@@ -551,6 +551,12 @@ REFERENCE          	PYTHON_UPGRADED_X2
 LANG_ENGLISH        "Cobra's Frenzy"
 
 
+REFERENCE          	STONER63_UPGRADED
+LANG_ENGLISH       	"Stoned69"
+
+REFERENCE          	STONER63_UPGRADED_x2
+LANG_ENGLISH       	"He Who is Without Sin"
+
 REFERENCE          	HK21_UPGRADED_X2
 LANG_ENGLISH        "H115 Oscillator"
 
@@ -794,6 +800,10 @@ getWeaponUiName( weapon )
 
 		case "m60_upgraded_zm_x2":
 			wepName = "Big Daddy";
+		break;
+
+		case "stoner63_upgraded_zm_x2":
+			wepName = "He Who is Without Sin";
 		break;
 
 		case "psg1_upgraded_zm_x2":

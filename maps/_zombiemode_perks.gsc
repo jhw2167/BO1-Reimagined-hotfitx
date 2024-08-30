@@ -5489,7 +5489,7 @@ init_vulture()
 				}
 
 			} //End Players FOR
-			wait 0.1;
+			wait(0.1);
 			//wait 2;
 		}
 		//END WHILE

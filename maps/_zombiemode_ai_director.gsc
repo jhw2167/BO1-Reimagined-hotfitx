@@ -889,51 +889,91 @@ director_watch_damage()
 */
 director_run_to_exit( sourcePlayer, fake_exit )
 {
-	self endon( "death" );
-	self endon( "zombie_start_traverse" );
+	//self endon( "death" );
+	//self endon( "zombie_start_traverse" );
 
-	// get the exit point
+	
+	// get the distance from the source to the exit
+	MAX_TRIES = 5;
+	try = 0;
 	exit = self [[ level.director_find_exit ]]();
+	while ( checkDist( sourcePlayer.origin, exit.origin, 512 ) && try < MAX_TRIES )
+	{
+		exit = self [[ level.director_find_exit ]]();
+		try++;
+	}
 
 	if( isDefined( fake_exit ) )
 		exit = fake_exit;
 
-	iprintln( "exit = " + exit );
-	if( !isDefined( exit ) )
+	if( try >= MAX_TRIES || !isDefined( exit ) ) {
+		iprintln( "failed to find exit" );
 		return;
-
-	
-	//Directory Prep for special goal
-	self notify( "disable_activation" );
-	self notify( "disable_buff" );
-	self notify( "director_run_change" );
-
-	self notify( "stop_find_flesh" );
-	self notify( "zombie_acquire_enemy" );
-
-
-	// get the distance from the source to the exit
-	MAX_TRIES = 5;
-	try = 0;
-	while ( checkDist( sourcePlayer.origin, exit, 512 ) && try < MAX_TRIES )
-	{
-		exit = sourcePlayer [[ level.director_find_exit ]]();
-		try++;
 	}
 
-	// run to the exit
-	iprintln( "running to exit" );
+	//Prepare for Exit
+	iprintln( "running to exit 1" );
+
+	self notify( "disable_activation" );
+
+	//self notify( "stop_find_flesh" );
+	//self notify( "zombie_acquire_enemy" );
+
+	activatedBefore = self.is_activated;
+	self notify( "director_calmed" );
+	self.is_activated = true;	//Makes george run to the exit
+
+	director_transition
+	self notify( "director_run_change" );
+	
+	self.ignoreall = true;
+
 	self.fake_exit = exit;
-	self thread [[ level.director_exit_level ]]( exit, false );
+	self.exit = exit;
+	
+	//HERE
+	self.goalradius = 32;
+	self SetGoalPos( exit.origin );
+	self waittill_any_or_timeout(  1, "goal" );
+	//self thread [[ level.director_exit_level ]]( exit, false, true );
+	//coast_director_exit_level
+
+	self.ignoreall = false;
+	self.on_break = undefined;
+	self.ignore_transition = undefined;
+	self.exit = undefined;
+	self.fake_exit = undefined;
+	self.following_player = false;
+
+	self.is_activated = activatedBefore;	//George walks again if he was peacful before
+	self notify( "director_run_change" );
+	
+	self thread director_zombie_check_for_activation();
+
+	iprintln( "6" );
+	if( true )
+		return;
+
+	// run to the exit
+	iprintln( "running to exit 2" );
+
+	self.calm = true;
+	self.activated = false;
+
 
 	//When he arrives, stop exit sequence
+	self.ignoreall = true;
+	self.goalradius = 92;
+	self SetGoalPos( exit.origin );
+	iprintln( "4. Waiting for goal" );
 	self waittill( "goal" );
-	self notify( "stop_exit" );
-	iprintln( "STOP exit" );
+	iprintln( "5. STOP exit" );
 
-	wait(3);
-	self.ignore_transition = undefined;
+	wait(0.1);
 	self.following_player = false;
+	self.ignore_transition = undefined;
+	self.on_break = undefined;
+	self.ignoreall = false;
 
 	/*
 
@@ -944,11 +984,19 @@ director_run_to_exit( sourcePlayer, fake_exit )
 
 	*/
 
+	iprintln( "6. running to exit" );
+
 }
 
 	checkDist( point1, point2, threshold )
 	{
 		return maps\_zombiemode::checkDist( point1, point2, threshold );
+	}
+
+	wait_for_goal()
+	{
+		self waittill( "goal" );
+		iprintln( "goal reached" );
 	}
 
 
@@ -1132,34 +1180,42 @@ director_zombie_update()
 	{
 		if ( is_true( self.custom_think ) )
 		{
+			iprintln( "1" );
 			wait_network_frame();
 			continue;
 		}
 		else if ( is_true( self.defeated ) )
 		{
+			iprintln( "2" );
 			wait( 5 );
 			continue;
 		}
 		else if ( is_true( self.performing_activation ) )
 		{
+			iprintln( "3" );
 			wait_network_frame();
 			continue;
 		}
 		else if ( is_true( self.ground_hit ) )
 		{
+			iprintln( "4" );
 			wait_network_frame();
 			continue;
 		}
 		else if ( is_true( self.solo_last_stand ) )
 		{
+			iprintln( "5" );
 			wait_network_frame();
 			continue;
 		}
 		else if ( !is_true( self.following_player ) )
 		{
+			iprintln( "6 - GOOD" );
 			self thread maps\_zombiemode_spawner::find_flesh();
 			self.following_player = true;
 		}
+
+		iprintln( "7" );
 		wait( 1 );
 	}
 }
