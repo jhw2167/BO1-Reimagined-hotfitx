@@ -1071,6 +1071,33 @@ adjust( editing, adj )
 	###############################
 */
 
+//Get next index in array
+get_next_index( pos, dir, size )
+{
+	if( dir > 0)
+	{
+		while( dir > 0)
+		{
+			pos++;
+			if( pos >= size )
+				pos = 0;
+			dir--;
+		}
+		
+	}
+	else
+	{
+		while( dir < 0)
+		{
+			pos--;
+			if( pos < 0 )
+				pos = size - 1;
+			dir++;
+		}
+	}
+
+	return pos;
+}
 
 /*
 wait_print( msg, data )

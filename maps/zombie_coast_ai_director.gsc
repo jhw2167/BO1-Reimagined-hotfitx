@@ -148,6 +148,10 @@ coast_director_entered_water( trigger )
 {
 	self endon( "death" );
 
+	if( IsDefined( self.pointIndexToRunTo ))
+		return;
+
+	iprintln( "coast_director_entered_water" );
 	self.water_trigger = trigger;
 
 	if ( is_true( self.is_sliding ) )
@@ -164,6 +168,10 @@ coast_director_exited_water()
 {
 	self endon( "death" );
 
+	if( IsDefined( self.pointIndexToRunTo ))
+		return;
+
+	iprintln( "coast_director_entered_water" );
 	if ( !is_true( self.defeated ) )
 	{
 		self thread maps\_zombiemode_ai_director::director_zombie_check_for_activation();
@@ -408,7 +416,7 @@ coast_director_exit_level( exit, calm, partialExit )
 	self waittill( "goal" );
 	if( is_true( partialExit ) )
 		return;
-		
+
 	wait( 0.5 );
 
 	self OrientMode( "face angle", exit.angles[1] );

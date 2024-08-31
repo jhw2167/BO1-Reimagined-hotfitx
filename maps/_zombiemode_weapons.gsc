@@ -1169,6 +1169,10 @@ has_weapon_or_upgrade( weaponname )
 	{
 		upgradedweaponname = level.zombie_weapons[weaponname].upgrade_name;
 	}
+	else
+	{
+		
+	}
 
 	has_weapon = false;
 	// If the weapon you're checking doesn't exist, it will return undefined
@@ -2727,6 +2731,21 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 			if( keys[i] == base_wep )
 				continue;
 		}
+
+
+		// Filter out saberooth_zm if any player has it
+		if( keys[i] == "saberooth_zm" )
+		{
+			players = get_players();
+			for( j = 0; j < players.size; j++ )
+			{
+				if( players[j] has_weapon_or_upgrade( "saberooth_zm" ) )
+				{
+					continue;
+				}
+			}
+		}
+
 
 		filtered[filtered.size] = keys[i];
 

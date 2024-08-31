@@ -2,6 +2,7 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 #include animscripts\zombie_Utility;
+#include maps\_zombiemode_reimagined_utility;
 
 #using_animtree( "generic_human" );
 
@@ -887,104 +888,290 @@ director_watch_damage()
 		source - the point the director is running away from
 
 */
-director_run_to_exit( sourcePlayer, fake_exit )
+director_run_to_exit( sourcePlayer )
 {
-	//self endon( "death" );
-	//self endon( "zombie_start_traverse" );
+	self endon( "death" );
+	self endon( "zombie_start_traverse" );
 
-	
-	// get the distance from the source to the exit
-	MAX_TRIES = 5;
-	try = 0;
-	exit = self [[ level.director_find_exit ]]();
-	while ( checkDist( sourcePlayer.origin, exit.origin, 512 ) && try < MAX_TRIES )
-	{
-		exit = self [[ level.director_find_exit ]]();
-		try++;
-	}
-
-	if( isDefined( fake_exit ) )
-		exit = fake_exit;
-
-	if( try >= MAX_TRIES || !isDefined( exit ) ) {
-		iprintln( "failed to find exit" );
-		return;
-	}
-
-	//Prepare for Exit
-	iprintln( "running to exit 1" );
-
-	self notify( "disable_activation" );
-
-	//self notify( "stop_find_flesh" );
-	//self notify( "zombie_acquire_enemy" );
-
-	activatedBefore = self.is_activated;
-	self notify( "director_calmed" );
-	self.is_activated = true;	//Makes george run to the exit
-
-	director_transition
-	self notify( "director_run_change" );
-	
-	self.ignoreall = true;
-
-	self.fake_exit = exit;
-	self.exit = exit;
-	
-	//HERE
-	self.goalradius = 32;
-	self SetGoalPos( exit.origin );
-	self waittill_any_or_timeout(  1, "goal" );
-	//self thread [[ level.director_exit_level ]]( exit, false, true );
-	//coast_director_exit_level
-
-	self.ignoreall = false;
-	self.on_break = undefined;
-	self.ignore_transition = undefined;
-	self.exit = undefined;
-	self.fake_exit = undefined;
-	self.following_player = false;
-
-	self.is_activated = activatedBefore;	//George walks again if he was peacful before
-	self notify( "director_run_change" );
-	
-	self thread director_zombie_check_for_activation();
-
-	iprintln( "6" );
-	if( true )
-		return;
-
-	// run to the exit
-	iprintln( "running to exit 2" );
-
-	self.calm = true;
-	self.activated = false;
+	self notify( "keep_running" );
+	/*
+	-2279, -63,  32
+ 	– 1254, -303, 34. 
+	-1928, 837, 61
+	*/
 
 
-	//When he arrives, stop exit sequence
-	self.ignoreall = true;
-	self.goalradius = 92;
-	self SetGoalPos( exit.origin );
-	iprintln( "4. Waiting for goal" );
-	self waittill( "goal" );
-	iprintln( "5. STOP exit" );
+	self.george_points = array( 
+		//Spawn
+		//(-2162, 1219, 24), 
+		//(-1308, 1039, -23), 
+		//(-1424, 98, -23), 
+		//(-2173, -19, 57),
 
-	wait(0.1);
-	self.following_player = false;
-	self.ignore_transition = undefined;
-	self.on_break = undefined;
-	self.ignoreall = false;
+		//Spawn
+		(-1928, 837, 61), //land
+		(-2596, 488, 8), //land
+		(-1492, 695, -10), //water
+		(-1254, 303, 0), //Island
+		(-2279, -63, 32) //Gate
+		
+
+		);
+		
 
 	/*
 
-	if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
-			 		is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
-			 		is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) || is_true( zomb.water_scream ) 
-				  )
+		1. If player gets close to George with chainsaw, he runs to a point
+		- Determine index of point closest to player
+		- Determine index of 2 closest points to George
+		- Determine which point is furthest from player
+		- Save this point
+		- Calculate "direction" as 1 if George's point has a higher index than Players, -1 otherwise
+		- If George is already too close to this point, move to point + dir
 
-	*/
+	2. If self.lastPointIndex - George's last point is defined, lets run him to the next point
+		- calculated next point as index = self.lastPointIndex + self.runDir
+		- run george to this point, return
 
-	iprintln( "6. running to exit" );
+
+		*/
+	
+	iprintln( "1: Entry" );
+
+		if ( self.is_activated ) {
+			iprintln( "2: angry");
+			return;
+		}
+	//Get Index of Last point
+	if( !IsDefined( self.pointIndexToRunTo ) )
+	{
+			
+		closestPointToPlayerIndex = 0;
+		closestDist = Distance( sourcePlayer.origin, self.george_points[0] );
+		for( i = 1; i < self.george_points.size; i++ )
+		{
+			dist = Distance( sourcePlayer.origin, self.george_points[i] );
+			if( dist < closestDist  )
+			{
+				closestDist = dist;
+				closestPointToPlayerIndex = i;
+			}
+		}
+
+		//Find second closest point to player too
+		closestPointToPlayerIndex2 = 1;
+		closestDist = Distance( sourcePlayer.origin, self.george_points[1] );
+		for( i = 0; i < self.george_points.size; i++ )
+		{
+			dist = Distance( sourcePlayer.origin, self.george_points[i] );
+			if( dist < closestDist && i != closestPointToPlayerIndex )
+			{
+				closestDist = dist;
+				closestPointToPlayerIndex2 = i;
+			}
+		}
+
+		//Print resulting indexes
+		//iprintln( "Dist1: " + closestPointToPlayerIndex);
+		////iprintln( "Dist2: " + closestPointToPlayerIndex2);
+
+		//1c. Determine index of 2 closest points to George
+
+		//remove the two closest points to player from geoerge_points
+
+		valid_points = array();
+		DEF_POINT = (9999, 9999, 9999);
+		for( i = 0; i < self.george_points.size; i++ )
+		{
+			georgeDist = Distance( self.origin, self.george_points[i] );
+			playerDist = Distance( sourcePlayer.origin, self.george_points[i] );
+			if( i == closestPointToPlayerIndex 
+			 //|| i == closestPointToPlayerIndex2 
+			 || playerDist < georgeDist			//player cannot be closer to the point than George!!
+				)
+			{
+				//iprintln( "Removing " + i );
+				valid_points[i] = DEF_POINT;
+			}
+			else
+			{	//iprintln( "Keeping " + i );
+				//iprintln( self.george_points[i] );
+				valid_points[i] = self.george_points[i];
+			}
+		}
+
+		//Print resulting indexes
+		for( i = 0; i < valid_points.size; i++ )
+		{
+			//iprintln( "George Point " + i );
+			//iprintln( valid_points[i] + ( 0, 0, i) );
+		}
+
+		closestPointsToGeorgeIndex = array();
+		closestDist = Distance( self.origin, valid_points[0] );
+		for( i = 1; i < valid_points.size; i++ )
+		{
+			if( valid_points[i] == DEF_POINT )
+				continue;
+
+			dist = Distance( self.origin, valid_points[i] );
+			//iprintln( "Dist 1" + i + " " + dist );
+			if( dist < closestDist )
+			{
+				//iprintln( "New Closest 1" + i );
+				closestDist = dist;
+				closestPointsToGeorgeIndex[0] = i;
+			}
+		}
+
+		startIndex = 0;
+		if( closestPointsToGeorgeIndex[0] == 0 )
+			startIndex = 1;
+		closestDist = Distance( self.origin, valid_points[startIndex] );
+		closestPointsToGeorgeIndex[1] = startIndex;
+		for( i = 0; i < valid_points.size; i++ )
+		{
+			if(  valid_points[i] == DEF_POINT )
+				continue;
+
+			dist = Distance( self.origin, valid_points[i] );
+			//iprintln( "Dist 2" + i + " " + dist );
+			if( dist < closestDist && i != closestPointsToGeorgeIndex[0] )
+			{
+				//iprintln( "New Closest 2" + i );
+				closestDist = dist;
+				closestPointsToGeorgeIndex[1] = i;
+			}
+		}
+
+		//Print resulting indexes
+		//iprintln( "Closest to George 1: " + closestPointsToGeorgeIndex[0]);
+		//iprintln( "Closest to George 2: " + closestPointsToGeorgeIndex[1]);
+
+		//1d. Determine which point is furthest from player
+		self.pointIndexToRunTo = closestPointsToGeorgeIndex[0];
+		playerDistPoint1 = Distance( sourcePlayer.origin, self.george_points[closestPointsToGeorgeIndex[0]] );
+		playerDistPoint2 = Distance( sourcePlayer.origin, self.george_points[closestPointsToGeorgeIndex[1]] );
+
+		if( playerDistPoint1 < playerDistPoint2 )
+			self.pointIndexToRunTo = closestPointsToGeorgeIndex[1];
+		
+
+		//1f. Calculate "direction" as 1 if George's point has a higher index than Players, -1 otherwise
+		dir = 1;
+		if( closestPointToPlayerIndex > self.pointIndexToRunTo )
+			dir = -1;
+		self.runDir = dir;
+
+		iprintln( "3: Dir " + dir );
+
+	}
+	else //If he's angry, return, but if he's still running from last time, keep running
+	{
+		dir = self.runDir;
+		idx = self.pointIndexToRunTo;
+		size = self.george_points.size;
+
+		if( randomint(4) == 0 )
+			dir = dir*2;
+
+		iprintln( "3b: Dir " + dir );
+		self.pointIndexToRunTo = get_next_index( idx, dir, size );
+	}
+
+	
+	//HERE1
+	THRESHOLD_TOO_CLOSE = 64;
+
+	//If George is too close to the point he's running to, move to the next point
+	targetPoint = self.george_points[self.pointIndexToRunTo];
+	if( checkDist( self.origin, targetPoint, THRESHOLD_TOO_CLOSE ) )
+	{
+		self.pointIndexToRunTo = get_next_index( self.pointIndexToRunTo, self.runDir, self.george_points.size );
+		targetPoint = self.george_points[self.pointIndexToRunTo];
+	}
+
+	iprintln( "4: Target " + self.pointIndexToRunTo  );
+	if( !IsDefined( self.pointIndexToRunTo ) )
+	{
+		iprintln( "4: No target " );
+		return;
+	}
+	
+	//2. MAKE GEORGE STOP FOLLOWING PLAYER
+	self notify( "stop_find_flesh" );
+	self notify( "zombie_acquire_enemy" );
+	iprintln( "running to exit 1 " );
+
+	//3. Make him run
+	//self notify( "director_calmed" );
+	self.is_activated = true;	//Makes george run to the exit
+	self notify( "director_run_change" );
+	
+	//4. Disable Activation
+	self notify( "disable_activation" );
+	self.ignoreall = true;
+	self.ignore_transition=true;
+	
+
+	iprintln( "5: Disabled stuff and ready to run " + self.pointIndexToRunTo );
+
+	//Run to Goal
+	while( 1 )
+	{
+		iprintln( "waiting for goal " );
+		self.goalradius = 32;
+		self SetGoalPos( targetPoint );
+		self thread time_goal( 5 );
+		self thread time_goal( 20 );
+		notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
+		iprintln( "goal reached " + notif ); 
+		
+		if( notif == "activated" )
+		{
+			self.pointIndexToRunTo = undefined;
+			break;
+		}
+		if( notif == "goal_interrupted" )
+		{
+			if( !IsDefined( self.pointIndexToRunTo ) )
+				break;	//George got mad
+
+			self notify( "stop_find_flesh" );
+			self notify( "zombie_acquire_enemy" );
+
+			self.is_activated = true;	//Makes george run to the exit
+			self notify( "director_run_change" );
+
+		}
+
+		//self waittill( "goal" );
+		self notify( "goal_timeout" );
+
+		weapon = sourcePlayer GetCurrentWeapon();
+		isScared = checkDist( self.origin, sourcePlayer.origin, 512 ) && IsSubStr( weapon, "sabertooth" );
+		isScared = false;
+
+		if( !isScared )
+			break;
+
+		dir = self.runDir;
+		if( randomint(4) == 0 )
+			dir = dir*2;
+
+		self.pointIndexToRunTo = get_next_index( self.pointIndexToRunTo, dir, self.george_points.size );
+		targetPoint = self.george_points[self.pointIndexToRunTo];
+	}
+
+	if( IsDefined( self.pointIndexToRunTo ) )
+	{
+		//7. Allow Activation again
+		self wait_make_peaceful();
+	}
+	else
+	{
+		self wait_return_normal();
+	}
 
 }
 
@@ -993,11 +1180,66 @@ director_run_to_exit( sourcePlayer, fake_exit )
 		return maps\_zombiemode::checkDist( point1, point2, threshold );
 	}
 
-	wait_for_goal()
+	set_goal( target, index )
 	{
+		self endon( "death" );
+		self endon( "goal_timeout" );
+
+		wait( 0.1 );
+		self thread time_goal( target );
+		iprintln( "inner goal started: " + index );
+		self SetGoalPos( target );
 		self waittill( "goal" );
-		iprintln( "goal reached" );
+		iprintln( "inner goal reached " + index );
 	}
+
+	time_goal( time )
+	{
+		self endon( "goal_timeout" );
+
+		wait( time );
+
+		self notify( "goal_interrupted" );
+		iprintln( "Long inturrupt " );
+		if( time > 15 )
+			self wait_return_normal();
+	}
+
+	wait_make_peaceful()
+	{
+		self endon( "keep_running" );
+
+		//HERE2
+		wait( 0.1 );
+		self director_calmed(undefined, true);
+		self.is_activated = false;	//George walks again if he was peaceful before
+		self director_transition("director_run_change");
+		//self thread director_zombie_check_for_activation();
+		iprintln( "Director peaceful " );
+
+		self.ignoreall = false;
+		self.ignore_transition=undefined;
+		self.pointIndexToRunTo = undefined;
+		self.runDir = undefined;
+		self.following_player = false;
+		iprintln( "Critical vars reset " );
+
+	}
+
+	wait_return_normal()
+	{
+		self endon( "keep_running" );
+
+		//HERE2
+		wait( 0.1 );
+		self.ignoreall = false;
+		self.ignore_transition=undefined;
+		self.pointIndexToRunTo = undefined;
+		self.runDir = undefined;
+		self.following_player = false;
+
+	}
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -1187,25 +1429,30 @@ director_zombie_update()
 		else if ( is_true( self.defeated ) )
 		{
 			iprintln( "2" );
+			self.pointIndexToRunTo = undefined;
 			wait( 5 );
 			continue;
 		}
 		else if ( is_true( self.performing_activation ) )
 		{
 			iprintln( "3" );
+			self notify( "activated" );
 			wait_network_frame();
+			self.pointIndexToRunTo = undefined;
 			continue;
 		}
 		else if ( is_true( self.ground_hit ) )
 		{
 			iprintln( "4" );
 			wait_network_frame();
+			self.pointIndexToRunTo = undefined;
 			continue;
 		}
 		else if ( is_true( self.solo_last_stand ) )
 		{
 			iprintln( "5" );
 			wait_network_frame();
+			self.pointIndexToRunTo = undefined;
 			continue;
 		}
 		else if ( !is_true( self.following_player ) )
@@ -1213,9 +1460,10 @@ director_zombie_update()
 			iprintln( "6 - GOOD" );
 			self thread maps\_zombiemode_spawner::find_flesh();
 			self.following_player = true;
+			self.pointIndexToRunTo = undefined;
 		}
 
-		iprintln( "7" );
+		//iprintln( "7" );
 		wait( 1 );
 	}
 }

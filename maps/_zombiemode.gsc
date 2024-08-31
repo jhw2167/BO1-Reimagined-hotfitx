@@ -2095,27 +2095,33 @@ watch_player_weapon_special_bonuses()
 			zomb = level.director_zombie;
 
 			//iprintln( "3: " );
+			wait(1);
 			while(1)
 			{
 				self waittill("weapon_fired");
+				//wait(0.01);
 
-				if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
-			 		is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
-			 		is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) ||
-					 is_true( zomb.water_scream )  || is_true( zomb.ground_hit ) || is_true( zomb.solo_last_stand )
-				  )
-				return;
+				if( !IsDefined( zomb.pointIndexToRunTo ) )
+				{	
+					if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
+						is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
+						is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) ||
+						is_true( zomb.water_scream )  || is_true( zomb.ground_hit ) || is_true( zomb.solo_last_stand )
+					)
+					continue;
+				}
 
-				//iprintln( "4: " );
-				if( checkDist( self.origin, zomb.origin, 512 ) )
+			
+				if( checkDist( self.origin, zomb.origin, 384 ) )
 				{
-					//iprintln( "5: " );
+					iprintln( "Triggered" );
 					zomb maps\_zombiemode_ai_director::director_run_to_exit( self );
 					wait(1);
-					break;
 				}
 					
 			}
+			//END WHILE
+
 		}
 
 
@@ -2138,6 +2144,12 @@ watch_player_perkslots()
 	}
 
 }
+/*
+	get_upgraded_weapon_string
+	ugrade_weapon_string
+	string_weapon_upgrade
+
+*/
 
 get_upgraded_weapon_string( weapon )
 {
@@ -9087,6 +9099,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		}
 		
+		if(is_boss_zombie(self.animname) )
+			baseDmg = baseDmg / 100;
 			
 		final_damage = baseDmg;
 		//iprintln("Final Damage 4: " + final_damage);
