@@ -1860,8 +1860,9 @@ watch_player_weapon_special_bonuses()
 			case "sabertooth_upgraded_zm":
 			case "sabertooth_upgraded_zm_x2":
 			//if the map is zombie coast
-			if( level.mapname == "zombie_coast" )
-				self watch_sabertooth();
+			if( level.mapname == "zombie_coast" ) {
+				 //self watch_sabertooth();
+			}
 				break;
 		}
 
@@ -2099,24 +2100,36 @@ watch_player_weapon_special_bonuses()
 			while(1)
 			{
 				self waittill("weapon_fired");
-				//wait(0.01);
+				wait(0.1);
 
 				if( !IsDefined( zomb.pointIndexToRunTo ) )
 				{	
 					if( is_true( zomb.performing_activation ) || is_true( zomb.finish_anim ) || is_true( zomb.on_break ) ||
 						is_true( zomb.is_traversing ) || is_true( zomb.nuke_react ) || is_true( zomb.leaving_level ) ||
 						is_true( zomb.entering_level ) || is_true( zomb.defeated ) || is_true( zomb.is_sliding ) ||
-						is_true( zomb.water_scream )  || is_true( zomb.ground_hit ) || is_true( zomb.solo_last_stand )
+						is_true( zomb.water_scream )  || is_true( zomb.ground_hit ) || is_true( zomb.solo_last_stand ) ||
+						is_true( zomb.is_angry ) || is_true( zomb.is_activated ) 
 					)
 					continue;
 				}
 
 			
-				if( checkDist( self.origin, zomb.origin, 384 ) )
+				if( checkDist( self.origin, zomb.origin, 512 ) )
 				{
+
 					iprintln( "Triggered" );
+
+					if( checkDist( self.origin, zomb.origin, 128 ) )
+					{
+						zomb.pointIndexToRunTo = undefined;
+						zomb notify( "director_aggro" );
+						continue;
+					}
+					
+
 					zomb maps\_zombiemode_ai_director::director_run_to_exit( self );
-					wait(1);
+					zomb.pointIndexToRunTo = undefined;
+					//wait(1);
 				}
 					
 			}
@@ -6081,7 +6094,7 @@ round_spawning()
 		else
 		{
 			ai = spawn_zombie( spawn_point );
-			wait 0.2;
+			wait(0.2);
 			if( IsDefined( ai ) && IsDefined( ai.animname) )
 			{
 				level.zombie_total--;

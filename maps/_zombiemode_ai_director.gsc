@@ -876,6 +876,10 @@ director_watch_damage()
 	self thread director_leave_map( exit, self.in_water );
 }
 
+
+
+
+
 /*
 	method: director_run_to_exit
 
@@ -891,7 +895,7 @@ director_watch_damage()
 director_run_to_exit( sourcePlayer )
 {
 	self endon( "death" );
-	self endon( "zombie_start_traverse" );
+	//self endon( "zombie_start_traverse" );
 
 	self notify( "keep_running" );
 	/*
@@ -908,16 +912,69 @@ director_run_to_exit( sourcePlayer )
 		//(-1424, 98, -23), 
 		//(-2173, -19, 57),
 
+		(-722, 393, 68),
 		//Spawn
 		(-1928, 837, 61), //land
 		(-2596, 488, 8), //land
 		(-1492, 695, -10), //water
 		(-1254, 303, 0), //Island
-		(-2279, -63, 32) //Gate
+		(-2279, -63, 32), //Gate
+
+		//Spawn->Boat
+		(-1882, -436, 107), //spawn-bend
+		(-1583, -858, 305), //boat-entry
+		(-1578, -1310, 319), //boat-deck
+
+		//Boat-Controls
+
+		(-1133, -1236, 501), //upper-deck
+		(-721, -601, 448), //upper-deck2
+		(-1181, -769, 616), //upper-deck
+
+		//Boat-Hull
+
+		//Boat-Hull-Door
+		(-836, -1548, 237),	//deck-stair
+		(-410, -1327, 388), //deck-stair2
+
+		//Boat-Hull-Top
+		(351, -1767, 289),
+		(770, -1205, 272),
+		(370, -871, 277),
+
+		//Boat-Hull-Bottom
+		(304, -1658, 93),
+		(-303, -1209, 80),		
+		(-1245, -321, 80)
+
+		//Boat-Bow
+
+		/*
+
+		*/
+
+		//Boat-Island
+
+		//LightHouse-F1
+
+		//LightHouse-F2
+
+		//LightHouse-F3
+
+		//Slide-Back Area
 		
 
 		);
-		
+
+		point_aliases = array(
+			"OffSpawn-Back",
+			"Land1",
+			"Land2",
+			"Water",
+			"Island",
+			"Gate"
+		);
+
 
 	/*
 
@@ -936,10 +993,10 @@ director_run_to_exit( sourcePlayer )
 
 		*/
 	
-	iprintln( "1: Entry" );
+	//iprintln( "1: Entry" );
 
 		if ( self.is_activated ) {
-			iprintln( "2: angry");
+			//iprintln( "2: angry");
 			return;
 		}
 	//Get Index of Last point
@@ -985,13 +1042,18 @@ director_run_to_exit( sourcePlayer )
 		{
 			georgeDist = Distance( self.origin, self.george_points[i] );
 			playerDist = Distance( sourcePlayer.origin, self.george_points[i] );
-			if( i == closestPointToPlayerIndex 
-			 //|| i == closestPointToPlayerIndex2 
-			 || playerDist < georgeDist			//player cannot be closer to the point than George!!
-				)
+			if( i == closestPointToPlayerIndex )
 			{
 				//iprintln( "Removing " + i );
 				valid_points[i] = DEF_POINT;
+			}
+			else if( playerDist < georgeDist ) {	//player cannot be closer to the point than George!!
+
+			}	
+			else if( !check_point_in_active_zone( self.george_points[i] ) ) {
+				iprintln( "Point not in active zone" + i );
+				valid_points[i] = DEF_POINT;
+
 			}
 			else
 			{	//iprintln( "Keeping " + i );
@@ -1109,7 +1171,7 @@ director_run_to_exit( sourcePlayer )
 	self notify( "director_run_change" );
 	
 	//4. Disable Activation
-	self notify( "disable_activation" );
+	//self notify( "disable_activation" );
 	self.ignoreall = true;
 	self.ignore_transition=true;
 	
@@ -1122,7 +1184,7 @@ director_run_to_exit( sourcePlayer )
 		iprintln( "waiting for goal " );
 		self.goalradius = 32;
 		self SetGoalPos( targetPoint );
-		self thread time_goal( 5 );
+		self thread time_goal( 10 );
 		self thread time_goal( 20 );
 		notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
 		iprintln( "goal reached " + notif ); 
@@ -1163,14 +1225,17 @@ director_run_to_exit( sourcePlayer )
 		targetPoint = self.george_points[self.pointIndexToRunTo];
 	}
 
+	iprintln("End of run");
 	if( IsDefined( self.pointIndexToRunTo ) )
 	{
 		//7. Allow Activation again
+		iprintln("Make peaceful");
 		self wait_make_peaceful();
 	}
 	else
 	{
-		self wait_return_normal();
+		iprintln("Make normal");
+		self wait_make_normal();
 	}
 
 }
@@ -1200,9 +1265,16 @@ director_run_to_exit( sourcePlayer )
 		wait( time );
 
 		self notify( "goal_interrupted" );
-		iprintln( "Long inturrupt " );
-		if( time > 15 )
-			self wait_return_normal();
+		if( time > 15 ) {
+			iprintln( "Long inturrupt " );
+			self wait_make_peaceful();
+		}
+			
+	}
+
+	make_angry_while_active()
+	{
+
 	}
 
 	wait_make_peaceful()
@@ -1226,7 +1298,7 @@ director_run_to_exit( sourcePlayer )
 
 	}
 
-	wait_return_normal()
+	wait_make_normal() //does not stop sprinting
 	{
 		self endon( "keep_running" );
 
@@ -1437,6 +1509,7 @@ director_zombie_update()
 		{
 			iprintln( "3" );
 			self notify( "activated" );
+			self notify( "keep_running" );
 			wait_network_frame();
 			self.pointIndexToRunTo = undefined;
 			continue;
@@ -1854,6 +1927,7 @@ director_zombie_check_for_activation()
 	self notify( "director_spawn_zombies" );
 
 	self.is_activated = true;
+	self.is_angry = true;
 
 	if ( is_true( self.is_traversing ) )
 	{
@@ -3239,6 +3313,7 @@ director_calmed( delay, humangun )
 		director_print( "director_calmed" );
 
 		self.is_activated = false;
+		self.is_angry = false;
 		self notify( "director_calmed" );
 
 		if ( is_true( humangun ) )

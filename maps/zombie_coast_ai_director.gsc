@@ -151,7 +151,7 @@ coast_director_entered_water( trigger )
 	if( IsDefined( self.pointIndexToRunTo ))
 		return;
 
-	iprintln( "coast_director_entered_water" );
+	//iprintln( "coast_director_entered_water" );
 	self.water_trigger = trigger;
 
 	if ( is_true( self.is_sliding ) )
@@ -171,7 +171,7 @@ coast_director_exited_water()
 	if( IsDefined( self.pointIndexToRunTo ))
 		return;
 
-	iprintln( "coast_director_entered_water" );
+	//iprintln( "coast_director_entered_water" );
 	if ( !is_true( self.defeated ) )
 	{
 		self thread maps\_zombiemode_ai_director::director_zombie_check_for_activation();
