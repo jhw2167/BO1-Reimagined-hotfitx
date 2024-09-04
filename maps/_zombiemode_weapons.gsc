@@ -4477,8 +4477,8 @@ init_includes()
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
-	include_weapon( "sabertooth_zm" );
-	include_weapon( "sabertooth_upgraded_zm", false );
+	//include_weapon( "sabertooth_zm" );
+	//include_weapon( "sabertooth_upgraded_zm", false );
 	include_weapon( "bo3_zm_widows_grenade", false );
 
 	//New weapons
@@ -4491,6 +4491,9 @@ init_includes()
  		register_tactical_grenade_for_level( "molotov_zm" );
  	}
 
+	include_weapon("knife_zm", false);
+	register_melee_weapon_for_level( "knife_zm" );
+
 	include_weapon( "vorkuta_knife_sp", false);
 	register_melee_weapon_for_level( "vorkuta_knife_sp" );
 
@@ -4502,13 +4505,13 @@ init_includes()
 
  	if(level.script == "zombie_cod5_factory" || level.script == "zombie_theater" || level.script == "zombie_pentagon" || level.script == "zombie_temple" || level.script == "zombie_moon")
  	{
- 		include_weapon("combat_bowie_knife_zm", false);
- 		register_melee_weapon_for_level( "combat_bowie_knife_zm" );
+ 		//include_weapon("combat_bowie_knife_zm", false);
+ 		//register_melee_weapon_for_level( "combat_bowie_knife_zm" );
  	}
  	else if(level.script == "zombie_cosmodrome" || level.script == "zombie_coast")
  	{
- 		include_weapon("combat_sickle_knife_zm", false);
- 		register_melee_weapon_for_level( "combat_sickle_knife_zm" );
+ 		//include_weapon("combat_sickle_knife_zm", false);
+ 		//register_melee_weapon_for_level( "combat_sickle_knife_zm" );
  	}
 }
 

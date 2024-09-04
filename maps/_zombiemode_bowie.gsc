@@ -4,7 +4,7 @@
 
 bowie_init()
 {
-	PrecacheItem( "zombie_bowie_flourish" );
+	//PrecacheItem( "zombie_bowie_flourish" );
 
 	if( isDefined( level.bowie_cost ) )
 	{
@@ -144,10 +144,10 @@ give_bowie()
 		self UnSetPerk("specialty_fastswitch");
 	}
 
-	gun = self do_bowie_flourish_begin();
+	//gun = self do_bowie_flourish_begin();
 	self maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "bowie" );
 
-	self waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
+	//self waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
 
 	if(self HasPerk("specialty_fastreload"))
 	{
@@ -155,7 +155,8 @@ give_bowie()
 	}
 
 	// restore player controls and movement
-	self do_bowie_flourish_end( gun );
+	//self do_bowie_flourish_end( gun );
+	self do_bowie_flourish_end( "none" );
 }
 
 do_bowie_flourish_begin()
@@ -244,6 +245,7 @@ do_bowie_flourish_end( gun )
 	{
 		gun = "none";
 	}
+	gun = "none";	//Reimagined-Expanded, no flourish, don't take any weapon from player
 
 	self TakeWeapon(weapon);
 	melee_wep = self get_player_melee_weapon();

@@ -51,14 +51,14 @@ main()
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
-	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
-	//level.dev_only=true;					///*/
+	level.dev_only=true;					///*/
 
 	// \give ppsh_upgraded_zm
 	// \give aug_acog_mk_upgraded_zm_x2
@@ -1485,6 +1485,7 @@ watch_player_button_press()
 		
 		}
 
+		iprintln( "Old Knife: " + old_knife + " New Knife: " + new_knife );
 		self TakeWeapon( old_knife );
 		self GiveWeapon( new_knife );
 
@@ -1497,6 +1498,13 @@ watch_player_button_press()
 
 		self.current_melee_weapon = new_knife;
 		self.offhand_melee_weapon = old_knife;
+
+		//Loop through all players weapons and print
+		weapons = self GetWeaponsList();
+		for(i=0;i<weapons.size;i++) {
+			iprintln( "Weapon: " + i + " - " + weapons[i] );
+		}
+
 
 		if( isDefined( primary_weapon ) )
 			self SwitchToWeapon( new_equipment );
@@ -2953,7 +2961,8 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
-	SetDvar( "scr_suppressErrors", "1" );
+	if( is_true(level.dev_only) )
+		SetDvar( "scr_suppressErrors", "1" );
 
 	SetDvar( "zm_mod_version", "2.1.0" );
 
