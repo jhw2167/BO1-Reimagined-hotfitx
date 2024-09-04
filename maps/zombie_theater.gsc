@@ -237,7 +237,6 @@ include_weapons()
 
 	//	Weapons - Special
 	include_weapon( "zombie_cymbal_monkey" );
-	include_weapon( "bo3_zm_widows_grenade" );
 	include_weapon( "ray_gun_zm" );
 	include_weapon( "ray_gun_upgraded_zm", false );
 

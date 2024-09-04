@@ -48,17 +48,17 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=1;	///
+	//level.zombie_ai_limit_override=1;	///allowed on map
+	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	level.zombie_timeout_override=1000;	///
+	//level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
-	level.dev_only=true;					///*/
+	//level.dev_only=true;					///*/
 
 	// \give ppsh_upgraded_zm
 	// \give aug_acog_mk_upgraded_zm_x2
@@ -1646,7 +1646,7 @@ watch_player_electric()
 				self.bullet_electric = true;
 			}
 				
-			iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
+			//iprintln( "Current ammo: " + self GetWeaponAmmoClip( weapon ) );
 			wait(0.5);
 		}
 
@@ -1885,7 +1885,6 @@ watch_player_weapon_special_bonuses()
 			while(1)
 			{
 				self waittill("weapon_fired");
-				iprintln( "Sniper Fired: " + wep );
 				zombies = getZombiesInRange( 99999 );
 				for(i=0;i<zombies.size;i++) {
 					zombies[i] DoDamage( 10, zombies[i].origin );
@@ -2001,9 +2000,9 @@ watch_player_weapon_special_bonuses()
 				return;
 			}
 				
-			self.bullet_electric = true;
 			while(1)
 			{
+				self.bullet_electric = true;
 				wait(0.1);
 			}
 		}
@@ -2954,8 +2953,9 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
+	SetDvar( "scr_suppressErrors", "1" );
 
-	SetDvar( "zm_mod_version", "2.0.0" );
+	SetDvar( "zm_mod_version", "2.1.0" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009

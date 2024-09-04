@@ -1165,20 +1165,29 @@ has_upgrade( weaponname )
 has_weapon_or_upgrade( weaponname )
 {
 	upgradedweaponname = weaponname;
+	x2weaponname = weaponname + "_x2";
 	if ( IsDefined( level.zombie_weapons[weaponname] ) && IsDefined( level.zombie_weapons[weaponname].upgrade_name ) )
 	{
 		upgradedweaponname = level.zombie_weapons[weaponname].upgrade_name;
 	}
-	else
+
+	if( IsSubStr( weaponname, "upgraded" ) )
 	{
-		
+		x2weaponname = weaponname + "_x2";
+	}
+	else if( IsSubStr( upgradedweaponname, "upgraded" ) )
+	{
+		x2weaponname = upgradedweaponname + "_x2";
 	}
 
 	has_weapon = false;
 	// If the weapon you're checking doesn't exist, it will return undefined
 	if( IsDefined( level.zombie_weapons[weaponname] ) )
 	{
-		has_weapon = self HasWeapon( weaponname ) || self has_upgrade( weaponname );
+		has_weapon = self HasWeapon( weaponname ) 
+		|| self has_upgrade( weaponname ) 
+		|| self HasWeapon( upgradedweaponname ) 
+		|| self HasWeapon( x2weaponname );
 	}
 
 	// double check for the bowie variant on the ballistic knife
@@ -2681,8 +2690,11 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 	filtered = [];
 	for( i = 0; i < keys.size; i++ )
 	{
+		//iprintln( "1" );
 		if( !is_true( get_is_in_box( keys[i] ) ) )
 		{
+			//iprintln( "2" );
+			//iprintln( keys[i] + " is not in the box" );
 			continue;
 		}
 
@@ -2692,16 +2704,19 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 			{
 				toggle_weapons_in_use++;
 			}
+			//iprintln( "3" );
 			continue;
 		}
 
 		if( !IsDefined( keys[i] ) )
 		{
+			//iprintln( "4" );
 			continue;
 		}
 
 		if(IsDefined(player) && is_in_array( player.already_got_weapons, keys[i] ))
 		{
+			//iprintln( "5" );
 			continue;
 		}
 
@@ -2714,39 +2729,44 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 			|| keys[i] == "molotov_zm" 
 			)
 			{
+				//iprintln( "6" );
 				continue;
 			}
 
 		}
 
-		if( player.weapon_taken_by_losing_additionalprimaryweapon != undefined )
+		if(  IsDefined(player.weapon_taken_by_losing_additionalprimaryweapon[0]) )
 		{
-			base_wep = player.weapon_taken_by_losing_additionalprimaryweapon;
+			base_wep = player.weapon_taken_by_losing_additionalprimaryweapon[0];
+			//iprintln( "base_wep: " + base_wep );
 			if( IsSubStr( base_wep, "_x2" ) )
 				base_wep = GetSubStr( base_wep, 0, base_wep.size - "_x2".size );
 
 			if( IsSubStr( base_wep, "_upgraded" ) )
 				base_wep = GetSubStr( base_wep, 0, base_wep.size - "upgraded_zm".size ) + "_zm";
 
+			//iprintln( "7" );
 			if( keys[i] == base_wep )
 				continue;
 		}
 
 
-		// Filter out saberooth_zm if any player has it
-		if( keys[i] == "saberooth_zm" )
+		
+		if( keys[i] == "saberooth_zm" ) // Filter out saberooth_zm if any player has it
 		{
 			players = get_players();
 			for( j = 0; j < players.size; j++ )
 			{
 				if( players[j] has_weapon_or_upgrade( "saberooth_zm" ) )
 				{
+					//iprintln( "8" );
 					continue;
 				}
 			}
 		}
 
-
+		//iprintln( "9 - Adding weapon" );
+		//iprintln( keys[i] );
 		filtered[filtered.size] = keys[i];
 
 		/*num_entries = [[ level.weapon_weighting_funcs[keys[i]] ]]();
@@ -4403,21 +4423,21 @@ init_includes()
 	//include_weapon("cz75lh_upgraded_zm_x2");
 	
 	include_weapon("asp_zm");				
-	include_weapon("asp_upgraded_zm");		
-	include_weapon("asp_upgraded_zm_x2");
+	include_weapon("asp_upgraded_zm", false);		
+	include_weapon("asp_upgraded_zm_x2", false);
 
 	include_weapon("makarov_zm");
-	include_weapon("makarov_upgraded_zm");
+	include_weapon("makarov_upgraded_zm", false);
 
 	//SMGS
 	include_weapon("ppsh_zm");
-	include_weapon("ppsh_upgraded_zm");
-	include_weapon("ppsh_upgraded_zm_x2");
-	include_weapon("spectre_upgraded_zm_x2");
+	include_weapon("ppsh_upgraded_zm", false);
+	include_weapon("ppsh_upgraded_zm_x2", false);
+	include_weapon("spectre_upgraded_zm_x2", false);
 	
 
 	include_weapon("uzi_zm");				
-	include_weapon("uzi_upgraded_zm");
+	include_weapon("uzi_upgraded_zm", false);
 	
 	//include_weapon("mac11_zm");
 	//include_weapon("mac11_upgraded_zm");
@@ -4427,38 +4447,39 @@ init_includes()
 	//Shotguns
 	//include_weapon("hs10_upgraded_zm_x2");
 	include_weapon("ks23_zm");
-	include_weapon("ks23_upgraded_zm");
+	include_weapon("ks23_upgraded_zm", false);
 	include_weapon("ithaca_zm");
 
 	//ARs
-	include_weapon("galil_upgraded_zm_x2");
-	include_weapon("commando_upgraded_zm_x2");
+	include_weapon("galil_upgraded_zm_x2", false);
+	include_weapon("commando_upgraded_zm_x2", false);
 	include_weapon("ak47_zm");
-	include_weapon("ak47_ft_upgraded_zm");
-	include_weapon("ft_ak47_upgraded_zm");
+	include_weapon("ak47_ft_upgraded_zm", false);
+	include_weapon("ft_ak47_upgraded_zm", false);
 
 	include_weapon("enfield_zm");
-	include_weapon("enfield_upgraded_zm");
+	include_weapon("enfield_upgraded_zm", false);
 	
 
 	//Mgs
-	include_weapon("rpk_upgraded_zm_x2");
-	include_weapon("hk21_upgraded_zm_x2");
+	include_weapon("rpk_upgraded_zm_x2", false);
+	include_weapon("hk21_upgraded_zm_x2", false);
 	include_weapon("stoner63_zm");
-	include_weapon("stoner63_upgraded_zm");
+	include_weapon("stoner63_upgraded_zm", false);
 
 	include_weapon("m60_zm");
-	include_weapon("m60_upgraded_zm");
+	include_weapon("m60_upgraded_zm", false);
 
 	//Snipers
 	include_weapon("psg1_zm");
-	include_weapon("psg1_upgraded_zm");
-	include_weapon("dragunov_upgraded_zm_x2");
+	include_weapon("psg1_upgraded_zm", false);
+	include_weapon("dragunov_upgraded_zm_x2", false);
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
-	include_weapon( "sabertooth_zm", false );
+	include_weapon( "sabertooth_zm" );
 	include_weapon( "sabertooth_upgraded_zm", false );
+	include_weapon( "bo3_zm_widows_grenade", false );
 
 	//New weapons
 	//{{WEAPON_INCLUDE}}
