@@ -2961,7 +2961,7 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
-	if( is_true(level.dev_only) )
+	if( !is_true(level.dev_only) )
 		SetDvar( "scr_suppressErrors", "1" );
 
 	SetDvar( "zm_mod_version", "2.1.0" );
@@ -8912,6 +8912,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) && is_true( self.is_zombie ) ) 		//knife punch!
 		{
+			//iprintln("Punching Zombie " + weapon);
 			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 			if( weapon == "vorkuta_knife_zm" )
 				wait_anim *= 1.5;
@@ -8929,7 +8930,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		else if( weapon == "combat_knife_zm" || weapon == "knife_zm" ) //Reimagined, knife held as independent weapo
 		{
-
+			//iprintln("Knifing Zombie " + weapon);
 			damage = int(self.maxhealth / level.round_number) + 100;
 			factor = 4;
 			if( level.round_number < 6 )
