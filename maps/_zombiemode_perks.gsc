@@ -486,10 +486,7 @@ third_person_weapon_upgrade( current_weapon, origin, angles, packa_rollers, perk
 	
 	if( current_weapon == "uzi_upgraded_zm" )
 	{
-		iprintln("Uzi upgrade");
-		iprintln(  "cost: " + perk_trigger.double_cost );
 		modelIndex = self maps\_zombiemode_weapon_effects::handle_double_pap_uzi( perk_trigger.double_cost );
-		iprintln("Done " + modelIndex);
 	}
 
 	worldgun = spawn( "script_model", origin );

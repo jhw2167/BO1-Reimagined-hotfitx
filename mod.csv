@@ -67,8 +67,8 @@ weapon,sp/makarov_zm
 weapon,sp/makarov_upgraded_zm
 weapon,sp/ks23_zm
 weapon,sp/ks23_upgraded_zm
-//weapon,sp/sabertooth_zm
-//weapon,sp/sabertooth_upgraded_zm
+weapon,sp/sabertooth_zm
+weapon,sp/sabertooth_upgraded_zm
 //weapon,sp/ithaca_zm
 //weapon,sp/mac11_upgraded_zm
 
@@ -78,8 +78,8 @@ weapon,sp/ks23_upgraded_zm
 weapon,sp/molotov_zm
 
 weapon,sp/combat_knife_zm
-weapon,sp/combat_bowie_knife_zm
-weapon,sp/combat_sickle_knife_zm
+//weapon,sp/combat_bowie_knife_zm
+//weapon,sp/combat_sickle_knife_zm
 
 
 //New / Overriden weapons

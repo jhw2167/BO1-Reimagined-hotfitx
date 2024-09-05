@@ -816,6 +816,21 @@ getWeaponUiName( weapon )
 
 		case "dragunov_upgraded_zm_x2":
 			wepName = "Zmei's Breath";
+		break;
+
+		//Knives
+		case "knife_zm":
+			if( self.knife_index == level.VALUE_WPN_INDEX_BOWIE)
+				wepName = "Bowie Knife";
+			else if( self.knife_index == level.VALUE_WPN_INDEX_SICKLE)
+				wepName = "Sickle";
+		break;
+	
+		case "combat_knife_zm":
+			if( self.knife_index == level.VALUE_WPN_INDEX_BOWIE)
+				wepName = "Bowie Knife";
+			else if( self.knife_index == level.VALUE_WPN_INDEX_SICKLE)
+				wepName = "Sickle";
 
 	}
 

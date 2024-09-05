@@ -90,7 +90,7 @@ bowie_think(cost)
 
 //Z2	HasPerk( "specialty_altmelee" ) is returning undefined
 //		player_has_bowie = player HasPerk( "specialty_altmelee" );
-		player_has_bowie = false;
+		player_has_bowie = ( player.knife_index == level.VALUE_WPN_INDEX_BOWIE);
 
 		if( !player_has_bowie )
 		{
@@ -249,21 +249,20 @@ do_bowie_flourish_end( gun )
 
 	self TakeWeapon(weapon);
 	melee_wep = self get_player_melee_weapon();
+	self.knife_index = level.VALUE_WPN_INDEX_BOWIE;
 	if( melee_wep == "knife_zm")
 	{
 		self TakeWeapon( "knife_zm" );
-		self.current_melee_weapon = "bowie_knife_zm";
-
-		self GiveWeapon( "bowie_knife_zm" );
-		self set_player_melee_weapon( "bowie_knife_zm" ); //remove knife_zm for knockdown, player can switch back
+		self GiveWeapon( "knife_zm", self.knife_index );
+		self set_player_melee_weapon( "knife_zm" );
 
 	}
 	else
 	{
-		self.offhand_melee_weapon = "bowie_knife_zm";
+		
 		self TakeWeapon("combat_knife_zm");
-		self GiveWeapon("combat_bowie_knife_zm");
-		self SetActionSlot(2, "weapon", "combat_bowie_knife_zm");
+		self GiveWeapon("combat_knife_zm", self.knife_index);
+		self SetActionSlot(2, "weapon", "combat_knife_zm");
 	}
 
 	// TODO: race condition?

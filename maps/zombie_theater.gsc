@@ -257,7 +257,7 @@ include_weapons()
 	include_weapon( "stoner63_upgraded_zm", false );
 	include_weapon( "kiparis_zm", false );
 	include_weapon( "kiparisdw_upgraded_zm", false );
-	//include_weapon( "psg1_zm" );
+	include_weapon( "psg1_zm" );
 	include_weapon( "psg1_upgraded_zm", false );
 	include_weapon( "ppsh_zm" );
 	include_weapon( "ppsh_upgraded_zm", false );

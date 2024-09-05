@@ -256,8 +256,8 @@ init_weapons()
 
 	//Base
 	add_zombie_weapon( "combat_knife_zm",			undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
-	add_zombie_weapon( "combat_bowie_knife_zm",		undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
-	add_zombie_weapon( "combat_sickle_knife_zm",	undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"sickle",			"",		undefined );
+	//add_zombie_weapon( "combat_bowie_knife_zm",		undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
+	//add_zombie_weapon( "combat_sickle_knife_zm",	undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"sickle",			"",		undefined );
 
 	add_zombie_weapon( "rebirth_hands_sp",					undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
 	add_zombie_weapon( "vorkuta_knife_sp",					undefined,								&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		50,		"bowie",			"",		undefined );
@@ -4477,8 +4477,8 @@ init_includes()
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
-	//include_weapon( "sabertooth_zm" );
-	//include_weapon( "sabertooth_upgraded_zm", false );
+	include_weapon( "sabertooth_zm" );
+	include_weapon( "sabertooth_upgraded_zm", false );
 	include_weapon( "bo3_zm_widows_grenade", false );
 
 	//New weapons
@@ -4491,8 +4491,8 @@ init_includes()
  		register_tactical_grenade_for_level( "molotov_zm" );
  	}
 
-	include_weapon("knife_zm", false);
-	register_melee_weapon_for_level( "knife_zm" );
+	//include_weapon("knife_zm", false); //in _zombimeode_utility.gsc
+	//register_melee_weapon_for_level( "knife_zm" );
 
 	include_weapon( "vorkuta_knife_sp", false);
 	register_melee_weapon_for_level( "vorkuta_knife_sp" );

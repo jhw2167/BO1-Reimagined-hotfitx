@@ -3943,7 +3943,7 @@ register_offhand_weapons_for_level_defaults()
 	level.zombie_placeable_mine_player_init = undefined;
 
 	register_melee_weapon_for_level( "knife_zm" );
-	register_melee_weapon_for_level( "bowie_knife_zm" );
+	//register_melee_weapon_for_level( "bowie_knife_zm" );
 	level.zombie_melee_weapon_player_init = "knife_zm";
 
 	level.zombie_equipment_player_init = undefined;

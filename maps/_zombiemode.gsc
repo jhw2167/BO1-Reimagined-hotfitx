@@ -51,7 +51,7 @@ main()
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
-	level.drop_rate_override=50;		/// //Rate = Expected drops per round
+	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
@@ -550,14 +550,14 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 10;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 5; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 50; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
 		if( isDefined(level.drop_rate_override) ) {
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = level.drop_rate_override*10;
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN = level.drop_rate_override*10;
-			level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = level.drop_rate_override*10;
+			level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = level.drop_rate_override*100;
 			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
 		}
 
@@ -588,6 +588,11 @@ reimagined_init_level()
 	
 	level.VALUE_PERK_PUNCH_COST = 10000;
 	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
+
+
+	//Weapon Consts
+	level.VALUE_WPN_INDEX_BOWIE = 1;
+	level.VALUE_WPN_INDEX_SICKLE = 2;
 	
 
 	//PERK CONSTANTS
@@ -1190,6 +1195,9 @@ reimagined_init_player()
 
 	self.widows_cancel_warning = false;
 	self.widows_heavy_warning_cooldown = false;
+
+	//Weapon Variables
+	self.knife_index = 0;
 	
 	//Perk player variables
 	self.weakpoint_streak=0;
@@ -1485,12 +1493,12 @@ watch_player_button_press()
 		
 		}
 
-		iprintln( "Old Knife: " + old_knife + " New Knife: " + new_knife );
+		//iprintln( "Old Knife: " + old_knife + " New Knife: " + new_knife );
 		self TakeWeapon( old_knife );
-		self GiveWeapon( new_knife );
+		self GiveWeapon( new_knife, self.knife_index );
 
 		self TakeWeapon( old_equipment );
-		self GiveWeapon( new_equipment );
+		self GiveWeapon( new_equipment, self.knife_index );
 
 		self SetActionSlot(2, "weapon", new_equipment );
 		self SetActionSlot(4, "weapon", old_equipment );
@@ -1498,13 +1506,6 @@ watch_player_button_press()
 
 		self.current_melee_weapon = new_knife;
 		self.offhand_melee_weapon = old_knife;
-
-		//Loop through all players weapons and print
-		weapons = self GetWeaponsList();
-		for(i=0;i<weapons.size;i++) {
-			iprintln( "Weapon: " + i + " - " + weapons[i] );
-		}
-
 
 		if( isDefined( primary_weapon ) )
 			self SwitchToWeapon( new_equipment );
@@ -4107,6 +4108,8 @@ onPlayerDeath()
 				}
 			}
 		}
+
+		self.knife_index = 0;
 	}
 }
 
@@ -8886,11 +8889,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 
 		final_damage = 200;	//base damage
+		iprintln("Melee Attack: " );
 		
 		undefined_weapon = !IsDefined(weapon);
 		boss_zombie = is_boss_zombie(self.animname);
 
-		if(  undefined_weapon ) 
+		if(  undefined_weapon )  
 			return final_damage;
 		
 		hasUgradedKnife = ( attacker HasWeapon("bowie_knife_zm") ||
@@ -8898,14 +8902,16 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 							attacker HasWeapon("sickle_knife_zm") ||
 							attacker HasWeapon("combat_sickle_knife_zm") );
 
-		usingUpgradedKnife = weapon == "bowie_knife_zm" || 
+		hasUgradedKnife = hasUgradedKnife || ( attacker.knife_index > 0 );
+
+		usingUpgradedKnife = ( weapon == "bowie_knife_zm" || 
 							weapon == "combat_bowie_knife_zm" ||
 							weapon == "sickle_knife_zm" || 
-							weapon == "combat_sickle_knife_zm";
-		
-		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );
+							weapon == "combat_sickle_knife_zm" );
 
-		
+		usingUpgradedKnife = IsSubStr(weapon, "knife_") && hasUgradedKnife;
+
+		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );		
 
 		if( boss_zombie ) {
 			//skip pre processing for punch
@@ -8928,6 +8934,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			self [[ self.thundergun_fling_func ]]( attacker );
 		}
+		else if( (usingUpgradedKnife || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
+		{
+			final_damage = int(self.maxhealth / 3) + 10;
+			if( level.round_number < 12)
+				final_damage = int( self.maxhealth ) + 100;
+			else if( level.round_number < 18 || is_true( self.isDog ) )
+				final_damage *= 2;
+
+		}
 		else if( weapon == "combat_knife_zm" || weapon == "knife_zm" ) //Reimagined, knife held as independent weapo
 		{
 			//iprintln("Knifing Zombie " + weapon);
@@ -8940,14 +8955,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if(damage > final_damage)
 				final_damage = damage;
 
-		}
-		else if( (usingUpgradedKnife || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
-		{
-			final_damage = int(self.maxhealth / 3) + 10;
-			if( level.round_number < 12)
-				final_damage = int( self.maxhealth ) + 100;
-			else if( level.round_number < 18 )
-				final_damage *= 2;
 		}
 
 		base_knife_damage = final_damage;
