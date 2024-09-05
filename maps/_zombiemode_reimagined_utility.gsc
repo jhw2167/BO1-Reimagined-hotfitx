@@ -171,7 +171,7 @@ generate_perk_hint( perkOrWeapon )
 
 	self.hints_activated[ hintCode ] = true;
 
-	iprintln( "notify: " + hintCode );
+	//iprintln( "notify: " + hintCode );
 
 	while( self.new_perk_hint ) {
 		self waittill( "perk_hint_end" );

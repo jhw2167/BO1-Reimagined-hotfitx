@@ -4473,7 +4473,7 @@ init_includes()
 	//Snipers
 	include_weapon("psg1_zm");
 	include_weapon("psg1_upgraded_zm", false);
-	include_weapon("dragunov_upgraded_zm_x2", false);
+	//include_weapon("dragunov_upgraded_zm_x2", false);
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );

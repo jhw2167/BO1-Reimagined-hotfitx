@@ -31,8 +31,8 @@ weapon,sp/rebirth_hands_sp
 weapon,sp/vorkuta_knife_sp
 weapon,sp/falling_hands_zm
 weapon,sp/knife_zm
-weapon,sp/bowie_knife_zm
-weapon,sp/sickle_knife_zm
+//weapon,sp/bowie_knife_zm
+//weapon,sp/sickle_knife_zm
 
 //weapon,sp/zombie_bowie_flourish
 //weapon,sp/zombie_sickle_flourish

@@ -2092,6 +2092,16 @@ giveAdditionalPrimaryWeaponUpgrade()
 	//Give player Restock - personal Max Ammo
 	if( !self.superpower_active )
 		level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, self, self.entity_num );
+
+	self thread watch_additionalprimaryweapon_upgrade(level.MUL_PRO + "_stop");
+}
+
+watch_additionalprimaryweapon_upgrade( stop_event )
+{
+	self endon( "death" );
+	self waittill( stop_event );
+	//must take weapon from here if downed, does not take weapon correctly if called in _zombiemode_perks::perk_think()
+ 	self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
 }
 
 giveStaminaUpgrade()
@@ -5232,7 +5242,7 @@ init_vulture()
 	//maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
 	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
 
-	level waittill( "all_players_connected" );
+	flag_wait( "all_players_connected" );
 	level thread vulture_watch_powerup_waypoints();
 	level thread vulture_perk_watch_waypoints();
 	level thread vulture_perk_watch_mystery_box();
@@ -5869,6 +5879,10 @@ init_vulture()
 				}
 			}
 			angles = ( 0, 0, 0 );
+
+			if( !IsDefined( machine ) )
+				return undefined;
+				
 			if( !IsDefined( machine.angles ) )
 				machine.angles = angles;
 

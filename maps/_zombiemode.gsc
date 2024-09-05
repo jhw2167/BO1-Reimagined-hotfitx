@@ -58,7 +58,7 @@ main()
 	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
-	level.dev_only=true;					///*/
+	//level.dev_only=true;					///*/
 
 	// \give ppsh_upgraded_zm
 	// \give aug_acog_mk_upgraded_zm_x2
@@ -550,7 +550,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 10;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 50; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 5; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -2962,8 +2962,10 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
-	if( !is_true(level.dev_only) )
-		SetDvar( "scr_suppressErrors", "1" );
+	if( !isDefined(level.dev_only) ) {
+		//SetDvar( "scr_suppressErrors", 1 );
+	}
+		
 
 	SetDvar( "zm_mod_version", "2.1.0" );
 
@@ -6593,11 +6595,14 @@ reimagined_expanded_round_start()
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
 	//Tracking
-	//entity = Spawn( "script_model", (0, 0, 0) );
-	//iprintln( "Spawning entity: " );
-	//iprintln( "With Number: " + entity GetEntityNumber() );
-	//entity delete();
-
+	if( IsDefined( level.dev_only) )
+	{
+		entity = Spawn( "script_model", (0, 0, 0) );
+		iprintln( "Spawning entity: " );
+		iprintln( "With Number: " + entity GetEntityNumber() );
+		entity delete();
+	}
+	
 }
 
 //	Zombie spawning
@@ -8889,7 +8894,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	{
 
 		final_damage = 200;	//base damage
-		iprintln("Melee Attack: " );
 		
 		undefined_weapon = !IsDefined(weapon);
 		boss_zombie = is_boss_zombie(self.animname);

@@ -1690,7 +1690,7 @@ playerHeartbeatSound(healthcap)
 
 	for (;;)
 	{
-		wait .2;
+		wait(0.2);
 		//if (self.health <= 0)
 		//return;
 
@@ -1710,7 +1710,7 @@ playerHeartbeatSound(healthcap)
 		self waittill( "end_heartbeat_loop" );
 		//self stoploopsound (1);
 
-	  	wait (.2);
+	  	wait(0.2);
 		self thread event_heart_beat( "none" , 0 );
 
 		level.player_pain_vox = 0;

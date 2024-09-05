@@ -10797,6 +10797,12 @@ SpawnThrottleEnableThread()
 {
 	level notify ("spawn_throttle_enable_thread_ender");
 	level endon ("spawn_throttle_enable_thread_ender");
+
+	
+	while(!isdefined(level.flag)) {
+		wait(0.1);
+	}
+
 	if (isdefined(level.flag["all_players_connected"]))
 	{
 		flag_wait("all_players_connected");
