@@ -295,6 +295,9 @@ setup_retrievable_watcher()
 	{
 		watcher = get_weapon_object_watcher_by_weapon( level.retrievableWeapons[i] );
 
+		if( !isDefined( watcher ) )
+			continue;
+
 		if( !isDefined( watcher.onSpawnRetrieveTriggers ) )
 			watcher.onSpawnRetrieveTriggers = ::on_spawn_retrievable_weapon_object;
 

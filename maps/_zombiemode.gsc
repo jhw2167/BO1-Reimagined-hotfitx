@@ -95,6 +95,7 @@ main()
 
 	PrecacheItem( "frag_grenade_zm" );
 	PrecacheItem( "claymore_zm" );
+	PrecacheItem( "falling_hands_zm" );
 
 	//difficulty
 	level.skill_override = 1;
@@ -3220,7 +3221,7 @@ init_fx()
 
 	level._effect["bloodspurt"] 				= LoadFX( "misc/fx_zombie_bloodspurt" );
 
-	/*
+	//*
 	
 	level._effect["fx_zombie_bar_break"]		= LoadFX( "maps/zombie/fx_zombie_bar_break" );
 	level._effect["fx_zombie_bar_break_lite"]	= LoadFX( "maps/zombie/fx_zombie_bar_break_lite" );
@@ -3243,7 +3244,7 @@ init_fx()
 	level._effect["fall_burst"]					= LoadFX("maps/zombie/fx_mp_zombie_hand_dirt_burst");
 	level._effect["fall_billow"]				= LoadFX("maps/zombie/fx_mp_zombie_body_dirt_billowing");
 	level._effect["fall_dust"]					= LoadFX("maps/zombie/fx_mp_zombie_body_dust_falling");
-	*/
+	//*/
 
 	// Flamethrower
 	//level._effect["character_fire_pain_sm"]     = LoadFX( "env/fire/fx_fire_player_sm_1sec" );
@@ -6118,6 +6119,14 @@ round_spawning()
 			}
 			else
 			{
+				if( !IsDefined( ai ) )
+					continue;
+				
+				if( !IsDefined(ai.health) ) {
+					ai Delete();
+					continue;
+				}
+
 				ai DoDamage( ai.health + 100, (0,0,0) );
 				continue;
 			}
@@ -7458,9 +7467,9 @@ round_think()
 round_spawn_wrapper_func()
 {
 	//If its a special round, call zombie spawning function too in apocalypse mode
-	specialRound = level.dog_intermission 
-				|| level.monkey_intermission 
-				|| level.thief_intermission 
+	specialRound = is_true( level.dog_intermission )
+				|| is_true( level.monkey_intermission )
+				|| is_true( level.thief_intermission )
 				|| flag("thief_round") 
 				|| flag("monkey_round") 
 				|| flag("dog_round") 
@@ -12842,7 +12851,7 @@ revive_waypoint_color_think(time)
 
 destroy_revive_waypoint()
 {
-	self waittill_any("player_revived", "bled_out", "round_restarted", "_zombie_game_over", "disconnect", "death");
+	self waittill_any("player_revived", "bled_out", "round_restarted", "disconnect", "death");
 
 	if(IsDefined(self.reviveWaypoint))
 		self.reviveWaypoint destroy_hud();
@@ -12867,6 +12876,9 @@ store_last_held_primary_weapon()
 		self waittill( "weapon_change" );
 
 		current_wep = self GetCurrentWeapon();
+
+		if( !IsDefined( current_wep ) || current_wep == "none" )
+			continue;
 
 		if(WeaponInventoryType(current_wep) == "altmode")
 		{

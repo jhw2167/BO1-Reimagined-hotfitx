@@ -58,7 +58,7 @@ main()
 
 init_perk_fx()
 {
-	//level._effect[ "zmb_new_gibtrail_fx" ] = LoadFX( "custom/zm_dog_v2/fx_zmb_blood_trail_mature" );	
+	level._effect[ "zmb_new_gibtrail_fx" ] = LoadFX( "custom/zm_dog_v2/fx_zmb_blood_trail_mature" );	
 	//level._effect[ "electric_cherry_explode" ] = LoadFX( "electric_cherry/cherry_shock_large" );
 	//level._effect[ "electric_cherry_reload_small" ] = LoadFX( "electric_cherry/cherry_shock_large" );
 	//level._effect[ "electric_cherry_reload_medium" ] = LoadFX( "electric_cherry/cherry_shock_large" );
@@ -554,7 +554,7 @@ do_gib( model, tag )
 		forward *= RandomIntRange( 600, 1000 );
 		forward += ( 0, 0, RandomIntRange( 400, 700 ) );
 	}
-	CreateDynEntAndLaunch( 0, model, end_pos, angles, start_pos, forward, level._effect[ "zmb_new_gibtrail_fx" ], 1 );
+	//CreateDynEntAndLaunch( 0, model, end_pos, angles, start_pos, forward, level._effect[ "zmb_new_gibtrail_fx" ], 1 );
 	if( IsDefined( self ) )
 	{
 		self do_gib_fx( tag );

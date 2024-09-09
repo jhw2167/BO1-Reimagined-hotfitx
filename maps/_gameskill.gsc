@@ -1740,6 +1740,11 @@ event_heart_beat( emotion, loudness )
 		self.last_emotion = "undefined";
 	}
 
+	if(!IsDefined(self.emotional_state_system))
+	{
+		self.emotional_state_system = 0;
+	}
+
 	if(self.emotional_state_system == 0)
 	{
 		self.emotional_state_system = 1;
@@ -2256,7 +2261,7 @@ shouldShowCoverWarning()
 		return false;
 	}
 
-	if ( !maps\_load_common::map_is_early_in_the_game() )
+	if ( ! is_true(maps\_load_common::map_is_early_in_the_game() ) )
 	{
 		return false;
 	}

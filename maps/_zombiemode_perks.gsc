@@ -5307,7 +5307,8 @@ init_vulture()
 			struct.chest_to_check = undefined;
 			struct.fx_var = "vulture_glow";
 			struct.ent_num = vending_triggers[i] GetEntityNumber();
-			struct.script_model = Spawn( "script_model", struct.origin );
+			if( IsDefined(struct.origin) )
+				struct.script_model = Spawn( "script_model", struct.origin );
 			struct.waypoint_name = convertPerkToShader( perk ) + "_pro";
 			struct.wp_type = "PERK";
 			struct.player_waypoint = [];
@@ -5481,6 +5482,8 @@ init_vulture()
 					powerup = level.vulture_track_current_powerups[i];
 					
 					is_visible = player HasPerk( level.VLT_PRK ) && check_waypoint_visible( player, powerup );
+					if( !IsDefined( powerup.player_waypoints ) )
+						powerup.player_waypoints = [];
 
 					if( is_visible )
 					{
@@ -5671,7 +5674,7 @@ init_vulture()
 				powerup.name 					= powerupDrop.powerup_name;
 
 				powerup.script_model = Spawn( "script_model", powerup.origin );
-				powerup.script_model linkto( powerup, "tag_origin", (0, 0, 10) );
+				powerup.script_model linkto( powerupDrop, "tag_origin", (0, 0, 10) );
 				powerup.waypoint_name = "specialty_instakill_zombies";
 				powerup.is_active_powerup = true;
 				powerup.powerup = powerupDrop;

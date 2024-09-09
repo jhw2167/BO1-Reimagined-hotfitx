@@ -246,11 +246,14 @@ zombie_spawn_init( animname_set )
 	self thread zombie_gib_on_damage();
 	self thread zombie_damage_failsafe();	
 	
+	self.zombie_despawn=false;
 	self.respawn_zombie = false;
+
 	self.marked_for_freeze=false;
 	self.marked_for_tesla=false;
 	self.marked_for_poison=false;
 	self.burned = false;
+
 	self.knockdown = false;
 	self.is_water = false;
 	self.widows_posion_bullet_count = 0;
@@ -479,11 +482,12 @@ zombie_determine_drop()
 			}
 			else
 			{
-				zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
-				zombie_drop_model LinkTo( self, "j_SpineLower" );
+				self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
+				self.zombie_drop_model LinkTo( self, "j_SpineLower" );
+				self.zombie_drop_model SetModel( "tag_origin" );
 
-				self.zombie_drop_model = zombie_drop_model;
-				PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
+				if( IsDefined(self.zombie_drop_model) )
+					PlayFXOnTag( level._effect["powerup_on"], self.zombie_drop_model, "tag_origin" );
 			}
 			
 
@@ -497,7 +501,7 @@ zombie_determine_drop()
 zombie_watch_despawn_no_damage() 
 {
 	wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
-	self.zombie_despawn=false;
+	
 	self endon("death");
 	level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
 
@@ -1655,7 +1659,7 @@ zombie_tear_notetracks( msg, chunk, node, tear_anim )
 		{
 			if( !chunk.destroyed )
 			{
-				//PlayFx( level._effect["wood_chunk_destory"], chunk.origin );
+				//PlayFx( level._effect["wood_chunk_destroy"], chunk.origin );
 				// jl created another function for dust so we create offsets with its timing
 				if(chunk.script_noteworthy == "4" || chunk.script_noteworthy == "6" || chunk.script_noteworthy == "5" || chunk.script_noteworthy == "1")
 				{
@@ -1982,9 +1986,9 @@ zombie_boardtear_offset_fx_horizontle( chunk, node )
 		}
 		else
 		{
-			PlayFx( level._effect["wood_chunk_destory"], chunk.origin + (0, 0, 30));
+			//PlayFx( level._effect["wood_chunk_destroy"], chunk.origin + (0, 0, 30));
 			wait( randomfloat( 0.2, 0.4 ));
-			PlayFx( level._effect["wood_chunk_destory"], chunk.origin + (0, 0, -30));
+			//PlayFx( level._effect["wood_chunk_destroy"], chunk.origin + (0, 0, -30));
 		}
 	}
 }
@@ -2047,9 +2051,9 @@ zombie_boardtear_offset_fx_verticle( chunk, node )
 		}
 		else
 		{
-			PlayFx( level._effect["wood_chunk_destory"], chunk.origin + (30, 0, 0));
+			//PlayFx( level._effect["wood_chunk_destroy"], chunk.origin + (30, 0, 0));
 			wait( randomfloat( 0.2, 0.4 ));
-			PlayFx( level._effect["wood_chunk_destory"], chunk.origin + (-30, 0, 0));
+			//PlayFx( level._effect["wood_chunk_destroy"], chunk.origin + (-30, 0, 0));
 		}
 	}
 }
@@ -4435,8 +4439,16 @@ zombie_death_event( zombie )
 	}
 
 	level notify( "zom_kill" );
-	if(!IsDefined(zombie.zombie_despawn) && !zombie.zombie_despawn )
+	if( is_true( zombie.zombie_despawn ) )
+	{
+		//nothing
+	}
+	else
+	{
 		level.total_zombies_killed++;
+	}
+
+		
 }
 
 

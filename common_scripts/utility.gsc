@@ -739,8 +739,16 @@ flag( message )
 {
 	assertEx( IsDefined( message ), "Tried to check flag but the flag was not defined." );
 	assertEx( IsDefined( level.flag[ message ] ), "Tried to check flag " + message + " but the flag was not initialized." );
+
+	if( !IsDefined( level.flag ) )
+		return false;
+		
+	if( !IsDefined( level.flag[ message ] ) )
+		return false;
+
 	if ( !level.flag[ message ] )
 		return false;
+		
 	return true;
 }
   
