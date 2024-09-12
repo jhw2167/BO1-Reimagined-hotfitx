@@ -1223,12 +1223,32 @@ watch_player_utility()
 {
 	//iprintln("Jump utility");
 
+	level.do_kill_all = is_true(level.dev_only) && true;
+	if(  !is_true(level.rolling_kill_all)  && level.do_kill_all )
+	{
+		level.rolling_kill_all = true;
+		self thread kill_all_utility_rolling( 10 );
+	}
+	
+
 	dev_only = true;
 	while(1)
 	{
 		if( self buttonPressed("g")  && dev_only)
 		{
+
+			if( level.do_kill_all )
+			{
+				if( is_true(level.rolling_kill_all) ) {
+				level.rolling_kill_all = false;
+				} else {
+					level.rolling_kill_all = true;
+					self thread kill_all_utility_rolling( 10 );
+				}
+			}
+
 			self kill_all_utility();
+
 		}
 
 		if( self buttonPressed("i")  && dev_only)
@@ -1264,6 +1284,27 @@ watch_player_utility()
 			//vending_triggers[j] delete();
 		}
 	}
+
+	/*
+
+		Name: kill_all_utility_rolling
+
+		Description:
+			- Take 1 parameter "interval" and after each interval call kill_all_utility
+			- While loop should take level.rolling_kill_all as true
+			- If level.rolling_kill_all is false, break the loop
+
+	*/
+
+	kill_all_utility_rolling( interval )
+	{
+		while( level.rolling_kill_all )
+		{
+			self kill_all_utility();
+			wait( interval );
+		}
+	}
+
 
 	kill_all_utility()
 	{

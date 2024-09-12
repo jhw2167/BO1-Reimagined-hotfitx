@@ -242,7 +242,8 @@ randomize_perks_think()
 
 		last_perks = curr_perks;
 		
-		level waittill( "perks_swapping" );
+		//level waittill( "perks_swapping" );
+		wait( 7 );
 
 		while( flag( "pack_machine_in_use" ) )
 		{

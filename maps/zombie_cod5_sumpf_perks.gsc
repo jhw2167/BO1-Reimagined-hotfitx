@@ -465,6 +465,8 @@ vending_randomization_effect( index )
 			}
 		}
 	}
+	tag_fx Delete();
+	
 	machine SetModel( true_model );
 	machine MoveTo( origin, 0.3, 0.3, 0 );
 	PlayFXOnTag( level._effect[ "zombie_perk_end" ], machine, "tag_origin" );

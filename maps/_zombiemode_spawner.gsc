@@ -473,7 +473,7 @@ zombie_determine_drop()
 			//iprintln("Zombie Drop 3: " + self.hasDrop);
 
 			level.total_drops_round++;
-			useClientSideFx = false;
+			useClientSideFx = true;
 			if( useClientSideFx )
 			{
 				self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
