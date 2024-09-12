@@ -4477,9 +4477,11 @@ init_includes()
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
-	include_weapon( "sabertooth_zm" );
-	include_weapon( "sabertooth_upgraded_zm", false );
 	include_weapon( "bo3_zm_widows_grenade", false );
+	
+	//include_weapon( "sabertooth_zm" );
+	//include_weapon( "sabertooth_upgraded_zm", false );
+	
 
 	//New weapons
 	//{{WEAPON_INCLUDE}}

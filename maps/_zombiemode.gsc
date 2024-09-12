@@ -58,7 +58,7 @@ main()
 	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
-	//level.dev_only=true;					///*/
+	level.dev_only=true;					///*/
 
 	// \give ppsh_upgraded_zm
 	// \give aug_acog_mk_upgraded_zm_x2
@@ -1223,7 +1223,7 @@ watch_player_utility()
 {
 	//iprintln("Jump utility");
 
-	level.do_kill_all = is_true(level.dev_only) && true;
+	level.do_kill_all = true;
 	if(  !is_true(level.rolling_kill_all)  && level.do_kill_all )
 	{
 		level.rolling_kill_all = true;

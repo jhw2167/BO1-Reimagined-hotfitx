@@ -17,7 +17,7 @@ randomize_vending_machines()
 	flag_init( "sumpf_perks" );
 	
 	level thread watch_randomize_vending_machines();
-	level thread watch_swamplights();
+	//level thread watch_swamplights();
 
 	flag_set( "sumpf_perks" );
 }
@@ -465,8 +465,9 @@ vending_randomization_effect( index )
 			}
 		}
 	}
+	tag_fx notify( "death" );
 	tag_fx Delete();
-	
+
 	machine SetModel( true_model );
 	machine MoveTo( origin, 0.3, 0.3, 0 );
 	PlayFXOnTag( level._effect[ "zombie_perk_end" ], machine, "tag_origin" );
@@ -493,7 +494,8 @@ vending_randomization_effect( index )
 	level.pap_moving = false;
 	flag_clear( "pack_machine_in_use" );
 
-	level waittill( "perks_swapping" );
+	//level waittill( "perks_swapping" );
+	wait(5);
 
 	while( flag( "pack_machine_in_use" ) )
 	{
