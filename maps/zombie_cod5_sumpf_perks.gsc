@@ -17,7 +17,7 @@ randomize_vending_machines()
 	flag_init( "sumpf_perks" );
 	
 	level thread watch_randomize_vending_machines();
-	//level thread watch_swamplights();
+	level thread watch_swamplights();
 
 	flag_set( "sumpf_perks" );
 }

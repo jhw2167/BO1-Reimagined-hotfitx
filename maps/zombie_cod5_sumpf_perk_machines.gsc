@@ -193,8 +193,9 @@ randomize_perks_think()
 	addPackaPunchOnce = false;
 	while( true )
 	{
-		if( level.is_pap_available )
+		if( level.is_pap_available && !addPackaPunchOnce )
 		{
+			addPackaPunchOnce = true;
 			vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
 		}
 		/* ############# */
@@ -202,6 +203,8 @@ randomize_perks_think()
 
 		curr_perks = [];
 		perk_list = array_randomize( vending_triggers );
+
+	
 		//perk_list = vending_triggers;
 		//for( i = perk_list.size-1; i > -1; i-- )
 		for( i = 0; i < perk_list.size; i ++ )
@@ -229,19 +232,20 @@ randomize_perks_think()
 			{
 				continue;
 			}
-			else
-			{
 
-				index = curr_perks.size;
-				curr_perks[ index ] = perk;
-				level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;	//vending_###
-				
-				if( !shino_zones_opened[ index ])
-					continue;
-				
-				thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
-				
-			}
+			index = curr_perks.size;
+			curr_perks[ index ] = perk;
+			level.ARRAY_SHINO_PERKS_AVAILIBLE[ index ] = perk_list[i].target;	//vending_###
+
+			//print perk and index
+			//iprintln( "Perk: " + perk + " Index: " + index );
+			
+			
+			if( !shino_zones_opened[ index ])
+				continue;
+			
+			thread maps\zombie_cod5_sumpf_perks::vending_randomization_effect( index );
+			
 		}
 
 		last_perks = curr_perks;

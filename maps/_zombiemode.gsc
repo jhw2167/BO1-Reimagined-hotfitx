@@ -49,13 +49,13 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=20;	///
+	level.starting_round_override=1;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=2;	///per round
+	level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
@@ -1222,10 +1222,12 @@ watch_player_utility()
 	//iprintln("Jump utility");
 
 	level.do_kill_all = true;
-	if(  !is_true(level.rolling_kill_all)  && level.do_kill_all )
+	if(  IsDefined(level.rolling_kill_all_interval)  && level.do_kill_all )
 	{
-		level.rolling_kill_all = true;
-		self thread kill_all_utility_rolling( 10 );
+		self thread kill_all_utility_rolling( level.rolling_kill_all_interval );
+	}
+	else {
+		level.rolling_kill_all_interval = 0;
 	}
 	
 
@@ -1235,13 +1237,13 @@ watch_player_utility()
 		if( self buttonPressed("g")  && dev_only)
 		{
 
-			if( level.do_kill_all )
+			if( level.rolling_kill_all_interval > 0 )
 			{
-				if( is_true(level.rolling_kill_all) ) {
-				level.rolling_kill_all = false;
+				if( level.do_kill_all ) {
+				level.do_kill_all = false;
 				} else {
-					level.rolling_kill_all = true;
-					self thread kill_all_utility_rolling( 10 );
+					level.do_kill_all = true;
+					self thread kill_all_utility_rolling( level.rolling_kill_all_interval );
 				}
 			}
 
@@ -1296,7 +1298,7 @@ watch_player_utility()
 
 	kill_all_utility_rolling( interval )
 	{
-		while( level.rolling_kill_all )
+		while( level.do_kill_all )
 		{
 			self kill_all_utility();
 			wait( interval );

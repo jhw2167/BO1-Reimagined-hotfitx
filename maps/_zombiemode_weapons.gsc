@@ -4448,7 +4448,6 @@ init_includes()
 	//include_weapon("hs10_upgraded_zm_x2");
 	include_weapon("ks23_zm");
 	include_weapon("ks23_upgraded_zm", false);
-	include_weapon("ithaca_zm");
 
 	//ARs
 	include_weapon("galil_upgraded_zm_x2", false);
@@ -4478,20 +4477,26 @@ init_includes()
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
 	include_weapon( "bo3_zm_widows_grenade", false );
-	
-	//include_weapon( "sabertooth_zm" );
-	//include_weapon( "sabertooth_upgraded_zm", false );
+
+	include_weapon( "sabertooth_zm" );
+	include_weapon( "sabertooth_upgraded_zm", false );
 	
 
 	//New weapons
 	//{{WEAPON_INCLUDE}}
 
 
+	/* Only include for WaW zombies */
  	if(IsDefined(level.script) && IsSubStr(level.script, "zombie_cod5"))
  	{
  		include_weapon("molotov_zm");
  		register_tactical_grenade_for_level( "molotov_zm" );
  	}
+	/* Only include for BO zombies */
+	else 
+	{
+		include_weapon("ithaca_zm");
+	}
 
 	//include_weapon("knife_zm", false); //in _zombimeode_utility.gsc
 	//register_melee_weapon_for_level( "knife_zm" );

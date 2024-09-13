@@ -4907,6 +4907,9 @@ player_watch_electric_cherry()
 			self notify( "stun_zombie" );
 			//self endon( "stun_zombie" );
 
+			if( self.animname != "zombie" ) 
+				return;	
+
 			if( self.health <= 0 )
 			{
 				return;
