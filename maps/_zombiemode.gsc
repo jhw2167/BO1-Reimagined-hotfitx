@@ -57,8 +57,10 @@ main()
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
+	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
+	level.rolling_kill_all_interval=10;	///
 	level.dev_only=true;					///*/
 
 
@@ -7355,8 +7357,12 @@ print_apocalypse_options()
 			{ players[i] thread generate_hint(undefined, "Tough Zombies: On", offsets[j] ); j++; }
 		if( level.zombie_types )
 			{ players[i] thread generate_hint(undefined, "Zombie Types: On", offsets[j] ); j++; }
+
 		if( level.bo2_perks )
 			{ players[i] thread generate_hint(undefined, "BO2 Perks: On", offsets[j] ); j++; }
+		else
+			{ players[i] thread generate_hint(undefined, "BO2 Perks: Off", offsets[j] ); j++; }
+
 		if( level.extra_drops )
 			{ players[i] thread generate_hint(undefined, "Extra Drops: On", offsets[j] ); j++; }
 		if( level.alt_bosses == 2 )

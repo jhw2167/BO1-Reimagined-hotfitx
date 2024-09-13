@@ -9,9 +9,14 @@ init()
 	place_deadshot();
 	place_marathon();
 	place_mulekick();
-	place_vulture();
-	place_martyrdom();
-	place_extraammo(); //Windows is availible by not placed
+	
+	if( level.bo2_perks )
+	{
+		place_martyrdom();	
+		place_extraammo();		
+		//place_chugabud();	
+		place_vulture();
+	}
 	
 }
 

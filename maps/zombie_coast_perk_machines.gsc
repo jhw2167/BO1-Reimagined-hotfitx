@@ -5,11 +5,15 @@ init()
 {		
 	place_babyjug();
 
-	place_extraammo();
-	place_martyrdom();
-	//place_chugabud();
-	place_vulture();
 	place_mulekick();
+	if( level.bo2_perks )
+	{
+		place_martyrdom();	
+		place_extraammo();		
+		//place_chugabud();	
+		place_vulture();
+	}
+
 }
 
 place_babyjug()
@@ -77,8 +81,8 @@ place_extraammo()
 
 place_vulture()
 {
-	machine_origin = (951.3, -2273.8, 290.8);
-	machine_angles = (0, 135, 0);
+	machine_origin = (622, -2010, 289.8);
+	machine_angles = (0, 210, 0);
 	perk = Spawn( "script_model", machine_origin );
 	perk.angles = machine_angles;
 	perk setModel( "bo2_zombie_vending_vultureaid" );

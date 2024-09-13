@@ -5,10 +5,15 @@ init()
 {			
 	place_babyjug();
 
-	place_martyrdom();
-	place_vulture();
-	place_wine();
-	place_mulekick();
+	if( level.bo2_perks )
+	{
+		place_martyrdom();	
+		place_wine();		
+		//place_chugabud();	
+		place_vulture();
+	}
+
+	place_mulekick(); //Jbleezy removed it, we add back
 }
 
 place_babyjug()

@@ -7,12 +7,17 @@ init()
 
 	place_divetonuke();
 	place_deadshot();	
-	place_marathon();		
-	place_martyrdom();	
-	place_extraammo();		
-	//place_chugabud();	
-	place_mulekick();	
-	place_vulture();
+	place_marathon();	
+	place_mulekick();
+
+	if( level.bo2_perks )
+	{
+		place_martyrdom();	
+		place_extraammo();		
+		//place_chugabud();	
+		place_vulture();
+	}
+	
 }
 
 place_babyjug()

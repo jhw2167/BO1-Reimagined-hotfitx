@@ -7,11 +7,17 @@ init()
 
 	//place_doubletap();
 	place_deadshot();
-	place_martyrdom();
-	place_extraammo();
-	//place_chugabud();	//swapped with vultures
-	place_vulture();	//vulture
 	place_mulekick();
+
+	//these perks only availible if level.bo2_perks is true
+	if( level.bo2_perks )
+	{
+		place_martyrdom();
+		place_extraammo();
+		//place_chugabud();	//swapped with vultures
+		place_vulture();	//vulture
+	}
+	
 }
 
 place_babyjug()
