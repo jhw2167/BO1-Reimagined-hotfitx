@@ -494,8 +494,7 @@ vending_randomization_effect( index )
 	level.pap_moving = false;
 	flag_clear( "pack_machine_in_use" );
 
-	//level waittill( "perks_swapping" );
-	wait(5);
+	level waittill( "perks_swapping" );
 
 	while( flag( "pack_machine_in_use" ) )
 	{
@@ -506,7 +505,7 @@ vending_randomization_effect( index )
 	perk_trigger notify( "death" );
 	level.pap_moving = true;
 
-	iprintln( "delete perk_trigger: " + perk_trigger );
+	//iprintln( "delete perk_trigger: " + perk_trigger );
 	perk_trigger Delete();
 
 }

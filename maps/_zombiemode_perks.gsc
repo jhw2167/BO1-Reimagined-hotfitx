@@ -16,9 +16,12 @@ init()
 	level.zombiemode_using_marathon_perk = true;
 	level.zombiemode_using_deadshot_perk = true;
 	level.zombiemode_using_additionalprimaryweapon_perk = true;
-	level.zombiemode_using_electriccherry_perk = true;
-	level.zombiemode_using_vulture_perk = true;
-	level.zombiemode_using_widowswine_perk = true;
+	if( level.bo2_perks ) 
+	{
+		level.zombiemode_using_electriccherry_perk = true;
+		level.zombiemode_using_vulture_perk = true;
+		level.zombiemode_using_widowswine_perk = true;
+	}
 
 	/*
 	level.zombiemode_using_chugabud_perk = true;
@@ -368,6 +371,7 @@ default_vending_precaching()
 		PreCacheString( &"REIMAGINED_PERK_CHERRY" );
 		//level._effect[ "electriccherry_light" ] = LoadFX( "misc/fx_zombie_cola_on" );
 		level._effect[ "electriccherry_light" ] = level._effect[ "doubletap_light" ];
+		thread init_electric_cherry();
 		level thread turn_electriccherry_on();
 	}
 	if( is_true( level.zombiemode_using_vulture_perk ) )
@@ -378,6 +382,7 @@ default_vending_precaching()
 		PreCacheModel( "bo2_zombie_vending_vultureaid_on" );
 		PreCacheString( &"REIMAGINED_PERK_VULTURE" );
 		level._effect[ "vulture_light" ] = level._effect["jugger_light"];
+		thread init_vulture();
 		level thread turn_vulture_on();
 	}
 	if( is_true( level.zombiemode_using_widowswine_perk ) )
@@ -393,6 +398,7 @@ default_vending_precaching()
 		PreCacheModel( "bo3_p7_zm_vending_widows_wine_on" );
 		PreCacheString( &"REIMAGINED_PERK_WIDOWSWINE" );
 		level._effect[ "widow_light" ] = level._effect["jugger_light"];
+		thread init_widows_wine();
 		level thread turn_widowswine_on();
 	}
 	if( is_true( level.zombiemode_using_bandolier_perk ) )
@@ -1612,7 +1618,6 @@ turn_additionalprimaryweapon_on()
 
 turn_electriccherry_on()
 {
-	init_electric_cherry();
 	machine = GetEntArray( "vending_electriccherry", "targetname" );
 	level waittill( "electriccherry_on" );
 	for( i = 0; i < machine.size; i ++ )
@@ -1633,7 +1638,6 @@ turn_electriccherry_on()
 
 turn_vulture_on()
 {
-	init_vulture();
 	machine = GetEntArray( "vending_vulture", "targetname" );
 	level waittill( "vulture_on" );
 
@@ -1650,7 +1654,6 @@ turn_vulture_on()
 
 turn_widowswine_on()
 {
-	init_widows_wine();
 	machine = GetEntArray( "vending_widowswine", "targetname" );
 	level waittill( "widowswine_on" );
 	for( i = 0; i < machine.size; i ++ )
@@ -1698,7 +1701,7 @@ perk_fx( fx, offset )
 	}
 	
 
-	model delete();
+	model Delete();
 
 }
 
@@ -5410,7 +5413,7 @@ init_vulture()
 		level.vulture_waypoint_structs = structs;
 		level thread vulture_perk_watch_perks_move();
 		//iprintln( "Waypoints strucuts: " + level.vulture_waypoint_structs.size );
-		while( true )
+		while(1)
 		{
 			players = get_players();
 			if( level.vulture_waypoint_structs_update ) 
@@ -6166,7 +6169,7 @@ vulture_perk_watch_perks_move()
 {
 
 	//HERE
-	while( 1 ) 
+	while(1) 
 	{
 		event = level waittill_any_return( "zombie_vending_off", "zombie_vending_spawned", "perks_swapping" );
 		structs = vulture_update_waypoint_structs();

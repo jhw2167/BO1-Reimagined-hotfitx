@@ -58,11 +58,9 @@ main()
 	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	//level.override_give_all_perks=true;	///
+	level.override_bo2_perks=true;		///
 	level.dev_only=true;					///*/
 
-	// \give ppsh_upgraded_zm
-	// \give aug_acog_mk_upgraded_zm_x2
-	
 
 	setApocalypseOptions();
 
@@ -7304,6 +7302,10 @@ setApocalypseOptions()
 	if(IsDefined(level.server_cheats_override)) {
 		level.server_cheats = true;
 		level.total_perks = 100;
+	}
+
+	if( IsDefined( level.override_bo2_perks ) ) {
+		level.bo2_perks = level.override_bo2_perks;
 	}
 
 	level.max_perks = level.total_perks;
