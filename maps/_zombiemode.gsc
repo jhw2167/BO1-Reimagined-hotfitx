@@ -3011,7 +3011,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.1.0" );
+	SetDvar( "zm_mod_version", "2.1.4" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -9490,6 +9490,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 3;
 			break;
 		case "galil_upgraded_zm":
+		case "g11_lps_upgraded_zm":
 			final_damage = 1550;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
@@ -9700,6 +9701,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 2);
 			}
 				
+		}
+
+		if( IsSubStr( weapon, "g11" ) && is_boss_zombie(self.animname) )
+		{
+			//If upgrad multiply damage by 10, else by 5
+			if( IsSubStr( weapon, "upgraded" ) )
+				final_damage = int( final_damage * 10 );
+			else
+				final_damage = int( final_damage * 5 );
 		}
 
 
