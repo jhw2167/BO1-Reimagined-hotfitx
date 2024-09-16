@@ -6403,9 +6403,11 @@ zombie_watch_vulture_drop_bonus()
 			otherWeps = self GetWeaponsListPrimaries();
 			validAmmoWeapon = is_valid_ammo_bonus_weapon( str_weapon_current );
 			index = 0;
-			//HERE
+			
+			if( !IsDefined( otherWeps ) || otherWeps.size == 0 )
+				return;
 
-			while( !validAmmoWeapon )
+			while( !validAmmoWeapon && index < otherWeps.size )
 			{
 				str_weapon_current = otherWeps[index];
 
@@ -6466,6 +6468,11 @@ zombie_watch_vulture_drop_bonus()
 
 		is_valid_ammo_bonus_weapon( weapon )
 		{
+			iprintln( "Checking is valid bonus ammo: "  );
+			iprintln( "Weapon: " + weapon );
+			if( !isDefined( weapon ) || weapon == "none" )
+				return false;
+
 			if( is_in_array( level.ARRAY_VULTURE_INVALID_AMMO_WEAPONS, weapon ) )
 				return false;
 			
