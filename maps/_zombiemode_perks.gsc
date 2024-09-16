@@ -6373,9 +6373,9 @@ zombie_watch_vulture_drop_bonus()
 		//Self is drop
 		watch_player_vulture_drop_pickup( player )
 		{
-			//create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
+			create_loop_fx_to_player( player, self GetEntityNumber(), "vulture_perk_bonus_drop", self.origin, self.angles );
 			self vulture_drop_pickup( player );
-			//destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
+			destroy_loop_fx_to_player( player, self GetEntityNumber(), true );
 			self SetInvisibleToPlayer( player, true );
 		}
 

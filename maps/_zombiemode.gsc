@@ -49,18 +49,18 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=1;	///
+	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1000;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	///per round
+	level.calculate_amount_override=20;	///per round
 	level.apocalypse_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
-	level.rolling_kill_all_interval=10;	///
+	//level.rolling_kill_all_interval=10;	///
 	level.dev_only=true;					///*/
 
 
@@ -1352,10 +1352,10 @@ wait_set_player_visionset()
 	{
 		//GIVE PERKS
 		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
