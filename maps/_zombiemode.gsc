@@ -48,14 +48,14 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=1;	///allowed on map
+	level.zombie_ai_limit_override=8;	///allowed on map
 	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	//level.zombie_timeout_override=1000;	///
+	level.zombie_timeout_override=10;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=20;	///per round
+	//level.calculate_amount_override=7;	///per round
 	level.apocalypse_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -6605,6 +6605,9 @@ reimagined_expanded_round_start()
 		
 	}
 
+	//Speed up remaining zombies
+	level thread last_zombies_speed_up();
+
 	//Increase max perks every 5 rounds after 15
 		if( level.round_number > 14 && level.round_number % 5 == 0 ) 
 		{
@@ -6656,6 +6659,49 @@ reimagined_expanded_round_start()
 	}
 	
 }
+
+	/*
+	   Descr:
+	   Method threaded on level.
+	   Wait for event level.STRING_MIN_ZOMBS_REMAINING_NOTIFY or "round_end"
+	   If its "round_end" then exit
+	   Otherwise, if its the specified event, get all zombies on the map and set run cycle to sprint
+
+	*/
+	last_zombies_speed_up()
+	{
+		level endon( "end_of_round" );
+		level endon( "intermission" );
+
+		level waittill( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+
+		zombies = GetAiSpeciesArray( "axis", "all" );
+
+		//check if zombies defined and has size
+		if( !isDefined( zombies ) || zombies.size < 1 )
+			return;
+
+		for( i = 0; i < zombies.size; i++ )
+		{
+			if( !isDefined( zombies[i].animname ) )
+				continue;
+			
+			if( is_true( zombies[i].has_legs ) && zombies[i].animname == "zombie" )
+			{
+				if( zombies[i].zombie_move_speed != "sprint" ) 
+				{
+					iprintln( "SPRINTING LAST ZOMBIE: " + zombies[i].zombie_hash );
+					zombies[i].zombie_move_speed_original = "sprint";
+					zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
+				}
+			}
+
+			//wait for small amount
+			wait( randomfloatrange( 0.2, 0.8 ) );
+		}
+
+	}
+
 
 //	Zombie spawning
 //
@@ -8788,6 +8834,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Flags: " + flags);
 	//iprintln("Has Drop: " + self.hasDrop);
 	//iprintln("Final Damage 0: ");
+	iprintln("Zombie hash: " + self.zombie_hash);
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	dwWeap = WeaponDualWieldWeaponName( weapon );

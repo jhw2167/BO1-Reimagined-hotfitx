@@ -6112,17 +6112,6 @@ init_vulture()
 		
 	}
 
-	checkObjectInPlayableArea( object )
-	{
-		playable_area = getentarray("player_volume","script_noteworthy");
-		for (i = 0; i < playable_area.size; i++)
-		{
-			if (object IsTouching(playable_area[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 //HERE_
 vulture_perk_watch_pap_move()

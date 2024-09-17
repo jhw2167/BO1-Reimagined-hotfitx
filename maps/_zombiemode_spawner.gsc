@@ -3,7 +3,7 @@
 #include maps\_zombiemode_utility;
 #include maps\_zombiemode_net;
 #include maps\_zombiemode_audio;
-
+#include maps\_zombiemode_reimagined_utility;
 
 #using_animtree( "generic_human" );
 init()
@@ -279,14 +279,18 @@ zombie_spawn_init( animname_set )
 
 		
 
-		//Reimagined-Expanded, despawn zombies if they are not damaged for a period
+		//Reimagined-Expanded, despawn or speed_up zombies if they are not damaged for a period
+		self.zombie_hash = randomint(level.VALUE_ZOMBIE_HASH_MAX);
 		if(
-		level.tough_zombies
-		&& is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname)
+		is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname)
 		&& level.round_number > 5
-		&& level.zombie_total > 5 ) 
+		&& maps\_zombiemode::get_total_remaining_enemies() > 5
+		) 
 		{
 			self thread zombie_watch_despawn_no_damage();
+		} 
+		else {
+			iprintln("Zombie not watching despawn: ");
 		}
 
 		//Reimagined-Expanded, zombie drops
@@ -338,7 +342,7 @@ zombie_spawn_init( animname_set )
 
 	//Reimagined-Expanded, slightly more damage since we now have baby jug
 	self.meleeDamage = 60;
-	self.zombie_hash=randomint(level.VALUE_ZOMBIE_HASH_MAX);
+	
 
 	//Effects
 	self.marked_for_freeze=false;
@@ -498,12 +502,25 @@ zombie_determine_drop()
 
 //Reimagined-Expanded
 //If a zombie is not damaged for a period, delete it
-zombie_watch_despawn_no_damage() 
+zombie_watch_despawn_no_damage( initialDelay ) 
 {
-	wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
-	
+	//iprintln("Starting zombie despawn: " + self.zombie_hash);
+
 	self endon("death");
 	level endon( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+
+	if( !IsDefined( initialDelay ) )
+		initialDelay = true;
+
+	if( initialDelay )
+		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
+
+	while( !checkObjectInPlayableArea( self ) ) {
+		wait(0.5);
+	}
+	
+	if( !Isdefined(self) || !IsAlive(self) )
+		return;
 
 	while( !self.zombie_despawn )
 	{
@@ -513,7 +530,24 @@ zombie_watch_despawn_no_damage()
 				return;
 		
 		wait(0.1);
-		wait 1;
+	}
+
+	if( !level.tough_zombies ) 
+	{
+		iprintln("1: " + self.zombie_hash);
+		//if animaname is not zombie return
+		if( self.animname != "zombie" )
+			return;
+
+		self zombie_speed_up( 1, true );
+		if( self.zombie_speed_og_indx < 4 ) {
+			self.zombie_despawn = false;
+			self thread zombie_watch_despawn_no_damage( false );
+		}
+			
+		//self animscripted( "attack_anim", self.origin, self.angles, level.scr_anim[self.animname]["sprint5"] );
+
+		return;
 	}
 	
 	respawn_queue_interface("PUSH", self.zombie_type);
@@ -686,18 +720,38 @@ zombie_damage_failsafe()
 	}
 }
 
-set_zombie_run_cycle( new_move_speed )
+set_zombie_run_cycle( new_move_speed, isPermanent )
 {
-	if ( isDefined( new_move_speed ) )
+
+	
+	//if zombie doesnt have legs, return
+	if( !is_true(self.has_legs ) )
+		return;
+
+	if( !isDefined( isPermanent ) )
+		isPermanent = false;
+
+	if ( !isDefined( new_move_speed ) )
 	{
-		self.zombie_move_speed = new_move_speed;
-	}
-	else
-	{
-		self set_run_speed();
+		new_move_speed = self set_run_speed();
 		self.zombie_move_speed_original = self.zombie_move_speed;
 	}
+	
+	if( new_move_speed == "super-sprint" ) 
+	{
+		self.zombie_move_speed = "sprint";
+		self.zombie_move_speed_supersprint = true;
+	}
+	else if ( new_move_speed == "terror" )
+	{
+		iprintln( "zombie_spawn_init -> terror " + self.zombie_hash );
+		self.zombie_move_speed = "sprint";
+		self.zombie_move_speed_supersprint = true;
+		if( !IsDefined(self.zombie_speed_up) ) 
+			self.zombie_speed_up = 1.15;
+	}
 
+	self.zombie_move_speed = new_move_speed;
 	self.needs_run_update = true;
 
 	death_anims = level._zombie_deaths[self.animname];
@@ -708,14 +762,17 @@ set_zombie_run_cycle( new_move_speed )
 		//iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
 	}
 
-// var = 0;
+	// var = 0;
 
-	switch(self.zombie_move_speed)
+	self notify( "end_terror_zombie" );
+
+	switch( new_move_speed )
 	{
 	case "walk":
 		var = randomintrange(1, 9);
 		self set_run_anim( "walk" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["walk" + var];
+		self.zombie_speed_indx = 0;
 		break;
 	case "run":
 		var = 1;
@@ -730,32 +787,58 @@ set_zombie_run_cycle( new_move_speed )
 		}
 		self set_run_anim( "run" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["run" + var];
+		self.zombie_speed_indx = 1;
 		break;
-	case "sprint":
-		var = 1;
-		if(is_true(self.zombie_move_speed_supersprint))
-		{
-			var = randomintrange(5, 7);
-			if(isDefined(self.zombie_speed_up))
-			{
-				self.moveplaybackrate = self.zombie_speed_up;
-				self.animplaybackrate = self.zombie_speed_up;
-				//iprintln("super sprinter spawned - " + self.zombie_speed_up);
-				var=5;
-			}
-		}
-		else
-		{
-			var = randomintrange(1, 5);
-		}
+	case "sprint":	
+
+		var = randomintrange(1, 5);
 		self set_run_anim( "sprint" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
+		self.zombie_speed_indx = 2;
 		break;
+	
+	case "super-sprint":
+		var = randomintrange(5, 7);
+		self.zombie_move_speed_supersprint = true;
+
+		self set_run_anim( "sprint" + var );
+		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
+		self.zombie_speed_indx = 3;
+		break;
+
+	case "terror":
+
+		var=5;
+		self.zombie_move_speed_supersprint = true;
+		
+		self set_run_anim( "sprint" + var );
+		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
+		self.zombie_speed_indx = 4;
+
+		self.moveplaybackrate = self.zombie_speed_up;
+		self.animplaybackrate = self.zombie_speed_up;
+
+		self thread watch_terror_playback_rate();
+
+		break;
+
 	}
 
-	if( !IsDefined(self.zombie_speed_up) ) {
+	if( isPermanent ) 
+	{
+		self.zombie_move_speed_original = self.zombie_move_speed;
+		self.zombie_speed_og_indx = self.zombie_speed_indx;
+	}
+		
+
+	if( !IsDefined( self.zombie_speed_up ) || self.zombie_speed_indx < 4 ) 
+	{
 		self.moveplaybackrate = 1;
 		self.animplaybackrate = 1;
+	} 
+
+	if ( self.zombie_speed_indx < 3 ) {
+		self.zombie_move_speed_supersprint = false;
 	}
 
 //	self thread print3d_ent( self.zombie_move_speed+var, (1,1,1), 2.0, (0,0,72), "", true );
@@ -773,31 +856,97 @@ set_run_speed()
 	
 
 	//iprintln( "zombie_spawn_init -> rand = " + rand );
-//	self thread print_run_speed( rand );
+//	self thread print_run_speed( rand ); 
 	if( rand <= 35 )
 	{
 		self.zombie_move_speed = "walk";
+		self.zombie_speed_og_indx = 0;
 	}
 	else if( rand <= 70 )
 	{
 		self.zombie_move_speed = "run";
+		self.zombie_speed_og_indx = 1;
 	}
 	else if( rand < 105 ) {
 		//Sprinter
 		self.zombie_move_speed = "sprint";
+		self.zombie_speed_og_indx = 2;
 	}
 	else if( rand < 140 ) {
 		//super sprinter
-		self.zombie_move_speed = "sprint";
-		self.zombie_move_speed_supersprint = true;
+		self.zombie_move_speed = "super-sprint";
+		self.zombie_speed_og_indx = 3;
 	}
 	else {
 		//terror (super sprinter) -- NEED TO SPEED UP ATTACK ANIMS
-		self.zombie_move_speed = "sprint";
-		self.zombie_move_speed_supersprint = true;
+		self.zombie_move_speed = "terror";
 		self.zombie_speed_up = ( (level.zombie_move_speed + 60) / rand ); // > 1
+		self.zombie_speed_og_indx = 4;
 	}
 
+	return self.zombie_move_speed;
+
+}
+
+/*
+	Method: zombie_speed_up( dir )
+
+	Description:
+		- dir is a positive or negative integer
+		- increase or decrease the zombies speed between the enum values of walk, run, sprint, super-sprint
+
+*/
+zombie_speed_up( dir, isPermanent )
+{
+	if( !isDefined( dir ) )
+		return false;
+
+	if( !isDefined( isPermanent ) )
+		isPermanent = false;
+
+	new_move_index = self.zombie_speed_indx + dir;
+	if( new_move_index < 0 || new_move_index > 4 )
+		return false;
+	
+	speed_enum = array("walk", "run", "sprint", "super-sprint", "terror");
+	self set_zombie_run_cycle( speed_enum[new_move_index], isPermanent );
+	
+}
+
+/*
+	Zombie does not attack at this speed, need to reset playback rates to 1
+	when zombie gets within 64 units of any player
+*/
+
+watch_terror_playback_rate()
+{
+	self endon("death");
+	self endon("end_terror_zombie");
+
+	players = get_players();
+	MAX_DIST = 64;
+
+	while(1)
+	{
+		goFast = true;
+		for(i=0; i < players.size; i++)
+		{
+			if( !IsDefined(players[i].origin) || !IsDefined(self.origin) )
+				continue;
+
+			if( checkDist(self.origin, players[i].origin, MAX_DIST) )
+			{
+				self notify("hit_player");			//resets damage trigger
+				self zombie_speed_up( -2 );
+				goFast = false;
+			}
+		}
+
+		if( goFast )
+			self zombie_speed_up( 2 );
+
+		wait(0.2);
+	}
 }
 
 
