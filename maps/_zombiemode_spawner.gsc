@@ -515,10 +515,13 @@ zombie_watch_despawn_no_damage( initialDelay )
 	if( initialDelay )
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 
+	iprintln("1: initial delay" + self.zombie_hash);
 	while( !checkObjectInPlayableArea( self ) ) {
 		wait(0.5);
 	}
 	
+	iprintln("2: Playble area" + self.zombie_hash);
+
 	if( !Isdefined(self) || !IsAlive(self) )
 		return;
 
@@ -534,7 +537,7 @@ zombie_watch_despawn_no_damage( initialDelay )
 
 	if( !level.tough_zombies ) 
 	{
-		iprintln("1: " + self.zombie_hash);
+		iprintln("3: Speed up " + self.zombie_hash);
 		//if animaname is not zombie return
 		if( self.animname != "zombie" )
 			return;
@@ -836,8 +839,8 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 
 	if( !IsDefined( self.zombie_speed_up ) || self.zombie_speed_indx < 4 ) 
 	{
-		//self.moveplaybackrate = 1;
-		//self.animplaybackrate = 1;
+		self.moveplaybackrate = 1;
+		self.animplaybackrate = 1;
 	} 
 
 	if ( self.zombie_speed_indx < 3 ) {
@@ -852,7 +855,11 @@ set_run_speed()
 	rand = level.zombie_move_speed;
 	if(level.zombie_move_speed < 65 ) {
 		rand = randomintrange( level.zombie_move_speed, level.zombie_move_speed + 40 );
-	} else {
+	} 
+	else  if(level.zombie_move_speed < 110 ) {
+		rand = randomintrange( level.zombie_move_speed - 20, level.zombie_move_speed + 40 );
+	}
+	else {
 		//Uniform dist
 		rand = randomintrange( level.zombie_move_speed - 40, level.zombie_move_speed + 40 );
 	}
@@ -860,27 +867,30 @@ set_run_speed()
 
 	//iprintln( "zombie_spawn_init -> rand = " + rand );
 //	self thread print_run_speed( rand ); 
-	if( rand <= 35 )
+	if( rand <= 35 )	/* 0 - 35 */
 	{
 		self.zombie_move_speed = "walk";
 		self.zombie_speed_og_indx = 0;
 	}
-	else if( rand <= 70 )
+	else if( rand <= 70 )	/* 35 - 70 */
 	{
 		self.zombie_move_speed = "run";
 		self.zombie_speed_og_indx = 1;
 	}
-	else if( rand < 105 ) {
+	else if( rand < 110 ) 		/* 70 - 105 */
+	{
 		//Sprinter
 		self.zombie_move_speed = "sprint";
 		self.zombie_speed_og_indx = 2;
 	}
-	else if( rand < 140 ) {
+	else if( rand < 140 ) 		/* 105 - 140 */
+	{
 		//super sprinter
 		self.zombie_move_speed = "super-sprint";
 		self.zombie_speed_og_indx = 3;
 	}
-	else {
+	else 						/* 140 - 180 */
+	{
 		//terror (super sprinter) -- NEED TO SPEED UP ATTACK ANIMS
 		self.zombie_move_speed = "terror";
 		self.zombie_speed_up = ( (level.zombie_move_speed + 60) / rand ); // > 1

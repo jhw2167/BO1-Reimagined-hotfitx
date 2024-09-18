@@ -48,14 +48,14 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=2;	///allowed on map
+	level.zombie_ai_limit_override=6;	///allowed on map
 	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	level.zombie_timeout_override=1;	///
+	//level.zombie_timeout_override=1;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=7;	///per round
+	level.calculate_amount_override=7;	///per round
 	level.apocalypse_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -419,7 +419,8 @@ reimagined_init_level()
 
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 
-	level.SUPER_SPRINTER_SPEED = 70;
+	level.SUPER_SPRINTER_SPEED = 85;
+	level.TERROR_SPEED = 140;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
 
@@ -6530,7 +6531,7 @@ reimagined_expanded_round_start()
 			level.zombie_ai_limit = 6 + 6*level.players_size; // Soft limit at 32, hard limit at 100, network issues?
 
 		} else if(  level.round_number < 11 ) {
-			level.zombie_move_speed = 40;	//runners, sparse sprinters
+			level.zombie_move_speed = 50;	//runners, sparse sprinters
 			level.zombie_ai_limit = 8 + 12*level.players_size; // Soft limit at 32, hard limit at 100, network issues?
 
 			level.VALUE_HORDE_SIZE = int( 10 + level.players_size * 2 );
@@ -6538,9 +6539,9 @@ reimagined_expanded_round_start()
 
 			level.VALUE_ZOMBIE_SPAWN_DELAY = 2.5 - (level.players_size * 0.5);
 		}
-		else if(  level.round_number < 16 )
+		else if(  level.round_number < 16 )		/* 11 - 16 */
 		{
-			level.zombie_move_speed = 50;	//runners, moderate sprinters, down from 90
+			level.zombie_move_speed = 60;	//runners, moderate sprinters, down from 90
 
 			if( level.players_size == 1) {
 				level.VALUE_ZOMBIE_SPAWN_DELAY = 2.5;
@@ -6553,9 +6554,9 @@ reimagined_expanded_round_start()
 			level.VALUE_HORDE_SIZE = 16 + 4*level.players_size;
 			level.VALUE_HORDE_DELAY = 20 - 4*level.players_size;; 
 
-		} else if(  level.round_number < 24 )
+		} else if(  level.round_number < 24 )		/* 16 - 24 */
 		{
-			level.zombie_move_speed = 60; //runners, many sprinters, down from 100
+			level.zombie_move_speed = 88; //runners, many sprinters, down from 100
 			level.VALUE_ZOMBIE_SPAWN_DELAY = .5;
 
 			if( level.players_size == 1) {
@@ -6566,18 +6567,18 @@ reimagined_expanded_round_start()
 			level.VALUE_HORDE_SIZE = 24 + 6*level.players_size;
 			level.VALUE_HORDE_DELAY = 32 - 6*level.players_size; 
 
-		} else if( level.round_number < 34 )
+		} else if( level.round_number < 28 )	/* 24 - 28 */
 		{
 			if( level.players_size == 1) {
 				level.zombie_ai_limit = level.THRESHOLD_ZOMBIE_AI_LIMIT; 
 			}
 
-			level.zombie_move_speed = 95;
+			level.zombie_move_speed = 115;
 			level.VALUE_HORDE_SIZE = 36 + 8*level.players_size;
 			level.VALUE_HORDE_DELAY = 16 - 2*level.players_size; 
 
-		} else {
-			level.zombie_move_speed = 105;
+		} else {							/* 28+ */
+			level.zombie_move_speed = level.TERROR_SPEED;
 		}
 
 	} else	//(More) Regular zombies!
@@ -6591,6 +6592,7 @@ reimagined_expanded_round_start()
 			level.VALUE_ZOMBIE_SPAWN_DELAY = 1;
 		}
 
+		iprintln( "Zombie move speed: " + level.zombie_move_speed );
 		//Cap zombie move speed by super sprinter speed
 		if ( level.zombie_move_speed > level.SUPER_SPRINTER_SPEED )
 			level.zombie_move_speed = level.SUPER_SPRINTER_SPEED;
