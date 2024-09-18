@@ -744,14 +744,12 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 	}
 	else if ( new_move_speed == "terror" )
 	{
-		iprintln( "zombie_spawn_init -> terror " + self.zombie_hash );
 		self.zombie_move_speed = "sprint";
 		self.zombie_move_speed_supersprint = true;
 		if( !IsDefined(self.zombie_speed_up) ) 
 			self.zombie_speed_up = 1.15;
 	}
 
-	self.zombie_move_speed = new_move_speed;
 	self.needs_run_update = true;
 
 	death_anims = level._zombie_deaths[self.animname];
@@ -763,8 +761,6 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 	}
 
 	// var = 0;
-
-	self notify( "end_terror_zombie" );
 
 	switch( new_move_speed )
 	{
@@ -795,33 +791,40 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 		self set_run_anim( "sprint" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
 		self.zombie_speed_indx = 2;
+		iprintln( "zombie_spawn_init -> sprinter " + self.zombie_hash );
 		break;
 	
 	case "super-sprint":
-		var = randomintrange(5, 7);
+		//var = randomintrange(5, 7);
+		iprintln( "zombie_spawn_init -> super-sprinter " + self.zombie_hash );
+		self.zombie_speed_indx = 3;
+
+		var=5;
 		self.zombie_move_speed_supersprint = true;
 
 		self set_run_anim( "sprint" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
-		self.zombie_speed_indx = 3;
+		
 		break;
 
 	case "terror":
-
+		iprintln( "zombie_spawn_init -> terror " + self.zombie_hash );
+		self.zombie_speed_indx = 4;
+		///*
 		var=5;
 		self.zombie_move_speed_supersprint = true;
 		
 		self set_run_anim( "sprint" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
-		self.zombie_speed_indx = 4;
 
 		self.moveplaybackrate = self.zombie_speed_up;
 		self.animplaybackrate = self.zombie_speed_up;
 
-		self thread watch_terror_playback_rate();
+		//self notify( "end_terror_zombie" );
+		//self thread watch_terror_playback_rate();
+		//*/
 
 		break;
-
 	}
 
 	if( isPermanent ) 
@@ -833,8 +836,8 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 
 	if( !IsDefined( self.zombie_speed_up ) || self.zombie_speed_indx < 4 ) 
 	{
-		self.moveplaybackrate = 1;
-		self.animplaybackrate = 1;
+		//self.moveplaybackrate = 1;
+		//self.animplaybackrate = 1;
 	} 
 
 	if ( self.zombie_speed_indx < 3 ) {
@@ -924,11 +927,20 @@ watch_terror_playback_rate()
 	self endon("end_terror_zombie");
 
 	players = get_players();
-	MAX_DIST = 64;
+	MAX_DIST = 128;
+
+
 
 	while(1)
 	{
-		goFast = true;
+		goFast = false;
+
+		if( !IsDefined(players) || players.size == 0 ) {
+			iprintln("No players");
+			continue;
+		}	
+			
+
 		for(i=0; i < players.size; i++)
 		{
 			if( !IsDefined(players[i].origin) || !IsDefined(self.origin) )
@@ -937,15 +949,26 @@ watch_terror_playback_rate()
 			if( checkDist(self.origin, players[i].origin, MAX_DIST) )
 			{
 				self notify("hit_player");			//resets damage trigger
-				self zombie_speed_up( -2 );
-				goFast = false;
+
+				self melee();
+				self animscripted("fling",self.origin,self.angles, %ai_zombie_flinger_flail , "normal", undefined, 2, 0.3 );
+				direction_vec = VectorNormalize( players[i] GetWeaponMuzzlePoint() - self.origin );
+				direction_vec = vector_scale( direction_vec, 75);
+				self MoveTo( self.origin + direction_vec , 0.5 );
+				//self StartRagdoll();
+				//self launchragdoll(direction_vec);
+
+				wait_network_frame();
+				//self thread set_zombie_run_cycle( "sprint" );
+				
+				wait(1);
+				break;
 			}
+		
 		}
+			
 
-		if( goFast )
-			self zombie_speed_up( 2 );
-
-		wait(0.2);
+		wait(0.1);
 	}
 }
 

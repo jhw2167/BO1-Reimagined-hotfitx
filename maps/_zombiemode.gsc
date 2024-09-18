@@ -48,11 +48,11 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=8;	///allowed on map
+	level.zombie_ai_limit_override=2;	///allowed on map
 	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
-	level.zombie_timeout_override=10;	///
+	level.zombie_timeout_override=1;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=7;	///per round
