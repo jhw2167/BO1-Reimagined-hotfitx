@@ -4495,7 +4495,7 @@ init_includes()
 	/* Only include for BO zombies */
 	else 
 	{
-		include_weapon("ithaca_zm");
+		include_weapon("ithaca_zm", false);
 	}
 
 	//include_weapon("knife_zm", false); //in _zombimeode_utility.gsc

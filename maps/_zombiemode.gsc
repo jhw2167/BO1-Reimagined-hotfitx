@@ -8995,6 +8995,32 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				}
 			}
 
+
+		if( attacker hasProPerk(level.DST_PRO) ) //&& WeaponClass(baseWeapon) != "spread" ) 
+		{
+			//Flat damage increase for ADS
+			if( attacker AdsButtonPressed() )
+				final_damage = int(final_damage * 1.5);
+
+			if(!isDefined(self.weakpoint))
+				self.weakpoint = "";
+
+			weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
+			
+			if( is_in_array(weakpoints, sHitLoc) ) 
+			{
+				attacker.weakpoint_streak++;	//add HUD for this
+				headshot_streak_bonus = (1 + (attacker.weakpoint_streak * level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK) );
+				final_damage = int(final_damage * headshot_streak_bonus);
+
+				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
+			} else {
+				attacker.weakpoint_streak = 0;
+				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
+			}
+			
+		}
+
 			return self.maxhealth + 1000;
 		}
 	}
