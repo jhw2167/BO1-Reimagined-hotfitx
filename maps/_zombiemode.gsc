@@ -8996,7 +8996,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 
 
-		if( attacker hasProPerk(level.DST_PRO) ) //&& WeaponClass(baseWeapon) != "spread" ) 
+		if( attacker hasProPerk(level.DST_PRO) && meansofdeath != "MOD_MELEE" ) //&& WeaponClass(baseWeapon) != "spread" ) 
 		{
 			//Flat damage increase for ADS
 			if( attacker AdsButtonPressed() )
