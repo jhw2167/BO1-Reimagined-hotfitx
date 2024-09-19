@@ -691,6 +691,7 @@ thief_zombie_think()
 	flag_set( "death_in_pre_game" );
 
 	self thread thief_zombie_choose_run();
+	self thread thief_zombie_watch_explosive();
 
 	self.goalradius = 32;
 	self.ignoreall = false;
@@ -706,7 +707,59 @@ thief_zombie_think()
 	*/
 
 	//Reimagined-Expanded
-	start_health = level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR;
+	num_players = get_players().size;
+	pap_multiplier = 0;
+	/*
+		For each player in the game, increase the health by 1.5x for a player owning a PaP weapon and 3x for owning a
+		double PaP weapon
+
+		e.g. player 1 has a x2 weapon and a x1 weapon, player 2 has a x1 weapon:
+		3 + 1.5 = 4.5
+
+	 */
+	for ( i = 0; i < num_players; i++ )
+	{
+		player = get_players()[i];
+
+		//Get list of weapons
+		weapons = player GetWeaponsListPrimaries();
+
+		//For each weapon, check if it's PaP'd or x2 pap
+		//isUpgraded = IsSubStr( weapon, "_upgraded" );
+		//isDoubleUpgraded = IsSubStr( weapon, "_x2" );
+		if( !isDefined( weapons ) || weapons.size == 0 )
+			continue;
+		
+		isUpgraded = false;
+		isDoubleUpgraded = false;
+		for( j = 0; j < weapons.size; j++ )
+		{
+			weapon = weapons[j];
+			isUpgraded = IsSubStr( weapon, "_upgraded" ) || isUpgraded;
+			isDoubleUpgraded = IsSubStr( weapon, "_x2" )|| isDoubleUpgraded;
+		}
+
+		if( isDoubleUpgraded )
+		{
+			pap_multiplier += 2;
+		}
+		else if( isUpgraded )
+		{
+			pap_multiplier += 1.5;
+		}
+	
+	}
+
+	if( pap_multiplier < 1 )
+		pap_multiplier = 1;
+
+	start_health = level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR * num_players * pap_multiplier;
+		
+		//Print out zombie health, health after scalling and health after pap
+		iprintln( "Zombie Health: " + level.zombie_health );
+		iprintln( "Health after scaler: " + level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR * num_players );
+		iprintln( "Health after pap: " + start_health );
+
 
 	//start_health = thief_scale_health( start_health );
 	//pregame_health = thief_scale_health( GetDvarInt( #"scr_thief_health_pregame" ) );
@@ -836,6 +889,29 @@ thief_zombie_choose_run()
 		self.needs_run_update = true;
 		wait( 0.05 );
 	}
+}
+
+/*
+
+	If thief zombie takes explosive damage, he walks for 2 seconds, 30 second cooldown
+
+*/
+thief_zombie_watch_explosive()
+{
+	self endon( "death" );
+
+	while ( 1 )
+	{
+		self waittill( "explosive_damage" );
+		old_speed = self.thief_speed;
+
+		self.thief_speed = "walk";
+		wait( 2 );
+
+		self.thief_speed = old_speed;
+		wait( 30 );
+	}
+
 }
 
 thief_zombie_die()

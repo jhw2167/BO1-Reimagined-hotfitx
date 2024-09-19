@@ -576,7 +576,7 @@ reimagined_init_level()
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
-	level.VALUE_THIEF_HEALTH_SCALAR = 24;	//this many times avg zombie max health of this round
+	level.VALUE_THIEF_HEALTH_SCALAR = 16;	//this many times avg zombie max health of this round
 
 	//Weapon Pap
 	level.VALUE_PAP_COST = 5000;
@@ -9361,6 +9361,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			}
 
 		}
+
+		//if thief zombie, trigger explosive damage
+		if( self.animname == "thief_zombie" )
+		{
+			self notify("explosive_damage");
+		}
+
 	}
 
 	// damage for non-shotgun bullet weapons - deals the same amount of damage through walls and multiple zombies
