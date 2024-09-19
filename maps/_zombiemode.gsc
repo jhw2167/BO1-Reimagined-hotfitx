@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=10;	///
+	level.starting_round_override=1;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -526,6 +526,7 @@ reimagined_init_level()
 
 	level.VALUE_ZOMBIE_DOG_HEALTH_PORTION = 0.6;
 
+	level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER_EARLY = 2;
 	level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER = 5;
 	level.STRING_MIN_ZOMBS_REMAINING_NOTIFY = "MIN_ZOMBS_REMAINING_NOTIFY";		//level message when < 5 zombies remain
 	level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX=24;
@@ -1232,6 +1233,12 @@ watch_player_utility()
 	else {
 		level.rolling_kill_all_interval = 0;
 	}
+
+	rolling_print_utility = true;	
+	if( rolling_print_utility )
+	{
+		self thread print_utility_rolling( 60 );
+	}
 	
 
 	dev_only = true;
@@ -1264,6 +1271,7 @@ watch_player_utility()
 			//_zombiemode_reimagined_utility
 			//start_properk_placer();
 		}
+
 
 		wait(0.5);
 	}
@@ -1321,6 +1329,31 @@ watch_player_utility()
 
 		iprintln("Origin: " + self.origin);
 
+	}
+
+	/*
+
+		Name: print_utility_rolling
+
+		Description:
+			- Take 1 parameter "interval" and after each interval print the message
+			- While loop should take level.rolling_kill_all as true
+			- If level.rolling_kill_all is false, break the loop
+			
+
+	*/
+
+	print_utility_rolling( interval )
+	{
+		while( 1 )
+		{
+			entity = Spawn( "script_model", (0, 0, 0) );
+			iprintln( "Spawning entity: " );
+			iprintln( "With Number: " + entity GetEntityNumber() );
+			entity delete();
+
+			wait( interval );
+		}
 	}
 
 
@@ -12350,10 +12383,25 @@ enemies_remaining_hud()
 		players = get_players();
 		zombs = get_total_remaining_enemies();
 
-		if( zombs <= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER && !notifyDespawnOnce ) {
-			level notify( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+		if( zombs <= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER && !notifyDespawnOnce ) 
+		{
 			notifyDespawnOnce = true;
-		} else if( zombs > level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER ) {
+			if( level.round_number < 6 ) 
+			{
+				if( zombs <= level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER_EARLY ) 
+					level notify( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+				else
+					notifyDespawnOnce = false;
+				
+			}
+			else 
+			{
+				level notify( level.STRING_MIN_ZOMBS_REMAINING_NOTIFY );
+			}
+			
+		}
+		else if( zombs > level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER ) 
+		{
 			notifyDespawnOnce = false;
 		}
 			

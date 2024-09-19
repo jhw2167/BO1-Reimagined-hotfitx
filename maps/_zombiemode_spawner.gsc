@@ -287,6 +287,7 @@ zombie_spawn_init( animname_set )
 		&& maps\_zombiemode::get_total_remaining_enemies() > 5
 		) 
 		{
+			iprintln("Zombie watching despawn: ");
 			self thread zombie_watch_despawn_no_damage();
 		} 
 		else {
