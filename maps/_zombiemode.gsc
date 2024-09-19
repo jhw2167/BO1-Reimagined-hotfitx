@@ -8470,7 +8470,18 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 				{
 					hash = eAttacker.zombie_hash;
 					if( hash == self.previous_zomb_attacked_by )
-						iDamage = int(iDamage * 0.5);
+					{
+						if( is_true( eAttacker.isDog ) )
+						{
+							iDamage = int(iDamage * 2);
+						}
+						else
+						{
+							iDamage = int(iDamage * 0.5);
+						}
+						
+					}
+						
 					self.previous_zomb_attacked_by = hash;
 
 					//Reimagined-Expaded, maybe we'll use later, not necessary right now

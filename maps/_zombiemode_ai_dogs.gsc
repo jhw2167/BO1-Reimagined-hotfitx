@@ -627,9 +627,6 @@ dog_init()
 	self.flame_damage_time = 0;
 	self.meleeDamage = 45;
 
-	if( level.apocalypse )
-		self.meleeDamage = 90;
-
 	self.thundergun_disintegrate_func = ::dog_thundergun_disintegrate;
 	self.thundergun_knockdown_func = ::dog_thundergun_knockdown;
 
