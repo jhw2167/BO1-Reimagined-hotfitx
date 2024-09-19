@@ -2,6 +2,7 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 #include animscripts\zombie_Utility;
+#include maps\_zombiemode_reimagined_utility;
 
 init()
 {
@@ -707,8 +708,6 @@ thief_zombie_think()
 	*/
 
 	//Reimagined-Expanded
-	num_players = get_players().size;
-	pap_multiplier = 0;
 	/*
 		For each player in the game, increase the health by 1.5x for a player owning a PaP weapon and 3x for owning a
 		double PaP weapon
@@ -717,6 +716,8 @@ thief_zombie_think()
 		3 + 1.5 = 4.5
 
 	 */
+	num_players = get_players().size;
+	pap_multiplier = 0;
 	for ( i = 0; i < num_players; i++ )
 	{
 		player = get_players()[i];
@@ -734,18 +735,18 @@ thief_zombie_think()
 		isDoubleUpgraded = false;
 		for( j = 0; j < weapons.size; j++ )
 		{
-			weapon = weapons[j];
+			weapon = player get_upgraded_weapon_string( weapons[j] );
 			isUpgraded = IsSubStr( weapon, "_upgraded" ) || isUpgraded;
 			isDoubleUpgraded = IsSubStr( weapon, "_x2" )|| isDoubleUpgraded;
 		}
 
 		if( isDoubleUpgraded )
 		{
-			pap_multiplier += 2;
+			pap_multiplier += level.VALUE_THIEF_HEALTH_SCALAR_x2_BONUS;
 		}
 		else if( isUpgraded )
 		{
-			pap_multiplier += 1.5;
+			pap_multiplier += level.VALUE_THIEF_HEALTH_SCALAR_PAP_BONUS;
 		}
 	
 	}
@@ -753,12 +754,12 @@ thief_zombie_think()
 	if( pap_multiplier < 1 )
 		pap_multiplier = 1;
 
-	start_health = level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR * num_players * pap_multiplier;
+	start_health = int( level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR * num_players * pap_multiplier );
 		
 		//Print out zombie health, health after scalling and health after pap
-		iprintln( "Zombie Health: " + level.zombie_health );
-		iprintln( "Health after scaler: " + level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR * num_players );
-		iprintln( "Health after pap: " + start_health );
+		//iprintln( "Zombie Health: " + level.zombie_health );
+		//iprintln( "Health after scaler: " + level.zombie_health * level.VALUE_THIEF_HEALTH_SCALAR * num_players );
+		//iprintln( "Health after pap: " + start_health );
 
 
 	//start_health = thief_scale_health( start_health );
@@ -906,7 +907,7 @@ thief_zombie_watch_explosive()
 		old_speed = self.thief_speed;
 
 		self.thief_speed = "walk";
-		wait( 2 );
+		wait( 3 );
 
 		self.thief_speed = old_speed;
 		wait( 30 );

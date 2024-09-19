@@ -49,7 +49,7 @@ main()
 	//Overrides	
 	/* 										*/
 	level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=1;	///
+	level.starting_round_override=5;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -576,7 +576,9 @@ reimagined_init_level()
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
-	level.VALUE_THIEF_HEALTH_SCALAR = 16;	//this many times avg zombie max health of this round
+	level.VALUE_THIEF_HEALTH_SCALAR = 20;	//this many times avg zombie max health of this round
+	level.VALUE_THIEF_HEALTH_SCALAR_PAP_BONUS = 1.75;	//Thief gets 75% more health per each player with PaP weapon
+	level.VALUE_THIEF_HEALTH_SCALAR_x2_BONUS = 2.5;	//Thief gets 150% more health per each player with PaP weapon
 
 	//Weapon Pap
 	level.VALUE_PAP_COST = 5000;
@@ -2243,29 +2245,7 @@ watch_player_perkslots()
 	}
 
 }
-/*
-	get_upgraded_weapon_string
-	ugrade_weapon_string
-	string_weapon_upgrade
 
-*/
-
-get_upgraded_weapon_string( weapon )
-{
-	if( IsDefined( self.packapunch_weapons[ weapon ] ) )
-	{
-		//if substring allready contains _x2, then exit for loop
-		if( isSubStr( weapon, "_x2" ) )	{
-			//nothing
-		}
-		else if( self.packapunch_weapons[ weapon ] > 1 )
-		{
-			weapon += "_x2";
-		}
-	}
-
-	return weapon;
-}
 
 /*
 	"weapon" is "base weapon" that is going to be upgraded by PaP
@@ -8479,7 +8459,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 						{
 							iDamage = int(iDamage * 0.5);
 						}
-						
+
 					}
 						
 					self.previous_zomb_attacked_by = hash;
@@ -8881,6 +8861,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Has Drop: " + self.hasDrop);
 	//iprintln("Final Damage 0: ");
 	iprintln("Zombie hash: " + self.zombie_hash);
+	iprintln("Zomb health: " + self.health);
+	iprintln("Zomb max health: " + self.maxhealth);
+
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	dwWeap = WeaponDualWieldWeaponName( weapon );
@@ -9320,7 +9303,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//return final_damage;
 	}
 
-	//iprintln("Final Damage 5: " + final_damage);
+	iprintln("Final Damage 5: " + final_damage);
 
 	// damage scaling for explosive weapons
 	// consistent damage and scales for zombies farther away from explosion better
@@ -9774,8 +9757,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;
 		}
 
-		//iprintln("Final Damage 6: " + final_damage);
-
+		iprintln("Final Damage 6: " + final_damage);
+		
 		if( IsSubStr( weapon, "x2" ) ) 
 		{
 			//flat 4x damage increase for double pap'ed weapon
@@ -9833,9 +9816,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			//If upgrad multiply damage by 10, else by 5
 			if( IsSubStr( weapon, "upgraded" ) )
-				final_damage = int( final_damage * 10 );
-			else
 				final_damage = int( final_damage * 5 );
+			else
+				final_damage = int( final_damage * 2 );
 		}
 
 
@@ -10305,7 +10288,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 
-	//iprintln("Final Damage 7: " + final_damage);
+	iprintln("Final Damage 7: " + final_damage);
 
 
 	

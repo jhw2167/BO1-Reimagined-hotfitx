@@ -1082,6 +1082,37 @@ adjust( editing, adj )
 
 /*
 	###############################
+   	ZOMBIE UTILITY
+	###############################
+*/
+
+/*
+	get_upgraded_weapon_string
+	ugrade_weapon_string
+	string_weapon_upgrade
+
+*/
+
+get_upgraded_weapon_string( weapon )
+{
+	if( IsDefined( self.packapunch_weapons[ weapon ] ) )
+	{
+		//if substring allready contains _x2, then exit for loop
+		if( isSubStr( weapon, "_x2" ) )	{
+			//nothing
+		}
+		else if( self.packapunch_weapons[ weapon ] > 1 )
+		{
+			weapon += "_x2";
+		}
+	}
+
+	return weapon;
+}
+
+
+/*
+	###############################
     GENERAL UTILITY
 	###############################
 */
