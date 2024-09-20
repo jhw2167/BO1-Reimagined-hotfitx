@@ -20,7 +20,7 @@ generate_hint_title( hint_title, hint_text, time )
 	title.horzAlign = "user_center";
 	title.vertAlign = "user_top";
 	title.foreground = true;
-	title.font = "extrabig";
+	title.font = "big";
 	title.fontScale = 3.2;
 	title.alpha = 0;
 	title.color = (0.5, 0.0, 0.0);
@@ -194,7 +194,7 @@ generate_perk_hint( perkOrWeapon )
 	title.horzAlign = "user_center";
 	title.vertAlign = "user_bottom";
 	title.foreground = true;
-	title.font = "extrabig";
+	title.font = "big";
 	title.fontScale = 1.6;
 	title.alpha = 0;
 	title.color = ( 1.0, 1.0, 1.0 );

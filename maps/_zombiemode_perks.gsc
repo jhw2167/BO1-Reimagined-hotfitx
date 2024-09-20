@@ -6457,8 +6457,8 @@ zombie_watch_vulture_drop_bonus()
 
 		is_valid_ammo_bonus_weapon( weapon )
 		{
-			iprintln( "Checking is valid bonus ammo: "  );
-			iprintln( "Weapon: " + weapon );
+			//iprintln( "Checking is valid bonus ammo: "  );
+			//iprintln( "Weapon: " + weapon );
 			if( !isDefined( weapon ) || weapon == "none" )
 				return false;
 

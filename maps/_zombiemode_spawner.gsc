@@ -287,11 +287,11 @@ zombie_spawn_init( animname_set )
 		&& maps\_zombiemode::get_total_remaining_enemies() > 5
 		) 
 		{
-			iprintln("Zombie watching despawn: ");
+			//iprintln("Zombie watching despawn: ");
 			self thread zombie_watch_despawn_no_damage();
 		} 
 		else {
-			iprintln("Zombie not watching despawn: ");
+			//iprintln("Zombie not watching despawn: ");
 		}
 
 		//Reimagined-Expanded, zombie drops
@@ -516,12 +516,12 @@ zombie_watch_despawn_no_damage( initialDelay )
 	if( initialDelay )
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 
-	iprintln("1: initial delay" + self.zombie_hash);
+	//iprintln("1: initial delay" + self.zombie_hash);
 	while( !checkObjectInPlayableArea( self ) ) {
 		wait(0.5);
 	}
 	
-	iprintln("2: Playble area" + self.zombie_hash);
+	//iprintln("2: Playble area" + self.zombie_hash);
 
 	if( !Isdefined(self) || !IsAlive(self) )
 		return;
