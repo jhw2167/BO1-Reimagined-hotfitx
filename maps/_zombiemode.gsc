@@ -55,7 +55,7 @@ main()
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=7;	///per round
+	//level.calculate_amount_override=7;	///per round
 	level.apocalypse_override=true;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -726,14 +726,15 @@ reimagined_init_level()
 	level.VALUE_CHERRY_PRO_SCALAR = 16/10;	//scales range, damage, max enemies by ~2
 
 	//Vulture
+	level.THRESHOLD_VULTURE_BONUS_AMMO_PICKUP_RANGE = 48;
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 40;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.03;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
 	level.VALUE_VULTURE_MIN_AMMO_BONUS = 6;
-	level.VALUE_VULTURE_MAX_AMMO_BONUS = 40;
+	level.VALUE_VULTURE_MAX_AMMO_BONUS = 25;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 40;			//1-1000, 4% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 600;			//1-1000, 4% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -6255,22 +6256,13 @@ determine_horde_wait( count )
 
 		//If less than 3/4 of horde, small delay	//HERE
 		delay = level.VALUE_ZOMBIE_SPAWN_DELAY;
-		iprintln( "start: " );
-		iprintln( "level delay: " );
-		iprintln( level.VALUE_ZOMBIE_SPAWN_DELAY );
-		//iprintln( level.VALUE_ZOMBIE_SPAWN_DELAY );
-		iprintln( "count: " + get_enemy_count() );
-		
-		
+				
 		if( get_enemy_count() < 12 )
 			delay -= 4;
 		else if( get_enemy_count() < 20 )
 			delay -= 2;
 		else if( get_enemy_count() < 32 )
 			delay -= 1;
-
-		iprintln( "Delay: " );
-		iprintln( delay );
 
 		if( delay > 0 )
 			wait( delay );
@@ -6814,7 +6806,6 @@ reimagined_expanded_round_start()
 			{
 				if( zombies[i].zombie_move_speed != "sprint" ) 
 				{
-					iprintln( "SPRINTING LAST ZOMBIE: " + zombies[i].zombie_hash );
 					zombies[i].zombie_move_speed_original = "sprint";
 					zombies[i] maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
 				}
@@ -10446,6 +10437,9 @@ hasProPerk( perk )
 
 is_boss_zombie( animname )
 {
+	if(!isDefined(animname))
+		return false;
+
 	return (
 	   animname == "thief_zombie"
 	|| animname == "director_zombie" 
@@ -10458,6 +10452,10 @@ is_boss_zombie( animname )
 
 is_special_zombie( animname )
 {
+	
+	if(!isDefined(animname))
+		return false;
+
 	return 
 	(  
 	   animname == "monkey"

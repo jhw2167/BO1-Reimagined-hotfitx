@@ -760,10 +760,6 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 
 	self.deathanim = random(death_anims);
 
-	if( self.animname != "zombie" ) {
-		//iprintln( "zombie_spawn_init -> move speed = " + self.zombie_move_speed );
-	}
-
 	// var = 0;
 
 	switch( new_move_speed )
@@ -795,12 +791,12 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 		self set_run_anim( "sprint" + var );
 		self.run_combatanim = level.scr_anim[self.animname]["sprint" + var];
 		self.zombie_speed_indx = 2;
-		iprintln( "zombie_spawn_init -> sprinter " + self.zombie_hash );
+		//iprintln( "zombie_spawn_init -> sprinter " + self.zombie_hash );
 		break;
 	
 	case "super-sprint":
 		//var = randomintrange(5, 7);
-		iprintln( "zombie_spawn_init -> super-sprinter " + self.zombie_hash );
+		//iprintln( "zombie_spawn_init -> super-sprinter " + self.zombie_hash );
 		self.zombie_speed_indx = 3;
 
 		var=5;
@@ -812,7 +808,7 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 		break;
 
 	case "terror":
-		iprintln( "zombie_spawn_init -> terror " + self.zombie_hash );
+		//iprintln( "zombie_spawn_init -> terror " + self.zombie_hash );
 		self.zombie_speed_indx = 4;
 		///*
 		var=5;

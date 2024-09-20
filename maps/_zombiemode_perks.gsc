@@ -6053,11 +6053,15 @@ init_vulture()
 		else if( IsDefined( struct.animname ) )	//struct could be a zombie
 		{
 			//Check for bosses/zombies who are no longer with us
-			if( !IsAlive( struct ) )
+			if( !IsAlive( struct ) || ( IsDefined(self.health) && self.health <= 0 ) )
 				return false;
 
 			inPlayableArea = checkObjectInPlayableArea( struct );
 			if( !inPlayableArea )
+				return false;
+
+			//Fix for thief zombie showing after dead
+			if( IsDefined( struct.state) && struct.state == "exiting" )
 				return false;
 
 			cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
@@ -6349,7 +6353,6 @@ zombie_watch_vulture_drop_bonus()
 		}
 		
 		drop waittill_any_or_timeout( level.VALUE_VULTURE_BONUS_DROP_TIME, "powerup_grabbed");
-		PlayFxOnTag( level._effect["powerup_grabbed_wave_solo"] , drop, "tag_origin" );
 		drop notify( "vulture_drop_done" );
 
 		wait( 1 );	//wait for players to cleanup fx, may need to be longer
@@ -6375,8 +6378,12 @@ zombie_watch_vulture_drop_bonus()
 			
 			while( player HasPerk( level.VLT_PRK ) ) 
 			{
-				if( player IsTouching( self ) ) 
+				threshold = level.THRESHOLD_VULTURE_BONUS_AMMO_PICKUP_RANGE;
+				did_pickup = distance2d( player.origin, self.origin ) < threshold;
+				if( did_pickup ) 
 				{
+					playfx( level._effect["powerup_grabbed_solo"], self.origin );
+					//playfx( level._effect["powerup_grabbed_wave_solo"], self.origin );
 					player thread vulture_drop_ammo_bonus();
 					self notify( "powerup_grabbed" );
 					return;
@@ -6421,26 +6428,43 @@ zombie_watch_vulture_drop_bonus()
 			{
 				if( validAmmoWeapon )
 				{
+					/*
 					n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
 					n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
 					ammo_fraction = RandomFloatRange( 0, level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION );
 					n_ammo_refunded = clamp( Int( n_ammo_count_max * ammo_fraction ), 1, n_ammo_count_max );
 
-					if( WeaponClass(str_weapon_current) == "spread" )
-					{
-						n_ammo_refunded = RandomIntRange( 1, 5 );
-					}
-
+	
 					if( n_ammo_refunded < level.VALUE_VULTURE_MIN_AMMO_BONUS )
 						n_ammo_refunded = level.VALUE_VULTURE_MIN_AMMO_BONUS;
 					else if( n_ammo_refunded > level.VALUE_VULTURE_MAX_AMMO_BONUS )
 						n_ammo_refunded = level.VALUE_VULTURE_MAX_AMMO_BONUS;
+					*/
+
+					n_ammo_refunded = RandomintRange( level.VALUE_VULTURE_MIN_AMMO_BONUS, level.VALUE_VULTURE_MAX_AMMO_BONUS );
+
+					//If weapon class is spread, give small portion of ammo
+					if( WeaponClass(str_weapon_current) == "spread" )
+					{
+						n_ammo_refunded = RandomIntRange( 1, level.VALUE_VULTURE_MIN_AMMO_BONUS );
+					}
+
+					//if Weapon class is pistol, take half of the ammo
+					if( WeaponClass(str_weapon_current) == "pistol" )
+					{
+						n_ammo_refunded = int( n_ammo_refunded / 2 );
+					}
+
 
 					if( self hasProPerk( self.VLT_PRO ) )
-						n_ammo_refunded *= level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS;
+						n_ammo_refunded = int( level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS * n_ammo_refunded );
+
+					n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
+					n_ammo_count_max = WeaponMaxAmmo( str_weapon_current );
 
 					stock_ammo = n_ammo_count_current + n_ammo_refunded;
 
+					iprintln( "Current Ammo: " + n_ammo_count_current + "  New Stock: " + stock_ammo );
 					if( stock_ammo > n_ammo_count_max )
 						stock_ammo = n_ammo_count_max;
 					
