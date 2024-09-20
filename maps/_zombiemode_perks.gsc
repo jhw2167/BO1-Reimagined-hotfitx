@@ -2343,12 +2343,8 @@ vending_trigger_think()
 		if ( players.size == 1 )
 		{
 			flag_set( "solo_game" );
-			level.solo_lives_given = 0;
-			players[0].lives = 0;
-			if(level.gamemode == "survival")
-			{
-				players[0].lives = 3;
-			}
+			level.solo_lives_given = 3;
+			players[0].lives = 3;
 			level maps\_zombiemode::zombiemode_solo_last_stand_pistol();
 		}
 	}
@@ -6061,7 +6057,7 @@ init_vulture()
 				return false;
 
 			//Fix for thief zombie showing after dead
-			if( IsDefined( struct.state) && struct.state == "exiting" )
+			if( IsDefined( struct.state ) && struct.state == "exiting" )
 				return false;
 
 			cutoffClose = checkDist( player.origin, struct.origin, level.VALUE_VULTURE_HUD_DIST_CUTOFF );
@@ -6379,7 +6375,7 @@ zombie_watch_vulture_drop_bonus()
 			while( player HasPerk( level.VLT_PRK ) ) 
 			{
 				threshold = level.THRESHOLD_VULTURE_BONUS_AMMO_PICKUP_RANGE;
-				did_pickup = distance2d( player.origin, self.origin ) < threshold;
+				did_pickup = checkDist( player.origin, self.origin, threshold );
 				if( did_pickup ) 
 				{
 					playfx( level._effect["powerup_grabbed_solo"], self.origin );

@@ -536,24 +536,52 @@ zombie_watch_despawn_no_damage( initialDelay )
 		wait(0.1);
 	}
 
-	if( !level.tough_zombies ) 
-	{
-		iprintln("3: Speed up " + self.zombie_hash);
-		//if animaname is not zombie return
-		if( self.animname != "zombie" )
-			return;
+	/*
+	  First attempt to speed up the zombie
 
-		self zombie_speed_up( 1, true );
-		if( self.zombie_speed_og_indx < 4 ) {
-			self.zombie_despawn = false;
-			self thread zombie_watch_despawn_no_damage( false );
+	*/
+		if( self.animname == "zombie" || self.animname == "quad_zombie" )
+		{
+			//Deal with crawler zombies
+			if( !is_true(self.has_legs) )
+			{
+				if( level.zombie_total < 5 ) 
+				{
+					self thread zombie_watch_despawn_no_damage( false );
+					return;	//don't kill the crawlers with few zombies left
+				}
+					
+			}
+			else if( level.apocalypse)
+			{
+				if( self.zombie_speed_og_indx < 4 ) 
+				{
+					self zombie_speed_up( 1, true );
+					self.zombie_despawn = false;
+					self thread zombie_watch_despawn_no_damage( false );
+				}
+			}
+			else	//Classic Mode!
+			{
+				if( self.zombie_speed_og_indx < 3 ) 
+				{
+					self zombie_speed_up( 1, true );
+					self.zombie_despawn = false;
+					self thread zombie_watch_despawn_no_damage( false );
+					return;
+				}
+				else 
+				{
+					return;
+				}
+
+			}
+
 		}
-			
-		//self animscripted( "attack_anim", self.origin, self.angles, level.scr_anim[self.animname]["sprint5"] );
-
-		return;
-	}
 	
+			
+
+	//Only reached in apocalypse mode - kill the zombie and no points can be salvaged
 	respawn_queue_interface("PUSH", self.zombie_type);
 	level.zombie_total++;
 	self DoDamage(self.health + 100, self.origin);

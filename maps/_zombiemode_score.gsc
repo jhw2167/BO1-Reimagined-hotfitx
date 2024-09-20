@@ -46,7 +46,7 @@ player_add_points( event, mod, hit_location, zombie)
 			{
 				//No points for WondwerWeapons, double for pistols
 				
-				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod );
+				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod, false, zombie );
 				if( weapon_multiplier < 1 ) 
 				{
 					player_points *= weapon_multiplier;
@@ -99,7 +99,7 @@ player_add_points( event, mod, hit_location, zombie)
 			player_points = zombie_calculate_damage_points( level.apocalypse, zombie );
 			if( level.apocalypse ) 
 			{
-				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod, true );
+				weapon_multiplier = weapon_points_multiplier( self getcurrentweapon(), mod, true, zombie );
 				if( weapon_multiplier < 1 ) 
 				{
 					self.gross_possible_points += player_points; //points u could have got if u had a better weapon
@@ -135,6 +135,8 @@ player_add_points( event, mod, hit_location, zombie)
 
 		case "thundergun_fling":
 			player_points = mod;
+			if( level.apocalypse )
+				player_points = 0;
 			break;
 
 		case "hacker_transfer":
@@ -226,7 +228,7 @@ player_add_points( event, mod, hit_location, zombie)
 	}
 
 //Reimagined-Expanded
-weapon_points_multiplier( weapon, mod, isForDamage ) 
+weapon_points_multiplier( weapon, mod, isForDamage, zombie ) 
 {
 	multiplier = 1;
 	//Reimagined-Expanded dont want to do a whole extra switch case for double pap damage, so we take subtring
@@ -244,7 +246,8 @@ weapon_points_multiplier( weapon, mod, isForDamage )
 	if( mod == "MOD_MELEE" )
 		return 1;
 
-	switch( weapon ) {
+	switch( weapon ) 
+	{
 		case "cz75_zm":
 		case "cz75dw_zm":
 		case "python_zm":
@@ -269,16 +272,20 @@ weapon_points_multiplier( weapon, mod, isForDamage )
 		case "tesla_gun_upgraded_zm":
 		case "thundergun_zm":
 		case "thundergun_upgraded_zm":
-		case "ray_gun_zm":
-		case "ray_gun_upgraded_zm":
+		//case "ray_gun_zm":
+		//case "ray_gun_upgraded_zm":
 		case "starburst_ray_gun_zm":
 		case "freezegun_zm":
 		case "freezegun_upgraded_zm":
 		case "shrink_ray_zm":
 		case "shrink_ray_upgraded_zm":
 		case "humangun_upgraded_zm":
+
+		iprintln("Wonder weapon: " + weapon);
+		
 		if( mod != "MOD_GRENADE_SPLASH" )
 			multiplier = 0;
+
         break;
 
 	}

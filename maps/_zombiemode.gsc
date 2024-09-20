@@ -426,7 +426,7 @@ reimagined_init_level()
 
 	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 
-	level.SUPER_SPRINTER_SPEED = 85;
+	level.SUPER_SPRINTER_SPEED = 70;
 	level.TERROR_SPEED = 140;
 
 	level.VALUE_ZOMBIE_HASH_MAX=10000;		// Zombies are given "hash" as an identifier
@@ -599,15 +599,15 @@ reimagined_init_level()
 	level.VALUE_PAP_COST = 5000;
 	level.VALUE_PAP_EXPENSIVE_COST = 10000;
 	level.VALUE_PAP_X2_COST = 10000;
-	level.VALUE_PAP_X2_EXPENSIVE_COST = 30000;
+	level.VALUE_PAP_X2_EXPENSIVE_COST = 40000;
 
 	level.VALUE_PAP_BONFIRE_COST = 1000;
 	level.VALUE_PAP_EXPENSIVE_BONFIRE_COST = 5000;
 	level.VALUE_PAP_X2_BONFIRE_COST = 5000;
 	level.VALUE_PAP_X2_EXPENSIVE_BONFIRE_COST = 20000;
 	
-	level.VALUE_PERK_PUNCH_COST = 10000;
-	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 15000;
+	level.VALUE_PERK_PUNCH_COST = 20000;
+	level.VALUE_PERK_PUNCH_EXPENSIVE_COST = 40000;
 
 
 	//Weapon Consts
@@ -726,7 +726,7 @@ reimagined_init_level()
 	level.VALUE_CHERRY_PRO_SCALAR = 16/10;	//scales range, damage, max enemies by ~2
 
 	//Vulture
-	level.THRESHOLD_VULTURE_BONUS_AMMO_PICKUP_RANGE = 48;
+	level.THRESHOLD_VULTURE_BONUS_AMMO_PICKUP_RANGE = 64;
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 40;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.03;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
@@ -734,7 +734,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 25;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 600;			//1-1000, 4% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 60;			//1-1000, 4% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -1088,6 +1088,7 @@ reimagined_init_level()
 reimagined_init_player()
 {
 	//init-player
+	self.lives = 3;
 
 	self.gross_points = 500;
 	self.gross_possible_points = 500;
@@ -1342,6 +1343,7 @@ watch_player_utility()
 		for(i=0;i<zombies.size;i++)
 		{
 			if( !is_boss_zombie( zombies[i].animname ) )
+			//Name: DoDamage( <health>, <source position>, <attacker>, <destructible_piece_index>, <means of death>, <hitloc> )
 				zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
 		}
 
@@ -1414,11 +1416,11 @@ wait_set_player_visionset()
 	if( is_true( level.dev_only ) )
 	{
 		//GIVE PERKS
-		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
@@ -8766,7 +8768,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 	// when it wasn't. This led to SREs about undefined and int being compared on death (self.lives was never defined on the host). While
 	// adding the check for the solo game flag we found that we would have to create a complex OR inside of the if check below. By breaking
 	// the conditions out in to their own variables we keep the complexity without making it look like a mess.
-	solo_death = ( players.size == 1 && flag( "solo_game" ) && (self.lives == 0 || self.num_perks == 0) ); // there is only one player AND the flag is set AND self.lives equals 0
+	solo_death = ( players.size == 1 && flag( "solo_game" ) && ( self.lives == 0 ) ); // there is only one player AND the flag is set AND self.lives equals 0
 	non_solo_death = ( players.size > 1 || ( players.size == 1 && !flag( "solo_game" ) ) ); // the player size is greater than one OR ( players.size equals 1 AND solo flag isn't set )
 
 	if ( (solo_death || non_solo_death) ) // if only one player on their last life or any game that started with more than one player
@@ -8780,7 +8782,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 
 	if( count == players.size )
 	{
-		if ( players.size == 1 && flag( "solo_game" ) && self.lives > 0 && self.num_perks > 0 )
+		if ( players.size == 1 && flag( "solo_game" ) && self.lives > 0 )
 		{
 			self thread wait_and_revive();
 			return finalDamage;
