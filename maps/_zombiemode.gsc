@@ -3054,7 +3054,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.1.4" );
+	SetDvar( "zm_mod_version", "2.1.5" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -6745,7 +6745,7 @@ reimagined_expanded_round_start()
 		}
 
 	//Drop Increment for later rounds
-	if( level.extra_drops )
+	//if( level.extra_drops )
 	{
 		if( level.round_number >= level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND )
 		{
@@ -7407,8 +7407,8 @@ setApocalypseOptions()
 	//level thread wait_print("Apocalypse: " , level.apocalypse);
 	if( level.user_options == 0)
 	{
-		level.apocalypse = true;
-		level.classic = false;
+		level.apocalypse = false;
+		level.classic = true;
 		level.alt_bosses = 1;
 		level.no_bosses = false;
 		level.expensive_perks = false;
@@ -7417,9 +7417,27 @@ setApocalypseOptions()
 		level.total_perks = 5;
 		level.bo2_perks = true;
 		level.extra_drops = false;
-		level.server_cheats = false;
+		level.server_cheats = true;
 		level.starting_round = 1;
 	}
+	else
+	{
+		//Classic mode
+		if( level.apocalypse == 0 ) {
+			level.classic = true;
+			level.apocalypse = false;
+		}
+		else if( level.apocalypse == 1 ) {
+			level.classic = false;
+			level.apocalypse = false;
+		}
+		else if( level.apocalypse == 2 ) {
+			level.classic = false;
+			level.apocalypse = true;
+		}
+	}
+	
+	
 	
 	//level thread wait_print("User Ops: " , level.user_options);
 	//level thread wait_print("Server cheats: ", level.server_cheats);

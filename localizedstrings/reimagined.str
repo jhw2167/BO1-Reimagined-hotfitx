@@ -78,6 +78,19 @@ LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Vulture Aid 2.0 [Cost: &&1]\n
 REFERENCE          	PERK_WIDOWSWINE
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Widow's Wine 2.0 [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
+//Classic Hintstrings, no upgraded perks:
+
+REFERENCE          	ZOMBIE_PERK_CHERRY
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Electric Cherry 2.0 [Cost: &&1]"
+
+REFERENCE          	ZOMBIE_PERK_VULTURE
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Vulture Aid 2.0 [Cost: &&1]"
+
+REFERENCE          	ZOMBIE_PERK_WIDOWSWINE
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Widow's Wine 2.0 [Cost: &&1]"
+
+
+
 REFERENCE          	WINE_GRENADES
 LANG_ENGLISH        "Web Grenades"
 
@@ -1158,8 +1171,11 @@ LANG_ENGLISH       	"PAUSE ZOMBIE SPAWNING"
 REFERENCE          	APOCALYPSE
 LANG_ENGLISH       	"DIFFICULTY"
 
+REFERENCE          	DIFFICULTY_CLASSIC
+LANG_ENGLISH       	"CLASSIC (VANILLA)"
+
 REFERENCE          	DIFFICULTY_EASY
-LANG_ENGLISH       	"CLASSIC (NORMAL)"
+LANG_ENGLISH       	"REIMAGINED (EASY)"
 
 REFERENCE          	DIFFICULTY_HARD
 LANG_ENGLISH       	"APOCALYPSE (HARD)"
