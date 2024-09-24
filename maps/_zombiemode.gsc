@@ -1417,8 +1417,8 @@ wait_set_player_visionset()
 	if( is_true( level.dev_only ) )
 	{
 		//GIVE PERKS
-		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
@@ -1427,7 +1427,6 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.WWN_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
 		//give knife_ballistic_upgraded_zm_x2
@@ -6260,15 +6259,7 @@ determine_horde_wait( count )
 
 		//If less than 3/4 of horde, small delay	//HERE
 		delay = level.VALUE_ZOMBIE_SPAWN_DELAY;
-		if( !IsDefined( level.VALUE_ZOMBIE_SPAWN_DELAY ) ) {
-			iprintln( "Delay not defined" );
-			delay = 4.5;
-		} else
-		{
-			iprintln( "Delay defined " );
-			iprintln( level.VALUE_ZOMBIE_SPAWN_DELAY );
-		}
-
+	
 		//Adjust delay based on round number
 		if( level.round_number < 5 )
 			delay -= 2;
@@ -6296,7 +6287,7 @@ determine_horde_wait( count )
 		if( delay > 0 )
 			wait( delay );
 
-		iprintln( "Delay: " + delay );
+		//iprintln( "Delay: " + delay );
 }
 
 /*
@@ -6727,6 +6718,7 @@ reimagined_expanded_round_start()
 		if( level.round_number < 8 )
 		{
 			level.zombie_move_speed = 25;	//down from 35
+		}
 		else if( level.round_number < 14 )
 		{
 			level.zombie_move_speed = 50;	//runners, sparse sprinters
@@ -7145,6 +7137,7 @@ chalk_one_up(override_round_number)
 	round = undefined;
 	if( intro )
 	{
+		wait( 8 );
 		// Hud1 shader
 		if( round_number >= 1 && round_number <= 5 )
 		{
@@ -7537,6 +7530,7 @@ setApocalypseOptions()
 	level.max_perks = level.total_perks;
 
 	level thread print_apocalypse_options();
+	//HERE fade_introblack
 
 }
 
@@ -7558,35 +7552,47 @@ wait_print( msg, data )
 
 print_apocalypse_options()
 {
-	flag_wait("begin_spawning");
-	wait(10);
+	level waittill("hold_introblack");
+	//wait(10);
 
 	players = GetPlayers();
-	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240 );
+	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300 );
+
+	OPTIONS_TIME = 8;
 	for(i=0; i<players.size; i++)
 	{
 		j = 0;
 		if( level.apocalypse )
-			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies", 8);
+			players[i] thread generate_hint_title(undefined, "Apocalypse Zombies", OPTIONS_TIME);
+		else if( level.classic )
+			players[i] thread generate_hint_title(undefined, "Classic Zombies", OPTIONS_TIME);
 		else
-			players[i] thread generate_hint_title(undefined, "Classic Zombies");
+			players[i] thread generate_hint_title(undefined, "Reimagined Zombies", OPTIONS_TIME);
 
 		wait (0.5);
 
+		//BO2 Perks on and off
+		if( level.bo2_perks )
+			{ players[i] thread generate_hint(undefined, "BO2 Perks: On", offsets[j], OPTIONS_TIME ); j++; }
+		else
+			{ players[i] thread generate_hint(undefined, "BO2 Perks: Off", offsets[j], OPTIONS_TIME ); j++; }
+
+		//If classic zombies, "Upgraded Perks" is off
+		if( level.classic )
+			{ players[i] thread generate_hint(undefined, "Upgraded Perks: Off", offsets[j], OPTIONS_TIME ); j++; }
+		else
+			{ players[i] thread generate_hint(undefined, "Upgraded Perks: On", offsets[j], OPTIONS_TIME ); j++; }
+
+		//Other settings
 		if( level.expensive_perks )
 			{ players[i] thread generate_hint(undefined, "Expensive Perks: On", offsets[j] ); j++; }
 		if( level.tough_zombies )
 			{ players[i] thread generate_hint(undefined, "Tough Zombies: On", offsets[j] ); j++; }
 		if( level.zombie_types )
 			{ players[i] thread generate_hint(undefined, "Zombie Types: On", offsets[j] ); j++; }
-
-		if( level.bo2_perks )
-			{ players[i] thread generate_hint(undefined, "BO2 Perks: On", offsets[j] ); j++; }
-		else
-			{ players[i] thread generate_hint(undefined, "BO2 Perks: Off", offsets[j] ); j++; }
-
 		if( level.extra_drops )
 			{ players[i] thread generate_hint(undefined, "Extra Drops: On", offsets[j] ); j++; }
+	
 		if( level.alt_bosses == 2 )
 		{
 			players[i] thread generate_hint(undefined, "Zombie Bosses: Tough", offsets[j] ); 
@@ -7603,14 +7609,17 @@ print_apocalypse_options()
 			j++;
 		}
 		
-		wait(0.5);
+		//wait(0.5);
+		j++;
 		if( level.apocalypse )
 			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j], 4);
 		else
 			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j], 4);
 		j++;
 
-		wait(4);
+		//Count max j++ statements up to here: 7
+
+		wait(6);
 		players[i] generate_hint(undefined, "In-Game Hints can be Toggled in the Settings", offsets[ j + 1 ], 2);
 
 		wait(2);

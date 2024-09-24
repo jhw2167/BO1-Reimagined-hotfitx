@@ -786,7 +786,7 @@ custom_zombie_introscreen()
 
 	wait( 1.5 );
 
-	level thread maps\_zombiemode_utility::fade_in();
+	level maps\_zombiemode_utility::fade_in(6);
 }
 
 onPlayerConnect()

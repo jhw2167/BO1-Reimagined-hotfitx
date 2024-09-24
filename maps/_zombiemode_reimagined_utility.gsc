@@ -32,8 +32,10 @@ generate_hint_title( hint_title, hint_text, time )
 	title.alpha = 1;
 
     wait(time);
-    title FadeOverTime( 4 );
+    title FadeOverTime( 2 );
 	title.alpha = 0;
+
+	wait(2);
 
 	title destroy_hud();
 }

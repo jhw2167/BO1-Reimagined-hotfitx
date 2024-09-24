@@ -3550,6 +3550,7 @@ fade_in( hold_black_time, fade_in_time, freeze_controls )
 		}
 	}
 
+	level notify("hold_introblack");
 	level.introblack.alpha = 1;
 
 	if( IsDefined( hold_black_time ) )
