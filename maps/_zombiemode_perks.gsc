@@ -2555,7 +2555,7 @@ vending_trigger_think()
 			if( level.classic )
 				self SetHintString( &"ZOMBIE_PERK_ADDITIONALWEAPONPERK", cost );
 			else
-				self SetHintString( &"REIMAGINED_PERK_ADDITIONALWEAPONPERK", cost, upgrade_perk_cost );
+				self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_extraammo_upgrade":
@@ -6594,6 +6594,7 @@ init_widows_wine()
 
 player_watch_widowswine()
 {
+	self thread player_give_wine_grenades( level.WWN_PRK + "_stop" );
 	self thread player_watch_widows_warning();
 }
 
@@ -6606,6 +6607,10 @@ watch_widowswine_upgrade( stop_str )
 
 player_give_wine_grenades( stop_str )
 {
+	//Check if player has any other tactical grenades
+	if( IsDefined( self get_player_tactical_grenade() )  )
+		return;
+	
 	self giveweapon( "bo3_zm_widows_grenade" );
 	self set_player_tactical_grenade( "bo3_zm_widows_grenade" );
 	
@@ -6676,6 +6681,7 @@ player_watch_widows_warning()
 
 				count_zombs_behind++;
 				heavy_warning = count_zombs_behind >= level.THRESHOLD_WIDOWS_COUNT_ZOMBS_HEAVY_WARNING;
+				heavy_warning = false;	//disabled
 				if( heavy_warning && !self.widows_heavy_warning_cooldown )
 				{ 
 					//iprintln("count zombs behind");
@@ -6990,7 +6996,7 @@ player_watch_widows_warning()
 
 player_zombie_handle_widows_poison( zombie )
 {
-	if( is_true( zombie.marked_for_poison ) )
+	if( is_true( zombie.marked_for_poison ) || level.classic )
 		return;
 	else
 		zombie.marked_for_poison = true;
@@ -7001,7 +7007,7 @@ player_zombie_handle_widows_poison( zombie )
 	if( self hasProPerk( level.WWN_PRO ) ) {
 		fraction = level.THRESHOLD_WIDOWS_PRO_POISON_MIN_HEALTH_FRACTION;
 		MAX_TIME = level.THRESHOLD_WIDOWS_PRO_POISON_MAX_TIME;
-		mod = "burned";
+		//mod = "burned";	
 	}
 
 	//min_health = fraction * zombie.maxhealth;
@@ -7021,6 +7027,8 @@ player_zombie_handle_widows_poison( zombie )
 	fx_count = 12;											//Every 3 seconds, play fx
 	count = 0;
 
+	//Play once at start
+	zombie thread zombie_handle_widows_poison_fx();
 
 	while( keepPoison )
 	{
@@ -7039,7 +7047,7 @@ player_zombie_handle_widows_poison( zombie )
 			//PlayFxOnTag( level._effect[ "fx_widows_wine_explode" ], zombie, "tag_origin" );
 			//PlayFxOnTag( level._effect[ "fx_widows_wine_zombie" ], zombie, "tag_origin" );
 			//self PlayLocalSound( "mx_widows_explode" );
-			zombie thread zombie_handle_widows_poison_fx();
+			//zombie thread zombie_handle_widows_poison_fx();
 		}
 		count++;
 	}
@@ -7050,21 +7058,20 @@ player_zombie_handle_widows_poison( zombie )
 //Handle widows poison fx
 
 	
-	zombie_handle_widows_poison_fx( )
+	zombie_handle_widows_poison_fx()
 	{
 		scale = 50;
-		forward = vector_scale( AnglesToForward( self.angles ), scale );
-		//model = Spawn( "script_model", self.origin + forward );
-		//model SetModel( "tag_origin" );
-		//model LinkTo( self, "tag_origin", forward );
-		//model LinkTo( self, "tag_origin" );
+		//forward = vector_scale( AnglesToForward( self.angles ), scale );
+		model = Spawn( "script_model", self GetTagOrigin( "j_SpineLower" ) );
+		model SetModel( "tag_origin" );
+		model LinkTo( self );	//, "j_SpineLower" );
 		
 		condition = self.marked_for_poison && IsAlive( self );
-		time = 4;
+		time = 0.75;	//down from 4, only play fx for 1 second
 		interval = 0.25;
-		//PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], model, "tag_origin" );
-		//HERE
-		PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], self, "j_SpineLower" );
+		PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], model, "tag_origin" );
+		
+		//PlayFxOnTag( level._effect[ "fx_acidgat_explode" ], self, "j_SpineLower" );
 		while( condition )
 		{
 			condition = self.marked_for_poison && IsAlive( self ) && time > 0;
@@ -7072,7 +7079,7 @@ player_zombie_handle_widows_poison( zombie )
 			time -= interval;
 		}
 
-		//model Delete();
+		model Delete();
 	}
 	
 //Handle Widows Grenades
@@ -7082,7 +7089,7 @@ player_watch_widows_grenade( stop_str )
 	self endon( "disconnect" );
 	self endon( "death" );
 
-	while( self hasProPerk( level.WWN_PRO ) )
+	while( self hasProPerk( level.WWN_PRO ) || (level.classic && self HasPerk( level.WWN_PRK )) )
 	{
 
 		self waittill( "grenade_fire", grenade, weapName );

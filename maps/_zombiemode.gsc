@@ -42,6 +42,7 @@ main()
 	level.total_perks=GetDvarInt("zombie_perk_limit");
 	level.bo2_perks=GetDvarInt("zombie_bo2_perks");
 	level.extra_drops=GetDvarInt("zombie_extra_drops");
+	level.weapon_fx=GetDvarInt("zombie_weapon_effects");
 
 	level.starting_round=GetDvarInt("zombie_round_start");
 	level.server_cheats=GetDvarInt("reimagined_cheat");
@@ -60,7 +61,7 @@ main()
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
-	//level.rolling_kill_all_interval=10;	///
+	level.rolling_kill_all_interval=20;	///
 	level.dev_only=true;					///*/
 
 
@@ -1417,7 +1418,7 @@ wait_set_player_visionset()
 	{
 		//GIVE PERKS
 		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
@@ -1426,6 +1427,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.WWN_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
 		//give knife_ballistic_upgraded_zm_x2
@@ -7422,16 +7424,16 @@ setApocalypseOptions()
 	}
 	else
 	{
-		//Classic mode
-		if( level.apocalypse == 0 ) {
+		
+		if( level.apocalypse == 0 ) {	//Classic mode
 			level.classic = true;
 			level.apocalypse = false;
 		}
-		else if( level.apocalypse == 1 ) {
+		else if( level.apocalypse == 1 ) {	//Reimagined mode
 			level.classic = false;
 			level.apocalypse = false;
 		}
-		else if( level.apocalypse == 2 ) {
+		else if( level.apocalypse == 2 ) {	//Apocalypse mode
 			level.classic = false;
 			level.apocalypse = true;
 		}
@@ -7444,11 +7446,15 @@ setApocalypseOptions()
 
 
 	//Apocalypse variables defaults
-	if( IsDefined( level.apocalypse_override ) && !level.apocalypse_override )
+	if( IsDefined( level.apocalypse_override ) && !level.apocalypse_override ) {
 		level.apocalypse = 0;
+	}
+		
 	
-	if(level.apocalypse > 0 || is_true(level.apocalypse_override) )
+	if(level.apocalypse > 0 || is_true(level.apocalypse_override) ) {
 		level.apocalypse = true;
+		level.classic = false;
+	}
 	if(level.expensive_perks > 0 || level.apocalypse)
 		level.expensive_perks = true;
 	if(level.tough_zombies > 0 || level.apocalypse)
@@ -7469,7 +7475,7 @@ setApocalypseOptions()
 
 
 	//Coerce to true so classic players get them too
-	level.extra_drops = true;
+	level.classic = true;
 
 	if(level.apocalypse) 
 	{		
@@ -7752,8 +7758,48 @@ award_grenades_for_survivors()
 			{
 				ammo_clip = max_clip;
 			}
+			else if( players[i] hasProPerk( level.MUL_PRO ) )
+			{
+				ammo_clip = max_clip;
+			}
 
 			players[i] SetWeaponAmmoClip( lethal_grenade, ammo_clip );
+
+			/* 
+				#########################
+			*/
+
+			/* 
+				tactical Grenades
+			*/
+
+			tactical = players[i] get_player_tactical_grenade(); 
+
+			if( !IsDefined(tactical )  )
+				continue;
+
+			//If player has Widows Wine Pro and Widows grenade, give them +1 grenade
+			wine_grenade = "bo3_zm_widows_grenade";
+			if( players[i] hasProPerk( level.WWN_PRK ) && tactical == wine_grenade )
+			{
+				ammo = players[i] GetWeaponAmmoClip( tactical );
+
+				if( players[i] hasProPerk( level.MUL_PRO ) )
+					players[i] SetWeaponAmmoClip( tactical, 4 );
+				else if( ammo < 4 )
+					players[i] SetWeaponAmmoClip( tactical, ammo + 2 );
+
+				continue;
+			}
+
+			//If Player has mule pro, give them a tactical grenade
+			if( players[i] hasProPerk( level.MUL_PRO ) )
+			{
+				ammo = players[i] GetWeaponAmmoClip( tactical );
+				if( ammo < 2 )
+					players[i] SetWeaponAmmoClip( tactical, ammo + 1 );
+			}
+
 		}
 	}
 }
@@ -8562,6 +8608,18 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			else if( self HasPerk( level.WWN_PRK ) && !self.widows_heavy_warning_cooldown )
 			{
 				eAttacker thread maps\_zombiemode_perks::zombie_watch_widows_web( self );
+
+				if( level.classic )
+				{
+					nade = "bo3_zm_widows_grenade";
+					hasWeapon = self HasWeapon( nade );
+					hasWineNade = hasWeapon && (self GetWeaponAmmoClip( nade ) > 0);
+					if( hasWineNade ) {
+						return 0;
+					}
+				}
+				
+					
 			}
 				
 

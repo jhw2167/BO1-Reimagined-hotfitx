@@ -2678,9 +2678,10 @@ treasure_chest_ChooseRandomWeapon( player )
 
 }
 
+//Tags: Mystery box, weapons, box weapons, HERE
 treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 {
-	if(IsDefined(player) || !IsDefined( player.already_got_weapons ) || ( player.already_got_weapons.size > 5 )  )	//Back to regular randomness - Reimagined-Expanded
+	if(IsDefined(player) || !IsDefined( player.already_got_weapons )  )	//Back to regular randomness - Reimagined-Expanded
 		player.already_got_weapons = [];
 
 	keys = GetArrayKeys( level.zombie_weapons );
@@ -2733,6 +2734,14 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 				continue;
 			}
 
+		}
+		else
+		{
+			if( keys[i] == "bo3_zm_widows_grenade" )
+			{
+				//iprintln( "6.6" );
+				continue;
+			} 
 		}
 
 		if(  IsDefined(player.weapon_taken_by_losing_additionalprimaryweapon[0]) )
@@ -3200,7 +3209,17 @@ treasure_chest_weapon_spawn( chest, player, respin )
 			self.weapon_model_dw hide();
 		}
 
-		player.already_got_weapons[player.already_got_weapons.size] = rand;
+		if( !isdefined( player.already_got_weapons_count ) )
+		{
+			player.already_got_weapons_count = 0;
+		}
+		else if( player.already_got_weapons_count > 4 )
+		{
+			player.already_got_weapons_count = 0;
+		}
+
+		player.already_got_weapons[player.already_got_weapons_count] = rand;
+		player.already_got_weapons_count++;
 
 		acquire_weapon_toggle( rand, player );
 
@@ -4476,7 +4495,7 @@ init_includes()
 
 	//Specials
 	//include_weapon( "crossbow_explosive_upgraded_zm_x2", false );
-	include_weapon( "bo3_zm_widows_grenade", false );
+	include_weapon( "bo3_zm_widows_grenade", true );		//in box, only availible with WWn pro
 
 	include_weapon( "sabertooth_zm" );
 	include_weapon( "sabertooth_upgraded_zm", false );
