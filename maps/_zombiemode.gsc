@@ -7502,7 +7502,7 @@ setApocalypseOptions()
 
 
 	//Coerce to true so classic players get them too
-	//level.classic = true;
+	level.classic = true;
 
 	if(level.apocalypse) 
 	{		
@@ -7558,7 +7558,7 @@ print_apocalypse_options()
 	players = GetPlayers();
 	offsets = array( 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300 );
 
-	OPTIONS_TIME = 8;
+	OPTIONS_TIME = 6;
 	for(i=0; i<players.size; i++)
 	{
 		j = 0;
@@ -7585,47 +7585,48 @@ print_apocalypse_options()
 
 		//Other settings
 		if( level.expensive_perks )
-			{ players[i] thread generate_hint(undefined, "Expensive Perks: On", offsets[j] ); j++; }
+			{ players[i] thread generate_hint(undefined, "Expensive Perks: On", offsets[j], OPTIONS_TIME ); j++; }
 		if( level.tough_zombies )
-			{ players[i] thread generate_hint(undefined, "Tough Zombies: On", offsets[j] ); j++; }
+			{ players[i] thread generate_hint(undefined, "Tough Zombies: On", offsets[j], OPTIONS_TIME ); j++; }
 		if( level.zombie_types )
-			{ players[i] thread generate_hint(undefined, "Zombie Types: On", offsets[j] ); j++; }
+			{ players[i] thread generate_hint(undefined, "Zombie Types: On", offsets[j], OPTIONS_TIME ); j++; }
 		if( level.extra_drops )
-			{ players[i] thread generate_hint(undefined, "Extra Drops: On", offsets[j] ); j++; }
+			{ players[i] thread generate_hint(undefined, "Extra Drops: On", offsets[j], OPTIONS_TIME ); j++; }
 	
 		if( level.alt_bosses == 2 )
 		{
-			players[i] thread generate_hint(undefined, "Zombie Bosses: Tough", offsets[j] ); 
+			players[i] thread generate_hint(undefined, "Zombie Bosses: Tough", offsets[j], OPTIONS_TIME );
 			j++;
 		}
 		else if( level.no_bosses )
 		{
-			players[i] thread generate_hint(undefined, "Zombie Bosses: None", offsets[j] ); 
+			players[i] thread generate_hint(undefined, "Zombie Bosses: None", offsets[j], OPTIONS_TIME );
 			j++;
 		}
 		else
 		{
-			players[i] thread generate_hint(undefined, "Zombie Bosses: Normal", offsets[j] ); 
+			players[i] thread generate_hint(undefined, "Zombie Bosses: Normal", offsets[j], OPTIONS_TIME );
 			j++;
 		}
 		
 		//wait(0.5);
 		j++;
 		if( level.apocalypse )
-			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j], 4);
+			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j], OPTIONS_TIME );
 		else
-			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j], 4);
+			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j], OPTIONS_TIME );
 		j++;
 
 		//Count max j++ statements up to here: 7
 
-		wait(6);
-		players[i] generate_hint(undefined, "In-Game Hints can be Toggled in the Settings", offsets[ j + 1 ], 2);
+		wait( OPTIONS_TIME + 1 );
+		players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-5 ], 3);
+		players[i] thread generate_hint(undefined, "Difficulty can be adjusted from the Main Menu 'Game' Settings ", offsets[ offsets.size-3 ], 3);
 
-		wait(2);
+		wait(3);
 		if( IsDefined( level.ARRAY_FREE_PERK_HINTS[level.mapname] ))
 			players[i] generate_hint(undefined, "Free Perk Hint: " + level.ARRAY_FREE_PERK_HINTS[level.mapname],
-				 offsets[ offsets.size-1 ], 2);
+				 offsets[ offsets.size-1 ], 4);
 	}
 	
 }
