@@ -1504,16 +1504,11 @@ powerup_grab()
 					case "full_ammo":
 						level thread full_ammo_powerup( self, players[i] );
 						players[i] thread powerup_vo("full_ammo");
-						if( level.vulture_is_upgraded_drop ) 
-							self thread delay_give_drop( players[i], "full_ammo", 
-							level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME );	
 						break;
 
 					case "restock":
 						level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
 						//players[i] thread powerup_vo("full_ammo");
-						if( level.vulture_is_upgraded_drop ) 
-							level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
 						break;
 
 					case "double_points":

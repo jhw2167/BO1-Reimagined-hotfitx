@@ -731,11 +731,11 @@ reimagined_init_level()
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 40;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.03;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
-	level.VALUE_VULTURE_MIN_AMMO_BONUS = 6;
+	level.VALUE_VULTURE_MIN_AMMO_BONUS = 8;
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 25;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 60;			//1-1000, 4% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 40;			//1-1000, 4% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -10336,9 +10336,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//Widows Wine posion damage
-		if( attacker HasPerk( level.WWN_PRK ) || is_in_array(level.ARRAY_POISON_WEAPONS , weapon) )
+		valid_poison = !is_in_array(level.ARRAY_VALID_SNIPERS, weapon)
+			&& ( attacker HasPerk( level.WWN_PRK ) || is_in_array(level.ARRAY_POISON_WEAPONS , weapon) );
+
+		if( valid_poison )
 		{
 			valid_zomb = is_in_array(level.ARRAY_WIDOWS_VALID_POISON_ZOMBIES, self.animname) && !is_true(self.marked_for_poison);
+
 			if( valid_zomb ) 
 			{
 				if( !isDefined(self.widows_posion_bullet_count) )
