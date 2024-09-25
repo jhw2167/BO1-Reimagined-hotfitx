@@ -6521,7 +6521,8 @@ zombie_watch_vulture_drop_bonus()
 					n_ammo_refunded = RandomintRange( level.VALUE_VULTURE_MIN_AMMO_BONUS, level.VALUE_VULTURE_MAX_AMMO_BONUS );
 
 					//If weapon class is spread, give small portion of ammo
-					if( WeaponClass(str_weapon_current) == "spread" || is_in_array(level.ARRAY_VALID_SNIPERS, weapon) )
+					if( WeaponClass(str_weapon_current) == "spread" 
+						|| is_in_array(level.ARRAY_VALID_SNIPERS, str_weapon_current) )
 					{
 						n_ammo_refunded = RandomIntRange( 1, level.VALUE_VULTURE_MIN_AMMO_BONUS );
 					}

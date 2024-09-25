@@ -784,9 +784,12 @@ custom_zombie_introscreen()
 {
 	flag_wait( "all_players_spawned" );
 
-	wait( 1.5 );
+	//wait( 1.5 );
 
-	level maps\_zombiemode_utility::fade_in(4);
+	if( is_true(level.dev_only) )
+		level maps\_zombiemode_utility::fade_in(2);
+	else
+		level maps\_zombiemode_utility::fade_in(5);
 }
 
 onPlayerConnect()

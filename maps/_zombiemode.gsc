@@ -7500,9 +7500,8 @@ setApocalypseOptions()
 	else
 		level.no_bosses = false;
 
-
-	//Coerce to true so classic players get them too
-	level.classic = true;
+	//Overrides
+	//level.classic = true;
 
 	if(level.apocalypse) 
 	{		

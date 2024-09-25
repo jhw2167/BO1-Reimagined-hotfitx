@@ -1524,11 +1524,6 @@ powerup_grab()
 					case "carpenter": //reimagined-expanded
 						players[i] thread powerup_vo("carpenter");
 						level thread start_carpenter_new( self.origin );
-						
-						if( level.vulture_is_upgraded_drop ) 
-							self thread delay_give_drop( players[i], "carpenter",
-							 level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME );
-						
 						break;
 
 					case "fire_sale":

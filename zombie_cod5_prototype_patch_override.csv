@@ -6,9 +6,9 @@ fx,maps/zombie/fx_zombie_packapunch
 
 //WAW WEAPONS
 weapon,sp/zombie_springfield
-weapon,sp/bar_upgraded_zm
-weapon,sp/m1garand_upgraded_zm
-weapon,sp/springfield_upgraded_zm
+weapon,sp/zombie_bar_upgraded_zm
+weapon,sp/zombie_m1garand_upgraded_zm
+weapon,sp/zombie_springfield_upgraded_zm
 
 
 //Special Weapons
