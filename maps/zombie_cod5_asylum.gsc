@@ -497,14 +497,19 @@ include_weapons()
 
 	//Single Shot
 	include_weapon( "zombie_gewehr43", false, true );
+	include_weapon( "zombie_gewehr43_upgraded", false );
+
 	include_weapon( "zombie_m1garand", false, true );
-	include_weapon( "zombie_springfield", false, true );
-	include_weapon( "springfield_upgraded_zm", false );
+	include_weapon( "zombie_m1garand_upgraded", false );
+
+	//include_weapon( "zombie_springfield", false, true );
+	//include_weapon( "zombie_springfield_upgraded", false );
+
 	include_weapon( "zombie_kar98k", false, true );
 	include_weapon( "zombie_kar98k_upgraded", false );
 	
-	include_weapon( "zombie_gewehr43_upgraded", false );
-	include_weapon( "m1garand_upgraded_zm", false );
+	
+	
 	
 	//Shotguns
 	include_weapon( "zombie_shotgun", false, true );
@@ -518,7 +523,7 @@ include_weapons()
 	//Full Auto
 	include_weapon( "zombie_bar", false, true );
 	include_weapon( "zombie_bar_bipod", false, true );
-	include_weapon( "bar_upgraded_zm", false );
+	include_weapon( "zombie_bar_upgraded", false );
 	
 	include_weapon( "zombie_stg44", false, true );
 	include_weapon( "zombie_thompson", false, true );	
@@ -581,7 +586,7 @@ include_weapons()
 	// Semi Auto
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_gewehr43", "zombie_gewehr43_upgraded",						&"WAW_ZOMBIE_WEAPON_GEWEHR43_600", 				600,	"rifle" );
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1carbine","zombie_m1carbine_upgraded",						&"WAW_ZOMBIE_WEAPON_M1CARBINE_600",				600,	"rifle" );
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1garand", "m1garand_upgraded_zm" ,						&"WAW_ZOMBIE_WEAPON_M1GARAND_600", 				600,	"rifle" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1garand", "zombie_m1garand_upgraded" ,						&"WAW_ZOMBIE_WEAPON_M1GARAND_600", 				600,	"rifle" );
 
 	maps\_zombiemode_weapons::add_zombie_weapon( "stielhandgranate", "", 						&"WAW_ZOMBIE_WEAPON_STIELHANDGRANATE_250", 		1000,	"grenade", "", 1000 );
 	maps\_zombiemode_weapons::add_zombie_weapon( "mine_bouncing_betty", "", &"WAW_ZOMBIE_WEAPON_SATCHEL_2000", 2000 );
@@ -601,7 +606,7 @@ include_weapons()
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_doublebarrel_sawed", "zombie_doublebarrel_upgraded", 			    &"REIMAGINED_WEAPON_DOUBLEBARREL_SAWED", 	1200, "shotgun");
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_shotgun", "zombie_shotgun_upgraded",							&"WAW_ZOMBIE_WEAPON_SHOTGUN_1500", 				1500, "shotgun");
 
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_bar", "bar_upgraded_zm", 						&"WAW_ZOMBIE_WEAPON_BAR_1800", 					1800,	"mg" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_bar", "zombie_bar_upgraded", 						&"WAW_ZOMBIE_WEAPON_BAR_1800", 					1800,	"mg" );
 
 	// Bipods
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_bar_bipod", 	"bar_upgraded_zm",					&"WAW_ZOMBIE_WEAPON_BAR_BIPOD_2500", 			2500,	"mg" );

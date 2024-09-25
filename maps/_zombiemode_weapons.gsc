@@ -700,6 +700,7 @@ init_weapon_upgrade()
         }
 
         // HACK - replace Kar98k wallbuy on Verruckt Quick Revive side with Springfield
+		/*
 		if(level.script == "zombie_cod5_asylum")
 		{
 			if(weapon_spawns[i].zombie_weapon_upgrade == "zombie_kar98k" && IsDefined(weapon_spawns[i].target) && weapon_spawns[i].target == "pf178_auto1")
@@ -713,6 +714,7 @@ init_weapon_upgrade()
 				model.origin += (-1.5, 0, 0.5);
 			}
 		}
+		*/
 
 		weapon_name = weapon_spawns[i].zombie_weapon_upgrade;
 		if( !IsDefined(weapon_name) || !IsDefined( level.zombie_weapons ) )

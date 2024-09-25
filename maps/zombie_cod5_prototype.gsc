@@ -593,6 +593,13 @@ include_weapons()
 	include_weapon( "zombie_shotgun", false, true );
 	include_weapon( "zombie_bar", false, true );
 
+	//Non wall WaW weapons
+	include_weapon( "zombie_m1garand", true );
+	include_weapon( "zombie_m1garand_upgraded", false );
+
+	include_weapon( "zombie_springfield", true );
+	include_weapon( "zombie_springfield_upgraded", false );
+
 	include_weapon( "zombie_cymbal_monkey");
 
 	include_weapon( "ray_gun_zm" );
