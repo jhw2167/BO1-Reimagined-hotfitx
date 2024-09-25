@@ -72,6 +72,10 @@ weapon,sp/sabertooth_upgraded_zm
 //weapon,sp/ithaca_zm
 //weapon,sp/mac11_upgraded_zm
 
+//weapon,sp/zombie_springfield
+weapon,sp/zombie_bar_upgraded
+weapon,sp/zombie_m1garand_upgraded
+weapon,sp/zombie_kar98k_upgraded
 
 
 //NEW Equip

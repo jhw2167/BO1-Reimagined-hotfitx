@@ -562,6 +562,7 @@ include_weapons()
 
 	// Special
 	include_weapon( "freezegun_zm" );
+	include_weapon( "freezegun_upgraded_zm" );
 	include_weapon( "m1911_upgraded_zm", false );
 
 	//bouncing betties

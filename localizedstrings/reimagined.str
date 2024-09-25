@@ -45,7 +45,7 @@ LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to Pick Up Bouncing Betty"
 REFERENCE          	BETTY_PURCHASE
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Bouncing Betty [Cost: 1000]"
 
-REFERENCE          	PERK_JUGGERNAUT
+REFERENCE          	PERK_JUGGERNOG
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Juggernog [Cost: &&1]\n        or upgrade [Cost: &&2]"
 
 REFERENCE          	PERK_QUICKREVIVE

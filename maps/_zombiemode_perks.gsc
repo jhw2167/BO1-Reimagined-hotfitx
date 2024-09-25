@@ -270,7 +270,7 @@ default_vending_precaching()
 
 	//Classic hintstrings
 	PrecacheString( &"ZOMBIE_PERK_QUICKREVIVE" );
-	PrecacheString( &"ZOMBIE_PERK_JUGGERNAUT" );
+	PrecacheString( &"ZOMBIE_PERK_JUGGERNOG" );
 	PrecacheString( &"ZOMBIE_PERK_FASTRELOAD" );
 	PrecacheString( &"ZOMBIE_PERK_DOUBLETAP" );
 	PrecacheString( &"ZOMBIE_PERK_MARATHON" );
@@ -2493,9 +2493,9 @@ vending_trigger_think()
 			 if(level.expensive_perks)
 			 	cost = 4000;
 			if( level.classic )
-				self SetHintString( &"ZOMBIE_PERK_JUGGERNAUT", cost );
+				self SetHintString( &"ZOMBIE_PERK_JUGGERNOG", cost );
 			else
-				self SetHintString( &"REIMAGINED_PERK_JUGGERNAUT", cost, upgrade_perk_cost );
+				self SetHintString( &"REIMAGINED_PERK_JUGGERNOG", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_quickrevive_upgrade":

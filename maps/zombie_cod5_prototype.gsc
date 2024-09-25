@@ -584,21 +584,20 @@ include_weapons()
 	include_weapon("knife_ballistic_zm");
 	
 	include_weapon( "zombie_m1carbine", false, true );
+	include_weapon( "zombie_m1carbine_upgraded", false, true );	//new
+
 	include_weapon( "zombie_thompson", false, true );
+	include_weapon( "zombie_thompson_upgraded", false, true );	//new
+
 	include_weapon( "zombie_kar98k", false, true );
+	include_weapon( "zombie_kar98k_upgraded", false, true );	//new
+	
 	include_weapon( "kar98k_scoped_zombie", false, true );
 	include_weapon( "stielhandgranate", false, true );
 	include_weapon( "zombie_doublebarrel", false, true );
 	include_weapon( "zombie_doublebarrel_sawed", false, true );
 	include_weapon( "zombie_shotgun", false, true );
 	include_weapon( "zombie_bar", false, true );
-
-	//Non wall WaW weapons
-	include_weapon( "zombie_m1garand", true );
-	include_weapon( "zombie_m1garand_upgraded", false );
-
-	include_weapon( "zombie_springfield", true );
-	include_weapon( "zombie_springfield_upgraded", false );
 
 	include_weapon( "zombie_cymbal_monkey");
 
