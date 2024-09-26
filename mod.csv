@@ -72,10 +72,19 @@ weapon,sp/sabertooth_upgraded_zm
 //weapon,sp/ithaca_zm
 //weapon,sp/mac11_upgraded_zm
 
-//weapon,sp/zombie_springfield
+//WAW WEAPONS
+weapon,sp/zombie_m1carbine_upgraded
+weapon,sp/zombie_gewehr43_upgraded
+weapon,sp/zombie_doublebarrel_sawed_upgraded
+weapon,sp/zombie_doublebarrel_upgraded
+weapon,sp/zombie_kar98k_upgraded
+
+weapon,sp/zombie_shotgun_upgraded
+weapon,sp/zombie_stg44_upgraded
+weapon,sp/zombie_thompson_upgraded
+weapon,sp/zombie_type100_smg_upgraded
 weapon,sp/zombie_bar_upgraded
 weapon,sp/zombie_m1garand_upgraded
-weapon,sp/zombie_kar98k_upgraded
 
 
 //NEW Equip

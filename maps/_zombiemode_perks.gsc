@@ -270,13 +270,13 @@ default_vending_precaching()
 
 	//Classic hintstrings
 	PrecacheString( &"ZOMBIE_PERK_QUICKREVIVE" );
-	PrecacheString( &"ZOMBIE_PERK_JUGGERNOG" );
+	PrecacheString( &"ZOMBIE_PERK_JUGGERNAUT" );
 	PrecacheString( &"ZOMBIE_PERK_FASTRELOAD" );
 	PrecacheString( &"ZOMBIE_PERK_DOUBLETAP" );
 	PrecacheString( &"ZOMBIE_PERK_MARATHON" );
 	PrecacheString( &"ZOMBIE_PERK_DIVETONUKE" );
 	PrecacheString( &"ZOMBIE_PERK_DEADSHOT" );
-	PrecacheString( &"ZOMBIE_PERK_ADDITIONALWEAPONPERK" );
+	PrecacheString( &"ZOMBIE_PERK_ADDITIONALPRIMARYWEAPON" );
 	PrecacheString( &"REIMAGINED_ZOMBIE_PERK_CHERRY" );
 	PrecacheString( &"REIMAGINED_ZOMBIE_PERK_VULTURE" );
 	PrecacheString( &"REIMAGINED_ZOMBIE_PERK_WIDOWSWINE" );
@@ -2493,7 +2493,7 @@ vending_trigger_think()
 			 if(level.expensive_perks)
 			 	cost = 4000;
 			if( level.classic )
-				self SetHintString( &"ZOMBIE_PERK_JUGGERNOG", cost );
+				self SetHintString( &"ZOMBIE_PERK_JUGGERNAUT", cost );
 			else
 				self SetHintString( &"REIMAGINED_PERK_JUGGERNOG", cost, upgrade_perk_cost );
 			break;
@@ -2553,7 +2553,7 @@ vending_trigger_think()
 		case "specialty_additionalprimaryweapon_upgrade":
 		case "specialty_additionalprimaryweapon":
 			if( level.classic )
-				self SetHintString( &"ZOMBIE_PERK_ADDITIONALWEAPONPERK", cost );
+				self SetHintString( &"ZOMBIE_PERK_ADDITIONALPRIMARYWEAPON", cost );
 			else
 				self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
 			break;
