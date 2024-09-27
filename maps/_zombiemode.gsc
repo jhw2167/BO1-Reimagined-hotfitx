@@ -3074,7 +3074,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.1.6" );
+	SetDvar( "zm_mod_version", "2.1.8" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009

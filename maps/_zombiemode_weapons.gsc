@@ -436,7 +436,7 @@ init_weapons()
 		//Base
 		add_zombie_weapon( "zombie_bar",				"zombie_bar_upgraded",					&"WAW_ZOMBIE_WEAPON_BAR_1800",			1800,		"mg",				"",		undefined );
 		add_zombie_weapon( "zombie_doublebarrel",		"zombie_doublebarrel_upgraded",			&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_1200",	1200,		"shotgun",			"",		undefined );
-		add_zombie_weapon( "zombie_doublebarrel_sawed",	"zombie_doublebarrel_sawed_upgraded",	&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_SAWED_1200",	1200,		"shotgun",			"",		undefined );
+		add_zombie_weapon( "zombie_doublebarrel_sawed",	"zombie_doublebarrel_upgraded",	&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_SAWED_1200",	1200,		"shotgun",			"",		undefined );
 		add_zombie_weapon( "zombie_fg42",				"zombie_fg42_upgraded",					&"WAW_ZOMBIE_WEAPON_FG42_1500",			1500,		"mg",				"",		undefined );
 		add_zombie_weapon( "zombie_gewehr43",			"zombie_gewehr43_upgraded",				&"WAW_ZOMBIE_WEAPON_GEWEHR43_600",		600,		"rifle",			"",		undefined );
 		add_zombie_weapon( "zombie_kar98k",			"zombie_kar98k_upgraded",				&"WAW_ZOMBIE_WEAPON_KAR98K_200",		200,		"rifle",			"",		undefined );
@@ -452,7 +452,7 @@ init_weapons()
 		/*
 		add_zombie_weapon( "zombie_bar_upgraded",		"zombie_bar_upgraded",					&"WAW_ZOMBIE_WEAPON_BAR_1800",			1800,		"mg",				"",		undefined );
 		add_zombie_weapon( "zombie_doublebarrel_upgraded",	"zombie_doublebarrel_upgraded",			&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_1200",	1200,		"shotgun",			"",		undefined );
-		add_zombie_weapon( "zombie_doublebarrel_sawed_upgraded",	"zombie_doublebarrel_sawed_upgraded",	&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_SAWED_1200",	1200,		"shotgun",			"",		undefined );
+		add_zombie_weapon( "zombie_doublebarrel_upgraded",	"zombie_doublebarrel_upgraded",	&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_SAWED_1200",	1200,		"shotgun",			"",		undefined );
 		add_zombie_weapon( "zombie_fg42_upgraded",		"zombie_fg42_upgraded",					&"WAW_ZOMBIE_WEAPON_FG42_1500",			1500,		"mg",				"",		undefined );
 		add_zombie_weapon( "zombie_gewehr43_upgraded",	"zombie_gewehr43_upgraded",				&"WAW_ZOMBIE_WEAPON_GEWEHR43_600",		600,		"rifle",			"",		undefined );
 		add_zombie_weapon( "zombie_kar98k_upgraded",	"zombie_kar98k_upgraded",				&"WAW_ZOMBIE_WEAPON_KAR98K_200",		200,		"rifle",			"",		undefined );
