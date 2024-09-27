@@ -1,6 +1,7 @@
 #include maps\_utility; 
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
+#include maps\_zombiemode_reimagined_utility;
 #include maps\_zombiemode_net;
 
 #using_animtree( "generic_human" );
@@ -259,25 +260,25 @@ checkDist(a, b, distance )
 }
 
 
-//Starts from _zombie_weap_crossbow.gsc -- unused
+//Starts from _zombie_weap_crossbow.gsc
 wait_projectile_impacts() {
 
-	for(;;) {
+	for(;;) 
+	{
 	
-		self waittill ( "projectile_impact", weaponName, position );
-		grenade = spawn("script_model", position);
+		self waittill ( "grenade_fire", grenade, weaponName, parent );
 		
 			switch( weaponName )
 			{
-				case "crossbow_explosive_upgraded_zm_x2":
+				case "explosive_bolt_upgraded_zm":
 					//Reimagined-Expanded - self is money bolt, want to play large explosion
 					primaryWeapons = self GetWeaponsListPrimaries();
 					for( i=0; i<primaryWeapons.size; i++) 
 					{
-						if(primaryWeapons[i]=="crossbow_explosive_upgraded_zm_x2") 
+						weapon = self get_upgraded_weapon_string( primaryWeapons[i] );
+						if( weapon == "crossbow_explosive_upgraded_zm_x2" ) 
 						{
-							//							(exploding object, radius, time, player)
-						level thread napalm_fire_effects( grenade, 80, 4, self );
+							self thread handle_crossbow_x2_bolt( grenade );
 						}
 						
 					}
@@ -293,6 +294,37 @@ wait_projectile_impacts() {
 		} //end switch
 
 	}
+}
+
+/*
+	Method: handle_crossbow_x2_bolt
+
+	Descrp: The crossbow bolt lasts 12 seconds and plays a napalm exlposion every 3 seconds
+
+	params: self is player
+
+*/
+handle_crossbow_x2_bolt( grenade )
+{
+
+	TOTAL_CROSSBOW_TIME = 12;
+	blast_interval = 3.9;
+
+	grenadeFinishPos = grenade.origin;
+	level thread napalm_fire_effects( grenade, 396, 2, self, 3 );
+	grenade waittill("explode");
+	
+	while( TOTAL_CROSSBOW_TIME > 0 )
+	{
+		explosionSource = Spawn( "script_origin", grenadeFinishPos );
+		explosionSource SetModel( "tag_origin" );
+		explosionSource thread maps\_zombiemode_weap_crossbow::crossbow_monkey_bolt( self );
+		level thread napalm_fire_effects( explosionSource, 396, 3, self, 3 );
+		wait( blast_interval );
+		explosionSource notify( "explode" );
+		TOTAL_CROSSBOW_TIME -= blast_interval;
+	}
+	
 }
 
 explosive_arc_damage( zomb , dmg, radius, time )
@@ -343,14 +375,15 @@ explosive_do_damage( dmg, source, radius, player )
 
 
 //Explosive Fire Damage + FX _zombiemode_ai_napalm
-napalm_fire_effects( grenadeOrAi , radius, time, attacker )
+napalm_fire_effects( grenadeOrAi , radius, time, attacker, fxTime )
 {
 	
 	
-	trigger = spawn( "trigger_radius", grenadeOrAi.origin, 1, radius, 70 );
+	trigger = Spawn( "trigger_radius", grenadeOrAi.origin, 1, radius, 70 );
 	if( isAi(grenadeOrAi)) {
 		//detotae bomb where zombie died
 	} else { //else we wait for the grenade to explode, in the case of crossbow projectile
+		iprintln("Waiting for grenade to explode -- napalm_fire_effects");
 		grenadeOrAi waittill("explode");
 	}
 	
@@ -358,9 +391,13 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 	
 	sound_ent = spawn( "script_origin", trigger.origin );
 	sound_ent playloopsound( "evt_napalm_fire", 1 );
-	PlayFx( level._effect["custom_large_explosion"], trigger.origin );
-	PlayFX( level._effect["custom_large_fire"], trigger.origin );
-					
+	fxModel = Spawn( "script_model", trigger.origin );
+	fxModel SetModel( "tag_origin" );
+	PlayFxOnTag( level._effect["custom_large_explosion"], fxModel, "tag_origin" );
+	PlayFxOnTag( level._effect["custom_large_fire"], fxModel, "tag_origin" );
+	//PlayFX( level._effect["custom_large_fire"], trigger.origin );
+	
+	self thread cleanupFx( fxModel, fxTime );
 
 	if(!isDefined(trigger))
 	{
@@ -387,6 +424,11 @@ napalm_fire_effects( grenadeOrAi , radius, time, attacker )
 	}
 }
 
+cleanupFx( fxModel, fxTime )
+{
+	wait(fxTime);
+	fxModel Delete();
+}
 
 bonus_fire_damage( zomb , player, radius, time)
 {
@@ -486,6 +528,10 @@ triggerCustomFireDamage(attacker)
 	while(1)
 	{
 		self waittill( "trigger", guy );
+
+		if( !IsDefined( guy ) || !IsAlive( guy ) )
+			continue;
+
 		if(isplayer(guy))
 		{
 			if(is_player_valid(guy))
@@ -502,10 +548,15 @@ triggerCustomFireDamage(attacker)
 				}
 			}
 		}
+		else if( IsDefined( guy.animname ) && guy.animname == "zombie" )
+		{
+			guy thread bonus_fire_damage( guy, attacker, 2, 2 );
+		}
 		else if(!maps\_zombiemode::is_boss_zombie(self.animname))
 		{
 			guy thread maps\_zombiemode_ai_napalm::kill_with_fire(self.napalm_fire_damage_type, attacker);
 		}
+	
 	}
 }
 

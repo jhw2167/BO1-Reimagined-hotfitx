@@ -627,9 +627,16 @@ director_reset_health( easy )
 	}
 	*/
 
-	self.max_damage_taken = level.THRESHOLD_MAX_ZOMBIE_HEALTH*level.round_number*(self.times_died+1)*num_players;
-	if(level.round_number < 20 )
-		self.max_damage_taken = int(self.max_damage_taken * 0.5);
+	round_factor = level.round_number;
+	if( round_factor < 10 )
+		round_factor = 10;
+
+	self.max_damage_taken = level.THRESHOLD_MAX_ZOMBIE_HEALTH*round_factor*(self.times_died+1)*num_players;
+	if(level.round_number < 16 )
+		self.max_damage_taken = int(self.max_damage_taken * 0.33);
+	else if(level.round_number < 25 )
+		self.max_damage_taken = int(self.max_damage_taken * 0.66);
+	
 
 	self.damage_one = self.max_damage_taken * .33;
 	self.damage_two = self.max_damage_taken * .66;

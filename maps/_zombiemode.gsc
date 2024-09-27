@@ -50,18 +50,18 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=15;	///
+	level.starting_round_override=25;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=5;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=7;	///per round
-	level.apocalypse_override=false;		///
+	level.apocalypse_override=true;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
-	level.rolling_kill_all_interval=10;	///
+	//level.rolling_kill_all_interval=10;	///
 	level.dev_only=true;					///*/
 
 
@@ -282,6 +282,7 @@ post_all_players_connected()
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
 		players[i] thread watch_player_shotgun_attrition();
+		players[i] thread maps\_zombiemode_weapon_effects::wait_projectile_impacts();
 
 		players[i] thread watch_player_weapon_special_bonuses();
 
@@ -539,7 +540,7 @@ reimagined_init_level()
 	level.THRESHOLD_ZOMBIE_SPAWN_CLUSTER_TOTAL_ENEMIES_MAX = 20;	//If more than _ zombies on map don't cluster spawn
 	level.THRESHOLD_ZOMBIE_SPAWN_CLUSTER_TOTAL_ENEMIES_MIN = 0;		//If less than _ zombies on map don't cluster spawn
 	level.THRESHOLD_ZOMBIE_SPAWN_CLUSTER_ASSUME_MAX_ENEMIES = 24;	//Assuming only 24 zombs total can be on map
-	level.VALUE_ZOMBIE_SPAWN_DELAY = 10.5;
+	level.VALUE_ZOMBIE_SPAWN_DELAY = 9.5;
 	//level.ARRAY_VALUES["zombie_spawn_delay"] = 4.5;		
 
 	level.THRESHOLD_MIN_ZOMBIES_DESPAWN_OFF_NUMBER_EARLY = 2;
@@ -569,7 +570,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 10;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 5; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 500; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -599,12 +600,12 @@ reimagined_init_level()
 	//Weapon Pap
 	level.VALUE_PAP_COST = 5000;
 	level.VALUE_PAP_EXPENSIVE_COST = 10000;
-	level.VALUE_PAP_X2_COST = 10000;
+	level.VALUE_PAP_X2_COST = 20000;
 	level.VALUE_PAP_X2_EXPENSIVE_COST = 40000;
 
 	level.VALUE_PAP_BONFIRE_COST = 1000;
 	level.VALUE_PAP_EXPENSIVE_BONFIRE_COST = 5000;
-	level.VALUE_PAP_X2_BONFIRE_COST = 5000;
+	level.VALUE_PAP_X2_BONFIRE_COST = 10000;
 	level.VALUE_PAP_X2_EXPENSIVE_BONFIRE_COST = 20000;
 	
 	level.VALUE_PERK_PUNCH_COST = 20000;
@@ -741,6 +742,7 @@ reimagined_init_level()
 	//level.count_vulture_fx_drops_round								//See pre-round
 	level.VALUE_VULTURE_PRO_POWERUP_RETRIGGER_TIME = 30;
 
+	//Blacklist
 	level.ARRAY_VULTURE_INVALID_AMMO_WEAPONS = array(
 		"microwavegundw_upgraded_zm",
 		"microwavegundw_zm",
@@ -761,7 +763,13 @@ reimagined_init_level()
 		"sniper_explosive_bolt_zm",
 		"m72_law_zm" , 
 		"china_lake_zm" ,
+		"crossbow_explosive_zm",
+		"crossbow_explosive_upgraded_zm",
+		"crossbow_explosive_upgraded_zm_x2",
+		"explosivbe_bolt_zm",
 		"explosivbe_bolt_upgraded_zm",
+		"sabertooth_zm",
+		"sabertooth_upgraded_zm",
 		"humangun_zm",
 		"humangun_upgraded_zm",
 		"m1911_upgraded_zm",
@@ -934,7 +942,7 @@ reimagined_init_level()
 
 
 	//WEAPON VARIABLES
-	level.WEAPON_SABERTOOTH_RANGE = 128;
+	level.WEAPON_SABERTOOTH_RANGE = 196;
 
 	//Uzi
 	level.WEAPON_UZI_TYPES = array( "", "Flame", "Freeze", "Shock", "Pestilence" );
@@ -1234,6 +1242,8 @@ reimagined_init_player()
 	//Threads
 	self thread wait_set_player_visionset();
 	self thread watch_player_utility();
+
+	//These need to be redone on respawn after death
 	self thread watch_player_button_press();
 	self thread watch_player_current_weapon();
 
@@ -1366,6 +1376,7 @@ watch_player_utility()
 
 	print_utility_rolling( interval )
 	{
+		maxes = [];
 		while( 1 )
 		{
 
@@ -1373,11 +1384,19 @@ watch_player_utility()
 				#1 COUNT ENTITIES 
 			*/
 			entity = Spawn( "script_model", (0, 0, 0) );
-			iprintln( "Spawning entity: " );
-			iprintln( "With Number: " + entity GetEntityNumber() );
+			iprintln( "Total entities: " + entity GetEntityNumber() );
+			recent_string = "";
+			size = maxes.size;
+			maxes[size] = entity GetEntityNumber();
+			for( i = 0; i < 10; i++ ) {
+				if( size - i < 0 )
+					break;
+				recent_string = recent_string + " " + maxes[size - i];
+			}
+			iprintln( "last five: " + recent_string );
 			entity delete();
 
-			wait( 3 );
+			wait( 2 );
 
 			/* 
 				#2 Print spawn delay
@@ -1421,7 +1440,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
@@ -3055,7 +3074,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.1.5" );
+	SetDvar( "zm_mod_version", "2.1.6" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -5647,6 +5666,10 @@ spectators_respawn()
 
 				//Reimagined_Expanded, give players pro perks back
 				players[i] give_pro_perks();
+
+				//Start watch threads again
+				players[i] thread watch_player_button_press();
+				players[i] thread watch_player_current_weapon();
 			}
 		}
 
@@ -6260,34 +6283,48 @@ determine_horde_wait( count )
 		//If less than 3/4 of horde, small delay	//HERE
 		delay = level.VALUE_ZOMBIE_SPAWN_DELAY;
 	
+		if( level.classic )
+			delay -= 1;
+		
 		//Adjust delay based on round number
 		if( level.round_number < 5 )
-			delay -= 2;
+			delay -= 4;
 		else if( level.round_number < 10 )
-			delay -= 1;
+			delay -= 3;
 		else if( level.round_number < 20 )
-			delay -= 2;
+			delay -= 3;
 		else if( level.round_number < 30 )
-			delay -= 5;
+			delay -= 3;
 		else 
-			delay -= 6;
+			delay -= 4;
 		
 
 
 		//Adjust delay based on zombie count
-		if( get_enemy_count() < 6 )
-			delay -= 5;
-		if( get_enemy_count() < 12 )
-			delay -= 4;
-		else if( get_enemy_count() < 20 )
+		zombs_count = get_enemy_count();
+		if( zombs_count < 12 )
+			delay -= 4.2;
+		else if( zombs_count < 16 )
+			delay -= 3.8;
+		else if( zombs_count < 20 )
+			delay -= 3.2;
+		else if( zombs_count < 32 )
 			delay -= 2;
-		else if( get_enemy_count() < 32 )
-			delay -= 0.5;
 
-		if( delay > 0 )
-			wait( delay );
+	// -0.5s for each player in the game:
+		delay -= get_players().size * 0.5;
 
-		//iprintln( "Delay: " + delay );
+	iprintln( "Delay: " + delay );
+
+		if( delay > 0 ) {
+			randDelay = RandomFloatRange( 0, delay );
+			wait( randDelay );
+			iprintln( "Waited: " + randDelay );
+		}
+			
+
+	
+	iprintln( "count: " + zombs_count );
 }
 
 /*
@@ -6796,11 +6833,17 @@ reimagined_expanded_round_start()
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
 	//Tracking
-	if( IsDefined( level.dev_only) )
+	print_entities = IsDefined( level.dev_only) || true;
+	if( print_entities	)
 	{
 		entity = Spawn( "script_model", (0, 0, 0) );
-		iprintln( "Spawning entity: " );
-		iprintln( "With Number: " + entity GetEntityNumber() );
+		number = entity GetEntityNumber();
+		if( number > 980 )
+		{
+			iprintln( "***Reimagined Expanded: Total entities exceeded 1000, Game may crash soon***" );
+			iprintln( "Total: " + number );
+		}
+		
 		entity delete();
 	}
 	
@@ -7622,7 +7665,7 @@ print_apocalypse_options()
 		players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-5 ], 3);
 		players[i] thread generate_hint(undefined, "Difficulty can be adjusted from the Main Menu 'Game' Settings ", offsets[ offsets.size-3 ], 3);
 
-		wait(3);
+		wait(6);
 		if( IsDefined( level.ARRAY_FREE_PERK_HINTS[level.mapname] ))
 			players[i] generate_hint(undefined, "Free Perk Hint: " + level.ARRAY_FREE_PERK_HINTS[level.mapname],
 				 offsets[ offsets.size-1 ], 4);
@@ -9094,6 +9137,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	
 	//Reimagined-Expanded, different implementation for double PaP
+	//DOUBLE_upgraded , _is_double_upgraded , upgraded_double_string
 	dwWeap = WeaponDualWieldWeaponName( weapon );
 	baseWeapon = weapon;
 	weapon = attacker get_upgraded_weapon_string( weapon );
@@ -9222,6 +9266,32 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	//iprintln("Final Damage 3: " + final_damage);
 
+	/***
+		DEADSHOT usePlayerHitmarkers
+	***/
+	usePlayerHitmarkers = ( meansofdeath != "MOD_MELEE" );
+
+	if( level.classic )
+		usePlayerHitmarkers = usePlayerHitmarkers && attacker HasPerk(level.DST_PRO);
+	else
+		usePlayerHitmarkers = usePlayerHitmarkers && attacker hasProPerk(level.DST_PRO);
+
+	if( usePlayerHitmarkers )
+	{
+		weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
+		
+		if( is_in_array(weakpoints, sHitLoc) ) 
+		{
+			attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
+		} else {
+			attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
+		}	
+	}
+
+	/***
+		END DEADSHOT usePlayerHitmarkers
+	***/
+
 	if((is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill)) && !is_true(self.magic_bullet_shield) && self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
 	{
 		// insta kill should not effect these weapons as they already are insta kill, causes special anims and scripted things to not work
@@ -9249,32 +9319,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					return 0;
 				}
 			}
-
-
-		if( attacker hasProPerk(level.DST_PRO) && meansofdeath != "MOD_MELEE" ) //&& WeaponClass(baseWeapon) != "spread" ) 
-		{
-			//Flat damage increase for ADS
-			if( attacker AdsButtonPressed() )
-				final_damage = int(final_damage * 1.5);
-
-			if(!isDefined(self.weakpoint))
-				self.weakpoint = "";
-
-			weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
-			
-			if( is_in_array(weakpoints, sHitLoc) ) 
-			{
-				attacker.weakpoint_streak++;	//add HUD for this
-				headshot_streak_bonus = (1 + (attacker.weakpoint_streak * level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK) );
-				final_damage = int(final_damage * headshot_streak_bonus);
-
-				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
-			} else {
-				attacker.weakpoint_streak = 0;
-				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
-			}
-			
-		}
 
 			return self.maxhealth + 1000;
 		}
@@ -9501,24 +9545,33 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( !is_boss_zombie(self.animname) )
 		{
-			//If upgraded, apply hellfire to all zombies
-			if( IsSubStr( weapon, "_x2" ) && !is_true( self.burned ) )
+			//If animname is not zombie, set damage equal to max health
+			if( self.animname != "zombie" )
 			{
-				//25% chance to apply hellfire to zombie
-				if( randomint(4) == 0 )
-					self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
-			}
-			//If double upgraded, shock nearby zombies too
-			doKnockDownChance = IsSubStr( weapon, "upgraded" ) 
-				&& !is_true( self.knockdown )
-				&& !is_true( self.marked_for_tesla );
+					//If upgraded, apply hellfire to all zombies
+				if( IsSubStr( weapon, "_x2" ) && !is_true( self.burned ) )
+				{
+					//25% chance to apply hellfire to zombie
+					if( randomint(4) == 0 )
+						self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
+				}
+				//If double upgraded, shock nearby zombies too
+				doKnockDownChance = IsSubStr( weapon, "upgraded" ) 
+					&& !is_true( self.knockdown )
+					&& !is_true( self.marked_for_tesla );
 
-			if( doKnockDownChance )
+				if( doKnockDownChance )
+				{
+					//25% chance to knock zombie down
+					if( randomint(4) == 0 )
+						self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME );
+					
+				}
+			}
+			else
 			{
-				//25% chance to knock zombie down
-				if( randomint(4) == 0 )
-					self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME );
-				
+				//Kills dogs, nova crawlers, and monkeys in one hit
+				baseDmg = self.maxhealth;
 			}
 
 		}
@@ -10248,11 +10301,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				attacker.weakpoint_streak++;	//add HUD for this
 				headshot_streak_bonus = (1 + (attacker.weakpoint_streak * level.VALUE_DEADSHOT_PRO_WEAKPOINT_STACK) );
 				final_damage = int(final_damage * headshot_streak_bonus);
-
-				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
+				//attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( true );
 			} else {
 				attacker.weakpoint_streak = 0;
-				attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
+				//attacker thread maps\_zombiemode_perks::trigger_deadshot_pro_hitmarker( false );
 			}
 			
 		}
@@ -10442,17 +10494,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//Reimagined-Expanded Hellfire spreads more hellfire
 	if(meansOfDeath=="hellfire" || weapon == "ft_ak47_upgraded_zm" ) 
 	{
-		iprintln("1");
 		self.in_water = false;
 		if( is_true( self.burned ) || is_true( self.in_water ) )
 			return 10;
 
-		iprintln("2");
 		if( is_boss_zombie(self.animname) ) {
 			return 1000;
 		}
-
-		iprintln("3");
 
 		radius=level.VALUE_HELLFIRE_RANGE;
 		time=level.VALUE_HELLFIRE_TIME;
@@ -10463,7 +10511,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, radius, time);
 		final_damage = 10;
-		iprintln("4");
 	}
 	
 	//Reimagined-Expanded, can china-lake be upgraded??

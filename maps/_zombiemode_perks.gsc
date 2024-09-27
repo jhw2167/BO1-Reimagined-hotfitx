@@ -2116,8 +2116,7 @@ watch_additionalprimaryweapon_upgrade( stop_event )
 {
 	self endon( "death" );
 	self waittill( stop_event );
-	//must take weapon from here if downed, does not take weapon correctly if called in _zombiemode_perks::perk_think()
- 	self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
+ 	//self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
 }
 
 giveStaminaUpgrade()
@@ -3292,6 +3291,7 @@ perk_think( perk )
 			if ( result == perk_str )
 			{
 				self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
+				self SwitchToWeapon( self GetWeaponsList()[0] );
 			}
 
 			if(self HasPerk("specialty_stockpile"))

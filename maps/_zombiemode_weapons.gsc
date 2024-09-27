@@ -2683,7 +2683,7 @@ treasure_chest_ChooseRandomWeapon( player )
 //Tags: Mystery box, weapons, box weapons, HERE
 treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 {
-	if(IsDefined(player) || !IsDefined( player.already_got_weapons )  )	//Back to regular randomness - Reimagined-Expanded
+	if(IsDefined(player) && !IsDefined( player.already_got_weapons )  )	//Back to regular randomness - Reimagined-Expanded
 		player.already_got_weapons = [];
 
 	keys = GetArrayKeys( level.zombie_weapons );
