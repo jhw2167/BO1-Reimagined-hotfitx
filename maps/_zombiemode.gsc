@@ -50,13 +50,13 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=6;	///allowed on map
-	//level.starting_round_override=25;	///
+	level.starting_round_override=12;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=1;	///per round
+	level.calculate_amount_override=15;	///per round
 	level.apocalypse_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -365,7 +365,7 @@ reimagined_init_player_depedent_values()
 	if( !isDefined(level.players_size) )
 		level.players_size = GetPlayers().size;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 300000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 500000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 
 	
 	//level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
@@ -426,7 +426,7 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.35;
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 1.50;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
+	//level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
 
 	level.SUPER_SPRINTER_SPEED = 70;
 	level.TERROR_SPEED = 140;
@@ -1281,6 +1281,8 @@ watch_player_utility()
 			{
 				if( level.do_kill_all ) {
 				level.do_kill_all = false;
+				iprintln("Kill all off");
+				wait( 1 );
 				} else {
 					level.do_kill_all = true;
 					self thread kill_all_utility_rolling( level.rolling_kill_all_interval );
@@ -1350,12 +1352,34 @@ watch_player_utility()
 	kill_all_utility()
 	{
 		//iprintln("kill all");
+		useEffect = "fire";
 		zombies = GetAiSpeciesArray( "axis", "all" );
 		for(i=0;i<zombies.size;i++)
 		{
 			if( !is_boss_zombie( zombies[i].animname ) )
-			//Name: DoDamage( <health>, <source position>, <attacker>, <destructible_piece_index>, <means of death>, <hitloc> )
-				zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
+			{
+				//Name: DoDamage( <health>, <source position>, <attacker>, <destructible_piece_index>, <means of death>, <hitloc> )
+
+				switch( useEffect )
+				{
+					case "fire":
+						zombies[i] thread maps\_zombiemode_weapon_effects::bonus_fire_damage( zombies[i], getPlayers()[0], 20, level.VALUE_HELLFIRE_TIME);
+						break;
+					case "freeze":
+						zombies[i] thread maps\_zombiemode_weapon_effects::bonus_freeze_damage( zombies[i], getPlayers()[0], 200, 2 );
+						wait( 0.1 );
+						zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
+						break;
+					case "shock":
+						zombies[i] thread maps\_zombiemode_weapon_effects::tesla_arc_damage( zombies[i], getPlayers()[0], 200 );
+						break;
+					default:
+						zombies[i] DoDamage( zombies[i].health + 666, zombies[i].origin, self );
+				}
+
+				
+			}
+			
 		}
 
 		iprintln("Origin: " + self.origin);
@@ -1393,7 +1417,7 @@ watch_player_utility()
 					break;
 				recent_string = recent_string + " " + maxes[size - i];
 			}
-			iprintln( "History: " + recent_string );
+			//iprintln( "History: " + recent_string );
 			entity delete();
 
 			wait( 2 );
@@ -7902,33 +7926,46 @@ ai_calculate_health( round_number )
 	//iprintln("Zombie Health calculate: ");
 
 	//Reimagined-Expanded - exponential health scaling
-	base = 1000;
+	//calculate health calculate_health
+	base = 1200;
 	if( level.tough_zombies )
-		base = 1150;
+		base = 1500;
 	
-	rTenfactor = 0.28;
+	roundHealthAdjust = [];
+	lowRoundZombHealthAdjust = 1;
+
+	MAX_ROUND_ADJUST = 50;
+	for(i=0; i<MAX_ROUND_ADJUST; i++)
+	{
+		if( i < 10 )
+			roundHealthAdjust[i] = 0.2;
+		else if( i < 15 )
+			roundHealthAdjust[i] = 0.6;
+		else if( i < 20 )
+			roundHealthAdjust[i] = 0.8;
+		else
+			roundHealthAdjust[i] = 1;
+	}
+
 	startHealth = 150;
-	logFactor = 4;
-	exp_scale_rounds = 10;
-	
+	logFactor = 3.5;	
 	health = startHealth;
 	//iprintln(health);
 	for ( i=2; i<=round_number; i++ )
 	{	
-		if(i == exp_scale_rounds)	
-			rTenfactor=1;
-		health += ( base * rTenfactor * ( i/logFactor ) );
+		lowRoundZombHealthAdjust = roundHealthAdjust[i];
+		health += ( base * lowRoundZombHealthAdjust * ( i/logFactor ) );
 		//iprintln(health);	
+	}
+
+	//cap zombies health, first round of capped == 46
+	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
+		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
 
 	//Player zombie health multiplier
 	if(level.tough_zombies && level.round_number >= level.THRESHOLD_ZOMBIE_PLAYER_BONUS_HEALTH_ROUND ) {
 		health *= level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
-	}
-
-	//cap zombies health, first round of capped == 41
-	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
-		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}	
 	
 	zombie_totals_defined = isdefined(level.zombie_total) && isdefined(level.zombie_round_total);
@@ -7939,7 +7976,7 @@ ai_calculate_health( round_number )
 	
 	//PRINT
 	//iprintln("Current health print:  ");
-	//iprintln("Current health:  " + health);
+	iprintln("Current health:  " + health);
 	level.zombie_health = Int( health );
 }
 
@@ -9275,7 +9312,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	/***
 		DEADSHOT usePlayerHitmarkers
 	***/
-	usePlayerHitmarkers = ( meansofdeath != "MOD_MELEE" );
+	validHitmarkerDeathTypes = array("MOD_RIFLE_BULLET", "MOD_PISTOL_BULLET");
+	usePlayerHitmarkers = is_in_array(validHitmarkerDeathTypes, meansofdeath);
 
 	if( level.classic )
 		usePlayerHitmarkers = usePlayerHitmarkers && attacker HasPerk(level.DST_PRK);

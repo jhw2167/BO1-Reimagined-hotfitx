@@ -564,7 +564,7 @@ triggerCustomFireDamage(attacker)
 /** FREEZE EFFECTS **/
 bonus_freeze_damage( zomb, player, radius, time ) 
 {
-
+		
 		// \give galil_upgraded_zm_x2
 		// \give spectre_upgraded_zm_x2
 	
