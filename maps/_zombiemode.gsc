@@ -1241,7 +1241,9 @@ reimagined_init_player()
 
 	//Threads
 	self thread wait_set_player_visionset();
-	self thread watch_player_utility();
+	if( is_true( level.dev_only ) )
+		self thread watch_player_dev_utility();
+
 
 	//These need to be redone on respawn after death
 	self thread watch_player_button_press();
@@ -1251,7 +1253,7 @@ reimagined_init_player()
 }
 
 //watch_utility
-watch_player_utility()
+watch_player_dev_utility()
 {
 	//iprintln("Jump utility");
 
