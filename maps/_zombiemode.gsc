@@ -50,18 +50,18 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=25;	///
+	//level.starting_round_override=25;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
-	//level.spawn_delay_override=5;			///
+	level.spawn_delay_override=0;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=7;	///per round
-	level.apocalypse_override=true;		///
+	//level.calculate_amount_override=1;	///per round
+	level.apocalypse_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
-	//level.rolling_kill_all_interval=10;	///
+	level.rolling_kill_all_interval=12;	///
 	level.dev_only=true;					///*/
 
 
@@ -570,7 +570,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 10;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 500; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 5; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -1388,20 +1388,21 @@ watch_player_utility()
 			recent_string = "";
 			size = maxes.size;
 			maxes[size] = entity GetEntityNumber();
-			for( i = 0; i < 10; i++ ) {
+			for( i = 0; i < maxes.size; i++ ) {
 				if( size - i < 0 )
 					break;
 				recent_string = recent_string + " " + maxes[size - i];
 			}
-			iprintln( "last five: " + recent_string );
+			iprintln( "History: " + recent_string );
 			entity delete();
 
 			wait( 2 );
 
 			/* 
-				#2 Print spawn delay
+				#2 Refill stock ammo of primary weapon
 			*/
-		
+
+			level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, getPlayers()[0], -1 );
 
 			wait( interval );
 		}
@@ -1440,7 +1441,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
@@ -6314,17 +6315,18 @@ determine_horde_wait( count )
 	// -0.5s for each player in the game:
 		delay -= get_players().size * 0.5;
 
-	iprintln( "Delay: " + delay );
+		//iprintln( "Delay: " + delay );
+
+		if( isDefined( level.spawn_delay_override ) )
+			delay = level.spawn_delay_override;
 
 		if( delay > 0 ) {
 			randDelay = RandomFloatRange( 0, delay );
 			wait( randDelay );
-			iprintln( "Waited: " + randDelay );
+			//iprintln( "Waited: " + randDelay );
 		}
 			
-
-	
-	iprintln( "count: " + zombs_count );
+	//iprintln( "count: " + zombs_count );
 }
 
 /*
@@ -7477,7 +7479,7 @@ setApocalypseOptions()
 	level.apocalypse = GetDvarInt("zombie_apocalypse");
 	//User did not choose options, default game
 	//level thread wait_print("Apocalypse: " , level.apocalypse);
-	if( level.user_options == 0)
+	if( level.user_options == 0 && level.apocalypse == 0 )
 	{
 		level.apocalypse = false;
 		level.classic = true;
@@ -7521,7 +7523,8 @@ setApocalypseOptions()
 	}
 		
 	
-	if(level.apocalypse > 0 || is_true(level.apocalypse_override) ) {
+	if(level.apocalypse > 0 || is_true(level.apocalypse_override) ) 
+	{
 		level.apocalypse = true;
 		level.classic = false;
 	}
@@ -7544,7 +7547,7 @@ setApocalypseOptions()
 		level.no_bosses = false;
 
 	//Overrides
-	//level.classic = true;
+	level.classic = true;
 
 	if(level.apocalypse) 
 	{		
@@ -7580,13 +7583,14 @@ setApocalypseOptions()
 wait_print( msg, data )
 {
 	flag_wait("begin_spawning");
+	wait(5);
 	if( isdefined( data ) )
 	{
 		iprintln( msg + " " + data );
 	}
 	else
 	{
-		iprintln( msg  + " undefined");
+		iprintln( msg  + " undefined data");
 	}
 	
 }
@@ -7652,11 +7656,13 @@ print_apocalypse_options()
 		}
 		
 		//wait(0.5);
-		j++;
+		j++;	//buffer
 		if( level.apocalypse )
 			players[i] thread generate_hint(undefined, "Difficulty: Apocalypse (Hard)", offsets[j], OPTIONS_TIME );
-		else
+		else if( level.classic )
 			players[i] thread generate_hint(undefined, "Difficulty: Classic (Normal)", offsets[j], OPTIONS_TIME );
+		else 
+			players[i] thread generate_hint(undefined, "Difficulty: Reimagined (Normal)", offsets[j], OPTIONS_TIME );
 		j++;
 
 		//Count max j++ statements up to here: 7
@@ -9272,7 +9278,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	usePlayerHitmarkers = ( meansofdeath != "MOD_MELEE" );
 
 	if( level.classic )
-		usePlayerHitmarkers = usePlayerHitmarkers && attacker HasPerk(level.DST_PRO);
+		usePlayerHitmarkers = usePlayerHitmarkers && attacker HasPerk(level.DST_PRK);
 	else
 		usePlayerHitmarkers = usePlayerHitmarkers && attacker hasProPerk(level.DST_PRO);
 

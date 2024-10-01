@@ -5325,13 +5325,19 @@ init_vulture()
 	//maps\_zombiemode_spawner::add_cusom_zombie_spawn_logic( ::vulture_zombie_spawn_func );
 	//maps\_zombiemode_spawner::register_zombie_death_event_callback( ::zombies_drop_stink_on_death );
 
+	
+	true_thing = true;
+	if( true_thing )
+	{
+		//return;
+	}
+
 	flag_wait( "all_players_connected" );
 	level thread vulture_watch_powerup_waypoints();
 	level thread vulture_perk_watch_waypoints();
 	level thread vulture_perk_watch_mystery_box();
 	level thread vulture_perk_watch_fire_sale();
 	level thread vulture_perk_watch_pap_move();
-	//level thread vulture_perk_watch_powerup_drops(); /handled with zombies
 		
 }
 
@@ -5489,6 +5495,7 @@ init_vulture()
 
 			structs[ structs.size ] = struct;
 		}
+
 
 		level.vulture_waypoint_structs = structs;
 		level thread vulture_perk_watch_perks_move();
@@ -5773,11 +5780,12 @@ init_vulture()
 		
 		vulture_watch_powerup_expiration( index )
 		{
-			level endon( "vulture_powerup_reshuffle" ); 
+			//level endon( "vulture_powerup_reshuffle" ); 
 
 			self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
 
 			level.vulture_track_current_powerups[ index ].is_active_powerup = false;
+			level.vulture_track_current_powerups[ index ].script_model Delete();
 			//level thread vulture_powerup_reshuffle( index );
 			//level notify( "vulture_powerup_reshuffle" );
 		}
