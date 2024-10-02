@@ -50,18 +50,19 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=12;	///
+	level.starting_round_override=8;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
-	level.spawn_delay_override=0;			///
+	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=15;	///per round
-	level.apocalypse_override=false;		///
+	//level.calculate_amount_override=15;	///per round
+	level.apocalypse_override=true;		///
+	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=true;		///
-	level.rolling_kill_all_interval=12;	///
+	//level.rolling_kill_all_interval=12;	///
 	level.dev_only=true;					///*/
 
 
@@ -1353,8 +1354,9 @@ watch_player_dev_utility()
 
 	kill_all_utility()
 	{
+		//kill all utility
 		//iprintln("kill all");
-		useEffect = "fire";
+		useEffect = "";
 		zombies = GetAiSpeciesArray( "axis", "all" );
 		for(i=0;i<zombies.size;i++)
 		{
@@ -6243,43 +6245,62 @@ round_spawning()
 		}
 		else
 		{
+			//Spawn zombie
 			cluster_size = determine_horde_cluster_size();
 			MAX_TRIES = 10;
-			tries = 0;
 
 			//iprintln( "spawning cluster of size: " + cluster_size );
-			while( tries < MAX_TRIES )
+			while( cluster_size > 0 )
 			{
-				ai = spawn_zombie( spawn_point );
-				wait(0.2);
-				if( IsDefined( ai ) && IsDefined( ai.animname) )
+				tries = 0;
+				while( tries < MAX_TRIES )
 				{
-					level.zombie_total--;
-					count++;
-					ai thread round_spawn_failsafe();
+					ai = spawn_zombie( spawn_point );
+					tries++;
+					if( IsDefined( ai ) && IsDefined( ai.animname) )
+					{
+						//wait(0.1);
+						level.zombie_total--;
+						count++;
+						ai thread round_spawn_failsafe();
 
-					cluster_size--;
-					//iprintln( "SPAWNED ZOMBIE, id | CLUSTER SIZE: " + ai.zombie_hash + " | " + cluster_size );
+						cluster_size--;
+						//iprintln( "SPAWNED ZOMBIE: " + ai.zombie_hash + " | " + cluster_size + " | " + get_enemy_count() );
+						//iprintln( spawn_point );
+						//iprintln( "SPAWNED ZOMBIE, id | CLUSTER SIZE: " + ai.zombie_hash + " | " + cluster_size );
+						//iprintln( "ZOMBIE TOTAL: " + get_enemy_count() );
+						//iprintln( "Spawned zombies with tries: " + tries );
+						if( cluster_size < 1 )
+							break;
+					}
+					else
+					{
+						if( tries >= MAX_TRIES-1 )
+						{
+							//iprintln( "Failed to spawn zombie num " get_enemy_count() + " | " + tries );
+						}
+							
+						
 
-					if( cluster_size < 1 )
-						break;
-				}
-				else
-				{
-					if( !IsDefined( ai ) )
-						continue;
+						if( !IsDefined( ai ) )
+							continue;
 
-					if( !IsDefined(ai.health) ) {
-						ai Delete();
+						if( !IsDefined(ai.health) ) {
+							ai Delete();
+							continue;
+						}
+
+						ai DoDamage( ai.health + 100, (0,0,0) );
 						continue;
 					}
-
-					ai DoDamage( ai.health + 100, (0,0,0) );
-					continue;
 				}
+				//END CLUSTER
 				
-				tries++;
+				if( tries >= MAX_TRIES )
+					break;
+				
 			}
+			//END ZOMBIE SPAWN ATTEMPTS
 
 		}
 		
@@ -6330,7 +6351,7 @@ determine_horde_wait( count )
 		//Adjust delay based on zombie count
 		zombs_count = get_enemy_count();
 		if( zombs_count < 12 )
-			delay -= 4.2;
+			delay = 0.8;
 		else if( zombs_count < 16 )
 			delay -= 3.8;
 		else if( zombs_count < 20 )
@@ -6388,7 +6409,7 @@ determine_horde_cluster_size()
 	}
 	else if( (RandomInt(100) < level.VALUE_ZOMBIE_SPAWN_CLUSTER_CHANCE) )
 	{
-		cluster_size = RandomIntRange( 2,  level.zombie_round_cluster_size + 1 );
+		cluster_size = RandomIntRange( 2,  level.zombie_round_cluster_size + 2 );
 		small_cluster = RandomIntRange( 2, 4 );
 		enemies_til_max = level.THRESHOLD_ZOMBIE_SPAWN_CLUSTER_ASSUME_MAX_ENEMIES - get_enemy_count();
 
@@ -7573,7 +7594,7 @@ setApocalypseOptions()
 		level.no_bosses = false;
 
 	//Overrides
-	level.classic = true;
+	level.classic = level.classic_override;
 
 	if(level.apocalypse) 
 	{		
@@ -9792,24 +9813,24 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 4;
 			break;
 		case "rpk_zm":
-			final_damage = 750;
+			final_damage = 1625;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.75;
 			break;
 		case "hk21_zm":
-			final_damage = 710;
+			final_damage = 1700;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.75;
 			break;
 		case "stoner63_zm":
-			final_damage = 900;
+			final_damage = 1800;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2.5;
 			break;
 		case "m60_zm":
-			final_damage = 1320;
+			final_damage = 2240;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
-				final_damage *= 2;
+				final_damage *= 2.5;
 			break;
 		case "dragunov_zm":
 			final_damage = 26000;
