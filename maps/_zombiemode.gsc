@@ -35,6 +35,12 @@ main()
 	//Reimagined Expanded options
 	level.user_options =GetDvarInt("zombie_custom_options");
 	level.apocalypse=GetDvarInt("zombie_apocalypse");
+
+	/*
+		***
+		Should not be set until we know user options was opened
+		***
+
 	level.alt_bosses=GetDvarInt("zombie_alt_bosses");
 	level.expensive_perks=GetDvarInt("zombie_exp_perks");
 	level.tough_zombies=GetDvarInt("zombie_tough_zombies");
@@ -46,6 +52,7 @@ main()
 
 	level.starting_round=GetDvarInt("zombie_round_start");
 	level.server_cheats=GetDvarInt("reimagined_cheat");
+	*/
 
 	//Overrides	
 	/* 										*/
@@ -1465,7 +1472,7 @@ wait_set_player_visionset()
 	if( is_true( level.dev_only ) )
 	{
 		//GIVE PERKS
-		self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
@@ -6362,7 +6369,7 @@ determine_horde_wait( count )
 	// -0.5s for each player in the game:
 		delay -= get_players().size * 0.5;
 
-		//iprintln( "Delay: " + delay );
+		iprintln( "Delay: " + delay );
 
 		if( isDefined( level.spawn_delay_override ) )
 			delay = level.spawn_delay_override;
@@ -6885,6 +6892,7 @@ reimagined_expanded_round_start()
 	print_entities = IsDefined( level.dev_only) || true;
 	if( print_entities	)
 	{
+		//Spawning entities, spawn entities
 		entity = Spawn( "script_model", (0, 0, 0) );
 		number = entity GetEntityNumber();
 		if( number > 980 )
@@ -7523,13 +7531,15 @@ chalk_round_over()
 //Reimagined-Expanded
 setApocalypseOptions()
 {
-	level.apocalypse = GetDvarInt("zombie_apocalypse");
+
 	//User did not choose options, default game
-	//level thread wait_print("Apocalypse: " , level.apocalypse);
-	if( level.user_options == 0 && level.apocalypse == 0 )
+	if( level.user_options == 0 )
 	{
-		level.apocalypse = false;
-		level.classic = true;
+		if( GetDvar("zombie_apocalypse_default") == "")
+			level.apocalypse = 0;
+		else
+			level.apocalypse = GetDvarInt("zombie_apocalypse_default");
+
 		level.alt_bosses = 1;
 		level.no_bosses = false;
 		level.expensive_perks = false;
@@ -7540,23 +7550,43 @@ setApocalypseOptions()
 		level.extra_drops = false;
 		level.server_cheats = true;
 		level.starting_round = 1;
+		SetDvar( "zombie_rt1", "1" );
 	}
 	else
 	{
-		
-		if( level.apocalypse == 0 ) {	//Classic mode
-			level.classic = true;
-			level.apocalypse = false;
-		}
-		else if( level.apocalypse == 1 ) {	//Reimagined mode
-			level.classic = false;
-			level.apocalypse = false;
-		}
-		else if( level.apocalypse == 2 ) {	//Apocalypse mode
-			level.classic = false;
-			level.apocalypse = true;
-		}
+		/* Set the following dvars for the game */
+
+		level.apocalypse = GetDvarInt("zombie_apocalypse");
+		level.alt_bosses=GetDvarInt("zombie_alt_bosses");
+		level.expensive_perks=GetDvarInt("zombie_exp_perks");
+		level.tough_zombies=GetDvarInt("zombie_tough_zombies");
+		level.zombie_types=GetDvarInt("zombie_types");
+		level.total_perks=GetDvarInt("zombie_perk_limit");
+		level.bo2_perks=GetDvarInt("zombie_bo2_perks");
+		level.extra_drops=GetDvarInt("zombie_extra_drops");
+		level.weapon_fx=GetDvarInt("zombie_weapon_effects");
+
+		level.starting_round=GetDvarInt("zombie_round_start");
+		level.server_cheats=GetDvarInt("reimagined_cheat");
 	}
+	
+	
+	//Set the gamemode from player chose apocalypse or not
+	if( level.apocalypse == 0 ) {	//Classic mode
+		level.classic = true;
+		level.apocalypse = false;
+	}
+	else if( level.apocalypse == 1 ) {	//Reimagined mode
+		level.classic = false;
+		level.apocalypse = false;
+	}
+	else if( level.apocalypse == 2 ) {	//Apocalypse mode
+		level.classic = false;
+		level.apocalypse = true;
+	}
+
+
+	SetDvar( "zombie_classic", ""+level.classic );
 	
 	
 	
@@ -7594,7 +7624,9 @@ setApocalypseOptions()
 		level.no_bosses = false;
 
 	//Overrides
-	level.classic = level.classic_override;
+	if( IsDefined(level.classic_override) )
+		level.classic = level.classic_override;
+	
 
 	if(level.apocalypse) 
 	{		
@@ -7715,8 +7747,33 @@ print_apocalypse_options()
 		//Count max j++ statements up to here: 7
 
 		wait( OPTIONS_TIME + 1 );
-		players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-5 ], 3);
-		players[i] thread generate_hint(undefined, "Difficulty can be adjusted from the Main Menu 'Game' Settings ", offsets[ offsets.size-3 ], 3);
+
+		if( level.apocalypse ) 
+		{
+			//apocalypse_hints = "- Zombies are stronger and faster \n- Zombies will respawn at full health if not killed quickly \n- Rounds will automatically start if you wait too long; with a break every 5 rounds \n- Damaging zombies gives less points; kills and headshots give more points \n- Points are rewarded for finishing a round quickly \n- Doors and upgrades are more expensive";
+			//apocalypse_hints = "- Zombies are stronger and faster \n";
+			//apocalypse_hints += "- Zombies will respawn at full health if not killed quickly \n";
+			//apocalypse_hints += "- Rounds will automatically start if you wait too long; with a break every 5 rounds \n";
+			//apocalypse_hints += "- Damaging zombies gives less points; kills and headshots give more points \n";
+			//apocalypse_hints += "- Points are rewarded for finishing a round quickly \n";
+			//apocalypse_hints += "- Doors and upgrades are more expensive";
+
+			players[i] generate_perk_hint("Apocalypse", true);
+
+		}
+		else if( level.classic )
+		{
+			players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-5 ], 5);
+			players[i] thread generate_hint(undefined, "Difficulty can be adjusted from the Main Menu 'Game' Settings ", offsets[ offsets.size-3 ], 5);
+		}
+		else
+		{
+			players[i] thread generate_hint(undefined, "For a more Vanilla experience, try 'Classic' difficulty from the Main Menu 'Game' Settings ", offsets[ offsets.size-5 ], 5);
+			players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-3 ], 5);
+		}
+
+		
+
 
 		wait(6);
 		if( IsDefined( level.ARRAY_FREE_PERK_HINTS[level.mapname] ))
@@ -9343,6 +9400,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	else
 		usePlayerHitmarkers = usePlayerHitmarkers && attacker hasProPerk(level.DST_PRO);
 
+	iprintln("Use Player Hitmarkers: " + usePlayerHitmarkers);
 	if( usePlayerHitmarkers )
 	{
 		weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);

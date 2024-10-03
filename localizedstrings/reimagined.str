@@ -1231,6 +1231,23 @@ LANG_ENGLISH       	"STARTING ROUND"
 REFERENCE          	GAME_HINTS
 LANG_ENGLISH       	"REIMAGINED IN-GAME HINTS"
 
+REFERENCE          	APOCALYPSE_TITLE
+LANG_ENGLISH       	"Apocalypse Mode"
+
+REFERENCE          	APOCALYPSE_HINT
+LANG_ENGLISH       	"Zombies are stronger, faster, and will respawn at full health if not killed quickly enough. Rounds \n     will progress even before all zombies are slain. Points are much harder to come by."
+
+REFERENCE          	APOCALYPSE_ROUNDS
+LANG_ENGLISH       	"Apocalypse Rounds"
+
+REFERENCE          	APOCALYPSE_HINT_ROUNDS
+LANG_ENGLISH       	"- Rounds will automatically start if you wait too long; with a break every 5 rounds"
+
+REFERENCE          	APOCALYPSE_POINTS
+LANG_ENGLISH       	"Apocalypse Mode Points"
+
+
+
 REFERENCE          	BABYJUGG_TITLE
 LANG_ENGLISH       	"Baby Jugg"
 
@@ -1247,7 +1264,7 @@ REFERENCE          	JUG_PRK_TITLE
 LANG_ENGLISH       	"Juggernog"
 
 REFERENCE          	JUG_PRK_HINT
-LANG_ENGLISH       	"- That's a little pricey, maybe try Babyjug?"
+LANG_ENGLISH       	"That's a little pricey, maybe try Babyjug?"
 
 REFERENCE          	JUG_PRO_TITLE
 LANG_ENGLISH       	"Juggernog Pro"

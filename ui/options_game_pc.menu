@@ -62,28 +62,67 @@
 
 			setDvar zombie_pause 0;
 			
-			setDvar zombie_apocalypse 0;
-
-			setDvar reimagined_cheat 1;
-
-			setDvar zombie_alt_bosses 1;
-
-			setDvar zombie_bo2_perks 1;
+			if(dvarString(zombie_apocalypse_default) == "")
+			{
+				setDvar zombie_apocalypse_default 0;
+			}
 			
-			setDvar zombie_exp_perks 0;
+			//Each of these only set if the dvar is not already set
+			if(dvarString(zombie_apocalypse) == "")
+			{
+				setDvar zombie_apocalypse dvarInt("zombie_apocalypse_default");
+			}
 			
-			setDvar zombie_tough_zombies 0;
+
+			if(dvarString(reimagined_cheat) == "")
+			{
+				setDvar reimagined_cheat 1;
+			}
+
+			if(dvarString(zombie_alt_bosses) == "")
+			{
+				setDvar zombie_alt_bosses 1;
+			}
+
+			if(dvarString(zombie_bo2_perks) == "")
+			{
+				setDvar zombie_bo2_perks 1;
+			}
+			
+			if(dvarString(zombie_exp_perks) == "")
+			{
+				setDvar zombie_exp_perks 0;
+			}
+			
+			if(dvarString(zombie_tough_zombies) == "")
+			{
+				setDvar zombie_tough_zombies 0;
+			}
 						
-			setDvar zombie_types 0;
+			if(dvarString(zombie_types) == "")
+			{
+				setDvar zombie_types 0;
+			}
 			
-			setDvar zombie_extra_drops 0;
+			if(dvarString(zombie_extra_drops) == "")
+			{
+				setDvar zombie_extra_drops 0;
+			}
 
-			setDvar zombie_perk_limit 5;
+			if(dvarString(zombie_perk_limit) == "")
+			{
+				setDvar zombie_perk_limit 5;
+			}
 			
-			setDvar zombie_round_start 1;
+			if(dvarString(zombie_round_start) == "")
+			{
+				setDvar zombie_round_start 1;
+			}
 
-			setDvar ui_hud_perk_hints 1;
-				
+			if(dvarString(ui_hud_perk_hints) == "")
+			{
+				setDvar ui_hud_perk_hints 1;
+			}
 
 			if(dvarString(com_maxfps) == "85") // default value
 			{

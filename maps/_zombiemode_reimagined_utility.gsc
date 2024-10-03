@@ -87,7 +87,7 @@ generate_hint( hint_code, hint_text, offset, wait_time )
 
 /* PERK HINTS HANDLED IN _ZOMBIEMODE_FFOTD.CSC CLIENTSCRIPT */
 
-generate_perk_hint( perkOrWeapon )
+generate_perk_hint( perkOrWeapon, specialHint )
 {
     self endon( "death" );
 	self endon( "disconnect" );
@@ -97,6 +97,9 @@ generate_perk_hint( perkOrWeapon )
 
 	if( is_true( self.superpower_active ) )
 		return;
+
+	if( !isdefined( specialHint ) )
+		specialHint = false;
 
 
 	if( perkOrWeapon == "rottweil72_upgraded_zm" )
@@ -203,6 +206,14 @@ generate_perk_hint( perkOrWeapon )
 
     title.y += BASE_OFFSET;
 
+	if( specialHint )
+	{
+		title.color = ( 0.5, 0, 0 );
+		//title.y -= 20;
+	}
+		
+   
+
 
     //Bullets
 	text = NewClientHudElem( self );
@@ -218,11 +229,24 @@ generate_perk_hint( perkOrWeapon )
 
 	text.y += BASE_OFFSET;
     text.y += 20;
+
+	if( specialHint )
+	{
+		//text.color = ( 1.0, 0.95, 0 );
+		//text.y -= 20;
+	}
+		
    
 
     /* SET APPROPRIATE HINT */
 		switch( hintCode )
 		{
+		case "Apocalypse":
+		//\n- Zombies will respawn at full health if not killed quickly \n- Rounds will automatically start if you wait too long; with a break every 5 rounds \n- Damaging zombies gives less points; kills and headshots give more points \n- Points are rewarded for finishing a round quickly \n- Doors and upgrades are more expensive
+			title SetText( &"REIMAGINED_APOCALYPSE_TITLE" );
+			text SetText( &"REIMAGINED_APOCALYPSE_HINT" );
+			break;
+
 		case "babyjugg":
 			title SetText( &"REIMAGINED_BABYJUGG_TITLE" );
 			text SetText( &"REIMAGINED_BABYJUGG_HINT" );
@@ -427,7 +451,12 @@ generate_perk_hint( perkOrWeapon )
 	title FadeOverTime( 1 );
 	title.alpha = 1;
 
-	wait 7;
+	wait_time = 7;
+
+	if( specialHint )
+		wait_time = 10;	
+
+	wait( wait_time );
 	self.new_perk_hint = false;
 	self notify( "perk_hint_end" );
 
