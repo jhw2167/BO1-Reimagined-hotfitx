@@ -25,9 +25,9 @@ player_add_points( event, mod, hit_location, zombie)
 	multiplier = self get_points_multiplier();
 	gross_possible_points = 0;
 
-	iprintln("event: " + event + " mod: " + mod + " ");
+	//iprintln("event: " + event + " mod: " + mod + " ");
 	//print current weapon
-	iprintln("current weapon: " + self getcurrentweapon());
+	//iprintln("current weapon: " + self getcurrentweapon());
 	
 	//Mod adjust for Sabertooth Chainsaw
 	if( isSubStr( self getcurrentweapon(), "sabertooth" ) && mod == "MOD_RIFLE_BULLET" )

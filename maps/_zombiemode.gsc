@@ -56,8 +56,8 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=8;	///
+	level.zombie_ai_limit_override=6;	///allowed on map
+	level.starting_round_override=30;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -373,7 +373,7 @@ reimagined_init_player_depedent_values()
 	if( !isDefined(level.players_size) )
 		level.players_size = GetPlayers().size;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 500000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 1000000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 
 	
 	//level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
@@ -950,7 +950,7 @@ reimagined_init_level()
 
 
 	//WEAPON VARIABLES
-	level.WEAPON_SABERTOOTH_RANGE = 196;
+	level.WEAPON_SABERTOOTH_RANGE = 160;
 
 	//Uzi
 	level.WEAPON_UZI_TYPES = array( "", "Flame", "Freeze", "Shock", "Pestilence" );
@@ -9240,6 +9240,42 @@ zombie_knockdown( wait_anim, upgraded )
 
 }
 
+//Reimagined-Expanded - kill zombie while he is down, Self is zombie
+zombie_ragdoll_kill( player, power, kill_zomb )
+{
+	self endon( "death" );
+	player endon( "disconnect" );
+
+	if( !IsDefined(self) || !IsAlive(self) )
+		return;
+
+	if( !isDefined(player) )
+		return;
+
+	if( !isDefined( kill_zomb ) )
+	{
+		kill_zomb = false;	
+	}
+
+	//default set power to 75
+	if( !isDefined( power ) )
+	{
+		power = 75;
+	}
+
+	self.a.nodeath = true;
+
+	direction_vec = VectorNormalize( self.origin - player.origin );
+	direction_vec = vector_scale( direction_vec, power );
+	self StartRagdoll();
+	self launchragdoll(direction_vec);
+	wait_network_frame();
+
+	//self playweapondeatheffects( weap, player getEntityNumber() );
+	if( kill_zomb )
+		self DoDamage( self.health + 666, player.origin, player, undefined, "MOD_UNKNOWN" );
+}
+
 
 
 //
@@ -9638,7 +9674,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	inRange = checkDist( attacker.origin, self.origin, level.WEAPON_SABERTOOTH_RANGE );
 	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
-		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.03;
+		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.01;
 	
 		/*
 			For each of following criteria, increase damage by 50%
@@ -10171,10 +10207,18 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			//flat 4x damage increase for double pap'ed weapon
 
-			if( IsSubStr( weapon, "zombie" ) || is_in_array( level.ARRAY_WALL_WEAPONS, weaponname ) )
+
+			//if its a valid shotgun, increase damage by 2x
+			if( is_in_array( level.ARRAY_SHOTGUN_WEAPONS, weaponname ) )
 			{
 				final_damage *= 2;
-			} else {
+			} 
+			else if( IsSubStr( weapon, "zombie" ) || is_in_array( level.ARRAY_WALL_WEAPONS, weaponname ) )
+			{
+				final_damage *= 3;
+			} 
+			else 
+			{
 				final_damage *= 4;
 			}
 			
@@ -10728,6 +10772,30 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			return 0;
 		}
 	}
+
+	//If damage is greater zombie health, do zombie ragdoll
+	if( !is_boss_zombie(self.animname) )
+	{
+		if( int(final_damage) >= self.health )
+		{
+			/*
+				1. If zombie is knocked down, do small ragdoll death
+				2. If zombie is killed by sniper or sabertooth, do larger ragdoll death
+			*/
+			if( is_true( self.knocked_down ) )
+			{
+				self thread zombie_ragdoll_kill( attacker, 75 );
+			}
+			else if( is_in_array(level.ARRAY_VALID_SNIPERS, weapon) 
+			||	   ( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" ) )
+			{
+				self thread zombie_ragdoll_kill( attacker, 150 );
+			}
+			
+			wait( 0.05 );
+		}
+	}
+	
 		
 	// return unchanged damage
 	//iPrintln( final_damage );
