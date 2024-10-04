@@ -6542,7 +6542,7 @@ zombie_watch_vulture_drop_bonus()
 					}
 
 
-					if( self hasProPerk( self.VLT_PRO ) )
+					if( self hasProPerk( level.VLT_PRO ) )
 						n_ammo_refunded = int( level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS * n_ammo_refunded );
 
 					n_ammo_count_current = self GetWeaponAmmoStock( str_weapon_current );
@@ -6550,7 +6550,7 @@ zombie_watch_vulture_drop_bonus()
 
 					stock_ammo = n_ammo_count_current + n_ammo_refunded;
 
-					iprintln( "Current Ammo: " + n_ammo_count_current + "  New Stock: " + stock_ammo );
+					//iprintln( "Current Ammo: " + n_ammo_count_current + "  New Stock: " + stock_ammo );
 					if( stock_ammo > n_ammo_count_max )
 						stock_ammo = n_ammo_count_max;
 					

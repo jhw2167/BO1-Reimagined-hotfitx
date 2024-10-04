@@ -740,11 +740,11 @@ reimagined_init_level()
 	level.VALUE_VULTURE_BONUS_MELEE_POINTS = 40;				//Up from 25
 	level.VALUE_VULTURE_BONUS_AMMO_CLIP_FRACTION = 0.03;
 	level.VALUE_VULTURE_PRO_BONUS_AMMO_CLIP_FRACTION = 0.05;
-	level.VALUE_VULTURE_MIN_AMMO_BONUS = 8;
-	level.VALUE_VULTURE_MAX_AMMO_BONUS = 25;
+	level.VALUE_VULTURE_MIN_AMMO_BONUS = 5;
+	level.VALUE_VULTURE_MAX_AMMO_BONUS = 20;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 40;			//1-1000, 4% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 45;//40;			//1-1000, 4% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -1435,9 +1435,10 @@ watch_player_dev_utility()
 
 			/* 
 				#2 Refill stock ammo of primary weapon
+				//RESTOCK, give_ammo, max_ammo give_max
 			*/
 
-			level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, getPlayers()[0], -1 );
+			//level thread maps\_zombiemode_powerups::full_ammo_powerup_implementation( undefined, getPlayers()[0], -1 );
 
 			wait( interval );
 		}
@@ -1477,6 +1478,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
@@ -6369,7 +6371,7 @@ determine_horde_wait( count )
 	// -0.5s for each player in the game:
 		delay -= get_players().size * 0.5;
 
-		iprintln( "Delay: " + delay );
+		//iprintln( "Delay: " + delay );
 
 		if( isDefined( level.spawn_delay_override ) )
 			delay = level.spawn_delay_override;
@@ -9400,7 +9402,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	else
 		usePlayerHitmarkers = usePlayerHitmarkers && attacker hasProPerk(level.DST_PRO);
 
-	iprintln("Use Player Hitmarkers: " + usePlayerHitmarkers);
+	//iprintln("Use Player Hitmarkers: " + usePlayerHitmarkers);
 	if( usePlayerHitmarkers )
 	{
 		weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
@@ -9636,7 +9638,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	inRange = checkDist( attacker.origin, self.origin, level.WEAPON_SABERTOOTH_RANGE );
 	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
-		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.04;
+		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.03;
 	
 		/*
 			For each of following criteria, increase damage by 50%
