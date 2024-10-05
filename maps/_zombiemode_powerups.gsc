@@ -3441,11 +3441,12 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	ent_player._show_solo_hud = true;
 
-	drop_time = 30;
+	DROP_LENGTH = 20;
 	if( ent_player maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
 	{
-		drop_time = 45;
+		DROP_LENGTH = 30;
 	}
+	drop_time = DROP_LENGTH;
 
 	//Reimagined-Expanded, override "Tesla" powerup to be a "Superpower"
 
@@ -3472,7 +3473,7 @@ tesla_weapon_powerup( ent_player, powerup, time )
 	{
 		if( is_true( level.stack_player_superpower ) )
 		{
-			drop_time += 45;
+			drop_time += DROP_LENGTH;
 			level.stack_player_superpower = false;
 		}
 		

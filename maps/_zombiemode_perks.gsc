@@ -6536,7 +6536,9 @@ zombie_watch_vulture_drop_bonus()
 					}
 
 					//if Weapon class is pistol, take half of the ammo
-					if( WeaponClass(str_weapon_current) == "pistol" )
+					//if weapon is in array: level.ARRAY_SIDEARMBONUS_WEAPONS
+					if( WeaponClass(str_weapon_current) == "pistol" 
+						|| is_in_array(level.ARRAY_SIDEARMBONUS_WEAPONS, str_weapon_current) )
 					{
 						n_ammo_refunded = int( n_ammo_refunded / 2 );
 					}

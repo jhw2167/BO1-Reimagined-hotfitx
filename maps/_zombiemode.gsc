@@ -56,8 +56,8 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=30;	///
+	//level.zombie_ai_limit_override=6;	///allowed on map
+	level.starting_round_override=25;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -373,7 +373,8 @@ reimagined_init_player_depedent_values()
 	if( !isDefined(level.players_size) )
 		level.players_size = GetPlayers().size;
 
-	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 1000000 * level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = level.THRESHOLD_MAX_ZOMBIE_HEALTH 
+		* level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ level.players_size ];
 
 	
 	//level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX = 32 - 2*level.players_size;
@@ -434,7 +435,12 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 3 ] = 1.35;
 	level.VALUE_ZOMBIE_PLAYER_HEALTH_MULTIPLIER[ 4 ] = 1.50;
 
-	//level.THRESHOLD_MAX_ZOMBIE_HEALTH = 200000;
+	level.THRESHOLD_MAX_ZOMBIE_HEALTH = 1000000;
+	level.VALUE_ZOMBIE_HEALTH_PORTION_R15 = 0.015;	//1.5% of max health
+	level.VALUE_ZOMBIE_HEALTH_PORTION_R20 = 0.05; 	//5% of max health
+	level.VALUE_ZOMBIE_HEALTH_PORTION_R30 = 0.25; 	//35% of max health
+	level.VALUE_ZOMBIE_HEALTH_PORTION_R40 = 0.50; 	//50% of max health
+	level.VALUE_ZOMBIE_HEALTH_PORTION_R50 = 0.80; 	//80% of max health
 
 	level.SUPER_SPRINTER_SPEED = 70;
 	level.TERROR_SPEED = 140;
@@ -498,7 +504,7 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = level.VALUE_APOCALYPSE_ROUND_TICK_TIME_MED;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 1000;
 
-			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 50;
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 75;
 			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 40;
 		}
 		else if( i < 30 ) {
@@ -506,7 +512,7 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_TIME_LIMITS[i] = i;
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
 
-			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 150;
 			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 50;
 		} 
 		else {
@@ -515,7 +521,7 @@ reimagined_init_level()
 			level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[i] = 2000;
 
 			level.ARRAY_QUICK_KILL_NEGATIVE_BONUS_POINTS[i] = 50;
-			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 100;
+			level.ARRAY_QUICK_KILL_BONUS_POINTS[i] = 200;
 		}
 			
 		if( isdefined(level.QUICK_KILL_BONUS_OVERRIDE) )
@@ -578,7 +584,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 10;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 5; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -744,7 +750,7 @@ reimagined_init_level()
 	level.VALUE_VULTURE_MAX_AMMO_BONUS = 20;
 	level.VALUE_VULTURE_PRO_SCALE_AMMO_BONUS = 2;
 
-	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 45;//40;			//1-1000, 4% chance per zombie per player with vulture
+	level.VALUE_VULTURE_BONUS_AMMO_SPAWN_CHANCE = 55;//40;			//1-1000, 4% chance per zombie per player with vulture
 	level.VALUE_VULTURE_BONUS_DROP_TIME = 60;					//60 seconds
 	level.VALUE_VULTURE_BONUS_DROP_DELAY_TIME = 15;				//15 seconds
 	//level.count_vulture_fx_drops_round								//See pre-round
@@ -930,7 +936,7 @@ reimagined_init_level()
 	level.VALUE_EXPLOSIVE_UPGD_RANGE_SCALE = 2;
 
 	level.VALUE_SHOTGUN_DMG_ATTRITION = 0.10;
-	level.VALUE_MAX_SHOTGUN_ATTRITION = 15;	//1.1^15=4.5x max 4.5x damage
+	level.VALUE_MAX_SHOTGUN_ATTRITION = 16;	//1.1^16=5x max 5x damage
 	level.ARRAY_VALID_SHOTGUNS = array("ithaca_zm", "spas_zm", "rottweil72_zm", "hs10_zm",
 									 "zombie_doublebarrel", "zombie_doublebarrel_upgraded", "zombie_shotgun", "zombie_shotgun_upgraded",
 									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
@@ -942,7 +948,9 @@ reimagined_init_level()
 	level.ARRAY_BIGHEADSHOTDMG_WEAPONS = array( "fnfal_upgraded_zm_x2", "m14_upgraded_zm", "psg1_upgraded_zm_x2", "l96a1_upgraded_zm_x2" );
 	level.ARRAY_SIDEARMBONUS_WEAPONS = array( "cz75_zm", "cz75_upgraded_zm", "cz75_upgraded_zm_x2",
 											"cz75_dw_zm", "cz75_dw_upgraded_zm", "cz75_dw_upgraded_zm_x2",
-											 "python_zm", "python_upgraded_zm", "python_upgraded_zm_x2"
+											 "python_zm", "python_upgraded_zm", "python_upgraded_zm_x2",
+											 "makarov_zm", "makarov_upgraded_zm", "makarov_upgraded_zm_x2",
+											 "asp_zm", "asp_upgraded_zm", "asp_upgraded_zm_x2"
 											);
 
 	level.ARRAY_EXECUTE_WEAPONS = array( "python_upgraded_zm_x2", "enfield_upgraded_zm_x2", "skorpionlh_upgraded_zm" );
@@ -6337,7 +6345,7 @@ determine_horde_wait( count )
 			wait( level.VALUE_HORDE_DELAY );
 		}
 
-		//If less than 3/4 of horde, small delay	//HERE
+		//If less than 3/4 of horde, small delay
 		delay = level.VALUE_ZOMBIE_SPAWN_DELAY;
 	
 		if( level.classic )
@@ -6738,6 +6746,7 @@ reimagined_expanded_round_start()
 	level.total_drops_round = 0;
 	level.count_vulture_fx_drops_round = 0;
 
+	level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH = 0.34 * level.zombie_health;
 
 	if( level.tough_zombies )
 	{
@@ -7656,7 +7665,7 @@ setApocalypseOptions()
 	level.max_perks = level.total_perks;
 
 	level thread print_apocalypse_options();
-	//HERE fade_introblack
+	//fade_introblack
 
 }
 
@@ -8014,19 +8023,30 @@ ai_calculate_health( round_number )
 		base = 1500;
 	
 	roundHealthAdjust = [];
-	lowRoundZombHealthAdjust = 1;
+	roundHealthLogFactor = [];
 
 	MAX_ROUND_ADJUST = 50;
 	for(i=0; i<MAX_ROUND_ADJUST; i++)
 	{
+		roundHealthLogFactor[i] = 3.5;
+
 		if( i < 10 )
 			roundHealthAdjust[i] = 0.2;
 		else if( i < 15 )
 			roundHealthAdjust[i] = 0.6;
 		else if( i < 20 )
+		{
 			roundHealthAdjust[i] = 0.8;
-		else
+		}
+		else if( i < 25 )
+		{
 			roundHealthAdjust[i] = 1;
+		}
+		else
+		{	roundHealthAdjust[i] = 1;
+			roundHealthLogFactor[i] = 2;
+		}
+			
 	}
 
 	startHealth = 150;
@@ -8035,12 +8055,20 @@ ai_calculate_health( round_number )
 	//iprintln(health);
 	for ( i=2; i<=round_number; i++ )
 	{	
-		lowRoundZombHealthAdjust = roundHealthAdjust[i];
+		lowRoundZombHealthAdjust = 1;
+		roundAdjustedLogFactor = 2;
+		if( i < MAX_ROUND_ADJUST )
+		{
+			roundAdjustedLogFactor = roundHealthLogFactor[i];
+			lowRoundZombHealthAdjust = roundHealthAdjust[i];
+		}
+			
+		
 		health += ( base * lowRoundZombHealthAdjust * ( i/logFactor ) );
 		//iprintln(health);	
 	}
 
-	//cap zombies health, first round of capped == 46
+	//cap zombies health, first round of capped 
 	if(health > level.THRESHOLD_MAX_ZOMBIE_HEALTH) {
 		health = level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 	}
@@ -8256,7 +8284,7 @@ reimagined_expanded_apocalypse_bonus( giveBonus )
 	wait( 5 );
 		players = get_players();
 		for(i=0;i<players.size;i++) {
-			bonus = level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS [ level.round_number ];
+			bonus = level.ARRAY_APOCALYPSE_ROUND_BONUS_POINTS[ level.round_number ];
 			if( giveBonus )
 				players[i] maps\_zombiemode_score::add_to_player_score( bonus, true );
 			else
@@ -9487,7 +9515,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
-	if(meansofdeath == "MOD_MELEE")
+	if(meansofdeath == "MOD_MELEE" )
 	{
 
 		final_damage = 200;	//base damage
@@ -9512,7 +9540,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		usingUpgradedKnife = IsSubStr(weapon, "knife_") && hasUgradedKnife;
 
-		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || weapon == "knife_ballistic_upgraded_zm" );		
+		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || baseWeapon == "knife_ballistic_upgraded_zm" );		
 
 		if( boss_zombie ) {
 			//skip pre processing for punch
@@ -9567,33 +9595,40 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if( weapon == "knife_ballistic_zm" )
 			{
 				if( is_boss_zombie(self.animname) )
-					final_damage = 2000;
+					final_damage = 1000;
 				else
 					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.1);
-			} else if ( weapon == "knife_ballistic_upgraded_zm" )
+			} 
+			else if( weapon == "knife_ballistic_upgraded_zm" )
+			{
+				if( is_boss_zombie(self.animname) )
+					final_damage = 2000;
+				else
+					final_damage = int(level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.3);
+				
+			} 
+			else if( weapon == "knife_ballistic_upgraded_zm_x2" )
 			{
 				if( is_boss_zombie(self.animname) )
 					final_damage = 4000;
-				else
-				{
-					self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 64, 1);
-					if( self.marked_for_tesla )
-						final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.3 );
-						
-				}
-					
-			} else if ( weapon == "knife_ballistic_upgraded_zm_x2" )
-			{
-				if( is_boss_zombie(self.animname) )
-					final_damage = 8000;
-				else
+				//else if meansofdeath is melee
+				else //if( meansOfDeath == "MOD_MELEE" )
 				{
 					//\give knife_ballistic_upgraded_zm_x2
-					self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 1);
-					if( self.marked_for_tesla )
-						final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6 );
+					final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6 );
+
+					if( final_damage > self.health )
+					{
+						//just shock zombie, no shocked anim
+						self thread maps\_zombiemode_weapon_effects::tesla_play_death_fx();
+					}
+					else
+					{
+						//Zomb is not killed, stun him
+						self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 0);
+						wait(0.01);
+					}					
 									
-					wait(0.1);
 				}
 					
 			}
@@ -9606,6 +9641,33 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		//return final_damage;
+	}
+
+	if( meansofdeath == "MOD_IMPACT" )
+	{
+		//else if statement for all ballistic knife levels
+		if( weapon == "knife_ballistic_zm" )
+		{
+
+		}
+		else if( weapon == "knife_ballistic_upgraded_zm" )
+		{
+			//\give knife_ballistic_upgraded_zm_x2
+			self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 1);
+			if( self.marked_for_tesla )
+				final_damage = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.6 );
+							
+			wait(0.01);
+		}
+		else if( weapon == "knife_ballistic_upgraded_zm_x2" )
+		{
+			//\give knife_ballistic_upgraded_zm_x2
+			self thread maps\_zombiemode_weapon_effects::tesla_arc_damage( self, attacker, 128, 2);
+			if( self.marked_for_tesla )
+				final_damage = int( self.max_health + 1000 );
+							
+			wait(0.01);
+		}
 	}
 
 	//iprintln("Final Damage 5: " + final_damage);
@@ -9674,7 +9736,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	inRange = checkDist( attacker.origin, self.origin, level.WEAPON_SABERTOOTH_RANGE );
 	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
-		baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.01;
+		iprintln("Total zomb health: " + level.THRESHOLD_MAX_ZOMBIE_HEALTH );
+		//baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.01;
+		baseDmg = 10000;
+		//10% of zombie's max health
 	
 		/*
 			For each of following criteria, increase damage by 50%
@@ -9682,15 +9747,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		//Is weapon upgraded
 		if( IsSubStr( weapon, "upgraded" ) ) 
-			baseDmg *= 1.5;
+			baseDmg *= 2;
 		
 		//Is weapon double upgraded
 		if( IsSubStr( weapon, "_x2" ) )
-			baseDmg *= 1.5;
+			baseDmg *= 2;
 
 		//Player has stamina upgraded
 		if( attacker hasProPerk(level.STM_PRO) )
-			baseDmg *= 1.5;
+			baseDmg *= 2;
 
 		//Zombie is afflicted by shock or fire or poison
 		zombie_aflicted = is_true( self.marked_for_tesla ) 
@@ -9743,7 +9808,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			baseDmg = baseDmg / 100;
 			
 		final_damage = baseDmg;
-		//iprintln("Final Damage 4: " + final_damage);
+		iprintln("Final Damage 4: " + final_damage);
 		//return final_damage;
 	}
 
@@ -10376,11 +10441,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( is_in_array(level.ARRAY_EXECUTE_WEAPONS, weapon) && !is_boss_zombie(self.animname) )
 		{
-			if( self.health < level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH )
+			//HERE
+			iprintln("Total zomb health: " + level.THRESHOLD_MAX_ZOMBIE_HEALTH );
+			execute_health = 0.34 * self.maxhealth;
+			if( self.health < execute_health + final_damage )
 			{
 				final_damage = self.health;
 				return final_damage;
 			}
+			
 		}
 
 		switch(weapon)
