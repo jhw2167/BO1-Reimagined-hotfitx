@@ -307,6 +307,17 @@ do_sickle_flourish_end( gun )
 		self SetActionSlot(2, "weapon", "combat_knife_zm");
 	}
 
+	//Iterate over all player wepaons, if they have any ballistic knife, switch to bowie
+	weapons = self GetWeaponsList();
+	for(i = 0; i < weapons.size; i++)
+	{
+		if(isSubStr(weapons[i], "knife_ballistic"))
+		{
+			self TakeWeapon(weapons[i]);
+			self GiveWeapon(weapons[i], self.knife_index);
+		}
+	}
+
 	// TODO: race condition?
 	if ( self maps\_laststand::player_is_in_laststand() || is_true( self.intermission ) )
 	{

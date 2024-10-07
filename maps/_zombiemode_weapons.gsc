@@ -3568,6 +3568,7 @@ treasure_chest_give_weapon( weapon_string )
 		self [[ level.zombiemode_offhand_weapon_give_override ]]( weapon_string );
 	}
 
+	modelIndex = 0;
 	if( weapon_string == "zombie_cymbal_monkey" )
 	{
 		if( IsDefined( self get_player_tactical_grenade() ) && !self is_player_tactical_grenade( "zombie_cymbal_monkey" ) )
@@ -3593,11 +3594,13 @@ treasure_chest_give_weapon( weapon_string )
 	}
 	else if ( weapon_string == "knife_ballistic_zm" && self HasWeapon( "bowie_knife_zm" ) )
 	{
-		weapon_string = "knife_ballistic_bowie_zm";
+		//weapon_string = "knife_ballistic_bowie_zm";
+		modelIndex = 1;
 	}
 	else if ( weapon_string == "knife_ballistic_zm" && self HasWeapon( "sickle_knife_zm" ) )
 	{
-		weapon_string = "knife_ballistic_sickle_zm";
+		//weapon_string = "knife_ballistic_sickle_zm";
+		modelIndex = 2;
 	}
 
 	if (weapon_string == "tesla_gun_zm" || weapon_string == "thundergun_zm" || weapon_string == "freezegun_zm" || weapon_string == "sniper_explosive_zm" || weapon_string == "humangun_zm" || weapon_string == "shrink_ray_zm" || weapon_string == "microwavegundw_zm")
@@ -3605,7 +3608,7 @@ treasure_chest_give_weapon( weapon_string )
 		playsoundatposition("mus_wonder_weapon_stinger", (0,0,0));
 	}
 
-	self GiveWeapon( weapon_string, 0 );
+	self GiveWeapon( weapon_string, modelIndex );
 	self maps\_zombiemode::handle_player_packapunch(weapon_string, false);
 	self give_max_ammo(weapon_string, 1);
 	self SwitchToWeapon( weapon_string );
@@ -4595,6 +4598,13 @@ entity_stolen_by_sam( ent_grenade, ent_model )
 
 get_upgraded_weapon_model_index(weapon)
 {
+	//HERE
+	//if weapon is ballistic knife, return knife index
+	if( IsSubStr(weapon, "knife_ballistic") )
+	{
+		return self.knife_index;
+	}
+
 	if(IsSubStr(level.script, "zombie_cod5_"))
 	{
 		if(weapon == "tesla_gun_upgraded_zm" || weapon == "mp40_upgraded_zm")

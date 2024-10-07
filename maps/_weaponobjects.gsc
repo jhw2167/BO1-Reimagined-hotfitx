@@ -352,9 +352,6 @@ watch_weapon_projectile_object_spawn() // self == player
 	{
 		self waittill( "missile_fire", weapon, weapname );
 
-			iprintln("watch_weapon_object_spawn: ");
-		iprintln("weapon: " + weapname);
-
 		if( IsSubStr( weapname, "knife_ballistic" ) )
 		{
 			weapname = "knife_ballistic_zm";

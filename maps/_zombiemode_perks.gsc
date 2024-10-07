@@ -990,7 +990,7 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				}
 				else
 				{
-					index = maps\_zombiemode_weapons::get_upgraded_weapon_model_index(upgrade_weapon);
+					index = player maps\_zombiemode_weapons::get_upgraded_weapon_model_index(upgrade_weapon);
 
 					player GiveWeapon( upgrade_weapon, index, player maps\_zombiemode_weapons::get_pack_a_punch_weapon_options( upgrade_weapon ) );
 					player maps\_zombiemode_weapons::give_max_ammo(upgrade_weapon, 1);

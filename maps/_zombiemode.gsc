@@ -2008,6 +2008,13 @@ watch_player_weapon_special_bonuses()
 
 		switch( weapon )
 		{
+			
+			//Ballistic knife and upgraded version
+			case "knife_ballistic_upgraded_zm":
+			case "knife_ballistic_zm":
+				self watch_ballistic_knife();
+				break;
+
 			case "famas_upgraded_zm_x2":
 				self watch_famas_x2();
 				break;
@@ -2057,6 +2064,29 @@ watch_player_weapon_special_bonuses()
 	}
 
 }
+
+		/*
+			method: watch_ballistic_knife
+
+			Descr: Check index of players weapon if it matches self.knife_index,
+			if it doesnt, give the player the new weapon
+		*/
+		watch_ballistic_knife()
+		{
+			self endon("weapon_switch");
+			
+			//Check if player has ballistic knife
+			weapon = self GetCurrentWeapon();
+			//index = self GetModelIndex( weapon );
+			//isSubStr( weapon, "knife_ballistic" )
+			if( isSubStr( weapon, "knife_ballistic" ) )
+			{
+				//self TakeWeapon( weapon );
+				//self GiveWeapon( weapon, self.knife_index );
+			}
+			//wait(10);
+		
+		}
 
 		/*
 			- Whenever a sniper is fired, 10 dmg is done to all zombies on the map
