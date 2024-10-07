@@ -559,7 +559,9 @@ zombie_watch_despawn_no_damage( initialDelay )
 					self zombie_speed_up( 1, true );
 					self.zombie_despawn = false;
 					self thread zombie_watch_despawn_no_damage( false );
+					return;
 				}
+				//else zombie will be kiled and respawn
 			}
 			else	//Classic Mode!
 			{

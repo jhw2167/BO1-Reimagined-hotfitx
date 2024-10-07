@@ -499,6 +499,7 @@ xanim,ai_zombie_tesla_death_d
 xanim,ai_zombie_tesla_death_e
 xanim,viewmodel_ppsh_empty_sprint_loop
 xanim,ai_zombie_thundergun_hit_upontoback
+xanim,ai_zombie_thundergun_hit_doublebounce
 xanim,ai_zombie_thundergun_getup_b
 
 xanim,p_zombie_perkacola_drink

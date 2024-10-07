@@ -56,12 +56,12 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=6;	///allowed on map
+	level.zombie_ai_limit_override=6;	///allowed on map
 	level.starting_round_override=40;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
-	//level.spawn_delay_override=0.5;			///
+	level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///per round
 	level.apocalypse_override=false;		///
@@ -1292,7 +1292,7 @@ watch_player_dev_utility()
 	dev_only = true;
 	while(1)
 	{
-		if( self buttonPressed("g")  && dev_only)
+		if( self buttonPressed("j")  && dev_only)
 		{
 
 			if( level.rolling_kill_all_interval > 0 )
@@ -9246,6 +9246,7 @@ wait_and_revive()
 }
 
 //Reimagined-Expanded Self is zombie
+//HERE
 zombie_knockdown( wait_anim, upgraded )
 {
 	if( is_true(self.knockdown) )
@@ -9269,6 +9270,13 @@ zombie_knockdown( wait_anim, upgraded )
 
 	self.knockdown = true;
 	fall_anim = %ai_zombie_thundergun_hit_upontoback;
+	if( !is_true( self.has_legs ) )
+	{
+		//From BO1 origin staffs anim
+		fall_anim = %ai_zombie_thundergun_hit_doublebounce;
+	}
+		
+	
 	self SetPlayerCollision( 0 );
 	//endon_str = "zombie_knockdown_" + attacker.entity_num;
 	//self thread setZombiePlayerCollisionOff(attacker, wait_anim, 200, endon_str);
@@ -9285,11 +9293,15 @@ zombie_knockdown( wait_anim, upgraded )
 
 	if( !IsDefined(self) || !IsAlive(self) )
 		return;
-	self.doingRagdollDeath = false;
-	self.nodeathragdoll = true;
+	//self.doingRagdollDeath = false;
+	//self.nodeathragdoll = true;
 	getup_anim = %ai_zombie_thundergun_getup_b;
-	self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
-	animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
+	if( is_true( self.has_legs ) )
+	{
+		self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
+		animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, wait_anim );
+	}
+	
 	self SetPlayerCollision( 1 );
 
 	wait(0.25);
@@ -10471,8 +10483,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( is_in_array(level.ARRAY_EXECUTE_WEAPONS, weapon) && !is_boss_zombie(self.animname) )
 		{
-			//HERE
-			iprintln("Total zomb health: " + level.THRESHOLD_MAX_ZOMBIE_HEALTH );
 			execute_health = 0.34 * self.maxhealth;
 			if( self.health < execute_health + final_damage )
 			{
