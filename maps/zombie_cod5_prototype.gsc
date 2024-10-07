@@ -360,7 +360,7 @@ disable_stances_in_zones()
  		players[i] thread fix_hax();
 		players[i] thread fix_couch_stuckspot();
  		//players[i] thread in_bad_zone_watcher();	
- 		players[i] thread out_of_bounds_watcher();
+ 		//players[i] thread out_of_bounds_watcher();
  	}
 }
 

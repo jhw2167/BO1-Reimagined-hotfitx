@@ -900,7 +900,21 @@ start_properk_placer()
 	new_pos = self.origin + offset;
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
-	object SetModel( "p6_zm_vending_electric_cherry_off" );
+	//object SetModel( "p6_zm_vending_electric_cherry_off" );
+	Object SetModel( "zombie_vending_jugg" );
+	//object SetModel( "zombie_vending_sleight" );
+	//object SetModel( "zombie_vending_doubletap2" );
+	//object SetModel( "zombie_vending_revive" );
+	//object SetModel( "zombie_vending_nuke" );
+	//object SetModel( "zombie_vending_marathon" );
+	//object SetModel( "zombie_vending_ads" );
+	//object SetModel( "zombie_vending_three_gun" );
+	//object SetModel( "p6_zm_vending_chugabud" );
+	//object SetModel( "p6_zm_vending_electric_cherry_off" );
+	//object SetModel( "bo2_zombie_vending_vultureaid" );
+	//object SetModel( "bo3_p7_zm_vending_widows_wine_off" );
+
+
 	//object.angles = angles + (0, 180, 0);
 	object.angles = VectorToAngles(forward_view_angles);
 
@@ -913,6 +927,22 @@ start_properk_placer()
 
     while(1)
     {
+		/*
+			q - return obj to player
+			e - edit obj position and angles
+				v - change editing index: x, y, z, theta, ro, phi
+						- theta - like a clock
+						- ro - roll
+
+						- z - up/downm
+				c - change fidelity index: 1, 5, 10, 45
+				f - moves into editing mode, must press enter once to exit
+					f - adjust value up
+					r - adjust value down
+
+			enter, exit fine tuning, return object to player
+
+		*/
 
 		if( self buttonPressed("q") )
 		{
@@ -930,12 +960,22 @@ start_properk_placer()
 
 		if( self buttonPressed("e") )
 		{
+			count = 0;
+			show = 30;
 			//Edit objects position and angles
 			i = 0; // Editing Index
     		j = level.fidelities.size-1; //fidelities index
+			iprintlnbold("Tuning: " + level.editing[i] + " : " + level.fidelities[j]);
 			
 			while(1)
 			{
+				//every 10 counts display the print statement
+				if(count % show == 0)
+				{
+					iprintlnbold("Tuning: " + level.editing[i] + " : " + level.fidelities[j]);
+				}
+				count++;
+
 				if(self buttonPressed("v"))
 				{
 					i++;
@@ -957,8 +997,9 @@ start_properk_placer()
 					continue;
 				}
 
-				if(self buttonPressed("e"))
+				if(self buttonPressed("f"))
 				{
+					iprintlnbold("Editing: ");
 					temp = self editObject( object, i, j );
 					object.origin = temp.origin;
 					object.angles = temp.angles;
@@ -966,11 +1007,13 @@ start_properk_placer()
 					iprintln("pos: " + object.origin);
 					iprintln("ang: " + object.angles);
 				}
+				
+				wait(0.2);
 
 				if(self buttonPressed("ENTER"))
 					break;
 				
-				wait(0.2);
+				
 			}
 			
 			
@@ -978,7 +1021,8 @@ start_properk_placer()
 			iprintlnbold("object angles: " + object.angles);
 		}
 
-        wait 0.5;
+		//iprintln("no input");
+        wait 0.1;
     }
 }
 
@@ -997,7 +1041,15 @@ editObject( object, i, j )
 	while(1)
 	{
 		
-		
+		wait(0.1);
+
+		if(self buttonPressed("r"))
+		{
+			iprintln("UP");
+			struct adjust( editing, level.fidelities[j] );
+			//wait(0.05);
+			return struct;
+		}
 			
 		if(self buttonPressed("f"))
 		{
@@ -1007,13 +1059,6 @@ editObject( object, i, j )
 			return struct;
 		}
 
-		if(self buttonPressed("r"))
-		{
-			iprintln("UP");
-			struct adjust( editing, level.fidelities[j] );
-			//wait(0.05);
-			return struct;
-		}
 
 		if(self buttonPressed("ENTER"))
 		{
@@ -1022,7 +1067,6 @@ editObject( object, i, j )
 		}
 		
 		
-		wait(0.05);
 	}
 
 

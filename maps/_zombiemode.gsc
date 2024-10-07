@@ -56,8 +56,8 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=40;	///
+	level.zombie_ai_limit_override=1;	///allowed on map
+	level.starting_round_override=1;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -1319,7 +1319,8 @@ watch_player_dev_utility()
 		if( self buttonPressed("q")  && dev_only)
 		{
 			//_zombiemode_reimagined_utility
-			//start_properk_placer();
+			self.ignoreme = true;
+			start_properk_placer();
 		}
 
 

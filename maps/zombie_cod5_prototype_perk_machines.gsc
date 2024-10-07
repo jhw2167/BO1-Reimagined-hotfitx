@@ -7,18 +7,49 @@ init()
 	place_babyjug();
 
 	//level._effect[ "lightning_dog_spawn" ] = LoadFX( "maps/zombie/fx_zombie_dog_lightning_buildup" );
-	register_perk_spawn( ( -160, -528, 1 ), ( 0, 0, 0 ) );
-	register_perk_spawn( ( 443.7, 641.1, 144.1 ), ( 0, -180, 0 ) );
-	register_perk_spawn( ( 510.3, 645.9, 1.1 ), ( 0, -180, 0 ) );
-	register_perk_spawn( ( 170.8, 326.1, 145.1 ), ( 0, 0, 0 ) );
-	spawn_perk( "zombie_vending_jugg", "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" );
-	spawn_perk( "zombie_vending_sleight", "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" );
-	spawn_perk( "zombie_vending_doubletap2", "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" );
-	spawn_perk( "zombie_vending_revive", "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" );
-	spawn_perk( "zombie_vending_nuke", "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" );
-	spawn_perk( "zombie_vending_marathon", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
-	spawn_perk( "zombie_vending_ads", "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" );
-	spawn_perk( "zombie_vending_three_gun", "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" );
+	//register_perk_spawn( ( -160, -528, 1 ), ( 0, 0, 0 ) );
+	//register_perk_spawn( ( 443.7, 641.1, 144.1 ), ( 0, -180, 0 ) );
+	//register_perk_spawn( ( 510.3, 645.9, 1.1 ), ( 0, -180, 0 ) );
+	//register_perk_spawn( ( 170.8, 326.1, 145.1 ), ( 0, 0, 0 ) );
+
+
+	/*
+		truck, move over 5 for fatter model
+		jug, DBTP, nuke
+	*/
+	register_perk_spawn( ( -412.2, 150.4, 37.7 ), ( 5, -49, 0 ) );	
+
+	/*
+		truck, wall smoke
+		jug, revive
+	*/
+	register_perk_spawn( ( -800, -111.5, -11 ), ( 0, 90, 0 ) );	
+
+	/*
+		back wall, up stairs, by stairs
+		speed, mule
+	*/
+	register_perk_spawn( ( 241.2, 415, 145.5), ( 0, 90, 0) );
+
+	/*
+		under stairs, grass covered
+		DS, STM, WW
+	*/
+	register_perk_spawn( ( 365, 515.5, 5), ( 0, 90, 0) ); //95
+
+
+
+
+
+	spawn_perk( "zombie_vending_jugg", 0, "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" );
+	spawn_perk( "zombie_vending_sleight", 1, "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" );
+	spawn_perk( "zombie_vending_doubletap2", 2, "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" );
+	spawn_perk( "zombie_vending_revive", 3, "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" );
+
+	//spawn_perk( "zombie_vending_nuke", "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" );
+	//spawn_perk( "zombie_vending_marathon", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
+	//spawn_perk( "zombie_vending_ads", "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" );
+	//spawn_perk( "zombie_vending_three_gun", "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" );
 	//spawn_perk( "p6_zm_vending_chugabud", "zombie_vending", "vending_chugabud", "specialty_extraammo", "mus_perks_whoswho_jingle", "mus_perks_whoswho_sting" );
 	//spawn_perk( "p6_zm_vending_electric_cherry_off", "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" );
 	//spawn_perk( "bo2_zombie_vending_vultureaid", "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" );
@@ -64,10 +95,11 @@ register_perk_spawn( origin, angles )
 	level.perk_spawn_location[ level.perk_spawn_location.size ] = struct;
 }
 
-spawn_perk( model, targetname, target, perk, jingle, sting )
+spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 {
-	machine = Spawn( "script_model", ( 0, 0, -9999 ) );
-	machine.angles = ( 0, 0, 0 );
+	//machine = Spawn( "script_model", ( 0, 0, -9999 ) );
+	machine = Spawn( "script_model", level.perk_spawn_location[ spawnPointIndex ].origin );
+	machine.angles = level.perk_spawn_location[ spawnPointIndex ].angles;
 	machine SetModel( model );
 	machine.targetname = target;
 	trigger = Spawn( "trigger_radius_use", machine.origin + ( 0, 0, 30 ), 0, 20, 70 );
