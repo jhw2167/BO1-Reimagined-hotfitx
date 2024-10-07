@@ -1501,20 +1501,20 @@ director_zombie_update()
 	{
 		if ( is_true( self.custom_think ) )
 		{
-			iprintln( "1" );
+			//iprintln( "1" );
 			wait_network_frame();
 			continue;
 		}
 		else if ( is_true( self.defeated ) )
 		{
-			iprintln( "2" );
+			//iprintln( "2" );
 			self.pointIndexToRunTo = undefined;
 			wait( 5 );
 			continue;
 		}
 		else if ( is_true( self.performing_activation ) )
 		{
-			iprintln( "3" );
+			//iprintln( "3" );
 			self notify( "activated" );
 			self notify( "keep_running" );
 			wait_network_frame();
@@ -1523,21 +1523,21 @@ director_zombie_update()
 		}
 		else if ( is_true( self.ground_hit ) )
 		{
-			iprintln( "4" );
+			//iprintln( "4" );
 			wait_network_frame();
 			self.pointIndexToRunTo = undefined;
 			continue;
 		}
 		else if ( is_true( self.solo_last_stand ) )
 		{
-			iprintln( "5" );
+			//iprintln( "5" );
 			wait_network_frame();
 			self.pointIndexToRunTo = undefined;
 			continue;
 		}
 		else if ( !is_true( self.following_player ) )
 		{
-			iprintln( "6 - GOOD" );
+			//iprintln( "6 - GOOD" );
 			self thread maps\_zombiemode_spawner::find_flesh();
 			self.following_player = true;
 			self.pointIndexToRunTo = undefined;

@@ -57,14 +57,14 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=6;	///allowed on map
-	level.starting_round_override=25;	///
+	level.starting_round_override=40;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///per round
-	level.apocalypse_override=true;		///
+	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -918,7 +918,7 @@ reimagined_init_level()
 	level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME = 3;
 
 	level.ARRAY_HELLFIRE_WEAPONS = array("ak47_ft_upgraded_zm_x2", "rpk_upgraded_zm_x2", "ppsh_upgraded_zm_x2",
-							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2");
+							 "rottweil72_upgraded_zm", "cz75dw_upgraded_zm_x2", "sabertooth_upgraded_zm_x2");
 	level.THRESHOLD_HELLFIRE_TIME = 1.8;		//Player holds trigger for 1.6 seconds to activate Hellfire
 	level.THRESHOLD_HELLFIRE_KILL_TIME = 4;		//Hellfire kills in 4 seconds
 	level.VALUE_HELLFIRE_RANGE = 25;
@@ -2012,7 +2012,7 @@ watch_player_weapon_special_bonuses()
 			//Ballistic knife and upgraded version
 			case "knife_ballistic_upgraded_zm":
 			case "knife_ballistic_zm":
-				self watch_ballistic_knife();
+				//self watch_ballistic_knife(); not needed
 				break;
 
 			case "famas_upgraded_zm_x2":
@@ -2051,9 +2051,7 @@ watch_player_weapon_special_bonuses()
 			case "sabertooth_upgraded_zm":
 			case "sabertooth_upgraded_zm_x2":
 			//if the map is zombie coast
-			if( level.mapname == "zombie_coast" ) {
-				 //self watch_sabertooth();
-			}
+			 	self watch_sabertooth();
 				break;
 		}
 
@@ -2300,9 +2298,10 @@ watch_player_weapon_special_bonuses()
 		{
 			self endon("weapon_switch");
 			wep = "sabertooth_upgraded_zm";	//x2 weapon file doesnt actually exist
-			//iprintln( "2: " );
-
-			if( !isDefined( level.director_zombie ) )
+			
+			/* Special Stuff for George */
+			
+			if( level.mapname != "zombie_coast" || !isDefined( level.director_zombie ) )
 				return;
 
 			//Check director failsages
@@ -9766,9 +9765,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	inRange = checkDist( attacker.origin, self.origin, level.WEAPON_SABERTOOTH_RANGE );
 	if( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" && inRange )
 	{
-		iprintln("Total zomb health: " + level.THRESHOLD_MAX_ZOMBIE_HEALTH );
-		//baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.01;
-		baseDmg = 10000;
+		//baseDmg = level.THRESHOLD_MAX_ZOMBIE_HEALTH * 0.02;
+		baseDmg = 6000;
 		//10% of zombie's max health
 	
 		/*
@@ -9794,7 +9792,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			|| is_true( self.burned )
 			|| is_true( self.knockdown );
 		if( zombie_aflicted )
-			baseDmg *= 1.5;
+			baseDmg *= 2;
 
 		/* 
 			Special Effects for upgraded and x2
@@ -9804,24 +9802,26 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( !is_boss_zombie(self.animname) )
 		{
 			//If animname is not zombie, set damage equal to max health
-			if( self.animname != "zombie" )
+			if( self.animname == "zombie" )
 			{
 					//If upgraded, apply hellfire to all zombies
 				if( IsSubStr( weapon, "_x2" ) && !is_true( self.burned ) )
 				{
 					//25% chance to apply hellfire to zombie
-					if( randomint(4) == 0 )
+					//if( randomint(8) == 0 )
+					if( attacker.bullet_hellfire )
 						self thread maps\_zombiemode_weapon_effects::bonus_fire_damage( self, attacker, 20, level.VALUE_HELLFIRE_TIME);
 				}
 				//If double upgraded, shock nearby zombies too
 				doKnockDownChance = IsSubStr( weapon, "upgraded" ) 
 					&& !is_true( self.knockdown )
-					&& !is_true( self.marked_for_tesla );
+					&& !is_true( self.marked_for_tesla )
+					&& checkDist( attacker.origin, self.origin, 35 );
 
 				if( doKnockDownChance )
 				{
 					//25% chance to knock zombie down
-					if( randomint(4) == 0 )
+					if( randomint(1) == 0 )
 						self thread zombie_knockdown( level.VALUE_ZOMBIE_KNOCKDOWN_TIME );
 					
 				}
@@ -9838,7 +9838,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			baseDmg = baseDmg / 100;
 			
 		final_damage = baseDmg;
-		iprintln("Final Damage 4: " + final_damage);
+		//iprintln("Final Damage 4: " + final_damage);
 		//return final_damage;
 	}
 
@@ -10883,12 +10883,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			*/
 			if( is_true( self.knocked_down ) )
 			{
-				self thread zombie_ragdoll_kill( attacker, 75 );
+				self thread zombie_ragdoll_kill( attacker, 50 );
 			}
 			else if( is_in_array(level.ARRAY_VALID_SNIPERS, weapon) 
 			||	   ( IsSubStr( weapon, "sabertooth" ) && meansofdeath == "MOD_MELEE" ) )
 			{
-				self thread zombie_ragdoll_kill( attacker, 150 );
+				self thread zombie_ragdoll_kill( attacker, 100 );
 			}
 			
 			wait( 0.05 );

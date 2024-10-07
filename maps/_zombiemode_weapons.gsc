@@ -2724,6 +2724,8 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 		}
 
 		//Special conditions
+		/*
+		Reimagined-Expanded - Maybe switching specials with wine is fine
 		if( player maps\_zombiemode_perks::hasProPerk( level.WWN_PRO )  )
 		{
 			if( keys[i] == "zombie_quantum_bomb" 
@@ -2745,6 +2747,7 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 				continue;
 			} 
 		}
+		*/
 
 		if(  IsDefined(player.weapon_taken_by_losing_additionalprimaryweapon[0]) )
 		{

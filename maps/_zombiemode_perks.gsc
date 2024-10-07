@@ -3257,7 +3257,7 @@ perk_think( perk )
 		self notify(perk_str);
 	}
 
-	iprintln( "Perk Lost: " + perk );
+	//iprintln( "Perk Lost: " + perk );
 	self UnsetPerk( perk );
 	self.num_perks--;
 
