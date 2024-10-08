@@ -56,7 +56,7 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=1;	///allowed on map
+	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=1;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round

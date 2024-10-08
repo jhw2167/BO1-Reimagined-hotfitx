@@ -23,7 +23,7 @@ init()
 		truck, wall smoke
 		jug, revive, DTP
 	*/
-	register_perk_spawn( ( -800, -111.5, -11 ), ( 0, 90, 0 ) );	
+	register_perk_spawn( ( -795, -91.5, -11 ), ( 0, 90, 0 ) );	
 
 	/*	2
 		back wall, up stairs, by stairs
@@ -33,7 +33,8 @@ init()
 
 	/*	3
 		under stairs, grass covered
-		DST, STM, WWN, QRV, PAP
+		DBT, STM, WWN, QRV, PAP
+		DBT -15x
 	*/
 	register_perk_spawn( ( 365, 515.5, 5), ( 0, 90, 0) ); //95
 
@@ -48,6 +49,7 @@ init()
 		Right next to window, yellow flame
 
 		DBT, PHD, STM, ECH
+		DBT -15x
 	*/
 	register_perk_spawn( ( 1070, 808 , 2), ( 0, 90, 0) ); //Maybe back X a bit
 
@@ -124,7 +126,7 @@ init()
 	level.SPD_OPTS = array( 2, 4, 12 );
 	level.QRV_OPTS = array( 1, 3, 10 );
 	level.PHD_OPTS = array( 0, 5, 7, 11, 13 );
-	level.DST_OPTS = array( 3, 4, 11, 13 );
+	level.DST_OPTS = array( 4, 11, 13 );
 	level.STM_OPTS = array( 3, 5, 8, 11, 12 );
 
 	level.VLT_OPTS = array( 6, 9, 10 );
@@ -142,6 +144,7 @@ init()
 
 
 	level thread randomize_perks_think();
+	level thread handle_nacht_powerswitch();
 }
 
 place_babyjug()
@@ -187,6 +190,17 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 	
 	iprintln( "Spawning " + model + " at " + spawnPointIndex + " loc:" + level.loc_notes[ spawnPointIndex ] );
 
+	/* Adjustments */
+
+	//If doubletap is in position 3 or 5, move it back 10 units
+	if( model == "zombie_vending_doubletap2" )
+	{
+		origin = level.perk_spawn_location[ spawnPointIndex ].origin;
+		level.perk_spawn_location[ spawnPointIndex ].origin = ( origin[0] - 15, origin[1], origin[2] );
+	}
+
+	/* ############ */
+
 	//machine = Spawn( "script_model", ( 0, 0, -9999 ) );
 	machine = Spawn( "script_model", level.perk_spawn_location[ spawnPointIndex ].origin );
 	machine.angles = level.perk_spawn_location[ spawnPointIndex ].angles;
@@ -198,10 +212,12 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 	trigger.script_noteworthy = perk;
 	trigger.script_sound = jingle;
 	trigger.script_label = sting;
+
+	//Save off model:
+	level.zombie_vending_off_models[ self.targetname ] = model;
 }
 
 ///*
-
 
 randomize_perks_think()
 {
@@ -239,7 +255,7 @@ randomize_perks_think()
 	{
 		tries = 0;
 		choice = array_randomize( data[ i ] )[0];
-		while( (visited[ choice ] > -1) && tries < MAX_TRIES && choice != 0 ) 
+		while( (visited[ choice ] > -1) && tries < MAX_TRIES ) 
 		{
 			choice = array_randomize( data[ i ] )[0];
 			tries++;
@@ -277,6 +293,167 @@ randomize_perks_think()
 
 }
 
+
+/*
+	Method: handle_nacht_powerswitch
+	Tags: Natch, power, power_switch, nach_power_switch
+
+	Desc: Spawns power switch at specified location, player turns it on, they are teleported outside 
+		to try and get some perks
+		- Lasts 10 seconds, then TP back in
+		- Switch used once per round
+		- Switch reset to off after each round
+
+*/
+handle_nacht_powerswitch()
+{
+	//PreCacheModel( "zombie_power_lever_handle" );
+
+	flag_wait("begin_spawning");
+
+	wait(5);
+	iprintln( "Spawning power switch" );
+
+	/*
+	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
+
+	//print out size of weapon spawns
+	iprintln( "Weapon Spawns: " + weapon_spawns.size );
+
+	//Spawn power switch
+	wep_spawn = array_randomize( weapon_spawns )[0];
+	spawn_loc = wep_spawn.origin;
+	iprintln( "Chosen switch loc: " + wep_spawn.zombie_weapon_upgrade );
+	spawn_loc = (-170, -306, 67);
+	trigger = Spawn( "trigger_radius_use", spawn_loc , 0, 20, 70 );
+	power_panel = Spawn( "script_model", spawn_loc - (0, 0, 20) );
+	power_panel SetModel( "p6_zm_buildable_pswitch_body" );
+	//power_panel SetModel( "zombie_vending_jugg" );
+
+	power_switch = Spawn( "script_model", spawn_loc );
+	//power_switch SetModel( "p6_zm_buildable_pswitch_lever" );
+	power_switch SetModel( "zombie_power_lever_handle" );
+	
+	
+	trigger sethintstring(&"ZOMBIE_ELECTRIC_SWITCH");
+	trigger SetCursorHint( "HINT_NOICON" );
+
+	trigger waittill("trigger",user);
+	//master_switch rotatepitch(90,1);
+	power_switch rotateroll(-90,.3);
+	*/
+
+	/* Spawn powerup light on the radios */
+
+	radio_locs = array( 
+		//( 78, -496, 40 )
+		( -194, 898, 36 )
+		//, ( 0, 0, 0 ) 
+		);
+
+	tp_locs = array( ( -655, 79, 10 ) 
+					,( -585, -1242, 0 )
+					,( 719, -722, 0 ) 
+					,( 1686, 259, 0 )
+					);
+
+	while(1)
+	{
+
+		level waittill("start_of_round");
+		dev = is_true( level.dev_only );
+		if( level.round_number < 10 && !dev )
+			continue;
+
+		wait_time = 1;
+		if( !dev )
+		{
+			wait_time = RandomIntRange( 10, 60 );
+		}
+
+		wait( wait_time );
+
+		spawn_loc = array_randomize( radio_locs )[0];
+		trigger = Spawn( "trigger_radius_use", spawn_loc , 0, 20, 70 );
+		trigger sethintstring(&"ZOMBIE_ELECTRIC_SWITCH");
+		trigger SetCursorHint( "HINT_NOICON" );
+
+		level.radio_activated = false;
+		level thread play_radio_fx( spawn_loc );
+		
+		trigger waittill("trigger", player);
+
+		level.radio_activated = true;
+		level notify( "juggernog_on" );
+
+		/*	Teleport player	*/
+		player do_player_teleport( array_randomize( tp_locs )[0] );
+
+		if( GetPlayers().size == 1) {
+			wait(5);
+		}
+
+		level notify( "perks_swapping" );
+
+	}
+
+	
+
+	//power_switch waittill("rotatedone");
+	//playfx(level._effect["switch_sparks"] ,getstruct("switch_fx","targetname").origin);
+
+}
+
+play_radio_fx( spawn_loc )
+{
+	while( !level.radio_activated )
+	{
+		model = Spawn( "script_model", spawn_loc );
+		model setModel( "tag_origin" );
+		PlayFXOnTag( level._effect["powerup_on_solo"], model, "tag_origin" );
+		iprintln( "Playing radio fx" );
+		wait( 1 );
+
+		model Delete();
+
+		wait(2);
+	}
+	iprintln( "Radio fx done" );
+}
+
+do_player_teleport( loc )
+{
+	destination = SpawnStruct();
+
+	destination.origin = loc;
+	destination.angles = self.angles;
+
+	respawn = SpawnStruct();
+	respawn.origin = self.origin + (0, 0, 5);
+
+
+	level.pap_moving = false;
+	//self.ignoreme = true;
+	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );	
+
+	wait(10);
+
+	//while pap in use, dont tp
+	while( flag("pack_machine_in_use") ) {
+		wait 0.5;
+	}
+
+	level.pap_moving = true;
+
+	respawn.angles = self GetPlayerAngles();
+
+	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( respawn, true );
+	self VisionSetNaked( level.zombie_visionset, 0.5 );
+	wait 0.5;
+	//self.ignoreme = false;
+	//wait(2);
+
+}	
 
 perk_swap_fx( perk )
 {
@@ -318,9 +495,4 @@ hellhound_spawn_fx( origin )
 	PlaySoundAtPosition( "zmb_hellhound_spawn", origin );
 }
 
-solo_quick_revive_disable()
-{
-	self Unlink();
-	self trigger_off();
-}
 //*/

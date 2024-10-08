@@ -345,6 +345,8 @@ material,vending_widows_grenade_icon
 material,vending_widows_grenade_indicator
 material,t7_semtex_ww
 
+material,bo2_mtl_p6_zm_buildable_pswitch
+
 //{{NEW_MATERIAL_PROPERTY_LINE}
 
 //XMODELS
@@ -433,6 +435,9 @@ xmodel,c_viet_zombie_napalm
 
 xmodel,viewmodel_ballistic_knife_w_bowie
 xmodel,t7_wpn_melee_ballistic_sickle_view
+
+xmodel,p6_zm_buildable_pswitch_body
+xmodel,p6_zm_buildable_pswitch_lever
 
 
 //Perk XMODELS

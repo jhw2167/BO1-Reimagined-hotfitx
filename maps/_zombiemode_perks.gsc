@@ -1713,6 +1713,9 @@ perk_fx( fx, offset )
 		wait( 1.5 );
 	}
 	
+	//When perks moved or turned off, set the perk as the off model!
+	if( level.mapname == "zombie_cod5_prototype" )
+		self SetModel( level.zombie_vending_off_models[ self.targetname ] );
 
 	model Delete();
 
