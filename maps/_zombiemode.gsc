@@ -1332,6 +1332,9 @@ watch_player_dev_utility()
 	{
 		iprintln( "Deleting old perks " );
 		vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+
+		level notify("juggernog_on");
+		
 		iprintln( "Size " + vending_triggers.size );
 		for( j = 0; j < vending_triggers.size; j ++ )
 		{

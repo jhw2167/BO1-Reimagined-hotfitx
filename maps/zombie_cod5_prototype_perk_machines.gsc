@@ -13,49 +13,134 @@ init()
 	//register_perk_spawn( ( 170.8, 326.1, 145.1 ), ( 0, 0, 0 ) );
 
 
-	/*
+	/*	0
 		truck, move over 5 for fatter model
-		jug, DBTP, nuke
+		jug, PHD
 	*/
 	register_perk_spawn( ( -412.2, 150.4, 37.7 ), ( 5, -49, 0 ) );	
 
-	/*
+	/*	1
 		truck, wall smoke
-		jug, revive
+		jug, revive, DTP
 	*/
 	register_perk_spawn( ( -800, -111.5, -11 ), ( 0, 90, 0 ) );	
 
-	/*
+	/*	2
 		back wall, up stairs, by stairs
-		speed, mule
+		SPD, MUL
 	*/
 	register_perk_spawn( ( 241.2, 415, 145.5), ( 0, 90, 0) );
 
-	/*
+	/*	3
 		under stairs, grass covered
-		DS, STM, WW
+		DST, STM, WWN, QRV, PAP
 	*/
 	register_perk_spawn( ( 365, 515.5, 5), ( 0, 90, 0) ); //95
 
+	/*	4
+		far out by tree, spawn facing direction
+
+		DST, WWN, SPD, PAP
+	*/
+	register_perk_spawn( ( -2097, -120, -129), ( 0, 71, 0) ); 
+
+	/*	5
+		Right next to window, yellow flame
+
+		DBT, PHD, STM, ECH
+	*/
+	register_perk_spawn( ( 1070, 808 , 2), ( 0, 90, 0) ); //Maybe back X a bit
+
+	/*	6
+		Laying down in the grass, opposite spawn face
+
+		JUG, VLT
+	*/
+	register_perk_spawn( ( 939, 25, 18 ), ( -19, -98, -65) ); //95
+
+	/*	7
+		By stairs
+
+		PHD, WWN
+	*/
+	register_perk_spawn( ( 292, 27, 7 ), ( 0, 0, 0) );
+
+	/*	8
+		By Second truck, turned on its side
+
+		ECH, STM
+	*/
+	register_perk_spawn( ( -534, -670 , -15 ), ( 86, -45, 0) );
 
 
+	/*	9
+		Behind first fence, between trucks
+
+		VLT, ECH, PHD
+	*/
+	register_perk_spawn( ( -798, -320 , 0 ), ( 7.5, 0, 0) );
+
+	/*	10
+		Far side first fence, corner, right of initial outside area
+
+		QRV, DBTP, VLT
+	*/
+	register_perk_spawn( ( -525, 861 , -5 ), ( 0, 0, 0) );
+
+	/*	11
+		Upstairs, sandbag corner
+
+		DS, PHD, STM
+	*/
+	register_perk_spawn( ( 995.6, 652, 146 ), ( 0, 220, 0) ); 
+
+	/*
+		12
+		Downstairs, mule corner
+
+		mule, speed, STM
+	*/
+	register_perk_spawn( ( -160, -528, 1 ), ( 0, 0, 0) );
+
+	/*
+		13
+		Empty Road
+
+		DST, VLT, PAP, PHD
+	*/
+	register_perk_spawn( ( 1254, -1174, 50 ), ( 0, 210, 0) );
+
+	/*
+		14
+		Deep Forest
+
+		JUG, MUL, WWN
+	*/
+	register_perk_spawn( ( 2571, 8, 153 ), ( 0, -55, 0) );
+
+	//Available Options
+	level.JUG_OPTS = array( 0, 1, 6, 14 );
+	level.DTP_OPTS = array( 3, 5, 12 );
+	level.SPD_OPTS = array( 2, 4, 12 );
+	level.QRV_OPTS = array( 1, 3, 10 );
+	level.PHD_OPTS = array( 0, 5, 7, 11, 13 );
+	level.DST_OPTS = array( 3, 4, 11, 13 );
+	level.STM_OPTS = array( 3, 5, 8, 11, 12 );
+
+	level.VLT_OPTS = array( 6, 9, 10 );
+	level.WWN_OPTS = array( 3, 4, 7, 14 );
+	level.ECH_OPTS = array( 5, 8, 9 );
+	level.MUL_OPTS = array( 2, 12, 14 );
+
+	level.PAP_OPTS = array( 1, 3, 4, 10, 13 );
+
+	level.loc_notes = array( "Truck, move over 5 for fatter model", "Truck, wall smoke", "Back wall, up stairs, by stairs",
+			 "Under stairs, grass covered", "Far out by tree, spawn facing direction", "Right next to window, yellow flame",
+			 "Laying down in the grass, opposite spawn face", "By stairs", "By Second truck, turned on its side", 
+			  "Behind first fence, between trucks", "Far side first fence, corner, right of initial outside area", 
+			  "Upstairs, sandbag corner", "Downstairs, mule corner", "Empty Road", "Deep Forest" );
 
 
-	spawn_perk( "zombie_vending_jugg", 0, "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" );
-	spawn_perk( "zombie_vending_sleight", 1, "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" );
-	spawn_perk( "zombie_vending_doubletap2", 2, "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" );
-	spawn_perk( "zombie_vending_revive", 3, "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" );
-
-	//spawn_perk( "zombie_vending_nuke", "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" );
-	//spawn_perk( "zombie_vending_marathon", "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" );
-	//spawn_perk( "zombie_vending_ads", "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" );
-	//spawn_perk( "zombie_vending_three_gun", "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" );
-	//spawn_perk( "p6_zm_vending_chugabud", "zombie_vending", "vending_chugabud", "specialty_extraammo", "mus_perks_whoswho_jingle", "mus_perks_whoswho_sting" );
-	//spawn_perk( "p6_zm_vending_electric_cherry_off", "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" );
-	//spawn_perk( "bo2_zombie_vending_vultureaid", "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" );
-	//spawn_perk( "bo3_p7_zm_vending_widows_wine_off", "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" );
-	//spawn_perk( "zombie_vending_packapunch", "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" );
-	level._solo_revive_machine_expire_func = ::solo_quick_revive_disable;
 	level thread randomize_perks_think();
 }
 
@@ -97,6 +182,11 @@ register_perk_spawn( origin, angles )
 
 spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 {
+	if( spawnPointIndex < 0 )	
+		return;
+	
+	iprintln( "Spawning " + model + " at " + spawnPointIndex + " loc:" + level.loc_notes[ spawnPointIndex ] );
+
 	//machine = Spawn( "script_model", ( 0, 0, -9999 ) );
 	machine = Spawn( "script_model", level.perk_spawn_location[ spawnPointIndex ].origin );
 	machine.angles = level.perk_spawn_location[ spawnPointIndex ].angles;
@@ -111,94 +201,80 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 }
 
 ///*
-hidden_perk_waypoints( struct )
-{
-	return IsDefined( struct.perk_to_check ) && !is_true( level.perk_randomization_on[ struct.perk_to_check ] );
-}
 
-perk_vulture_update_position( perk )
-{
-	if( IsDefined( level.perk_vulture ) && IsDefined( level.perk_vulture.vulture_vision_fx_list ) )
-	{
-		structs = level.perk_vulture.vulture_vision_fx_list;
-		for( i = 0; i < structs.size; i ++ )
-		{
-			if( IsDefined( structs[i].perk_to_check ) && structs[i].perk_to_check == perk )
-			{
-				type = "perk";
-				switch( perk )
-				{
-					case "specialty_weapupgrade":
-						type = "packapunch";
-						break;
-				}
-				//structs[i].location = self maps\_zombiemode_perks::get_waypoint_origin( type );
-				//Need entire Vulture aid code for this to work, see zombiemode_perks.gsc::3500-4900
-				level.perk_randomization_on[ perk ] = true;
-				return;
-			}
-		}
-	}
-}
 
 randomize_perks_think()
 {
-	while( !IsDefined( level.perk_vulture ) || !IsDefined( level.perk_vulture.vulture_vision_fx_list ) )
+
+
+	/*
+		Write an algorithm that choices a random number from each array, ensure there are no duplicates chosen
+		then spawn the perks in the order of the random numbers
+
+		Start with mule since he only has 2 options
+
+		palcements - perk[0] will be placed at placements[0] which corresponds to a relevant perk register spawn
+		visited - 
+	*/
+
+
+	data = array( level.MUL_OPTS, level.JUG_OPTS, level.DTP_OPTS, level.VLT_OPTS,
+  				  level.SPD_OPTS, level.QRV_OPTS, level.DST_OPTS, level.WWN_OPTS,
+				  level.ECH_OPTS, level.PAP_OPTS, level.PHD_OPTS, level.STM_OPTS );
+
+
+	//Default Options
+	placements = [];
+	visited = [];
+	total_placements = 15;
+	for( i = 0; i < total_placements; i++ ) 
 	{
-		wait 0.05;
-	}
-	level.perk_randomization_on = [];
-	level.vulture_perk_custom_map_check = ::hidden_perk_waypoints;
-	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
-	vending_triggers = array_combine( vending_triggers, GetEntArray( "zombie_vending_upgrade", "targetname" ) );
-	for( i = 0; i < vending_triggers.size; i ++ )
-	{
-		machine = GetEnt( vending_triggers[i].target, "targetname" );
-		vending_triggers[i] EnableLinkTo();
-		vending_triggers[i] LinkTo( machine );
+		placements[ i ] = -1;	//only 11 perks + pap
+		visited[ i ] = -1;		//15 nodes could be visited
 	}
 
-	
-	last_perks = [];
-	while( true )
+
+	MAX_TRIES = 10;
+	for( i = 0; i < data.size; i++ ) 
 	{
-		curr_perks = [];
-		perk_list = array_randomize( vending_triggers );
-		for( i = 0; i < perk_list.size; i ++ )
+		tries = 0;
+		choice = array_randomize( data[ i ] )[0];
+		while( (visited[ choice ] > -1) && tries < MAX_TRIES && choice != 0 ) 
 		{
-			machine = GetEnt( perk_list[i].target, "targetname" );
-			perk = perk_list[i].script_noteworthy;
-			if( is_in_array( last_perks, perk ) || curr_perks.size >= 4 || ( perk == "specialty_quickrevive" && flag( "solo_game" ) && flag( "solo_revive" ) ) )
-			{
-				machine.origin = ( 0, 0, -9999 );
-				machine.angles = ( 0, 0, 0 );
-			}
-			else
-			{
-				index = curr_perks.size;
-				machine.origin = level.perk_spawn_location[ index ].origin;
-				machine.angles = level.perk_spawn_location[ index ].angles;
-				perk_list[i] perk_vulture_update_position( perk );
-				machine thread perk_swap_fx( perk );
-				curr_perks[ index ] = perk;
-			}
+			choice = array_randomize( data[ i ] )[0];
+			tries++;
 		}
-		last_perks = curr_perks;
-		wait RandomFloatRange( 90, 180 );
-		level.pap_moving = true;
-		while( flag( "pack_machine_in_use" ) )
+		if( tries >= MAX_TRIES )
 		{
-			wait 0.05;
+			iprintln( "Failed to randomize perk " + i );
 		}
-		level notify( "perks_swapping" );
-		wait 10;
-		for( i = 0; i < level.perk_spawn_location.size; i ++ )
+		else
 		{
-			level thread hellhound_spawn_fx( level.perk_spawn_location[i].origin );
+			visited[ choice ] = i;
+			placements[ i ] = choice;
 		}
-		wait 1.5;
-		level.pap_moving = undefined;
+		
 	}
+
+	j = 0;
+
+	spawn_perk( "zombie_vending_three_gun", placements[j] , "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" ); j++;
+	spawn_perk( "zombie_vending_jugg", placements[j], "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" ); j++;
+	spawn_perk( "zombie_vending_doubletap2", placements[j], "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" ); j++;
+	spawn_perk( "bo2_zombie_vending_vultureaid", placements[j], "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" ); j++;
+	spawn_perk( "zombie_vending_sleight", placements[j], "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" ); j++;
+	spawn_perk( "zombie_vending_revive", placements[j], "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" ); j++;
+	spawn_perk( "zombie_vending_ads", placements[j], "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" ); j++;
+	
+	spawn_perk( "bo3_p7_zm_vending_widows_wine_off", placements[j], "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" ); j++;
+	spawn_perk( "p6_zm_vending_electric_cherry_off", placements[j], "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" ); j++;
+	
+	spawn_perk( "zombie_vending_packapunch", placements[j], "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" ); j++;
+	spawn_perk( "zombie_vending_nuke", placements[j], "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" ); j++;
+	spawn_perk( "zombie_vending_marathon", placements[j], "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" ); j++;
+
+
+
 }
 
 

@@ -1041,7 +1041,7 @@ editObject( object, i, j )
 	while(1)
 	{
 		
-		wait(0.1);
+		wait(1);
 
 		if(self buttonPressed("r"))
 		{

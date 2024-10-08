@@ -1428,7 +1428,7 @@ turn_jugger_on()
 
 	level waittill("juggernog_on");
 
-	//iprintln("Juggernog_on");
+	iprintln("Juggernog_on");
 	//Reimagined-Expanded
 	if(level.mapname != "zombie_cod5_sumpf")
 	{
@@ -1612,7 +1612,7 @@ turn_deadshot_on()
 turn_additionalprimaryweapon_on()
 {
 	machine = getentarray("vending_additionalprimaryweapon", "targetname");
-//	level waittill("additionalprimaryweapon_on");
+	level waittill("additionalprimaryweapon_on");
 	if ( "zombie_cod5_prototype" != level.script && "zombie_cod5_sumpf" != level.script )
 	{
 		flag_wait( "power_on" );

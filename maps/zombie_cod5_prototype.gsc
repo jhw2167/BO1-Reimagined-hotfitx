@@ -54,9 +54,9 @@ main()
 	
 	//thread bad_area_fixes();
 
-	thread above_couches_death();
-	thread above_roof_death();
-	thread below_ground_death();
+	//thread above_couches_death();
+	//thread above_roof_death();
+	//thread below_ground_death();
 		
 	level thread zombie_collision_patch();
 
@@ -764,7 +764,7 @@ out_of_bounds_watcher()
  		if (kill_player)
  		{
  			setsaveddvar("player_deathInvulnerableTime", 0);
-			self DoDamage( self.health + 1000, self.origin, undefined, undefined, "riflebullet" );
+			//self DoDamage( self.health + 1000, self.origin, undefined, undefined, "riflebullet" );
 			setsaveddvar("player_deathInvulnerableTime", level.startInvulnerableTime);	
  		}
  		
