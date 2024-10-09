@@ -1613,11 +1613,6 @@ turn_additionalprimaryweapon_on()
 {
 	machine = getentarray("vending_additionalprimaryweapon", "targetname");
 	level waittill("additionalprimaryweapon_on");
-	if ( "zombie_cod5_prototype" != level.script && "zombie_cod5_sumpf" != level.script )
-	{
-		flag_wait( "power_on" );
-	}
-	wait ( 3 );
 
 	for( i = 0; i < machine.size; i++ )
 	{
@@ -5983,9 +5978,7 @@ init_vulture()
 
 			forward = AnglesToForward( angles - ( 0, 90, 0 ) );
 			origin = machine.origin;
-			//if( level.mapname != "zombie_cod5_sumpf")
-				//origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
-
+			
 			return origin + ( 0, 0, 50 );
 		}
 

@@ -21,7 +21,7 @@ init()
 
 	/*	1
 		truck, wall smoke
-		jug, revive, DTP
+		jug, revive, DBT
 	*/
 	register_perk_spawn( ( -795, -91.5, -11 ), ( 0, 90, 0 ) );	
 
@@ -85,7 +85,7 @@ init()
 	/*	10
 		Far side first fence, corner, right of initial outside area
 
-		QRV, DBTP, VLT
+		QRV, PAP, VLT
 	*/
 	register_perk_spawn( ( -525, 861 , -5 ), ( 0, 0, 0) );
 
@@ -122,9 +122,9 @@ init()
 
 	//Available Options
 	level.JUG_OPTS = array( 0, 1, 6, 14 );
-	level.DTP_OPTS = array( 3, 5, 12 );
+	level.DTP_OPTS = array( 1, 3, 5 );
 	level.SPD_OPTS = array( 2, 4, 12 );
-	level.QRV_OPTS = array( 1, 3, 10 );
+	level.QRV_OPTS = array( 1, 3, 10, 12 );
 	level.PHD_OPTS = array( 0, 5, 7, 11, 13 );
 	level.DST_OPTS = array( 4, 11, 13 );
 	level.STM_OPTS = array( 3, 5, 8, 11, 12 );
@@ -213,8 +213,15 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 	trigger.script_sound = jingle;
 	trigger.script_label = sting;
 
-
-	trigger thread watch_perk_off( machine, model, perk );
+	
+	if( spawnPointIndex == 12 || spawnPointIndex == 11 ) {
+		//If perk is in position inside the map, skip this and never turn off
+	}
+	else
+	{
+		trigger thread watch_perk_off( machine, model, perk, machine.targetname );
+	}
+		
 }
 
 /*
@@ -229,10 +236,11 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 		- self is trigger
 */
 
-watch_perk_off( machine, model, perk )
+watch_perk_off( machine, model, perk, machinetargetname )
 {
 	level endon( "intermission" );
 
+	firstTime = true;
 	while( 1 )
 	{
 		while( !IsDefined( level.radio_activated) ) {
@@ -240,9 +248,13 @@ watch_perk_off( machine, model, perk )
 		}
 
 
-
 		while( !level.radio_activated ) {
 			wait( 0.1 );
+		}
+
+		if( firstTime ) {
+			firstTime = false;
+			continue;
 		}
 
 		activate_zombie_vending( model );
@@ -252,6 +264,8 @@ watch_perk_off( machine, model, perk )
 			wait( 0.1 );
 		}
 
+		//Turn perk off
+		level notify( machinetargetname + "_off" );
 		self SetHintString( &"ZOMBIE_NEED_POWER" );
 		machine SetModel( model );	
 	}
@@ -397,8 +411,6 @@ randomize_perks_think()
 	spawn_perk( "zombie_vending_nuke", placements[j], "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" ); j++;
 	spawn_perk( "zombie_vending_marathon", placements[j], "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" ); j++;
 
-
-
 }
 
 
@@ -490,15 +502,17 @@ handle_nacht_powerswitch()
 		level thread play_radio_fx( spawn_loc );
 		
 		trigger waittill("trigger", player);
+		trigger Delete();
 
 		level.radio_activated = true;
-		level notify( "juggernog_on" );
+		level notify( "juggernog_on" );	//turns all perks on
 
 		/*	Teleport player	*/
 		player do_player_teleport( array_randomize( tp_locs )[0] );
 
-		level notify( "perks_swapping" );
+		//level notify( "perks_swapping" );
 		level.radio_activated = false;
+		
 
 	}
 
@@ -515,8 +529,9 @@ play_radio_fx( spawn_loc )
 	{
 		model = Spawn( "script_model", spawn_loc );
 		model setModel( "tag_origin" );
-		PlayFXOnTag( level._effect["powerup_on_solo"], model, "tag_origin" );
-		wait( 1 );
+		//PlayFXOnTag( level._effect["powerup_on_solo"], model, "tag_origin" );
+		PlayFx( level._effect["powerup_grabbed_solo"], spawn_loc );
+		wait( .5 );
 
 		model Delete();
 
@@ -540,7 +555,7 @@ do_player_teleport( loc )
 	//self.ignoreme = true;
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );	
 
-	wait(10);
+	wait(15);
 
 	//while pap in use, dont tp
 	while( flag("pack_machine_in_use") ) {
