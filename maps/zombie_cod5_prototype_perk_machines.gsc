@@ -58,7 +58,7 @@ init()
 
 		JUG, VLT
 	*/
-	register_perk_spawn( ( 939, 25, 18 ), ( -19, -98, -65) ); //95
+	register_perk_spawn( ( 939, 25, 18 ), ( -19, -98, -65), 6 ); //95
 
 	/*	7
 		By stairs
@@ -72,7 +72,7 @@ init()
 
 		ECH, STM
 	*/
-	register_perk_spawn( ( -534, -670 , -15 ), ( 86, -45, 0) );
+	register_perk_spawn( ( -534, -670 , -15 ), ( 86, -45, 0), 8 );
 
 
 	/*	9
@@ -162,13 +162,23 @@ place_babyjug()
 
 }
 
-register_perk_spawn( origin, angles )
+register_perk_spawn( origin, angles, index )
 {
+	if( !IsDefined( index ) ) {
+		index = 0;
+	}
+
 	if( !IsDefined( level.perk_spawn_location ) )
 	{
 		level.perk_spawn_location = [];
 	}
-	perk_clip = Spawn( "script_model", origin );
+
+	offset = (0, 0, 30);	//collision models need to be off the ground a bit
+	if( index == 6 || index == 8)
+		offset = (0, 0, 0);
+
+
+	perk_clip = Spawn( "script_model", origin + offset );
 	perk_clip.angles = angles;
 	perk_clip SetModel( "collision_geo_64x64x64" );
 	perk_clip Hide();
@@ -180,6 +190,7 @@ register_perk_spawn( origin, angles )
 	struct = SpawnStruct();
 	struct.origin = origin;
 	struct.angles = angles;
+	struct.clip = perk_clip;
 	level.perk_spawn_location[ level.perk_spawn_location.size ] = struct;
 }
 
@@ -236,7 +247,7 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 		- self is trigger
 */
 
-watch_perk_off( machine, model, perk, machinetargetname )
+watch_perk_off( machine, model, perk, machineTargetName )
 {
 	level endon( "intermission" );
 
@@ -258,14 +269,14 @@ watch_perk_off( machine, model, perk, machinetargetname )
 		}
 
 		activate_zombie_vending( model );
-		self maps\zombie_cod5_sumpf_perks::set_perk_buystring( perk );
+		self maps\zombie_cod5_sumpf_perks::set_perk_buystring( perk, machineTargetName );
 
 		while( level.radio_activated ) {
 			wait( 0.1 );
 		}
 
 		//Turn perk off
-		level notify( machinetargetname + "_off" );
+		level notify( machineTargetName + "_off" );
 		self SetHintString( &"ZOMBIE_NEED_POWER" );
 		machine SetModel( model );	
 	}
@@ -317,7 +328,7 @@ activate_zombie_vending( model )
 			level thread maps\_zombiemode_perks::turn_divetonuke_on();
 			break;
 
-		case "p6_zm_vending_electric_cherry":
+		case "p6_zm_vending_electric_cherry_off":
 			level thread maps\_zombiemode_perks::turn_electriccherry_on();
 			break;
 
@@ -325,7 +336,7 @@ activate_zombie_vending( model )
 			level thread maps\_zombiemode_perks::turn_vulture_on();
 			break;
 
-		case "bo3_p7_zm_vending_widows_wine":
+		case "bo3_p7_zm_vending_widows_wine_off":
 			level thread maps\_zombiemode_perks::turn_widowswine_on();
 			break;
 
@@ -399,17 +410,29 @@ randomize_perks_think()
 	spawn_perk( "zombie_vending_three_gun", placements[j] , "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" ); j++;
 	spawn_perk( "zombie_vending_jugg", placements[j], "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" ); j++;
 	spawn_perk( "zombie_vending_doubletap2", placements[j], "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" ); j++;
-	spawn_perk( "bo2_zombie_vending_vultureaid", placements[j], "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" ); j++;
+	if( level.zombiemode_using_vulture_perk )
+		spawn_perk( "bo2_zombie_vending_vultureaid", placements[j], "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" ); j++;
 	spawn_perk( "zombie_vending_sleight", placements[j], "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" ); j++;
 	spawn_perk( "zombie_vending_revive", placements[j], "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" ); j++;
 	spawn_perk( "zombie_vending_ads", placements[j], "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" ); j++;
 	
-	spawn_perk( "bo3_p7_zm_vending_widows_wine_off", placements[j], "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" ); j++;
-	spawn_perk( "p6_zm_vending_electric_cherry_off", placements[j], "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" ); j++;
+	if( level.zombiemode_using_widowswine_perk )
+		spawn_perk( "bo3_p7_zm_vending_widows_wine_off", placements[j], "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" ); j++;
+	if( level.zombiemode_using_electriccherry_perk )
+		spawn_perk( "p6_zm_vending_electric_cherry_off", placements[j], "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" ); j++;
 	
 	spawn_perk( "zombie_vending_packapunch", placements[j], "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" ); j++;
 	spawn_perk( "zombie_vending_nuke", placements[j], "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" ); j++;
 	spawn_perk( "zombie_vending_marathon", placements[j], "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" ); j++;
+
+	//For any location that is not occupied, replace its collision model with tag_origin
+	for( i = 0; i < total_placements; i++ ) 
+	{
+		if( visited[i] == -1 )
+		{
+			level.perk_spawn_location[ i ].clip SetModel( "tag_origin" );
+		}
+	}
 
 }
 

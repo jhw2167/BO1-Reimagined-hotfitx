@@ -510,7 +510,7 @@ vending_randomization_effect( index )
 
 }
 
-set_perk_buystring( script_notetworthy )
+set_perk_buystring( script_notetworthy, machineTargetName )
 {
 	if( script_notetworthy == "specialty_weapupgrade" )
 	{
@@ -583,7 +583,6 @@ set_perk_buystring( script_notetworthy )
 
 	}
 
-
 	upgrade_perk_cost = level.VALUE_PERK_PUNCH_COST;
 	if(level.expensive_perks)
 		upgrade_perk_cost = level.VALUE_PERK_PUNCH_EXPENSIVE_COST;
@@ -592,75 +591,106 @@ set_perk_buystring( script_notetworthy )
 	{
 		case "specialty_armorvest_upgrade":
 		case "specialty_armorvest":
-			self SetHintString( &"REIMAGINED_PERK_JUGGERNAUT", cost, upgrade_perk_cost );
+			self SetHintString( &"REIMAGINED_PERK_JUGGERNOG", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_quickrevive_upgrade":
 		case "specialty_quickrevive":
-			self SetHintString( &"REIMAGINED_PERK_QUICKREVIVE", cost, upgrade_perk_cost );
+
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_QUICKREVIVE", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_QUICKREVIVE", cost, upgrade_perk_cost );
+		
 			break;
 
 		case "specialty_fastreload_upgrade":
 		case "specialty_fastreload":
-			self SetHintString( &"REIMAGINED_PERK_FASTRELOAD", cost, upgrade_perk_cost );
+			
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_FASTRELOAD", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_FASTRELOAD", cost, upgrade_perk_cost );
+
 			break;
 
 		case "specialty_rof_upgrade":
 		case "specialty_rof":
-			self SetHintString( &"REIMAGINED_PERK_DOUBLETAP", cost, upgrade_perk_cost );
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_DOUBLETAP", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_DOUBLETAP", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_endurance_upgrade":
 		case "specialty_endurance":
-			self SetHintString( &"REIMAGINED_PERK_MARATHON", cost, upgrade_perk_cost );
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_MARATHON", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_MARATHON", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_flakjacket_upgrade":
 		case "specialty_flakjacket":
-			self SetHintString( &"REIMAGINED_PERK_DIVETONUKE", cost, upgrade_perk_cost );
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_DIVETONUKE", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_DIVETONUKE", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_deadshot_upgrade":
 		case "specialty_deadshot":
-			self SetHintString( &"REIMAGINED_PERK_DEADSHOT", cost, upgrade_perk_cost );
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_DEADSHOT", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_DEADSHOT", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_additionalprimaryweapon_upgrade":
 		case "specialty_additionalprimaryweapon":
-			self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
+			if( level.classic )
+				self SetHintString( &"ZOMBIE_PERK_ADDITIONALPRIMARYWEAPON", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_MULEKICK", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_extraammo_upgrade":
 		case "specialty_extraammo":
-			self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
+			//Unused
+			//self SetHintString( &"REIMAGINED_PERK_CHUGABUD", cost, upgrade_perk_cost );
 			break;
 
 		case "specialty_bulletdamage_upgrade":
 		case "specialty_bulletdamage":
-			self SetHintString( &"REIMAGINED_PERK_CHERRY", cost, upgrade_perk_cost );
+			
+			if( level.classic )
+				self SetHintString( &"REIMAGINED_ZOMBIE_PERK_CHERRY", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_CHERRY", cost, upgrade_perk_cost );
+
 			break;
 
 		case "specialty_altmelee_upgrade":
 		case "specialty_altmelee":
-			self SetHintString( &"REIMAGINED_PERK_VULTURE", cost, upgrade_perk_cost );
+			
+			if( level.classic )
+				self SetHintString( &"REIMAGINED_ZOMBIE_PERK_VULTURE", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_VULTURE", cost, upgrade_perk_cost );
+
 			break;
 
 		case "specialty_bulletaccuracy_upgrade":
 		case "specialty_bulletaccuracy":
-			self SetHintString( &"REIMAGINED_PERK_WIDOWSWINE", cost, upgrade_perk_cost );
-			break;
+			
+			if( level.classic )
+				self SetHintString( &"REIMAGINED_ZOMBIE_PERK_WIDOWSWINE", cost );
+			else
+				self SetHintString( &"REIMAGINED_PERK_WIDOWSWINE", cost, upgrade_perk_cost );
 
-		case "specialty_stockpile_upgrade":
-		case "specialty_stockpile":
-			self SetHintString( &"REIMAGINED_PERK_BANDOLIER", cost, upgrade_perk_cost );
-			break;
-
-		case "specialty_scavanger_upgrade":
-		case "specialty_scavanger":
-			self SetHintString( &"REIMAGINED_PERK_TIMESLIP", cost, upgrade_perk_cost );
 			break;
 	}
 
-	self thread maps\_zombiemode_perks::watch_perk_trigger( script_notetworthy, cost, upgrade_perk_cost );
+	self thread maps\_zombiemode_perks::watch_perk_trigger( script_notetworthy, cost, upgrade_perk_cost, machineTargetName );
 
 }

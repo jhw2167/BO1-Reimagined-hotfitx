@@ -65,10 +65,10 @@ main()
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///per round
 	level.apocalypse_override=false;		///
-	level.classic_override=false;		///
+	level.classic_override=true;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
-	level.override_bo2_perks=true;		///
+	level.override_bo2_perks=false;		///
 	//level.rolling_kill_all_interval=12;	///
 	level.dev_only=true;					///*/
 

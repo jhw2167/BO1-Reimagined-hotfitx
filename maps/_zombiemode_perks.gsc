@@ -22,6 +22,13 @@ init()
 		level.zombiemode_using_vulture_perk = true;
 		level.zombiemode_using_widowswine_perk = true;
 	}
+	else
+	{
+		level.zombiemode_using_electriccherry_perk = false;
+		level.zombiemode_using_vulture_perk = false;
+		level.zombiemode_using_widowswine_perk = false;
+
+	}
 
 	/*
 	level.zombiemode_using_chugabud_perk = true;
@@ -2611,9 +2618,15 @@ vending_trigger_think()
 	
 }
 
-watch_perk_trigger( perk, cost, upgrade_perk_cost )
+watch_perk_trigger( perk, cost, upgrade_perk_cost, machineTargetName )
 {
-	level endon("perks_swapping"); //shino, nacht
+	if( !IsDefined(machineTargetname) )
+		machineTargetname = "zombie_vending";
+	
+	perkOffEvent = machineTargetName + "_off";
+
+	level endon("perks_swapping"); //shino
+	level endon( perkOffEvent ); //nacht
 
 	CONST_PERK = perk;
 	CONST_COST = cost;
