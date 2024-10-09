@@ -213,8 +213,117 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 	trigger.script_sound = jingle;
 	trigger.script_label = sting;
 
-	//Save off model:
-	level.zombie_vending_off_models[ self.targetname ] = model;
+
+	trigger thread watch_perk_off( machine, model, perk );
+}
+
+/*
+	Methods: watch_perk_off
+
+	Descr: 
+		- Turns perks on when radio is active
+		- Turns perks off when radio is inactive
+			- Reverts hint string to default
+			- Sets off model back
+
+		- self is trigger
+*/
+
+watch_perk_off( machine, model, perk )
+{
+	level endon( "intermission" );
+
+	while( 1 )
+	{
+		while( !IsDefined( level.radio_activated) ) {
+			wait( 0.1 );
+		}
+
+
+
+		while( !level.radio_activated ) {
+			wait( 0.1 );
+		}
+
+		activate_zombie_vending( model );
+		self maps\zombie_cod5_sumpf_perks::set_perk_buystring( perk );
+
+		while( level.radio_activated ) {
+			wait( 0.1 );
+		}
+
+		self SetHintString( &"ZOMBIE_NEED_POWER" );
+		machine SetModel( model );	
+	}
+	
+}
+
+/*
+	Methods: activate_zombie_vending
+
+	Descr: Activates the specified vending machine, turning on the perk
+		- Calls the appropriate method to turn on the perk
+		- If the model is not found, prints an error message
+*/
+
+activate_zombie_vending( model )
+{
+	switch( model )
+	{
+		case "zombie_vending_revive":
+			level thread maps\_zombiemode_perks::turn_revive_on();
+			break;
+
+		case "zombie_vending_jugg":
+			level thread maps\_zombiemode_perks::turn_jugger_on();
+			break;
+
+		case "zombie_vending_doubletap2":
+		case "zombie_vending_doubletap":
+			level thread maps\_zombiemode_perks::turn_doubletap_on();
+			break;
+
+		case "zombie_vending_sleight":
+			level thread maps\_zombiemode_perks::turn_sleight_on();
+			break;
+
+		case "zombie_vending_marathon":
+			level thread maps\_zombiemode_perks::turn_marathon_on();
+			break;
+
+		case "zombie_vending_three_gun":
+			level thread maps\_zombiemode_perks::turn_additionalprimaryweapon_on();
+			break;
+
+		case "zombie_vending_ads":
+			level thread maps\_zombiemode_perks::turn_deadshot_on();
+			break;
+
+		case "zombie_vending_nuke":
+			level thread maps\_zombiemode_perks::turn_divetonuke_on();
+			break;
+
+		case "p6_zm_vending_electric_cherry":
+			level thread maps\_zombiemode_perks::turn_electriccherry_on();
+			break;
+
+		case "bo2_zombie_vending_vultureaid":
+			level thread maps\_zombiemode_perks::turn_vulture_on();
+			break;
+
+		case "bo3_p7_zm_vending_widows_wine":
+			level thread maps\_zombiemode_perks::turn_widowswine_on();
+			break;
+
+		case "zombie_vending_packapunch":
+			level thread maps\_zombiemode_perks::turn_PackAPunch_on();
+			break;
+
+		default:
+			iprintln( "activate_zombie_vending: " + model + " not found" );
+			break;
+	}
+
 }
 
 ///*
@@ -232,7 +341,6 @@ randomize_perks_think()
 		palcements - perk[0] will be placed at placements[0] which corresponds to a relevant perk register spawn
 		visited - 
 	*/
-
 
 	data = array( level.MUL_OPTS, level.JUG_OPTS, level.DTP_OPTS, level.VLT_OPTS,
   				  level.SPD_OPTS, level.QRV_OPTS, level.DST_OPTS, level.WWN_OPTS,
@@ -368,14 +476,14 @@ handle_nacht_powerswitch()
 		wait_time = 1;
 		if( !dev )
 		{
-			wait_time = RandomIntRange( 10, 60 );
+			wait_time = RandomIntRange( 10, 30 );
 		}
 
 		wait( wait_time );
 
 		spawn_loc = array_randomize( radio_locs )[0];
 		trigger = Spawn( "trigger_radius_use", spawn_loc , 0, 20, 70 );
-		trigger sethintstring(&"ZOMBIE_ELECTRIC_SWITCH");
+		trigger sethintstring(&"REIMAGINED_NACHT_POWER");
 		trigger SetCursorHint( "HINT_NOICON" );
 
 		level.radio_activated = false;
@@ -389,11 +497,8 @@ handle_nacht_powerswitch()
 		/*	Teleport player	*/
 		player do_player_teleport( array_randomize( tp_locs )[0] );
 
-		if( GetPlayers().size == 1) {
-			wait(5);
-		}
-
 		level notify( "perks_swapping" );
+		level.radio_activated = false;
 
 	}
 
@@ -411,14 +516,13 @@ play_radio_fx( spawn_loc )
 		model = Spawn( "script_model", spawn_loc );
 		model setModel( "tag_origin" );
 		PlayFXOnTag( level._effect["powerup_on_solo"], model, "tag_origin" );
-		iprintln( "Playing radio fx" );
 		wait( 1 );
 
 		model Delete();
 
 		wait(2);
 	}
-	iprintln( "Radio fx done" );
+
 }
 
 do_player_teleport( loc )

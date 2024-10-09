@@ -1713,9 +1713,6 @@ perk_fx( fx, offset )
 		wait( 1.5 );
 	}
 	
-	//When perks moved or turned off, set the perk as the off model!
-	if( level.mapname == "zombie_cod5_prototype" )
-		self SetModel( level.zombie_vending_off_models[ self.targetname ] );
 
 	model Delete();
 
@@ -2328,8 +2325,9 @@ vending_trigger_think()
 
 	//player_print_msg( "Setting up perk: " + perk );
 
-	if(level.script != "zombie_cod5_sumpf")
+	if(level.mapname != "zombie_cod5_sumpf" && level.mapname != "zombie_cod5_prototype"  )
 	{
+		iprintln("Setting up bumps");
 		machine = GetEntArray(self.target, "targetname");
 		for(i = 0; i < machine.size; i++)
 		{
@@ -2620,7 +2618,7 @@ vending_trigger_think()
 
 watch_perk_trigger( perk, cost, upgrade_perk_cost )
 {
-	level endon("perks_swapping"); //shino
+	level endon("perks_swapping"); //shino, nacht
 
 	CONST_PERK = perk;
 	CONST_COST = cost;

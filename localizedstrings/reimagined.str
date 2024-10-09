@@ -90,6 +90,8 @@ REFERENCE          	ZOMBIE_PERK_WIDOWSWINE
 LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Widow's Wine 2.0 [Cost: &&1]"
 
 
+REFERENCE           NACHT_POWER
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to call for help"
 
 REFERENCE          	WINE_GRENADES
 LANG_ENGLISH        "Web Grenades"
