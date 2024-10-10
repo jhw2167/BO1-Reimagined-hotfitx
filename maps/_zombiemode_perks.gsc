@@ -16,19 +16,17 @@ init()
 	level.zombiemode_using_marathon_perk = true;
 	level.zombiemode_using_deadshot_perk = true;
 	level.zombiemode_using_additionalprimaryweapon_perk = true;
+	level.zombiemode_using_electriccherry_perk = false;
+	level.zombiemode_using_vulture_perk = false;
+	level.zombiemode_using_widowswine_perk = false;
+	
 	if( level.bo2_perks ) 
 	{
 		level.zombiemode_using_electriccherry_perk = true;
 		level.zombiemode_using_vulture_perk = true;
 		level.zombiemode_using_widowswine_perk = true;
 	}
-	else
-	{
-		level.zombiemode_using_electriccherry_perk = false;
-		level.zombiemode_using_vulture_perk = false;
-		level.zombiemode_using_widowswine_perk = false;
-
-	}
+	
 
 	/*
 	level.zombiemode_using_chugabud_perk = true;

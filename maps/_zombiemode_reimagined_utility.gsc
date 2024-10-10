@@ -901,7 +901,7 @@ start_properk_placer()
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
 	//object SetModel( "p6_zm_vending_electric_cherry_off" );
-	Object SetModel( "zombie_vending_jugg" );
+	object SetModel( "zombie_vending_jugg" );
 	//object SetModel( "zombie_vending_sleight" );
 	//object SetModel( "zombie_vending_doubletap2" );
 	//object SetModel( "zombie_vending_revive" );

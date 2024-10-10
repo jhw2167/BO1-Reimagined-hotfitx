@@ -57,7 +57,7 @@ main()
 	//Overrides	
 	/* 										*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=1;	///
+	level.starting_round_override=8;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -68,9 +68,9 @@ main()
 	level.classic_override=true;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
-	level.override_bo2_perks=false;		///
+	level.override_bo2_perks=true;		///
 	//level.rolling_kill_all_interval=12;	///
-	level.dev_only=true;					///*/
+	level.dev_only=false;					///*/
 
 
 	setApocalypseOptions();
@@ -996,6 +996,9 @@ reimagined_init_level()
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
 	//Maps
+
+	//Natch
+	level.THRESHOLD_NACHT_PERKS_ENABLED_ROUND = 5;
 
 	//Veruktd
 	level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS = [];
@@ -6382,7 +6385,10 @@ determine_horde_wait( count )
 		delay = level.VALUE_ZOMBIE_SPAWN_DELAY;
 	
 		if( level.classic )
-			delay -= 1;
+		{
+			//delay -= 1;
+		}
+			
 		
 		//Adjust delay based on round number
 		if( level.round_number < 5 )
@@ -10063,17 +10069,17 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 2;
 			break;
 		case "zombie_m1carbine":
-			final_damage = 300;
+			final_damage = 900;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
 		case "zombie_gewehr43":
-			final_damage = 300;
+			final_damage = 600;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
 		case "zombie_bar":
-			final_damage = 300;
+			final_damage = 900;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 2;
 			break;
@@ -10083,7 +10089,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 4;
 			break;
 		case "zombie_fg42":
-			final_damage = 200;
+			final_damage = 400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 1.5;
 			break;

@@ -264,6 +264,7 @@ place_vulture()
 	bump_trigger.targetname = "audio_bump_trigger";
 }
 
+
 place_barriers()
 {
 	level.verukt_barriers = [];

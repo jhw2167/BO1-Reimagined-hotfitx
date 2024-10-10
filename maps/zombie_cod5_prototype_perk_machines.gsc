@@ -145,6 +145,7 @@ init()
 
 	level thread randomize_perks_think();
 	level thread handle_nacht_powerswitch();
+	place_barriers();
 }
 
 place_babyjug()
@@ -455,7 +456,6 @@ handle_nacht_powerswitch()
 	flag_wait("begin_spawning");
 
 	wait(5);
-	iprintln( "Spawning power switch" );
 
 	/*
 	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
@@ -505,7 +505,7 @@ handle_nacht_powerswitch()
 
 		level waittill("start_of_round");
 		dev = is_true( level.dev_only );
-		if( level.round_number < 10 && !dev )
+		if( level.round_number < level.THRESHOLD_NACHT_PERKS_ENABLED_ROUND && !dev )
 			continue;
 
 		wait_time = 1;
@@ -638,3 +638,146 @@ hellhound_spawn_fx( origin )
 }
 
 //*/
+
+
+place_barriers()
+{
+	//truck1 - main outside
+	
+	truck1 = array(
+		(-391.358, 192.848, 0),
+		(-434, 131, 10.5874),
+		(-470, 82, 15.81012),
+		
+		(-478, 114, 17.0166)
+		/*
+		(-, 61.1555, 26.0885),
+		(-, , 22.9504),
+		(-, , 10.1087),
+		(-425.802, 106.01, 10.6865),
+		(-408.167, 127.518, 12.1304)
+		*/	
+	);
+	truck1Angles = array( 
+		(0, -40, 0),
+		(0, -40, 0),
+		(0, -40, 0),
+		(0, -40, 0)
+	);
+
+	//truck2 - main outside, dark side
+	truck2 = array(
+		(-405, 539, 20),
+		(-395, 601, 20),
+		(-381, 686, 20)
+	);
+
+	truck2Angles = array(
+		(0, -10, 0),
+		(0, -10, 0),
+		(0, -10, 0)
+	);
+
+	backGate = array(
+		(-405, 932, 20)
+	);
+
+	backGateAngles = array(
+		(0, 0, 0)
+	);
+
+	//truck3 - through gate, entrenched
+	truck3 = array(
+		(-530, -595, 20),
+		(-461, -650, 20),
+		(-422, -680, 20)
+	);
+
+	truck3Angles = array(
+		(0, -20, 0),
+		(0, -20, 0),
+		(0, -20, 0)
+	);
+
+
+	tree1 = array(
+		(-667, -59, 48),	//tree1 - main outside, by truck 1, actually a telephone pole
+		(-667, -59, 16),	//tree1 - main outside, by truck 1, actually a telephone pole
+		(-432, -414, 48),	//tree2 - main outside, by truck 1, actually a telephone pole
+		(-432, -414, 16),	//tree2 - main outside, by truck 1, actually a telephone pole
+		(-670, -694, 48),	//tree3 - past gate, barrel gathering
+		(-670, -694, 16),	//tree3 - past gate, barrel gathering
+		( 414, -555, 48),	//tree4 - tree in back by dark corner
+		( 414, -555, 16),	//tree4 - tree in back by dark corner
+		( 249, 79, 212),	//boxes - up stairs by 
+		(1276, -1223, 82),	//tree5 - tree way back, by perk spawn
+		(1186, 275, 82),		//tree6 - tree by stairs
+		(1231, 595, 82)		//tree7 - tree by stairs
+	);
+
+	tree1Angles = array(
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0),
+		(0, 0, 0)
+	);
+
+	
+	//All barrieres
+
+	//64x64
+	barriers64 = array_combine( truck1, truck2);
+	barriers64 = array_combine( barriers64, truck3);
+	//barriers64 = array_combine( barriers64, tree1);
+
+	barriers64Angles = array_combine( truck1Angles, truck2Angles);
+	barriers64Angles = array_combine( barriers64Angles, truck3Angles);
+
+	level.nacht_barriers = [];
+	for(i = 0; i < barriers64.size; i++)
+	{
+		level.nacht_barriers[i] = spawn( "script_model", barriers64[i] );
+		level.nacht_barriers[i].angles = barriers64Angles[i];
+		level.nacht_barriers[i] SetModel( "collision_geo_64x64x64" );
+		level.nacht_barriers[i] Hide();
+	}
+
+	//128x128
+	barriers128 = array_combine( backGate, [] );
+	barriers128Angles = array_combine( backGateAngles, [] );
+
+	start = barriers64.size;
+	end = start + barriers128.size;
+	for(i = start; i < end; i++)
+	{
+		level.nacht_barriers[i] = spawn( "script_model", barriers128[i - start] );
+		level.nacht_barriers[i].angles = barriers128Angles[i - start];
+		level.nacht_barriers[i] SetModel( "collision_geo_128x128x128" );
+		level.nacht_barriers[i] Hide();
+	}
+	
+	//32x32
+	barriers32 = array_combine( tree1, []);
+	//barriers32 = array_combine( barriers32, tree3);
+
+	barriers32Angles = array_combine( tree1Angles, []);
+	//barriers32Angles = array_combine( barriers32Angles, tree3Angles);
+	
+	start = barriers64.size + barriers128.size;
+	end = start + barriers32.size;
+
+	for(i = start; i < end; i++)
+	{
+		level.nacht_barriers[i] = spawn( "script_model", barriers32[i - start] );
+		level.nacht_barriers[i].angles = barriers32Angles[i - start];
+		level.nacht_barriers[i] SetModel( "collision_geo_32x32x32" );
+		level.nacht_barriers[i] Hide();
+	}
+	
+}
