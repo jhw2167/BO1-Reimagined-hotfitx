@@ -19,7 +19,7 @@ init()
 	level.zombiemode_using_electriccherry_perk = false;
 	level.zombiemode_using_vulture_perk = false;
 	level.zombiemode_using_widowswine_perk = false;
-	
+
 	if( level.bo2_perks ) 
 	{
 		level.zombiemode_using_electriccherry_perk = true;
@@ -1001,6 +1001,7 @@ wait_for_player_to_take( player, weapon, packa_timer )
 					player maps\_zombiemode_weapons::give_max_ammo(upgrade_weapon, 1);
 				}
 
+				//Upgraded weapon, upgrade_weapon, weap_upgrade
 				player handle_player_packapunch(weapon, true);
 				player SwitchToWeapon( upgrade_weapon );
 				player notify("weapon_upgrade_complete");

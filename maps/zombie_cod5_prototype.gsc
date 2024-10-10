@@ -582,6 +582,32 @@ include_weapons()
 	include_weapon("ray_gun_zm");
 	include_weapon("crossbow_explosive_zm");
 	include_weapon("knife_ballistic_zm");
+
+	include_weapon("m72_law_upgraded_zm", false);
+	include_weapon("crossbow_explosive_upgraded_zm", false);
+	include_weapon("knife_ballistic_upgraded_zm", false);
+	//Normal upgraded Weapons - included from _zombiemode_weapons
+	/*
+	include_weapon("python_upgraded_zm", false);
+	include_weapon("cz75_upgraded_zm", false);
+	include_weapon("g11_lps_upgraded_zm", false);
+	include_weapon("famas_upgraded_zm", false);
+	include_weapon("spectre_upgraded_zm", false);
+	include_weapon("cz75dw_upgraded_zm", false);
+	include_weapon("spas_upgraded_zm", false);
+	include_weapon("hs10_upgraded_zm", false);
+	include_weapon("aug_acog_mk_upgraded_zm", false);
+	include_weapon("galil_upgraded_zm", false);
+	include_weapon("commando_upgraded_zm", false);
+	include_weapon("fnfal_upgraded_zm", false);
+	include_weapon("dragunov_upgraded_zm", false);
+	include_weapon("l96a1_upgraded_zm", false);
+	include_weapon("rpk_upgraded_zm", false);
+	include_weapon("hk21_upgraded_zm", false);
+	include_weapon("china_lake_upgraded_zm", false);
+	include_weapon("knife_ballistic_bowie_upgraded_zm", false);
+	*/
+
 	
 	include_weapon( "zombie_m1carbine", false, true );
 	include_weapon( "zombie_m1carbine_upgraded", false, true );	//new
@@ -591,19 +617,30 @@ include_weapons()
 
 	include_weapon( "zombie_kar98k", false, true );
 	include_weapon( "zombie_kar98k_upgraded", false, true );	//new
+
+	include_weapon( "zombie_stg44", false, true );
+	include_weapon( "zombie_stg44_upgraded", false );
 	
 	include_weapon( "kar98k_scoped_zombie", false, true );
 	include_weapon( "stielhandgranate", false, true );
 	include_weapon( "zombie_doublebarrel", false, true );
 	include_weapon( "zombie_doublebarrel_sawed", false, true );
+	include_weapon( "zombie_doublebarrel_upgraded", false );
+
 	include_weapon( "zombie_shotgun", false, true );
+	include_weapon( "zombie_shotgun_upgraded", false );
+
 	include_weapon( "zombie_bar", false, true );
+	include_weapon( "zombie_bar_upgraded", false );
 
 	include_weapon( "zombie_cymbal_monkey");
 
 	include_weapon( "ray_gun_zm" );
 	include_weapon( "thundergun_zm" );
+
 	include_weapon( "m1911_upgraded_zm", false );
+	include_weapon( "ray_gun_upgraded_zm", false );
+	include_weapon( "thundergun_upgraded_zm", false );
 
 	level._uses_retrievable_ballisitic_knives = true;
 

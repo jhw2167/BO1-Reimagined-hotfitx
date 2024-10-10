@@ -56,21 +56,21 @@ main()
 
 	//Overrides	
 	/* 										*/
-	//level.zombie_ai_limit_override=1;	///allowed on map
+	level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=8;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
-	level.spawn_delay_override=0.5;			///
+	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=true;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
-	level.override_bo2_perks=true;		///
+	level.override_bo2_perks=false;		///
 	//level.rolling_kill_all_interval=12;	///
-	level.dev_only=false;					///*/
+	level.dev_only=true;					///*/
 
 
 	setApocalypseOptions();
@@ -3156,7 +3156,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.1.8" );
+	SetDvar( "zm_mod_version", "2.2.0" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -6386,7 +6386,7 @@ determine_horde_wait( count )
 	
 		if( level.classic )
 		{
-			//delay -= 1;
+			delay += 1;
 		}
 			
 		
@@ -6418,7 +6418,7 @@ determine_horde_wait( count )
 	// -0.5s for each player in the game:
 		delay -= get_players().size * 0.5;
 
-		//iprintln( "Delay: " + delay );
+		iprintln( "Delay: " + delay );
 
 		if( isDefined( level.spawn_delay_override ) )
 			delay = level.spawn_delay_override;
@@ -6426,7 +6426,7 @@ determine_horde_wait( count )
 		if( delay > 0 ) {
 			randDelay = RandomFloatRange( 0, delay );
 			wait( randDelay );
-			//iprintln( "Waited: " + randDelay );
+			iprintln( "Waited: " + randDelay );
 		}
 			
 	//iprintln( "count: " + zombs_count );
@@ -7597,7 +7597,7 @@ setApocalypseOptions()
 		level.zombie_types = false;
 		level.total_perks = 5;
 		level.bo2_perks = true;
-		level.extra_drops = false;
+		level.extra_drops = true;
 		level.server_cheats = true;
 		level.starting_round = 1;
 		SetDvar( "zombie_rt1", "1" );

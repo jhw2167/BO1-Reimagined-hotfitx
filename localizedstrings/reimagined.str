@@ -91,7 +91,7 @@ LANG_ENGLISH        "Hold ^3[{+activate}]^7 to buy Widow's Wine 2.0 [Cost: &&1]"
 
 
 REFERENCE           NACHT_POWER
-LANG_ENGLISH        "Hold ^3[{+activate}]^7 to call for help"
+LANG_ENGLISH        "Hold ^3[{+activate}]^7 to radio for help"
 
 REFERENCE          	WINE_GRENADES
 LANG_ENGLISH        "Web Grenades"
@@ -1225,7 +1225,7 @@ REFERENCE          	BO2_PERKS
 LANG_ENGLISH       	"INCLUDE BO2 PERKS"
 
 REFERENCE          	EXTRA_DROPS
-LANG_ENGLISH       	"EXTRA DROPS"
+LANG_ENGLISH       	"BLUE DROPS"
 
 REFERENCE          	ROUND_START
 LANG_ENGLISH       	"STARTING ROUND"

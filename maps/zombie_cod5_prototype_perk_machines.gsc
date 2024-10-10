@@ -134,7 +134,7 @@ init()
 	level.ECH_OPTS = array( 5, 8, 9 );
 	level.MUL_OPTS = array( 2, 12, 14 );
 
-	level.PAP_OPTS = array( 1, 3, 4, 10, 13 );
+	level.PAP_OPTS = array( 1, 2, 3, 4, 10, 13, 14 );
 
 	level.loc_notes = array( "Truck, move over 5 for fatter model", "Truck, wall smoke", "Back wall, up stairs, by stairs",
 			 "Under stairs, grass covered", "Far out by tree, spawn facing direction", "Right next to window, yellow flame",
@@ -192,6 +192,7 @@ register_perk_spawn( origin, angles, index )
 	struct.origin = origin;
 	struct.angles = angles;
 	struct.clip = perk_clip;
+	struct.trigger = bump_trigger;
 	level.perk_spawn_location[ level.perk_spawn_location.size ] = struct;
 }
 
@@ -199,13 +200,32 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 {
 	if( spawnPointIndex < 0 )	
 		return;
+
+	//Disable BO2 Perks if applicable
+	switch( target )
+	{
+		case "vending_electriccherry":
+		case "vending_vulture":
+		case "vending_widowswine":
+			if( !is_true( level.bo2_perks ) )
+			{
+				level.perk_spawn_location[ spawnPointIndex ].clip Delete();
+				level.perk_spawn_location[ spawnPointIndex ].trigger Delete();
+				return;
+			}
+		break;
+
+		default:
+		//continue
+			break;
+	}
 	
-	iprintln( "Spawning " + model + " at " + spawnPointIndex + " loc:" + level.loc_notes[ spawnPointIndex ] );
+	//level thread maps\_zombiemode::wait_print( "Spawning " + model + " at " + spawnPointIndex + " loc:" + level.loc_notes[ spawnPointIndex ] );
 
 	/* Adjustments */
 
 	//If doubletap is in position 3 or 5, move it back 10 units
-	if( model == "zombie_vending_doubletap2" )
+	if( perk == level.DBT_PRK )
 	{
 		origin = level.perk_spawn_location[ spawnPointIndex ].origin;
 		level.perk_spawn_location[ spawnPointIndex ].origin = ( origin[0] - 15, origin[1], origin[2] );
@@ -231,7 +251,7 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 	}
 	else
 	{
-		trigger thread watch_perk_off( machine, model, perk, machine.targetname );
+		//trigger thread watch_perk_off( machine, model, perk, machine.targetname );
 	}
 		
 }
@@ -368,6 +388,8 @@ randomize_perks_think()
 		visited - 
 	*/
 
+	dev = is_true( level.dev_only );
+	
 	data = array( level.MUL_OPTS, level.JUG_OPTS, level.DTP_OPTS, level.VLT_OPTS,
   				  level.SPD_OPTS, level.QRV_OPTS, level.DST_OPTS, level.WWN_OPTS,
 				  level.ECH_OPTS, level.PAP_OPTS, level.PHD_OPTS, level.STM_OPTS );
@@ -411,16 +433,14 @@ randomize_perks_think()
 	spawn_perk( "zombie_vending_three_gun", placements[j] , "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" ); j++;
 	spawn_perk( "zombie_vending_jugg", placements[j], "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" ); j++;
 	spawn_perk( "zombie_vending_doubletap2", placements[j], "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" ); j++;
-	if( level.zombiemode_using_vulture_perk )
-		spawn_perk( "bo2_zombie_vending_vultureaid", placements[j], "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" ); j++;
+	
+	spawn_perk( "bo2_zombie_vending_vultureaid", placements[j], "zombie_vending", "vending_vulture", "specialty_altmelee", "mus_perks_vulture_jingle", "mus_perks_vulture_sting" ); j++;
 	spawn_perk( "zombie_vending_sleight", placements[j], "zombie_vending", "vending_sleight", "specialty_fastreload", "mus_perks_speed_jingle", "mus_perks_speed_sting" ); j++;
 	spawn_perk( "zombie_vending_revive", placements[j], "zombie_vending", "vending_revive", "specialty_quickrevive", "mus_perks_revive_jingle", "mus_perks_revive_sting" ); j++;
 	spawn_perk( "zombie_vending_ads", placements[j], "zombie_vending", "vending_deadshot", "specialty_deadshot", "mus_perks_deadshot_jingle", "mus_perks_deadshot_sting" ); j++;
 	
-	if( level.zombiemode_using_widowswine_perk )
-		spawn_perk( "bo3_p7_zm_vending_widows_wine_off", placements[j], "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" ); j++;
-	if( level.zombiemode_using_electriccherry_perk )
-		spawn_perk( "p6_zm_vending_electric_cherry_off", placements[j], "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" ); j++;
+	spawn_perk( "bo3_p7_zm_vending_widows_wine_off", placements[j], "zombie_vending", "vending_widowswine", "specialty_bulletaccuracy", "mus_perks_widows_jingle", "mus_perks_widows_sting" ); j++;
+	spawn_perk( "p6_zm_vending_electric_cherry_off", placements[j], "zombie_vending", "vending_electriccherry", "specialty_bulletdamage", "mus_perks_cherry_jingle", "mus_perks_cherry_sting" ); j++;
 	
 	spawn_perk( "zombie_vending_packapunch", placements[j], "zombie_vending_upgrade", "vending_packapunch", "specialty_weapupgrade", "mus_perks_packa_jingle", "mus_perks_packa_sting" ); j++;
 	spawn_perk( "zombie_vending_nuke", placements[j], "zombie_vending", "vending_divetonuke", "specialty_flakjacket", "mus_perks_phd_jingle", "mus_perks_phd_sting" ); j++;
@@ -573,8 +593,6 @@ do_player_teleport( loc )
 	respawn = SpawnStruct();
 	respawn.origin = self.origin + (0, 0, 5);
 
-
-	level.pap_moving = false;
 	//self.ignoreme = true;
 	self maps\_zombiemode_weap_black_hole_bomb::black_hole_teleport( destination, true );	
 
@@ -585,7 +603,7 @@ do_player_teleport( loc )
 		wait 0.5;
 	}
 
-	level.pap_moving = true;
+	
 
 	respawn.angles = self GetPlayerAngles();
 

@@ -106,7 +106,7 @@
 			
 			if(dvarString(zombie_extra_drops) == "")
 			{
-				setDvar zombie_extra_drops 0;
+				setDvar zombie_extra_drops 1;
 			}
 
 			if(dvarString(zombie_perk_limit) == "")
