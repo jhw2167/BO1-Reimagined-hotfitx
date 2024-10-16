@@ -10900,8 +10900,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			/*
 				1. If zombie is knocked down, do small ragdoll death
 				2. If zombie is killed by sniper or sabertooth, do larger ragdoll death
+				3. If player is using a shotgun, and zombie is within 96 units, do ragdoll death
 			*/
-			if( is_true( self.knocked_down ) )
+			isShotgun = is_in_array( level.ARRAY_SHOTGUN_WEAPONS, weaponname );
+			zombieIsCloseToPlayer = checkDist( self.origin, attacker.origin, 96 );
+			zombieIsKnockedDown = is_true( self.knocked_down );
+
+			doSmallRagdoll = zombieIsKnockedDown || (isShotgun && zombieIsCloseToPlayer);
+
+			if( doSmallRagdoll )
 			{
 				self thread zombie_ragdoll_kill( attacker, 50 );
 			}

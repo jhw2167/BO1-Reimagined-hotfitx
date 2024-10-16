@@ -251,7 +251,7 @@ spawn_perk( model, spawnPointIndex, targetname, target, perk, jingle, sting )
 	}
 	else
 	{
-		//trigger thread watch_perk_off( machine, model, perk, machine.targetname );
+		trigger thread watch_perk_off( machine, model, perk, machine.targetname );
 	}
 		
 }
