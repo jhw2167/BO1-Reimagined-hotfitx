@@ -290,7 +290,8 @@ watch_perk_off( machine, model, perk, machineTargetName )
 		}
 
 		activate_zombie_vending( model );
-		self maps\zombie_cod5_sumpf_perks::set_perk_buystring( perk, machineTargetName );
+		if( perk != "specialty_weapupgrade" ) //pap set earlier, dont set again
+			self maps\zombie_cod5_sumpf_perks::set_perk_buystring( perk, machineTargetName );
 
 		while( level.radio_activated ) {
 			wait( 0.1 );
@@ -603,7 +604,7 @@ do_player_teleport( loc )
 		wait 0.5;
 	}
 
-	
+	wait(1);	
 
 	respawn.angles = self GetPlayerAngles();
 

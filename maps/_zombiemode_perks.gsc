@@ -853,6 +853,7 @@ vending_weapon_upgrade()
 		flag_clear("pack_machine_in_use");
 		self.user = undefined;
 		self.third_person_weapon_complete = undefined;
+		wait(1);
 	}
 }
 //END VENDING WEAPON UPGRADE
@@ -900,7 +901,7 @@ vending_weapon_upgrade_cost()
 			
 		
 		self SetHintString( &"REIMAGINED_PERK_PACKAPUNCH", self.cost, self.double_cost );
-		iprintln("Set hint string:" );
+		
 		level waittill( "powerup bonfire sale" );
 
 		self.cost = level.VALUE_PAP_BONFIRE_COST;
@@ -930,8 +931,8 @@ wait_for_player_to_take( player, weapon, packa_timer )
 	if( !isDefined( upgrade_weapon ) ) 
 		upgrade_weapon = weapon;
 	
-	iprintln("Upgrade weapon to give: " );
-	iprintln( upgrade_weapon );
+	//iprintln("Upgrade weapon to give: " );
+	//iprintln( upgrade_weapon );
 
 	self endon( "pap_timeout" );
 	while( true )
@@ -1006,10 +1007,11 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				player SwitchToWeapon( upgrade_weapon );
 				player notify("weapon_upgrade_complete");
 				player maps\_zombiemode_weapons::play_weapon_vo(upgrade_weapon);
-				
-				
+
 				return;
 			}
+
+			
 		}
 		wait( 0.05 );
 	}
@@ -1434,7 +1436,7 @@ turn_jugger_on()
 
 	level waittill("juggernog_on");
 
-	iprintln("Juggernog_on");
+	//iprintln("Juggernog_on");
 	//Reimagined-Expanded
 	if(level.mapname != "zombie_cod5_sumpf")
 	{
@@ -2328,7 +2330,7 @@ vending_trigger_think()
 
 	if(level.mapname != "zombie_cod5_sumpf" && level.mapname != "zombie_cod5_prototype"  )
 	{
-		iprintln("Setting up bumps");
+		//iprintln("Setting up bumps");
 		machine = GetEntArray(self.target, "targetname");
 		for(i = 0; i < machine.size; i++)
 		{
@@ -2740,8 +2742,6 @@ watch_perk_trigger( perk, cost, upgrade_perk_cost, machineTargetName )
 		}
 		
 		//iprintln( "Bought Perk: " + perk );
-		iprintln("Max perks: " + player.num_perks + " Perk slots: " + player.perk_slots);
-		iprintln( "Level: " + level.max_perks );
 		sound = "evt_bottle_dispense";
 		playsoundatposition(sound, self.origin);
 		player maps\_zombiemode_score::minus_to_player_score( cost );
@@ -6020,7 +6020,7 @@ init_vulture()
 
 		get_pack_a_punch_origin( trigger )
 		{
-			iprintln( "PAP Origin: ");
+			//iprintln( "PAP Origin: ");
 			machine = GetEnt( trigger.target, "targetname" );
 			forward = AnglesToForward( machine.angles - ( 0, 90, 0 ) );
 			origin = machine.origin + vector_scale( forward, level.VALUE_VULTURE_MACHINE_ORIGIN_OFFSET );
@@ -6247,8 +6247,8 @@ vulture_perk_watch_pap_move()
 			}
 		}
 		
-		iprintln( "new pap: " );
-		iprintln( level.vulture_track_current_pap_spot );
+		//iprintln( "new pap: " );
+		//iprintln( level.vulture_track_current_pap_spot );
 	}
 }
 

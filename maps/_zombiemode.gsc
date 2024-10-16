@@ -56,7 +56,7 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=1;	///allowed on map
+	level.zombie_ai_limit_override=5;	///allowed on map
 	level.starting_round_override=8;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
@@ -941,6 +941,7 @@ reimagined_init_level()
 									 "zombie_doublebarrel", "zombie_doublebarrel_upgraded", "zombie_shotgun", "zombie_shotgun_upgraded",
 									 "ithaca_upgraded_zm", "spas_upgraded_zm", "rottweil72_upgraded_zm", "hs10_upgraded_zm",
 									 "ithaca_upgraded_zm_x2", "spas_upgraded_zm_x2", "rottweil72_upgraded_zm_x2", "hs10_upgraded_zm_x2",
+									 "ks23_zm", "ks23_upgraded_zm", "ks23_upgraded_zm_x2",
 									 "aug_acog_mk_upgraded_zm", "aug_acog_mk_upgraded_zm_x2", "mk_aug_upgraded_zm"
 									 );
 
@@ -6418,7 +6419,7 @@ determine_horde_wait( count )
 	// -0.5s for each player in the game:
 		delay -= get_players().size * 0.5;
 
-		iprintln( "Delay: " + delay );
+		//iprintln( "Delay: " + delay );
 
 		if( isDefined( level.spawn_delay_override ) )
 			delay = level.spawn_delay_override;
@@ -6426,7 +6427,7 @@ determine_horde_wait( count )
 		if( delay > 0 ) {
 			randDelay = RandomFloatRange( 0, delay );
 			wait( randDelay );
-			iprintln( "Waited: " + randDelay );
+			//iprintln( "Waited: " + randDelay );
 		}
 			
 	//iprintln( "count: " + zombs_count );
@@ -9264,7 +9265,10 @@ zombie_knockdown( wait_anim, upgraded )
 
 	//If zombie is not in the map
 	if( !checkObjectInPlayableArea( self ) )
-		return;
+	{
+		//return; turning off for now
+	}
+		
 
 	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
 		return;
@@ -9512,12 +9516,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	validHitmarkerDeathTypes = array("MOD_RIFLE_BULLET", "MOD_PISTOL_BULLET");
 	usePlayerHitmarkers = is_in_array(validHitmarkerDeathTypes, meansofdeath);
 
+
 	if( level.classic )
 		usePlayerHitmarkers = usePlayerHitmarkers && attacker HasPerk(level.DST_PRK);
 	else
 		usePlayerHitmarkers = usePlayerHitmarkers && attacker hasProPerk(level.DST_PRO);
 
-	//iprintln("Use Player Hitmarkers: " + usePlayerHitmarkers);
 	if( usePlayerHitmarkers )
 	{
 		weakpoints = array_add(level.CONDITION_DEADSHOT_PRO_WEAKPOINTS, self.weakpoint);
@@ -10902,7 +10906,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				2. If zombie is killed by sniper or sabertooth, do larger ragdoll death
 				3. If player is using a shotgun, and zombie is within 96 units, do ragdoll death
 			*/
-			isShotgun = is_in_array( level.ARRAY_SHOTGUN_WEAPONS, weaponname );
+			isShotgun = is_in_array( level.ARRAY_VALID_SHOTGUNS, weapon );
 			zombieIsCloseToPlayer = checkDist( self.origin, attacker.origin, 96 );
 			zombieIsKnockedDown = is_true( self.knocked_down );
 
