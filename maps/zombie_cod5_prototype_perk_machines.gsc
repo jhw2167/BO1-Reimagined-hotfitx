@@ -1,6 +1,7 @@
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\_zombiemode_utility;
+#include maps\_zombiemode_reimagined_utility;
 
 init()
 {
@@ -120,27 +121,39 @@ init()
 	*/
 	register_perk_spawn( ( 2571, 8, 153 ), ( 0, -55, 0) );
 
-	//Available Options
-	level.JUG_OPTS = array( 0, 1, 6, 14 );
-	level.DTP_OPTS = array( 1, 3, 5 );
-	level.SPD_OPTS = array( 2, 4, 12 );
-	level.QRV_OPTS = array( 1, 3, 10, 12 );
-	level.PHD_OPTS = array( 0, 5, 7, 11, 13 );
-	level.DST_OPTS = array( 4, 11, 13 );
-	level.STM_OPTS = array( 3, 5, 8, 11, 12 );
+	//Available Options - listed in order of placement
+	level.MUL_OPTS = array( 2, 12, 14 ); 				//0
+	level.JUG_OPTS = array( 0, 1, 6, 14 ); 				//1
+	level.DTP_OPTS = array( 1, 3, 5 ); 					//2
 
-	level.VLT_OPTS = array( 6, 9, 10 );
-	level.WWN_OPTS = array( 3, 4, 7, 14 );
-	level.ECH_OPTS = array( 5, 8, 9 );
-	level.MUL_OPTS = array( 2, 12, 14 );
+	level.VLT_OPTS = array( 6, 9, 10 ); 				//3
+	level.SPD_OPTS = array( 2, 4, 12 ); 				//4
+	level.QRV_OPTS = array( 1, 3, 10, 12 );				//5
+	level.DST_OPTS = array( 4, 11, 13 );				//6
 
-	level.PAP_OPTS = array( 1, 2, 3, 4, 10, 13, 14 );
+	level.WWN_OPTS = array( 3, 4, 7, 14 );				//7
+	level.ECH_OPTS = array( 5, 8, 9 );					//8
+
+	level.PAP_OPTS = array( 1, 2, 3, 4, 10, 13, 14 );	//9
+	level.PHD_OPTS = array( 0, 5, 7, 11, 13 );			//10
+	level.STM_OPTS = array( 3, 5, 8, 11, 12 );			//11
+
+	
+
+	//create array perks that can spawn at pos 12 & 11
+	level.perksAtLoc11 = array( 6, 10, 11 );
+	level.perksAtLoc12 = array( 0, 4, 5, 11);
+	
 
 	level.loc_notes = array( "Truck, move over 5 for fatter model", "Truck, wall smoke", "Back wall, up stairs, by stairs",
 			 "Under stairs, grass covered", "Far out by tree, spawn facing direction", "Right next to window, yellow flame",
 			 "Laying down in the grass, opposite spawn face", "By stairs", "By Second truck, turned on its side", 
 			  "Behind first fence, between trucks", "Far side first fence, corner, right of initial outside area", 
 			  "Upstairs, sandbag corner", "Downstairs, mule corner", "Empty Road", "Deep Forest" );
+
+
+	level.perk_notes = array( "Mule Kick", "Juggernog", "Double Tap", "Vulture Aid", "Speed Cola", "Quick Revive", "Deadshot Daiquiri",
+		"Widow's Wine", "Electric Cherry", "Pack-A-Punch", "PhD Flopper", "Stamin-Up" );
 
 
 	level thread randomize_perks_think();
@@ -390,11 +403,6 @@ randomize_perks_think()
 	*/
 
 	dev = is_true( level.dev_only );
-	
-	data = array( level.MUL_OPTS, level.JUG_OPTS, level.DTP_OPTS, level.VLT_OPTS,
-  				  level.SPD_OPTS, level.QRV_OPTS, level.DST_OPTS, level.WWN_OPTS,
-				  level.ECH_OPTS, level.PAP_OPTS, level.PHD_OPTS, level.STM_OPTS );
-
 
 	//Default Options
 	placements = [];
@@ -406,31 +414,55 @@ randomize_perks_think()
 		visited[ i ] = -1;		//15 nodes could be visited
 	}
 
+	//Force spawns
+	//1 perk must always be at position 12 & 11
+	
+	//11
+	loc11PerkIndex = array_randomize( level.perksAtLoc11 )[0];
+	placements[ loc11PerkIndex ] = 11;
+	visited[ 11 ] = loc11PerkIndex;
+
+	//12
+	loc12PerkIndex = array_randomize( level.perksAtLoc12 )[0];
+	placements[ loc12PerkIndex ] = 12;
+	visited[ 12 ] = loc12PerkIndex;
+
+	//Determine PaPLoc
+	//papLoc = array_randomize( level.PAP_OPTS )[0];
+	//papLoc = 14;
+	//placements[ 9 ] = papLoc;
+	//visited[ papLoc ] = 9;
+
+	validPerkLocations = array( level.MUL_OPTS, level.JUG_OPTS, level.DTP_OPTS, level.VLT_OPTS,
+  				  level.SPD_OPTS, level.QRV_OPTS, level.DST_OPTS, level.WWN_OPTS,
+				  level.ECH_OPTS, level.PAP_OPTS, level.PHD_OPTS, level.STM_OPTS );
 
 	MAX_TRIES = 10;
-	for( i = 0; i < data.size; i++ ) 
+	for( perkIndex = 0; perkIndex< validPerkLocations.size; perkIndex++ ) 
 	{
+		if( placements[ perkIndex ] > -1 )
+			continue;
+
 		tries = 0;
-		choice = array_randomize( data[ i ] )[0];
-		while( (visited[ choice ] > -1) && tries < MAX_TRIES ) 
+		locIndex = array_randomize( validPerkLocations[ perkIndex ] )[0];
+		while( (visited[ locIndex ] > -1) && tries < MAX_TRIES ) 
 		{
-			choice = array_randomize( data[ i ] )[0];
+			locIndex = array_randomize( validPerkLocations[ perkIndex ] )[0];
 			tries++;
 		}
 		if( tries >= MAX_TRIES )
 		{
-			iprintln( "Failed to randomize perk " + i );
+			iprintln( "Failed to randomize perk " + perkIndex );
 		}
 		else
 		{
-			visited[ choice ] = i;
-			placements[ i ] = choice;
+			visited[ locIndex ] = perkIndex;
+			placements[ perkIndex ] = locIndex;
 		}
 		
 	}
 
 	j = 0;
-
 	spawn_perk( "zombie_vending_three_gun", placements[j] , "zombie_vending", "vending_additionalprimaryweapon", "specialty_additionalprimaryweapon", "mus_perks_mulekick_jingle", "mus_perks_mulekick_sting" ); j++;
 	spawn_perk( "zombie_vending_jugg", placements[j], "zombie_vending", "vending_jugg", "specialty_armorvest", "mus_perks_jugganog_jingle", "mus_perks_jugganog_sting" ); j++;
 	spawn_perk( "zombie_vending_doubletap2", placements[j], "zombie_vending", "vending_doubletap", "specialty_rof", "mus_perks_doubletap_jingle", "mus_perks_doubletap_sting" ); j++;
@@ -455,6 +487,9 @@ randomize_perks_think()
 			level.perk_spawn_location[ i ].clip SetModel( "tag_origin" );
 		}
 	}
+
+	wait_print( "At position 11: " + level.perk_notes[ visited[11] ] );
+	wait_print( "At position 12: " + level.perk_notes[ visited[12] ] );
 
 }
 

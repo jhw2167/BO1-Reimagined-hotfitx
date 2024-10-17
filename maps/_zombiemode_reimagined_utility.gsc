@@ -474,6 +474,21 @@ generate_perk_hint( perkOrWeapon, specialHint )
 	text destroy_hud();
 }
 
+wait_print( msg, data )
+{
+	flag_wait("begin_spawning");
+	wait(5);
+	if( isdefined( data ) )
+	{
+		iprintln( msg + " " + data );
+	}
+	else
+	{
+		iprintln( msg  + " undefined data");
+	}
+	
+}
+
 /*
 	###############################
 		X2 Weapon Names

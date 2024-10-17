@@ -65,7 +65,7 @@ main()
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=15;	///per round
 	level.apocalypse_override=false;		///
-	level.classic_override=true;		///
+	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
 	level.override_bo2_perks=false;		///
@@ -7707,22 +7707,6 @@ setApocalypseOptions()
 	level thread print_apocalypse_options();
 	//fade_introblack
 
-}
-
-
-wait_print( msg, data )
-{
-	flag_wait("begin_spawning");
-	wait(5);
-	if( isdefined( data ) )
-	{
-		iprintln( msg + " " + data );
-	}
-	else
-	{
-		iprintln( msg  + " undefined data");
-	}
-	
 }
 
 
