@@ -1536,26 +1536,37 @@ watch_pap_teleport_drops()
 	while( true )
 	{
 		rounds_until_spawn = randomintrange( 1, 3 );
-		//rounds_until_spawn = 1;
+
+		if( is_true( level.dev_only ) )
+			rounds_until_spawn = 1;
+
 		//iprintln( "Rounds until vending machines swap: " + rounds_until_swap );
 		for( i = 0; i < rounds_until_spawn; i++ )
 		{
-			self waittill( "between_round_over" );
+			level waittill( "between_round_over" );
 			//self waittill( "end_of_round" );
 		}
-		
-		level.pap_used = false;
-		while( !level.pap_used )
-		{
-			seconds_wait = randomintrange( 10, 100 );
-			//seconds_wait = 10;
 
-			level waittill_any_or_timeout( "end_of_round", seconds_wait );
-		
+		level.pap_used = false;
+		while( 1 )
+		{
+			seconds_wait = randomintrange( 30, 120 );
+
+			if( is_true( level.dev_only ) )
+				seconds_wait = 10;
+
+			level waittill_any_or_timeout( seconds_wait, "end_of_round" );
+
+			if( level.pap_used )
+				break;
+
 			drop_spot = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
 			maps\_zombiemode_powerups::specific_powerup_drop( "pap_teleport", drop_spot.origin );
 
+			wait( 1 );
+
 		}
+
 		
 	}
 

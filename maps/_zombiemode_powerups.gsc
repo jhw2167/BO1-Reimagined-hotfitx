@@ -1882,6 +1882,7 @@ delete_on_bonfire_sale(temp_ent)
 
 start_special_pap( powerup, isUpgraded )
 {
+	level.pap_used = true;
 	destination = SpawnStruct();
 
 	//destination.origin = level.pap_origin + (100, 0, 10);
