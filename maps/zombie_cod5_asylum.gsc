@@ -962,6 +962,7 @@ checkDist( a, b, dist )
 	return result;
 }
 
+//tags: free_perk, free perk, switch drop 
 electric_trap_hack_powerup( notify_ent )
 {
 	notify_ent endon("elec_done");
@@ -1542,15 +1543,20 @@ watch_pap_teleport_drops()
 			self waittill( "between_round_over" );
 			//self waittill( "end_of_round" );
 		}
-
-		seconds_wait = randomintrange( 10, 100 );
-		//seconds_wait = 10;
-		level waittill_any_or_timeout( "end_of_round", seconds_wait );
 		
-		drop_spot = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
-	
-		maps\_zombiemode_powerups::specific_powerup_drop( "pap_teleport", drop_spot.origin );
+		level.pap_used = false;
+		while( !level.pap_used )
+		{
+			seconds_wait = randomintrange( 10, 100 );
+			//seconds_wait = 10;
 
+			level waittill_any_or_timeout( "end_of_round", seconds_wait );
+		
+			drop_spot = array_randomize( level.ARRAY_VERUKT_PAP_DROP_SPAWN_LOCATIONS )[0];
+			maps\_zombiemode_powerups::specific_powerup_drop( "pap_teleport", drop_spot.origin );
+
+		}
+		
 	}
 
 }

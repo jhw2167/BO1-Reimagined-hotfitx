@@ -1062,6 +1062,7 @@ reimagined_init_level()
         break;
     case "zombie_cod5_asylum":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "(Electro)Shock Therapy!";
+		level.pap_used = false;
         break;
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
