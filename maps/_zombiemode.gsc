@@ -56,7 +56,7 @@ main()
 
 	//Overrides	
 	/* 										*/
-	level.zombie_ai_limit_override=5;	///allowed on map
+	//level.zombie_ai_limit_override=5;	///allowed on map
 	level.starting_round_override=8;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
@@ -68,7 +68,7 @@ main()
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
-	level.override_bo2_perks=false;		///
+	level.override_bo2_perks=true;		///
 	//level.rolling_kill_all_interval=12;	///
 	level.dev_only=true;					///*/
 

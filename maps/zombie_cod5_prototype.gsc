@@ -697,6 +697,7 @@ include_powerups()
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
 	include_powerup( "carpenter" );
+	include_powerup( "free_perk" );
 
 	include_powerup( "tesla" );
 	include_powerup( "restock" );

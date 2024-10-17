@@ -158,6 +158,7 @@ init()
 
 	level thread randomize_perks_think();
 	level thread handle_nacht_powerswitch();
+	level thread watch_perk_bottle_spawned();
 	place_barriers();
 }
 
@@ -480,11 +481,13 @@ randomize_perks_think()
 	spawn_perk( "zombie_vending_marathon", placements[j], "zombie_vending", "vending_marathon", "specialty_longersprint", "mus_perks_stamin_jingle", "mus_perks_stamin_sting" ); j++;
 
 	//For any location that is not occupied, replace its collision model with tag_origin
+	level.perk_spawn_unused_locations = [];
 	for( i = 0; i < total_placements; i++ ) 
 	{
 		if( visited[i] == -1 )
 		{
 			level.perk_spawn_location[ i ].clip SetModel( "tag_origin" );
+			level.perk_spawn_unused_locations = level.perk_spawn_location[ i ];
 		}
 	}
 
@@ -513,35 +516,6 @@ handle_nacht_powerswitch()
 
 	wait(5);
 
-	/*
-	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
-
-	//print out size of weapon spawns
-	iprintln( "Weapon Spawns: " + weapon_spawns.size );
-
-	//Spawn power switch
-	wep_spawn = array_randomize( weapon_spawns )[0];
-	spawn_loc = wep_spawn.origin;
-	iprintln( "Chosen switch loc: " + wep_spawn.zombie_weapon_upgrade );
-	spawn_loc = (-170, -306, 67);
-	trigger = Spawn( "trigger_radius_use", spawn_loc , 0, 20, 70 );
-	power_panel = Spawn( "script_model", spawn_loc - (0, 0, 20) );
-	power_panel SetModel( "p6_zm_buildable_pswitch_body" );
-	//power_panel SetModel( "zombie_vending_jugg" );
-
-	power_switch = Spawn( "script_model", spawn_loc );
-	//power_switch SetModel( "p6_zm_buildable_pswitch_lever" );
-	power_switch SetModel( "zombie_power_lever_handle" );
-	
-	
-	trigger sethintstring(&"ZOMBIE_ELECTRIC_SWITCH");
-	trigger SetCursorHint( "HINT_NOICON" );
-
-	trigger waittill("trigger",user);
-	//master_switch rotatepitch(90,1);
-	power_switch rotateroll(-90,.3);
-	*/
-
 	/* Spawn powerup light on the radios */
 
 	radio_locs = array( 
@@ -556,10 +530,15 @@ handle_nacht_powerswitch()
 					,( 1686, 259, 0 )
 					);
 
+	spawn_loc = array_randomize( radio_locs )[0];
+	trigger = Spawn( "trigger_radius_use", spawn_loc , 0, 20, 70 );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger SetHintString("Radio is not ready");
+
 	while(1)
 	{
 
-		level waittill("start_of_round");
+		level waittill_any("start_of_round", "perk_bottle_spawned");
 		dev = is_true( level.dev_only );
 		if( level.round_number < level.THRESHOLD_NACHT_PERKS_ENABLED_ROUND && !dev )
 			continue;
@@ -571,17 +550,14 @@ handle_nacht_powerswitch()
 		}
 
 		wait( wait_time );
-
-		spawn_loc = array_randomize( radio_locs )[0];
-		trigger = Spawn( "trigger_radius_use", spawn_loc , 0, 20, 70 );
-		trigger sethintstring(&"REIMAGINED_NACHT_POWER");
-		trigger SetCursorHint( "HINT_NOICON" );
+		
+		trigger SetHintString(&"REIMAGINED_NACHT_POWER");
 
 		level.radio_activated = false;
 		level thread play_radio_fx( spawn_loc );
 		
 		trigger waittill("trigger", player);
-		trigger Delete();
+		//trigger Delete();
 
 		level.radio_activated = true;
 		level notify( "juggernog_on" );	//turns all perks on
@@ -592,6 +568,8 @@ handle_nacht_powerswitch()
 		//level notify( "perks_swapping" );
 		level.radio_activated = false;
 		
+
+		trigger SetHintString("Radio is not ready");
 
 	}
 
@@ -614,7 +592,7 @@ play_radio_fx( spawn_loc )
 
 		model Delete();
 
-		wait(2);
+		wait(5);
 	}
 
 }
@@ -649,7 +627,70 @@ do_player_teleport( loc )
 	//self.ignoreme = false;
 	//wait(2);
 
-}	
+}
+
+
+watch_perk_bottle_spawned()
+{
+
+	perkSpawnChance = 33;
+
+	dev = is_true( level.dev_only );
+	if( dev )
+		perkSpawnChance = 100;
+
+	while(1)
+	{
+		level waittill( "start_of_round" );
+		//wait(15);
+
+		if( level.round_number < level.THRESHOLD_NACHT_PERKS_ENABLED_ROUND )
+			continue;
+
+		wait( 5 );
+
+		if( RandomInt( 100 ) > perkSpawnChance )	//no free perk this round
+			continue;
+
+		total_zombs = level.zombie_round_total;
+		zomb_threshold = int(total_zombs * 0.5);
+		rand = RandomInt( 3 );
+
+		if( rand == 0 )			//Spawn towards end of round
+			zomb_threshold = int(total_zombs * 0.15);
+		else if( rand == 1 )  //Spawn towards begining of round
+			zomb_threshold = int(total_zombs * 0.85);
+		else
+			zomb_threshold = int(total_zombs * 0.5);
+
+		while( level.zombie_total < zomb_threshold )
+		{
+			if( dev )
+				wait( 1 );
+			else
+				wait( RandomIntRange( 2, 10 ) );
+		}
+
+		//Spawn the bottle
+		spawn_locs = array();
+		i=0;
+		spawnlocs[i] = level.perk_spawn_location[ 1 ].origin; i++;
+		spawnlocs[i] = level.perk_spawn_location[ 4 ].origin; i++;
+		spawnlocs[i] = level.perk_spawn_location[ 6 ].origin; i++;
+
+		spawnlocs[i] = level.perk_spawn_location[ 13 ].origin; i++;
+		spawnlocs[i] = level.perk_spawn_location[ 14 ].origin; i++;
+
+
+		dropLoc = array_randomize( spawnlocs )[0];
+		//spawn a bottle in  (32, 256) radius of the dropLoc
+		offset = ( RandomIntRange( 32, 256 ), RandomIntRange( 32, 256 ), 0 );
+		level notify( "perk_bottle_spawned" );
+		maps\_zombiemode_powerups::specific_powerup_drop( "free_perk", dropLoc + offset );
+		
+	}
+
+}
 
 perk_swap_fx( perk )
 {
