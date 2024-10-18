@@ -509,6 +509,33 @@ player_teleporting( index, user, first_time )
 
 test_special_dog_spawn()
 {
+	tp1 = flag( "teleporter_pad_link_1" );
+	tp2 = flag( "teleporter_pad_link_2" );
+	tp3 = flag( "teleporter_pad_link_3" );
+
+	if( tp1 && tp2 && tp3 )
+	{
+		//nothing, continue
+	}
+	else
+	{
+		iprintln("Tps not init");
+		//return;
+	}
+
+	if( flag( "dog_round_spawning" ) )
+	{
+		iprintln("Dog round spawning");
+		return;
+	}
+
+	if( level.special_dog_spawn )
+	{
+		iprintln("Special dog spawn already set");
+		return;
+	}
+	
+
 	if( RandomInt(100) < level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE )
 	{
 		level.special_dog_spawn = true;

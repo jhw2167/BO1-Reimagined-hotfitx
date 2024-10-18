@@ -927,15 +927,16 @@ special_dog_spawn( spawners, num_to_spawn )
 					iprintln("Special spawn: " + level.special_dog_spawn);
 					if( is_true( level.special_dog_spawn ))
 					{
+						level.special_dog_spawn = false;
 						iprintln("Special spawn");
 						ai.upgraded_dog = true;
 						ai.favoriteenemy = level.teleported_player; //set in zombie_cod5_factory_teleport
 						ss thread dog_spawn_fx( ai, ss );
-						//level.special_dog_spawn = false;
+						
 					}
 					else
 					{
-						spawn_loc thread dog_spawn_fx( ai, spawn_loc );
+						//spawn_loc thread dog_spawn_fx( ai, spawn_loc );
 					}
 						
 //					level.zombie_dog_total--;
@@ -991,12 +992,6 @@ dog_run_think()
 		self.maxhealth = level.dog_health;
 		self.health = level.dog_health;
 
-		if( is_true( self.upgraded_dog ))
-		{
-			self.health = level.zombie_health * 5;
-			self.maxhealth = level.zombie_health * 5;
-		}
-
 	}
 
 	// start glowing eyes
@@ -1005,9 +1000,7 @@ dog_run_think()
 
 	if( is_true( self.upgraded_dog ))
 	{
-		//network_safe_play_fx_on_tag( "dog_fx", 2, level._effect["tesla_shock_eyes"], self.fx_dog_eye, "tag_origin" );
-		network_safe_play_fx_on_tag( "dog_fx", 2, level._effect[ "dog_trail_ash" ], self.fx_dog_trail, "tag_origin" );
-
+		self thread watch_upgraded_dog();
 		self thread watch_upgraded_dog_fx();
 
 	}
@@ -1026,18 +1019,71 @@ dog_run_think()
 	
 }
 
+watch_upgraded_dog()
+{
+	
+	self.health = level.zombie_health * 5;
+	self.maxhealth = level.zombie_health * 5;
+
+	iprintln("Upgraded dog health: " + self.health);
+	self.hasDrop = "GREEN";
+
+	wait(1);
+
+	self.favoriteenemy = undefined;
+	self notify( "stop_find_flesh" );
+	self.ignoreall = true;
+	iprintln("Upgraded dog stop find flesh");
+
+	self.goalradius = 200;
+	tpIndex = randomint( level.teleporter_pad_trig.size );
+	goalOrigin = level.teleporter_pad_trig[ tpIndex ].origin;
+	self SetGoalPos( goalOrigin );	
+
+	self thread watch_upgrade_dog_goal_reached( tpIndex );
+
+}
+
+watch_upgrade_dog_goal_reached( tpIndex )
+{
+	self endon( "death" );
+
+	self waittill( "goal" );
+
+	if( IsDefined( self ) && IsAlive( self ) )
+	{
+		
+		//trigger tpFx
+		maps\zombie_cod5_factory_teleporter::teleport_pad_start_exploder( tpIndex );
+		// play startup fx at the core
+		exploder( 105 );
+
+		self Melee();
+		wait(1);
+		self.hasDrop = undefined;
+		self.a.nodeath = true;
+		//dog_explode_fx( self.origin, self );
+		self DoDamage( self.health + 666, self.origin );
+		self Delete();
+	}
+	
+}
+
 watch_upgraded_dog_fx()
 {
+	//trail
+	network_safe_play_fx_on_tag( "dog_fx", 2, level._effect[ "dog_trail_ash" ], self.fx_dog_trail, "tag_origin" );
+
 	//Play glowly effect
 	//self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "J_Spine1" ) );
 	//self.zombie_drop_model LinkTo( self, "J_Spine1" );
-	powerup_glow = Spawn( "script_model", self GetTagOrigin( "J_Spine1" ) );
-	powerup_glow LinkTo( self, "J_Spine1" );
+	powerup_glow = Spawn( "script_model", self GetTagOrigin( "J_neck" ) );
+	powerup_glow LinkTo( self, "J_neck" );
 	powerup_glow SetModel( "tag_origin" );
 
 
 	if( IsDefined(powerup_glow) )
-		PlayFXOnTag( level._effect["powerup_on_solo"], powerup_glow, "tag_origin" );
+		PlayFXOnTag( level._effect["powerup_on"], powerup_glow, "tag_origin" );
 		//PlayFXOnTag( level._effect["powerup_grabbed_solo"], powerup_glow, "tag_origin" );
 
 	while( IsDefined(self) && IsAlive( self ) )
@@ -1045,8 +1091,11 @@ watch_upgraded_dog_fx()
 		//network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self.fx_dog_eye, "tag_origin" );
 		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self, "J_eyeBall_LE" );
 		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self, "J_eyeBall_RI" );
+
+	if( IsDefined(powerup_glow) )
+		PlayFXOnTag( level._effect["powerup_grabbed_solo"], powerup_glow, "tag_origin" );
 		
-		wait( 1 );
+		wait( 2 );
 	}
 	
 	if( IsDefined(powerup_glow) )
