@@ -389,6 +389,8 @@ player_teleporting( index, user, first_time )
 		level.times_teleported++;
 	}
 
+	level.teleported_player = user;
+
 	times_teleported = level.times_teleported; //save the current amount because the global variable might change
 
 	level.time_since_last_teleport = GetTime() - level.teleport_time;
@@ -447,7 +449,7 @@ player_teleporting( index, user, first_time )
 	is_powerup = false;
 	if ( IsDefined( ss ) )
 	{
-		if(level.round_number < 15 || first_time)
+		if(level.round_number < 10 || first_time)
 		{
 			is_powerup = true;
 		}
@@ -484,16 +486,33 @@ player_teleporting( index, user, first_time )
 		is_dog = !first_time;
 	}
 
+	is_dog = true;
 	if(is_dog)
 	{
 		thread play_sound_2d( "sam_nospawn" );
 		dog_spawners = GetEntArray( "special_dog_spawner", "targetname" );
+		test_special_dog_spawn();
+		iprintlnbold( "Spawning special dog" );
 		maps\_zombiemode_ai_dogs::special_dog_spawn( undefined, 2 * get_players().size );
 	}
 
+	iprintlnbold( "SPAWN ATTEMPT FINNISHED" );
 	level.teleport_time = GetTime();
 
 	level notify("teleporter_end");
+}
+
+/*
+	test_special_dog_spawn
+	- Reimagined-Expanded - rarealy spawn a special dog that will drop a powerup
+*/
+
+test_special_dog_spawn()
+{
+	if( RandomInt(100) < level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE )
+	{
+		level.special_dog_spawn = true;
+	}
 }
 
 //-------------------------------------------------------------------------------
@@ -762,6 +781,9 @@ teleport_players(user)
 
 		player.inteleportation = false;
 	}
+
+	//EMD PLAYER teleport, teleport here
+	//Call spawn
 
 	// play beam fx at the core
 	exploder( 106 );

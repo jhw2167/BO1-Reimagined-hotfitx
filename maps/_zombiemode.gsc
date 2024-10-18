@@ -55,15 +55,15 @@ main()
 	*/
 
 	//Overrides	
-	/* 										*/
+	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
-	level.starting_round_override=8;	///
+	level.starting_round_override=15;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=15;	///per round
+	level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -549,6 +549,7 @@ reimagined_init_level()
 
 	level.VALUE_ZOMBIE_DOG_HEALTH_PORTION = 0.6;			//dogs have 60% of normal zombie health
 
+	level.zombie_round_cluster_size = 1;
 	level.VALUE_ZOMBIE_SPAWN_CLUSTER_CHANCE = 20;			//20% chance of spawning a cluster of zombies
 	level.VALUE_ZOMBIE_SPAWN_CLUSTER_SIZE_MAX = 6;			//largest cluster is 6 zombies
 	level.THRESHOLD_ZOMBIE_SPAWN_CLUSTER_TOTAL_ENEMIES_MAX = 20;	//If more than _ zombies on map don't cluster spawn
@@ -1036,6 +1037,10 @@ reimagined_init_level()
 	level.ARRAY_SHINO_PERKS_AVAILIBLE = array("", "", "", ""); //babyjug never valid
 	level.ARRAY_SHINO_ZONE_OPENED = [];
 
+	//DER RIESE
+	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 20;	//20% chance of spawning a dog
+	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 100;	//20% chance of spawning a dog
+
 	//Cosmodrome
 	level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME = 30;
 
@@ -1089,7 +1094,8 @@ reimagined_init_level()
 		
         break;
     case "zombie_cod5_factory":
-		//level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
+		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
+		level.special_dog_spawn = true;
         break;
     case "zombie_theater":
 		//level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
@@ -1108,7 +1114,7 @@ reimagined_init_level()
         break;
     case "zombie_moon":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
-		//level.ARRAY_FREE_PERK_HINTS["zombie_temple"] = " 'Decompression in Tunnel 6' ";
+		//level.ARRAY_FREE_PERK_HINTS["zombie_moon"] = " 'Decompression in Tunnel 6' ";
         break;
 }
 
@@ -1318,7 +1324,8 @@ watch_player_dev_utility()
 
 		if( self buttonPressed("i")  && dev_only)
 		{
-			get_vending_utility();
+			//get_vending_utility();
+			print_info_utility();
 		}
 
 		if( self buttonPressed("q")  && dev_only)
@@ -1332,6 +1339,26 @@ watch_player_dev_utility()
 		wait(0.5);
 	}
 }
+
+	print_info_utility()
+	{	
+		//Print all origins in: level.enemy_dog_spawns
+		/*
+		
+		for(i=0;i<level.enemy_dog_spawns.size;i++)
+		{
+			iprintln( level.enemy_dog_spawns[i].origin );
+		}
+		*/
+
+		iprintln("Dog Spawns: " + level.enemy_dog_locations.size);
+		for(i=0;i<level.enemy_dog_locations.size;i++)
+		{
+			iprintln( level.enemy_dog_locations[i].origin );
+		}
+
+		iprintln("finished info: " );
+	}
 
 	get_vending_utility()
 	{
@@ -7675,7 +7702,6 @@ setApocalypseOptions()
 	else
 		level.no_bosses = false;
 
-	//Overrides
 	if( IsDefined(level.classic_override) )
 		level.classic = level.classic_override;
 	

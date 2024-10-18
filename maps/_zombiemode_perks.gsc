@@ -3298,8 +3298,11 @@ perk_think( perk )
 			// weapon is not taken properly from here if downed, so called in _zombiemode::player_laststand() instead
 			if ( result == perk_str )
 			{
+				current_wep = self GetCurrentWeapon();
 				self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
-				self SwitchToWeapon( self GetWeaponsList()[0] );
+				
+				if( current_wep == self.weapon_taken_by_losing_additionalprimaryweapon[0] )
+					self SwitchToWeapon( self GetWeaponsListPrimaries()[0] );
 			}
 
 			if(self HasPerk("specialty_stockpile"))

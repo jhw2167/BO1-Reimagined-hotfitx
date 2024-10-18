@@ -275,6 +275,8 @@ dog_spawn_fx( ai, ent )
 		playsoundatposition( "zmb_hellhound_spawn", ent.origin );
 
 		// face the enemy
+		iprintln("Favorite enemy: " );
+		iprintln(ai.favoriteenemy.origin);
 		angle = VectorToAngles( ai.favoriteenemy.origin - ent.origin );
 		angles = ( ai.angles[0], angle[1], ai.angles[2] );
 		ai ForceTeleport( ent.origin, angles );
@@ -920,17 +922,36 @@ special_dog_spawn( spawners, num_to_spawn )
 				ai = spawn_zombie( level.enemy_dog_spawns[0] );
 				if( IsDefined( ai ) )
 				{
+					ss = getstruct( "teleporter_powerup", "targetname" );
 					ai.favoriteenemy = favorite_enemy;
-					spawn_loc thread dog_spawn_fx( ai, spawn_loc );
+					iprintln("Special spawn: " + level.special_dog_spawn);
+					if( is_true( level.special_dog_spawn ))
+					{
+						iprintln("Special spawn");
+						ai.upgraded_dog = true;
+						ai.favoriteenemy = level.teleported_player; //set in zombie_cod5_factory_teleport
+						ss thread dog_spawn_fx( ai, ss );
+						//level.special_dog_spawn = false;
+					}
+					else
+					{
+						spawn_loc thread dog_spawn_fx( ai, spawn_loc );
+					}
+						
 //					level.zombie_dog_total--;
 					count++;
 					flag_set( "dog_clips" );
+				}
+				else
+				{
+					iprintln("AI not defined");
 				}
 			}
 			else
 			{
 				// Default method
 				spawn_point = dog_spawn_factory_logic( level.enemy_dog_spawns, favorite_enemy );
+
 				ai = spawn_zombie( spawn_point );
 
 				if( IsDefined( ai ) )
@@ -969,16 +990,67 @@ dog_run_think()
 	{
 		self.maxhealth = level.dog_health;
 		self.health = level.dog_health;
+
+		if( is_true( self.upgraded_dog ))
+		{
+			self.health = level.zombie_health * 5;
+			self.maxhealth = level.zombie_health * 5;
+		}
+
 	}
 
 	// start glowing eyes
-	assert( IsDefined( self.fx_dog_eye ) );
-	network_safe_play_fx_on_tag( "dog_fx", 2, level._effect["dog_eye_glow"], self.fx_dog_eye, "tag_origin" );
-
-	// start trail
 	assert( IsDefined( self.fx_dog_trail ) );
-	network_safe_play_fx_on_tag( "dog_fx", 2, self.fx_dog_trail_type, self.fx_dog_trail, "tag_origin" );
-	self playloopsound( self.fx_dog_trail_sound );
+	assert( IsDefined( self.fx_dog_eye ) );
+
+	if( is_true( self.upgraded_dog ))
+	{
+		//network_safe_play_fx_on_tag( "dog_fx", 2, level._effect["tesla_shock_eyes"], self.fx_dog_eye, "tag_origin" );
+		network_safe_play_fx_on_tag( "dog_fx", 2, level._effect[ "dog_trail_ash" ], self.fx_dog_trail, "tag_origin" );
+
+		self thread watch_upgraded_dog_fx();
+
+	}
+	else
+	{
+		network_safe_play_fx_on_tag( "dog_fx", 2, level._effect["dog_eye_glow"], self.fx_dog_eye, "tag_origin" );
+
+		// start trail
+		network_safe_play_fx_on_tag( "dog_fx", 2, self.fx_dog_trail_type, self.fx_dog_trail, "tag_origin" );
+		self playloopsound( self.fx_dog_trail_sound );
+	}
+	
+
+	
+
+	
+}
+
+watch_upgraded_dog_fx()
+{
+	//Play glowly effect
+	//self.zombie_drop_model = Spawn( "script_model", self GetTagOrigin( "J_Spine1" ) );
+	//self.zombie_drop_model LinkTo( self, "J_Spine1" );
+	powerup_glow = Spawn( "script_model", self GetTagOrigin( "J_Spine1" ) );
+	powerup_glow LinkTo( self, "J_Spine1" );
+	powerup_glow SetModel( "tag_origin" );
+
+
+	if( IsDefined(powerup_glow) )
+		PlayFXOnTag( level._effect["powerup_on_solo"], powerup_glow, "tag_origin" );
+		//PlayFXOnTag( level._effect["powerup_grabbed_solo"], powerup_glow, "tag_origin" );
+
+	while( IsDefined(self) && IsAlive( self ) )
+	{
+		//network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self.fx_dog_eye, "tag_origin" );
+		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self, "J_eyeBall_LE" );
+		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self, "J_eyeBall_RI" );
+		
+		wait( 1 );
+	}
+	
+	if( IsDefined(powerup_glow) )
+		powerup_glow delete();
 }
 
 dog_stalk_audio()
