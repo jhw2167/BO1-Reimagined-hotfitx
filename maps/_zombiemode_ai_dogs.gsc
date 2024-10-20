@@ -275,7 +275,6 @@ dog_spawn_fx( ai, ent )
 		playsoundatposition( "zmb_hellhound_spawn", ent.origin );
 
 		// face the enemy
-		iprintln("Favorite enemy: " );
 		iprintln(ai.favoriteenemy.origin);
 		angle = VectorToAngles( ai.favoriteenemy.origin - ent.origin );
 		angles = ( ai.angles[0], angle[1], ai.angles[2] );
@@ -683,8 +682,17 @@ dog_death()
 	//iprintln("Has drop: " + self.hasDrop );
 	if( IsDefined( self.hasDrop ) )
 	{
-		level.last_dog_origin = self.origin;
-		level notify( "last_dog_down" );
+		if( is_true( self.upgraded_dog ) )
+		{
+			self.a.nodeath = true;
+			PlayFX( level._effect["tesla_bolt"], self GetTagOrigin( "J_neck" ) );
+			thread maps\_zombiemode_powerups::specific_powerup_drop( "free_perk", self.origin );
+		}
+		else
+		{
+			level.last_dog_origin = self.origin;
+			level notify( "last_dog_down" );
+		}
 	}
 
 	// score
@@ -924,11 +932,10 @@ special_dog_spawn( spawners, num_to_spawn )
 				{
 					ss = getstruct( "teleporter_powerup", "targetname" );
 					ai.favoriteenemy = favorite_enemy;
-					iprintln("Special spawn: " + level.special_dog_spawn);
+					
 					if( is_true( level.special_dog_spawn ))
 					{
 						level.special_dog_spawn = false;
-						iprintln("Special spawn");
 						ai.upgraded_dog = true;
 						ai.favoriteenemy = level.teleported_player; //set in zombie_cod5_factory_teleport
 						ss thread dog_spawn_fx( ai, ss );
@@ -936,17 +943,14 @@ special_dog_spawn( spawners, num_to_spawn )
 					}
 					else
 					{
-						//spawn_loc thread dog_spawn_fx( ai, spawn_loc );
+						spawn_loc thread dog_spawn_fx( ai, spawn_loc );
 					}
 						
 //					level.zombie_dog_total--;
 					count++;
 					flag_set( "dog_clips" );
 				}
-				else
-				{
-					iprintln("AI not defined");
-				}
+				
 			}
 			else
 			{
@@ -1021,11 +1025,11 @@ dog_run_think()
 
 watch_upgraded_dog()
 {
-	
-	self.health = level.zombie_health * 5;
-	self.maxhealth = level.zombie_health * 5;
+	health_factor = level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR[ level.players_size ];
+	self.maxhealth = level.zombie_health * health_factor;
+	self.health = self.maxhealth;
+	self DoDamage( 1, self.origin );	//Speeds him up
 
-	iprintln("Upgraded dog health: " + self.health);
 	self.hasDrop = "GREEN";
 
 	wait(1);
@@ -1033,9 +1037,8 @@ watch_upgraded_dog()
 	self.favoriteenemy = undefined;
 	self notify( "stop_find_flesh" );
 	self.ignoreall = true;
-	iprintln("Upgraded dog stop find flesh");
 
-	self.goalradius = 200;
+	self.goalradius = 256;
 	tpIndex = randomint( level.teleporter_pad_trig.size );
 	goalOrigin = level.teleporter_pad_trig[ tpIndex ].origin;
 	self SetGoalPos( goalOrigin );	
@@ -1054,12 +1057,17 @@ watch_upgrade_dog_goal_reached( tpIndex )
 	{
 		
 		//trigger tpFx
-		maps\zombie_cod5_factory_teleporter::teleport_pad_start_exploder( tpIndex );
-		// play startup fx at the core
-		exploder( 105 );
+		if( isDefined( level.teleporter_exploder_func ) )
+		{
+			thread [[level.teleporter_exploder_func]]( tpIndex );
+			// play startup fx at the core
+			exploder( 105 );
+		}
+		
+
 
 		self Melee();
-		wait(1);
+		wait(0.4);
 		self.hasDrop = undefined;
 		self.a.nodeath = true;
 		//dog_explode_fx( self.origin, self );
@@ -1083,14 +1091,21 @@ watch_upgraded_dog_fx()
 
 
 	if( IsDefined(powerup_glow) )
+	{
 		PlayFXOnTag( level._effect["powerup_on"], powerup_glow, "tag_origin" );
-		//PlayFXOnTag( level._effect["powerup_grabbed_solo"], powerup_glow, "tag_origin" );
-
+	}
+		
+	//PlayFxOnTag( level._effect["fx_electric_cherry_shock"], self, "j_shoulder_base_ri" );
+	//PlayFxOnTag( level._effect["fx_electric_cherry_shock"], self, "j_hip_base_le" );
+	
 	while( IsDefined(self) && IsAlive( self ) )
 	{
 		//network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self.fx_dog_eye, "tag_origin" );
 		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self, "J_eyeBall_LE" );
 		network_safe_play_fx_on_tag( "tesla_death_fx", 2, level._effect["tesla_shock_eyes"], self, "J_eyeBall_RI" );
+
+		PlayFxOnTag( level._effect["fx_electric_cherry_shock"], self, "j_neck_end" );
+		PlayFxOnTag( level._effect["fx_electric_cherry_shock"], self, "j_pelvis" );
 
 	if( IsDefined(powerup_glow) )
 		PlayFXOnTag( level._effect["powerup_grabbed_solo"], powerup_glow, "tag_origin" );

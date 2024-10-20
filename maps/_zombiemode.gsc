@@ -63,7 +63,7 @@ main()
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=2;	///per round
+	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -385,6 +385,11 @@ reimagined_init_player_depedent_values()
 
 	//Shino
 	level.THRESHOLD_SHINO_SWAMPLIGHT_EXPIRATION_TIME = 60 - (level.players_size * 12);
+
+	//Der Riese
+	for(i=0; i< level.players_size; i++)  {
+		level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR[i] = 2.5 + i*0.75;
+	}
 
 	//Real time late iniatialized variables
 
@@ -1039,7 +1044,12 @@ reimagined_init_level()
 
 	//DER RIESE
 	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 20;	//20% chance of spawning a dog
-	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 100;	//20% chance of spawning a dog
+	//level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 100;	//20% chance of spawning a dog
+	level.THRESHOLD_FACTORY_MAX_ATTEMPTS_SPECIAL_DOG_SPAWN = 2;
+	level.THRESHOLD_FACTORY_MIN_ROUNDS_BETWEEN_SPECIAL_DOG_SPAWN = 2;
+	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row, unused
+	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
+	
 
 	//Cosmodrome
 	level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME = 30;
@@ -1066,7 +1076,7 @@ reimagined_init_level()
     case "zombie_cod5_prototype":
         break;
     case "zombie_cod5_asylum":
-		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "(Electro)Shock Therapy!";
+		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "Shock, Drop, & Reroll!";
 		level.pap_used = false;
         break;
     case "zombie_cod5_sumpf":
@@ -1095,10 +1105,11 @@ reimagined_init_level()
         break;
     case "zombie_cod5_factory":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
-		level.special_dog_spawn = true;
+		level.special_dog_spawn = false;
+		level.last_special_dog_spawn = 0;
         break;
     case "zombie_theater":
-		//level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
+		level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
         break;
     case "zombie_pentagon":
 		//level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The Numbers, The Lab";
@@ -1325,7 +1336,8 @@ watch_player_dev_utility()
 		if( self buttonPressed("i")  && dev_only)
 		{
 			//get_vending_utility();
-			print_info_utility();
+			//print_info_utility();
+			self maps\zombie_cod5_factory_teleporter::player_teleporting( 1, self, false );
 		}
 
 		if( self buttonPressed("q")  && dev_only)
@@ -6813,6 +6825,7 @@ reimagined_expanded_round_start()
 	//Reimagined-Expanded: Set per round variables
 	level.total_drops_round = 0;
 	level.count_vulture_fx_drops_round = 0;
+	level.special_dog_spawn_attempted = 0;	//Factory only
 
 	level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH = 0.34 * level.zombie_health;
 
@@ -9549,7 +9562,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		END DEADSHOT usePlayerHitmarkers
 	***/
 
-	if((is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill)) && !is_true(self.magic_bullet_shield) && self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie")
+	if((is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill)) && !is_true(self.magic_bullet_shield) && self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie" && !is_true(self.upgraded_dog))
 	{
 		// insta kill should not effect these weapons as they already are insta kill, causes special anims and scripted things to not work
 		no_insta_kill_on_weps = array("tesla_gun_zm", "tesla_gun_upgraded_zm", "tesla_gun_powerup_zm", "tesla_gun_powerup_upgraded_zm", "humangun_zm", "humangun_upgraded_zm", "microwavegundw_zm", "microwavegundw_upgraded_zm");
@@ -10960,7 +10973,7 @@ is_boss_zombie( animname )
 	|| animname == "astro_zombie" 
 	|| animname == "bo2_zm_mech" 
 	|| animname == "kf2_scrake" 
-	|| animname == "bo1_simianaut" 
+	|| animname == "bo1_simianaut"
 	);
 }
 

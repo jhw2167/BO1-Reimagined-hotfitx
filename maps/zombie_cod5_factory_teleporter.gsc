@@ -59,6 +59,7 @@ teleporter_init()
 	}
 
 	level.teleport_ae_funcs = [];
+	level.teleporter_exploder_func = ::teleport_pad_start_exploder;
 
 	/*if( !IsSplitscreen() )
 	{
@@ -486,17 +487,15 @@ player_teleporting( index, user, first_time )
 		is_dog = !first_time;
 	}
 
-	is_dog = true;
+	is_dog = true;	//testing special_dog_spawn, fluffy
 	if(is_dog)
 	{
 		thread play_sound_2d( "sam_nospawn" );
 		dog_spawners = GetEntArray( "special_dog_spawner", "targetname" );
 		test_special_dog_spawn();
-		iprintlnbold( "Spawning special dog" );
 		maps\_zombiemode_ai_dogs::special_dog_spawn( undefined, 2 * get_players().size );
 	}
 
-	iprintlnbold( "SPAWN ATTEMPT FINNISHED" );
 	level.teleport_time = GetTime();
 
 	level notify("teleporter_end");
@@ -513,19 +512,19 @@ test_special_dog_spawn()
 	tp2 = flag( "teleporter_pad_link_2" );
 	tp3 = flag( "teleporter_pad_link_3" );
 
-	if( tp1 && tp2 && tp3 )
+	if( is_true( tp1 ) && is_true( tp2 ) && is_true( tp3 ) )
 	{
-		//nothing, continue
+		//all tps linked, continue
 	}
 	else
 	{
-		iprintln("Tps not init");
-		//return;
+		//iprintln("Tps not init");
+		return;
 	}
 
 	if( flag( "dog_round_spawning" ) )
 	{
-		iprintln("Dog round spawning");
+		iprintln("Dog round spawning, no special dog");
 		return;
 	}
 
@@ -534,12 +533,33 @@ test_special_dog_spawn()
 		iprintln("Special dog spawn already set");
 		return;
 	}
+
+	if( level.round_number - level.last_special_dog_spawn < level.THRESHOLD_FACTORY_MIN_ROUNDS_BETWEEN_SPECIAL_DOG_SPAWN )
+	{
+		//iprintln("Last special dog spawn too soon");
+		return;
+	}
+
+	if( !IsDefined( level.special_dog_spawn_attempted ) )
+		level.special_dog_spawn_attempted = 0;
 	
+	if( level.special_dog_spawn_attempted >= level.THRESHOLD_FACTORY_MAX_ATTEMPTS_SPECIAL_DOG_SPAWN )
+	{
+		iprintln("Special dog spawn attempted this round");
+		return;
+	}
 
 	if( RandomInt(100) < level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE )
 	{
 		level.special_dog_spawn = true;
+		level.last_special_dog_spawn = level.round_number;
 	}
+	else
+	{
+		level.special_dog_spawn_attempted++;
+	}
+
+	
 }
 
 //-------------------------------------------------------------------------------
