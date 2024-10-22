@@ -5769,6 +5769,13 @@ init_vulture()
 				//Repeat above with powerupDrop
 				level waittill("powerup_dropped", powerupDrop);
 
+				if( !IsDefined( powerupDrop ) )
+					continue;
+
+				isFreePerkDrop = IsDefined(powerupDrop.powerup_name) && (powerupDrop.powerup_name == "free_perk");
+				if( isFreePerkDrop )
+					continue;
+
 				powerup = SpawnStruct();
 				powerup.origin 					= powerupDrop.origin;
 				powerup.original_entity_number 	= powerupDrop GetEntityNumber();

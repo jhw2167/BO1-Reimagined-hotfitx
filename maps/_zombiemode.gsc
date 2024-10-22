@@ -1043,9 +1043,9 @@ reimagined_init_level()
 	level.ARRAY_SHINO_ZONE_OPENED = [];
 
 	//DER RIESE
-	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 20;	//20% chance of spawning a dog
+	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 33;	//20% chance of spawning a dog
 	//level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 100;	//20% chance of spawning a dog
-	level.THRESHOLD_FACTORY_MAX_ATTEMPTS_SPECIAL_DOG_SPAWN = 2;
+	level.THRESHOLD_FACTORY_MAX_ATTEMPTS_SPECIAL_DOG_SPAWN = 3;
 	level.THRESHOLD_FACTORY_MIN_ROUNDS_BETWEEN_SPECIAL_DOG_SPAWN = 2;
 	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row, unused
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
@@ -1337,7 +1337,7 @@ watch_player_dev_utility()
 		{
 			//get_vending_utility();
 			//print_info_utility();
-			self maps\zombie_cod5_factory_teleporter::player_teleporting( 1, self, false );
+			//self maps\zombie_cod5_factory_teleporter::player_teleporting( 1, self, false );
 		}
 
 		if( self buttonPressed("q")  && dev_only)
@@ -3197,7 +3197,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.2.0" );
+	SetDvar( "zm_mod_version", "2.2.1 " );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009

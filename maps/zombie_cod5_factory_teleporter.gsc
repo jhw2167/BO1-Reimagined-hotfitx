@@ -487,7 +487,9 @@ player_teleporting( index, user, first_time )
 		is_dog = !first_time;
 	}
 
-	is_dog = true;	//testing special_dog_spawn, fluffy
+	if( is_true( level.dev_only ) )
+		is_dog = true;	//testing special_dog_spawn, fluffy
+		
 	if(is_dog)
 	{
 		thread play_sound_2d( "sam_nospawn" );
@@ -522,7 +524,9 @@ test_special_dog_spawn()
 		return;
 	}
 
-	if( flag( "dog_round_spawning" ) )
+	iprintln("Dog test");
+
+	if( is_true( flag( "dog_round_spawning" ) ) )
 	{
 		iprintln("Dog round spawning, no special dog");
 		return;
@@ -531,6 +535,12 @@ test_special_dog_spawn()
 	if( level.special_dog_spawn )
 	{
 		iprintln("Special dog spawn already set");
+		return;
+	}
+
+	if( level.zombie_total < 16)
+	{
+		//iprintln("Not enough zombies");
 		return;
 	}
 
@@ -549,10 +559,13 @@ test_special_dog_spawn()
 		return;
 	}
 
+	iprintln("Attempting dog chance");
 	if( RandomInt(100) < level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE )
 	{
 		level.special_dog_spawn = true;
 		level.last_special_dog_spawn = level.round_number;
+
+		wait( RandomInt(5) );
 	}
 	else
 	{

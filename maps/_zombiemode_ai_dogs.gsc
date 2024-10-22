@@ -1032,7 +1032,7 @@ watch_upgraded_dog()
 
 	self.hasDrop = "GREEN";
 
-	wait(1);
+	wait(.25);
 
 	self.favoriteenemy = undefined;
 	self notify( "stop_find_flesh" );
