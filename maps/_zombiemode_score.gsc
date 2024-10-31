@@ -25,12 +25,12 @@ player_add_points( event, mod, hit_location, zombie)
 	multiplier = self get_points_multiplier();
 	gross_possible_points = 0;
 
-	//iprintln("event: " + event + " mod: " + mod + " ");
+	iprintln("event: " + event + " mod: " + mod + " ");
 	//print current weapon
 	//iprintln("current weapon: " + self getcurrentweapon());
 	
 	//Mod adjust for Sabertooth Chainsaw
-	if( isSubStr( self getcurrentweapon(), "sabertooth" ) && mod == "MOD_RIFLE_BULLET" )
+	if( isSubStr( self getcurrentweapon(), "sabertooth" ) && IsString(mod) && mod == "MOD_RIFLE_BULLET" )
 	{
 		mod = "MOD_MELEE";
 	}
@@ -124,6 +124,8 @@ player_add_points( event, mod, hit_location, zombie)
 			break;
 
 		case "rebuild_board":
+		player_points	= mod* (Int(level.round_number/5)+1);
+		break;
 		case "carpenter_powerup":
 			player_points	= mod* (Int(level.round_number/5)+1);
 			if( player_points > level.THRESHOLD_MAX_POINTS_CARPENTER )

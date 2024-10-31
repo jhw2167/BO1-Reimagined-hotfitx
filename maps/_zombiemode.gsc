@@ -605,7 +605,7 @@ reimagined_init_level()
 	level.THRESHOLD_ZOMBIE_DROP_INCREMENT_START_ROUND = 11;
 
 
-	level.THRESHOLD_MAX_DROPS = 8;	//Max Drops allowed per round. Protects against bugs
+	level.THRESHOLD_MAX_DROPS = 6;	//Max Drops allowed per round. Protects against bugs
 
 	level.THRESHOLD_MAX_POINTS_CARPENTER = 2000;
 	level.THRESHOLD_MAX_POINTS_NUKE = 4800;

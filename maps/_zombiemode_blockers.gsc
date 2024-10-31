@@ -1600,6 +1600,8 @@ blocker_trigger_think()
 				break;
 			}
 
+			//sabertooth
+
 
 
 			chunk = get_random_destroyed_chunk( self.barrier_chunks ); // calls get_random_destroyed_chunk in _zombiemode_utility, continue if the chunk was destroyed
@@ -1691,6 +1693,7 @@ blocker_trigger_think()
 				player play_sound_on_ent( "purchase" );
 			}
 			player.rebuild_barrier_reward += cost;
+			//print player total barrier repair reward
 			// general contractor achievement for dlc 2. keep track of how many board player repaired.
 			if(IsDefined(player.board_repair))
 			{

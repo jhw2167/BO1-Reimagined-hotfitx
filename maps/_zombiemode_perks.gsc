@@ -3300,9 +3300,15 @@ perk_think( perk )
 			{
 				current_wep = self GetCurrentWeapon();
 				self.weapon_taken_by_losing_additionalprimaryweapon = self maps\_zombiemode::take_additionalprimaryweapon();
-				
-				if( current_wep == self.weapon_taken_by_losing_additionalprimaryweapon[0] )
+
+				swapPlayerWeapon = IsDefined( self.weapon_taken_by_losing_additionalprimaryweapon[0] );
+				swapPlayerWeapon = swapPlayerWeapon && current_wep == self.weapon_taken_by_losing_additionalprimaryweapon[0];
+
+				if( swapPlayerWeapon )
+				{
 					self SwitchToWeapon( self GetWeaponsListPrimaries()[0] );
+				}
+				
 			}
 
 			if(self HasPerk("specialty_stockpile"))

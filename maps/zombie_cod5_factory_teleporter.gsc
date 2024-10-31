@@ -450,21 +450,14 @@ player_teleporting( index, user, first_time )
 	is_powerup = false;
 	if ( IsDefined( ss ) )
 	{
-		if(level.round_number < 10 || first_time)
+		if( first_time && level.round_number < 15 )
 		{
 			is_powerup = true;
 		}
 
 		if(!is_powerup)
-		{
-			// starting at round 15, chance of getting a powerup goes down by 5% each round (minimum of 15% chance)
-			chance = (level.round_number - 14) * 5;
-			if(chance > 85)
-			{
-				chance = 85;
-			}
-
-			is_powerup = RandomInt(100) >= chance;
+		{		
+			is_powerup = ( RandomInt(100) < 34 );
 		}
 
 		// if versus mode, then only spawn powerups once all links are active or else it will try to spawn 3 powerups at the beginning of the match since the teleporters are automatically linked at the beginning of the match
