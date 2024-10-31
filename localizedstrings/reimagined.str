@@ -1370,6 +1370,12 @@ LANG_ENGLISH 		"Combat Knife/Fists"
 REFERENCE			OFFHAND_MELEE_HINT
 LANG_ENGLISH 		"- Press [{+speed_throw}] (ADS) with your knife out to swap offhand weapon \n - Your knife does a minimum 25% max health damage to zombies \n - Your fists will knock zombies down, allowing you to run past them"
 
+REFERENCE			FREE_PERK_TITLE
+LANG_ENGLISH 		"Perk Bottle"
+
+REFERENCE			FREE_PERK_HINT
+LANG_ENGLISH 		"Perk limit increased by 1"
+
 REFERENCE			PAP_TITLE
 LANG_ENGLISH 		"Pack-a-Punch"
 

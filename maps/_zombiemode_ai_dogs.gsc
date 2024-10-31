@@ -687,6 +687,7 @@ dog_death()
 			self.a.nodeath = true;
 			PlayFX( level._effect["tesla_bolt"], self GetTagOrigin( "J_neck" ) );
 			thread maps\_zombiemode_powerups::specific_powerup_drop( "free_perk", self.origin );
+			level.special_dog_killstreak++;
 		}
 		else
 		{
@@ -1026,6 +1027,7 @@ dog_run_think()
 watch_upgraded_dog()
 {
 	health_factor = level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR[ level.players_size ];
+	health_factor = health_factor * ( level.special_dog_killstreak * level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC );
 	self.maxhealth = level.zombie_health * health_factor;
 	self.health = self.maxhealth;
 	self DoDamage( 1, self.origin );	//Speeds him up
@@ -1070,6 +1072,7 @@ watch_upgrade_dog_goal_reached( tpIndex )
 		wait(0.4);
 		self.hasDrop = undefined;
 		self.a.nodeath = true;
+		level.special_dog_killstreak = 0;
 		//dog_explode_fx( self.origin, self );
 		self DoDamage( self.health + 666, self.origin );
 		self Delete();

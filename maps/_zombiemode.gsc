@@ -1043,11 +1043,11 @@ reimagined_init_level()
 	level.ARRAY_SHINO_ZONE_OPENED = [];
 
 	//DER RIESE
-	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 33;	//20% chance of spawning a dog
+	level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 20;	//20% chance of spawning a dog
 	//level.VALUE_FACTORY_SPECIAL_DOG_SPAWN_CHANCE = 100;	//20% chance of spawning a dog
 	level.THRESHOLD_FACTORY_MAX_ATTEMPTS_SPECIAL_DOG_SPAWN = 3;
 	level.THRESHOLD_FACTORY_MIN_ROUNDS_BETWEEN_SPECIAL_DOG_SPAWN = 2;
-	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row, unused
+	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
 
@@ -1107,12 +1107,13 @@ reimagined_init_level()
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
 		level.special_dog_spawn = false;
 		level.last_special_dog_spawn = 0;
+		level.special_dog_killstreak = 0;	//number of times in a row the special dog has been killed
         break;
     case "zombie_theater":
-		level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
+		//level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
         break;
     case "zombie_pentagon":
-		//level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The Numbers, The Lab";
+		level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The 6";
         break;
     case "zombie_cosmodrome":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cosmodrome"] = "October 24, 1960";

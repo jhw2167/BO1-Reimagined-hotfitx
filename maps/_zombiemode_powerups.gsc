@@ -1,6 +1,7 @@
 #include maps\_utility; 
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
+#include maps\_zombiemode_reimagined_utility;
 
 
 //
@@ -2972,6 +2973,9 @@ free_perk_powerup( item, player )
 		}
 		players[i].perk_slots++;
 	}
+
+	//Reimagined-Expanded
+	player thread generate_perk_hint( "free_perk_powerup" );
 
 	if(level.gamemode != "survival")
 	{

@@ -400,6 +400,11 @@ generate_perk_hint( perkOrWeapon, specialHint )
 			title SetText( &"REIMAGINED_OFFHAND_MELEE_TITLE" );
 			break;
 
+		case "free_perk_powerup":
+			text SetText( &"REIMAGINED_FREE_PERK_HINT" );
+			title SetText( &"REIMAGINED_FREE_PERK_TITLE" );
+			break;
+
 		/* Specific Weapons */
 		case "m1911_upgraded_zm":
 			//Dont set if player is in last stand
