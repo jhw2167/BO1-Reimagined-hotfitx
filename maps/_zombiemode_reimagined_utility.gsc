@@ -920,7 +920,8 @@ start_properk_placer()
 	new_pos = self.origin + offset;
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
-	//object SetModel( "p6_zm_vending_electric_cherry_off" );
+	object SetModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+	/*
 	object SetModel( "p_glo_propanetank_thin" );
 	wait(1);
 	object SetModel( "p_jun_dollytanks" );
@@ -932,6 +933,7 @@ start_properk_placer()
 	object SetModel( "zombie_vending_sleight" );
 	wait(1);
 	object SetModel( "p_a51_fueltank_01" );
+	*/
 	//object SetModel( "zombie_vending_doubletap2" );
 	//object SetModel( "zombie_vending_revive" );
 	//object SetModel( "zombie_vending_nuke" );

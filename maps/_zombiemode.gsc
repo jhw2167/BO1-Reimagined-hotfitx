@@ -57,11 +57,11 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
-	level.starting_round_override=15;	///
+	//level.starting_round_override=15;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
-	//level.spawn_delay_override=0.5;			///
+	level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
 	//level.calculate_amount_override=2;	///per round
 	level.apocalypse_override=false;		///
@@ -613,7 +613,7 @@ reimagined_init_level()
 	//Boss Zombies
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
-	level.VALUE_THIEF_HEALTH_SCALAR = 20;	//this many times avg zombie max health of this round
+	level.VALUE_THIEF_HEALTH_SCALAR = 16;	//this many times avg zombie max health of this round
 	level.VALUE_THIEF_HEALTH_SCALAR_PAP_BONUS = 1.75;	//Thief gets 75% more health per each player with PaP weapon
 	level.VALUE_THIEF_HEALTH_SCALAR_x2_BONUS = 2.5;	//Thief gets 150% more health per each player with PaP weapon
 
@@ -1114,6 +1114,8 @@ reimagined_init_level()
         break;
     case "zombie_pentagon":
 		level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The 6";
+		//level._override_quad_explosion = maps\zombie_pentagon::pentagon_overide_quad_explosion; needs to be done from "pentagon" map files
+		level.pentagon_gas_point = undefined;
         break;
     case "zombie_cosmodrome":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cosmodrome"] = "October 24, 1960";
@@ -1132,6 +1134,7 @@ reimagined_init_level()
 
 
 }
+
 
 reimagined_init_player()
 {
@@ -1315,7 +1318,7 @@ watch_player_dev_utility()
 	dev_only = true;
 	while(1)
 	{
-		if( self buttonPressed("j")  && dev_only)
+		if( self buttonPressed("k")  && dev_only)
 		{
 
 			if( level.rolling_kill_all_interval > 0 )
@@ -1532,10 +1535,10 @@ wait_set_player_visionset()
 		//GIVE PERKS
 		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
@@ -7844,8 +7847,9 @@ print_apocalypse_options()
 		}
 		else
 		{
-			players[i] thread generate_hint(undefined, "For a more Vanilla experience, try 'Classic' difficulty from the Main Menu 'Game' Settings ", offsets[ offsets.size-5 ], 5);
-			players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-3 ], 5);
+			players[i] thread generate_hint(undefined, "For a more Vanilla experience, try 'Classic' difficulty from the Main Menu", offsets[ offsets.size-3 ], 5);
+			players[i] thread generate_hint(undefined, "For a challenge, try 'Apocalypse' difficulty", offsets[ offsets.size-2 ], 5);
+			players[i] thread generate_hint(undefined, "In-Game Hints can be toggled from the in-Game the Settings", offsets[ offsets.size-1 ], 5);
 		}
 
 		

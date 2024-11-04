@@ -52,7 +52,7 @@ watch_randomize_vending_machines()
 watch_swamplights()
 {
 	self endon( "end_game" );
-	iprintln( "ENTER SWAMPLIGHTS" );
+	//iprintln( "ENTER SWAMPLIGHTS" );
 
 	level waittill( "pap_available" );
 	zone_keys = GetArrayKeys( level.ARRAY_SWAMPLIGHTS_POS );
