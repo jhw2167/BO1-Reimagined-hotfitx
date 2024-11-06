@@ -57,13 +57,13 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
-	//level.starting_round_override=15;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
-	level.spawn_delay_override=0.5;			///
+	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=2;	///per round
+	level.calculate_amount_override=16;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -71,7 +71,6 @@ main()
 	level.override_bo2_perks=true;		///
 	//level.rolling_kill_all_interval=12;	///
 	level.dev_only=true;					///*/
-
 
 	setApocalypseOptions();
 
@@ -614,8 +613,8 @@ reimagined_init_level()
 	level.THRESHOLD_DIRECTOR_LIVES=10;
 
 	level.VALUE_THIEF_HEALTH_SCALAR = 16;	//this many times avg zombie max health of this round
-	level.VALUE_THIEF_HEALTH_SCALAR_PAP_BONUS = 1.75;	//Thief gets 75% more health per each player with PaP weapon
-	level.VALUE_THIEF_HEALTH_SCALAR_x2_BONUS = 2.5;	//Thief gets 150% more health per each player with PaP weapon
+	level.VALUE_THIEF_HEALTH_SCALAR_PAP_BONUS = 1.5;	//Thief gets 50% more health per each player with PaP weapon
+	level.VALUE_THIEF_HEALTH_SCALAR_x2_BONUS = 2.0;	//Thief gets 100% more health per each player with PaP weapon
 
 	//Weapon Pap
 	level.VALUE_PAP_COST = 5000;
@@ -1050,6 +1049,27 @@ reimagined_init_level()
 	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
+	//Kino, theater
+
+
+	//Pentagon, five
+	level.VALUE_PENTAGON_ROUNDS_BETWEEN_GAS = 3;
+	level.ARRAY_PENTAGON_GAS_LOCS = array( 
+		//(-579, 2611, 71),	//dev
+		//(-648, 4101, -705), //obselete pig room
+
+		(-567, 4059, -656), 
+		(-695, 4305, -657),	//pig room
+
+		(-913, 3856, -652),	//bowie room
+		(-1022, 3486, -659) );
+
+	level.THRESHOLD_PENTAGON_CRAWLERS_FILL_TANK_MIN = 5;
+	level.THRESHOLD_PENTAGON_CRAWLERS_FILL_TANK_MAX = 8;
+	level.THRESHOLD_PENTAGON_CRAWLERS_FILL_TANK_RANGE = 196;
+
+	level.THRESHOLD_PENTAGON_GAS_LONG_TIMEOUT = 90;
+	level.THRESHOLD_PENTAGON_GAS_SHORT_TIMEOUT = 30;
 
 	//Cosmodrome
 	level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME = 30;
@@ -1427,7 +1447,22 @@ watch_player_dev_utility()
 		zombies = GetAiSpeciesArray( "axis", "all" );
 		for(i=0;i<zombies.size;i++)
 		{
-			if( !is_boss_zombie( zombies[i].animname ) )
+			isBossZombie = is_boss_zombie( zombies[i].animname );
+			isSpecialZombie = is_special_zombie( zombies[i].animname );
+			isQuadZombie = zombies[i].animname == "quad_zombie";
+
+			skipKill = false;
+			if( isBossZombie ) {
+				skipKill = true;
+			}
+			else if( isSpecialZombie ) {
+				skipKill = true;
+			}
+			else if( isQuadZombie ) {
+				skipKill = true;
+			}
+
+			if( !skipKill )
 			{
 				//Name: DoDamage( <health>, <source position>, <attacker>, <destructible_piece_index>, <means of death>, <hitloc> )
 

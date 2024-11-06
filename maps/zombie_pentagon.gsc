@@ -378,9 +378,9 @@ wait_for_power()
 	master_switch = getent("elec_switch","targetname");
 	master_switch notsolid();
 
-	level thread handle_free_perk();
-	flag_wait( "power_on" );
 	//level thread handle_free_perk();
+	flag_wait( "power_on" );
+	level thread handle_free_perk();
 
 	exploder(3500);
 
@@ -1034,35 +1034,32 @@ override_blocker_prices()
 	}
 }
 
+/*
+	- Gas Appears in different tanks throughout the map after set number of rounds
+	- Gas waits arbitrary length of time between each spawn
+	- If player knifes the tank, get opportunity to fill tank with gas by knifing nova crawlers
+	- If they fail, they will have wait until next round
+	- If they suceed, they must wait 3 rounds before gas begins spawning again
 
+	//gasProgressStage
+	2 - player succeeded, wait 3 rounds
+	1 - plyer did not fill tanks, wait til next round
+	0 - player did not knife tank, wait and attempt again this round
+
+*/
 handle_free_perk()
 {
-	level.VALUE_PENTAGON_ROUNDS_BETWEEN_GAS = 3;
-	level.ARRAY_PENTAGON_GAS_LOCS = array( 
-		//(-579, 2611, 71),	//dev
-		(-567, 4059, -656), 
-		(-648, 4101, -705),
-		(-1022, 3486, -659) );
-
-	level.THRESHOLD_PENTAGON_CRAWLERS_FILL_TANK_MIN = 5;
-	level.THRESHOLD_PENTAGON_CRAWLERS_FILL_TANK_MAX = 8;
-	level.THRESHOLD_PENTAGON_CRAWLERS_FILL_TANK_RANGE = 196;
-
-	level.THRESHOLD_PENTAGON_GAS_LONG_TIMEOUT = 90;
-	level.THRESHOLD_PENTAGON_GAS_SHORT_TIMEOUT = 30;
-
 	//0. Wait for power to come on
-	iprintln("power on FOR GAS");
-
-	succeeded = false;
+	
+	gasProgressStage = 2;
 	while(1)
 	{
 		//1. set gas point to undefined
 		level.pentagon_gas_point = undefined;	 
 
 		//2. Watch for gas
-		level watch_wait_gas( succeeded );
-		succeeded = false;
+		level watch_wait_gas( gasProgressStage );
+		gasProgressStage = 0;
 
 		//3. Wait for player to knife or timeout
 		trigger = level watch_start_gas();
@@ -1074,10 +1071,9 @@ handle_free_perk()
 
 		if( !level.proceed_with_fill_tanks )
 		{
-			iprintln("player did not knife gas");
 			continue;
 		}
-			
+
 
 		//5. Watch player fill gas tanks by knifing nova crawlers
 		succeeded = level watch_player_fill_gas_tanks();
@@ -1085,14 +1081,13 @@ handle_free_perk()
 		//6. If player succeeded, give free perk
 		if( succeeded )
 		{
-			wait(2);
-			iprintln("player filled gas tanks");
+			wait(4);
 			maps\_zombiemode_powerups::specific_powerup_drop( "free_perk",  level.crawler_death_origin );
+			gasProgressStage = 2;
 		}
 		else
 		{
-			iprintln("player did not fill gas tanks");
-			continue;
+			gasProgressStage = 1;
 		}
 
 	}
@@ -1101,12 +1096,21 @@ handle_free_perk()
 }
 
 //2. Watch for gas
+/*
+	- If player got a perk bottle last time, wait at least 3 rounds before giving them another chance
+	- else wait until next round
+	- rait some random time after that
+*/
 watch_wait_gas( succeeded )
 {
 
 	count = 0;
 	wait_rounds = level.VALUE_PENTAGON_ROUNDS_BETWEEN_GAS;
-	if( is_true( level.dev_only ) || !succeeded )
+
+	if( !succeeded )
+		wait_rounds = 1;
+
+	if( is_true( level.dev_only ) )
 		wait_rounds = 0;
 
 	while(count < wait_rounds)
@@ -1133,12 +1137,14 @@ watch_start_gas()
 
 	if( is_true( level.dev_only ) )
 	{
-		//locs = level.ARRAY_PENTAGON_GAS_LOCS;
+		locs = level.ARRAY_PENTAGON_GAS_LOCS;
 	}
 		
 
-	gas_point = Spawn("script_model", locs[0]);
+	gas_point = Spawn("script_model", locs[1]);
 	gas_point SetModel("t6_wpn_zmb_perk_bottle_jugg_world");
+	gas_point NotSolid();
+	gas_point Hide();
 	level.pentagon_gas_point = gas_point;
 
 	trigger = Spawn( "trigger_damage", gas_point.origin, 1, 30, 72 ); // org, flags, radius, height
@@ -1191,7 +1197,7 @@ watch_player_knife_gas( trigger )
 {
 	level endon( "gas_trigger_timeout" );
 	//wait for player to knife or timeout
-	iprintln("waitting for damage trigger");
+	
 	wait(3);
 	level thread watch_gas_trigger_timeout( trigger );
 
@@ -1205,8 +1211,6 @@ watch_player_knife_gas( trigger )
 		wait(0.1);
 	}
 
-	
-	iprintln("player knifed gas");
 
 	//stop gas fx
 	level.proceed_with_fill_tanks = true;
@@ -1229,7 +1233,6 @@ watch_gas_trigger_timeout()
 		timeout = 90;
 
 	wait( timeout );
-	iprintln("gas_trigger timeout");
 
 	if( level.proceed_with_fill_tanks )
 		return;
@@ -1272,11 +1275,19 @@ watch_player_fill_gas_tanks()
 	watch_player_fill_gas_tanks_timeout()
 	{
 		self endon( "player_knife_nova_crawler" );
+		self endon( "end_of_round" );	//no timeout in between rounds
 		
 		timeout = level.THRESHOLD_PENTAGON_GAS_SHORT_TIMEOUT;
 		wait( timeout );
 
 		level notify( "gas_trigger_timeout" );
+
+		origin = level.pentagon_gas_point.origin;
+		playsoundatposition("warning", origin);
+		wait(0.4);
+		Playfx( level._effect["powerup_grabbed_caution"], origin );
+		playsoundatposition("warning", origin);
+
 		level.pentagon_gas_point Delete();
 		level.pentagon_gas_point = undefined;
 	}
@@ -1284,7 +1295,6 @@ watch_player_fill_gas_tanks()
 //override quad explosions to attempt to fill the tank
 pentagon_override_quad_explosion( zomb )
 {
-	iprintln("override quad explosion");
 
 	if( !isDefined( level.pentagon_gas_point ) )
 		return;
@@ -1299,7 +1309,6 @@ pentagon_override_quad_explosion( zomb )
 
 	if( closeEnough )
 	{
-		iprintln("close enough");
 		level notify( "player_knife_nova_crawler" );
 		level.crawler_death_origin = self.origin;
 	}
