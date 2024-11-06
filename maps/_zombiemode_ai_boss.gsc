@@ -2,6 +2,8 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 #include animscripts\zombie_Utility;
+
+/*
 init()
 {
 	PrecacheRumble( "explosion_generic" );
@@ -1244,3 +1246,269 @@ boss_zombie_default_enter_level()
 	PlayRumbleOnPosition("explosion_generic", self.origin);
 	self.entered_level = true;
 }
+*/
+
+//Renn Script
+#using_animtree( "generic_human" );
+zmb_engineer( target )
+{
+	/*
+  players = GetPlayers();
+  target_num = randomIntRange( 0, players.size );
+  plr_target = players[target_num];
+
+  nodes = GetAllNodes();
+  spawn_target = get_array_of_closest( plr_target.origin, nodes, undefined, 65, level.max_eng_spawn_dist );
+  target = undefined;
+
+  for( i = 0; i < spawn_target.size; i++ )
+  {
+    if( distance( spawn_target[i].origin, plr_target.origin ) >= level.min_eng_spawn_dist && randomIntRange( 0, 100 ) >= 50 && check_point_in_active_zone( spawn_target[i].origin ) && check_point_in_playable_area( spawn_target[i].origin ) )
+    {
+      target = spawn_target[i].origin;
+      break;
+    }
+  }
+  */
+
+  if( !isDefined( target ) ) // then ill guess it just be a piece of shit normal zombie
+  {
+    return;
+  }
+
+  self thread zm_variant_on_death( "engineer" );
+
+  self detachAll();
+  self.no_gib = 1;
+  //self setmodel( "char_ger_zombeng_body1_1" );
+  //self.animname = "boss_zombie";
+  self.moveplaybackrate = 0;
+  self.talking = true;
+  self hide();
+  self.ignore_all_poi = true;
+  self.ignoreall = true;
+  self.meleeDamage = 95;
+  self.flame_damage_time = 0;
+  self.is_on_fire = true;
+  self.a.disablePain = true;
+  self disable_react();
+  self.allowpain = false;
+  self.no_damage_points = true;
+  self.zombie_can_sidestep = false;
+  self.noChangeDuringMelee = true;
+  self.script_string = undefined;
+  self thread magic_bullet_shield();
+  self dontinterpolate();
+  self.script_disable_bleeder = 1;
+  self.script_noteworthy = "find_flesh";
+  self.script_moveoverride = true;
+
+  self.custom_idle_setup = ::boss_zombie_idle_setup;
+
+  self.set_animarray_standing_override = ::boss_zombie_idle_setup;
+
+  self.a.idleAnimOverrideArray = [];
+  self.a.idleAnimOverrideArray["stand"] = [];
+  self.a.idleAnimOverrideArray["stand"] = [];
+  self.a.idleAnimOverrideArray["stand"][0][0] 	= %ai_zombie_boss_idle_a;
+  self.a.idleAnimOverrideWeights["stand"][0][0] 	= 10;
+  self.a.idleAnimOverrideArray["stand"][0][1] 	= %ai_zombie_boss_idle_a;
+  self.a.idleAnimOverrideWeights["stand"][0][1] 	= 10;
+
+  count = 0;
+
+  while( count < 40 ) // double check to make sure its hiding and not going to be force to teleport to barriers
+  {
+    self notify( "teleporting" );
+    self hide();
+    self unlink();
+    self.anchor delete();
+    self.first_node = undefined;
+    self ClearEnemy();
+    self ClearGoalVolume();
+    self.zombie_move_speed = "sprint";
+    self.zombie_can_sidestep = false;
+    self.zombie_can_forwardstep = false;
+    self.shouldSideStepFunc = ::no_reaction;
+
+    count++;
+    wait .06;
+  }
+
+  count = 0;
+
+  Playfx( level._effect["fx_lighting_strike"], target );
+  playsoundatposition( "zmb_hellhound_prespawn", target );
+  wait( 1.5 );
+  playsoundatposition( "zmb_hellhound_bolt", target );
+
+  Earthquake( 0.5, 0.75, target, 1000 );
+  PlayRumbleOnPosition( "explosion_generic", target );
+  playsoundatposition( "zmb_hellhound_spawn", target );
+
+  self ForceTeleport( target );
+
+  self thread stop_magic_bullet_shield();
+  self.health = 9500+level.zombie_health;
+  if( self.health >= 12000 )
+  {
+	self.health = 12000;
+  }
+  //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
+  //self.custom_damage_func = ::eng_custom_damage;
+  self show();
+  self.moveplaybackrate = 1;
+  self.needs_run_update = true;
+  rnd = randomIntRange( 1, 8 );
+  movement = undefined;
+  
+  if( randomintrange( 0, 2 ) == 0 )
+  {
+	movement = "walk";
+  }
+  else
+  {
+	movement = "run";
+  }
+  
+  self.run_combatanim = level.scr_anim["boss_zombie"][movement+rnd];
+  self set_run_anim( movement+rnd );
+  self ClearAnim( %exposed_modern, 0 );
+  self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
+  self.needs_run_update = false;
+  self.script_moveoverride = false;
+  self.ignoreall = false;
+  level.engineer_zms_alive++;
+
+  self notify( "stop_find_flesh" );
+  self notify( "zombie_acquire_enemy" );
+  self notify( "goal" );
+
+  while( count < 20 )
+  {
+    self thread maps\_zombiemode_spawner::find_flesh();
+    self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+    self thread maps\_zombiemode_spawner::reset_attack_spot();
+    count++;
+
+    wait .1;
+  }
+  
+  self thread eng_enrage_think();
+
+}
+
+eng_custom_damage( player )
+{
+  if( !isDefined( player.stunned_by_eng ) )
+  {
+    player thread eng_player_stunned( 1 );
+  }
+  return self.meleeDamage;
+}
+
+eng_player_stunned( stunned_time )
+{
+	self.stunned_by_eng = true;
+
+	self shellshock( "death", stunned_time );
+
+	wait stunned_time;
+
+  	self stopShellShock();
+
+	self.stunned_by_eng = undefined;
+}
+
+eng_enrage_think()
+{
+	self endon( "death" );
+	
+	amount_of_dmg_to_rage = 100; // default
+	current_dmg = 0;
+	
+	if( level.round_number <= 15 )
+	{
+		amount_of_dmg_to_rage = 500;
+	}
+	else if( level.round_number > 15 )
+	{
+		amount_of_dmg_to_rage = 250;
+	}
+	
+	while( current_dmg < amount_of_dmg_to_rage )
+	{
+		self waittill( "damage", amount );
+		
+		current_dmg += amount;
+	}
+	
+	self animscripted( "enraged", self.origin, self.angles, level.scr_anim["boss_zombie"]["enrage"] );
+	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint"+randomintrange( 1, 3 )];
+	self.zombie_move_speed = "sprint"; 
+	self.moveplaybackrate = 1.25;
+	
+	wait 1;
+	
+	earthquake(0.7,2,self.origin,500);
+}
+
+heavy_zombie_dmg_function( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
+{
+	self endon( "death" );
+	
+	 if( meansofdeath == "MOD_MELEE" )
+	{
+		return damage*.15;
+	}
+	
+	if( meansofdeath == "MOD_GRENADE" || meansofdeath == "MOD_EXPLOSIVE" || meansofdeath == "MOD_PROJECTILE" || meansofdeath == "MOD_PROJECTILE_SPLASH" )
+	{
+		return damage*.25;
+	}
+	
+	if( ( sHitLoc == "head" || sHitLoc == "neck" ) && meansofdeath != "MOD_PISTOL_BULLET" )
+	{
+		return damage*3;
+	}
+	
+	if( self.animname == "boss_zombie" )
+	{
+		damage *= .70;
+	}
+	else
+	{
+		damage *= .45;
+	}
+	
+
+	return damage;
+}
+
+no_reaction( player )
+{
+  // nothing
+}
+
+boss_zombie_idle_setup()
+{
+	self.a.array["turn_left_45"] = %exposed_tracking_turn45L;
+	self.a.array["turn_left_90"] = %exposed_tracking_turn90L;
+	self.a.array["turn_left_135"] = %exposed_tracking_turn135L;
+	self.a.array["turn_left_180"] = %exposed_tracking_turn180L;
+	self.a.array["turn_right_45"] = %exposed_tracking_turn45R;
+	self.a.array["turn_right_90"] = %exposed_tracking_turn90R;
+	self.a.array["turn_right_135"] = %exposed_tracking_turn135R;
+	self.a.array["turn_right_180"] = %exposed_tracking_turn180L;
+	self.a.array["exposed_idle"] = array( %ai_zombie_boss_idle_a, %ai_zombie_boss_idle_b );
+	self.a.array["straight_level"] = %ai_zombie_boss_idle_a;
+	self.a.array["stand_2_crouch"] = %ai_zombie_shot_leg_right_2_crawl;
+}
+
+zm_variant_on_death( zm_type )
+{
+	// nothing
+}
+
+//List all called functions that are not found in this file
+//

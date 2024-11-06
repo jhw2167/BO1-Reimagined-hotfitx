@@ -1141,7 +1141,7 @@ watch_start_gas()
 	}
 		
 
-	gas_point = Spawn("script_model", locs[1]);
+	gas_point = Spawn("script_model", locs[0]);
 	gas_point SetModel("t6_wpn_zmb_perk_bottle_jugg_world");
 	gas_point NotSolid();
 	gas_point Hide();

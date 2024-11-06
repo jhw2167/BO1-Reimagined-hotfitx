@@ -1631,6 +1631,34 @@ wait_set_player_visionset()
 	}
 	*/
 
+	//setup a while loop to wait for zombies to spawn
+	//get the ai species array and check size to see if we can transform zombie to engineer
+	//if we can, then we can spawn the boss
+	//if we can't, then we wait for the next round to spawn the boss
+
+	zombies = [];
+	while(1)
+	{
+		wait(1);
+		//iprintln( "Waiting for zombies to spawn" );
+		zombies = GetAiSpeciesArray( "axis", "zombie" );
+		if( zombies.size > 0 )
+			break;
+		
+	}
+
+	spawned_boss = true;
+	if( spawned_boss )
+	{
+		trigger_name = "trigger_teleport_pad_0";
+		core = getent( trigger_name, "targetname" );
+		pad = getent( core.target, "targetname" );
+		location = pad.origin;
+
+		zombie = zombies[0];
+		zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
+		
+	}
 
 }
 
@@ -11014,6 +11042,7 @@ is_boss_zombie( animname )
 	|| animname == "bo2_zm_mech" 
 	|| animname == "kf2_scrake" 
 	|| animname == "bo1_simianaut"
+	|| animname == "boss_zombie"
 	);
 }
 
