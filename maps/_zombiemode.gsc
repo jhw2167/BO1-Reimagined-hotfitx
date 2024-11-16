@@ -57,7 +57,7 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
-	level.starting_round_override=20;	///
+	level.starting_round_override=10;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -785,6 +785,8 @@ reimagined_init_level()
 		"crossbow_explosive_zm",
 		"crossbow_explosive_upgraded_zm",
 		"crossbow_explosive_upgraded_zm_x2",
+		"sniper_explosive_zm",
+		"sniper_explosive_upgraded_zm",
 		"explosivbe_bolt_zm",
 		"explosivbe_bolt_upgraded_zm",
 		"sabertooth_zm",
@@ -1073,6 +1075,10 @@ reimagined_init_level()
 
 	//Cosmodrome
 	level.VALUE_ZOMBIE_COSMODROME_MONKEY_DISABLE_PRO_PERK_TIME = 30;
+
+	//Coast
+	level.VALUE_COAST_DIRECTOR_BOSS_HEALTH_FACTOR = 0.5;
+	level.VALUE_COAST_SCAVENGER_ROUND_SCALING_FACTOR = 0.5;
 
 	//Temple
 	level.THRESHOLD_ZOMBIE_TEMPLE_SPECIAL_ZOMBIE_ROUND = 5;
@@ -1570,12 +1576,12 @@ wait_set_player_visionset()
 		//GIVE PERKS
 		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
@@ -2213,7 +2219,11 @@ watch_player_weapon_special_bonuses()
 			{
 				self waittill("weapon_fired");
 				zombies = getZombiesInRange( 99999 );
-				for(i=0;i<zombies.size;i++) {
+				for(i=0;i<zombies.size;i++) 
+				{
+					if( is_boss_zombie( zombies[i].animname ) )
+						continue;
+
 					zombies[i] DoDamage( 10, zombies[i].origin );
 				}
 			}
@@ -3264,7 +3274,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.2.1 " );
+	SetDvar( "zm_mod_version", "2.2.2" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -6492,7 +6502,7 @@ determine_horde_wait( count )
 		//If less than 3/4 of horde, small delay
 		delay = level.VALUE_ZOMBIE_SPAWN_DELAY;
 	
-		if( level.classic )
+		//if( level.classic )
 		{
 			delay += 1;
 		}
@@ -6524,7 +6534,7 @@ determine_horde_wait( count )
 			delay -= 2;
 
 	// -0.5s for each player in the game:
-		delay -= get_players().size * 0.5;
+		delay -= get_players().size * 0.25;
 
 		//iprintln( "Delay: " + delay );
 
@@ -9661,6 +9671,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			return self.maxhealth + 1000;
 		}
 	}
+	//If its install and a boss zombie, double damage
+	if( is_true(level.zombie_vars["zombie_insta_kill"]) && is_boss_zombie(self.animname) )
+	{
+		damage *= 2;
+	}
 
 	if(meansofdeath == "MOD_MELEE" )
 	{
@@ -9875,6 +9890,20 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			rayDmg = basedDmg / 10;
 
 		final_damage = rayDmg;
+	}
+
+	//if(weapon == "sniper_explosive_zm" || weapon == "sniper_explosive_upgraded_zm")
+	//The weapon is actually the bolt, not the gun
+	iprintln("Weapon: " + weapon);
+	if(weapon == "sniper_explosive_bolt_zm" || weapon == "sniper_explosive_bolt_upgraded_zm")
+	{
+		factor = level.VALUE_COAST_SCAVENGER_ROUND_SCALING_FACTOR * level.round_number;
+		final_damage = int( damage * factor);
+
+		if( IsSubStr( weapon, "upgraded" ) )
+			final_damage *= 2;
+
+		iprintln("Final Damage 6: " + final_damage);
 	}
 
 
@@ -10698,9 +10727,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		//Reimagined-Expanded -- Doubletap Pro Bullet Penetration
 		isUpgradedSniper =  is_in_array(level.ARRAY_VALID_SNIPERS, weapon)  && isSubStr(weapon, "upgraded");
 		dbt_marked = ( IsDefined(self.dbtap_marked) && self.dbtap_marked == attacker.entity_num );
+		boss_zomb = is_boss_zombie(self.animname);
 		if( (attacker hasProPerk(level.DBT_PRO) || isUpgradedSniper )
 		&&  !dbt_marked 
-		&& (attacker.dbtp_penetrated_zombs < level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) ) 
+		&& (attacker.dbtp_penetrated_zombs < level.THRESHOLD_DBT_TOTAL_PENN_ZOMBS) 
+		&& !boss_zomb
+		)
+
 		{
 			self.dbtap_marked = attacker.entity_num;
 
@@ -10757,11 +10790,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( is_in_array(level.ARRAY_VALID_SNIPERS, weapon) ) 
 		{
 			if( is_boss_zombie(self.animname) ) {
-				return int(final_damage / 10);
+				final_damage =  int(final_damage / 5);
 			}
-
 			//Zombie knockdown
-			if( final_damage >= self.health ) {
+			else if( final_damage >= self.health ) {
 				//no knockdown
 			}
 			else if( IsSubStr(weapon, "dragunov") ) {
@@ -10973,7 +11005,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	if(self.animname == "director_zombie")
 	{
+
 		self.dmg_taken += int(final_damage);
+		iprintln("Director Damage: " + self.dmg_taken);
 	}
 
 	//Shino Special Behavior
@@ -11150,7 +11184,7 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 
 	if(sMeansOfDeath == "MOD_IMPACT" && (sWeapon == "sniper_explosive_zm" || sWeapon == "sniper_explosive_upgraded_zm"))
 	{
-		self.no_powerups = true;
+		//self.no_powerups = true;
 	}
 
 	if(sMeansOfDeath == "MOD_PROJECTILE_SPLASH" && sWeapon == "humangun_upgraded_zm")
@@ -12308,7 +12342,7 @@ player_intermission()
 
 	if( level.apocalypse )
 	{
-		self thread player_apocalypse_stats(undefined, 12);	
+		//self thread player_apocalypse_stats(undefined, 12);	
 	}
 
 	org = undefined;

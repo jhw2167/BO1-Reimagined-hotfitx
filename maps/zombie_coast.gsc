@@ -717,8 +717,31 @@ wait_for_power()
 	
 
 	level thread maps\zombie_coast_fx::blizzard_tidyup();
-	wait(1);
-	level notify("kill_blizzard");
+	while(1)
+	{
+		wait(1);
+		if( !isdefined( level.blizzard_thread ) )
+		{
+			break;
+		}
+	}
+	
+}
+
+threaded_kill_blizzard()
+{
+	level endon("end_game");
+
+	while(1)
+	{
+		wait(3);
+		players = get_players();
+		for(i = 0; i < players.size; i++) {
+			players[i] ClearClientFlag(level._COAST_FOG_BLIZZARD);
+		}
+
+		level notify("kill_blizzard");
+	}
 	
 }
 

@@ -613,7 +613,7 @@ director_reset_health( easy )
 	num_players = players.size;
 
 	self.dmg_taken = 0;
-	if( self.times_died == undefined )
+	if( !IsDefined( self.times_died ) )
 		self.times_died = 0;
 	 else 
 		self.times_died++;
@@ -627,11 +627,8 @@ director_reset_health( easy )
 	}
 	*/
 
-	round_factor = level.round_number;
-	if( round_factor < 10 )
-		round_factor = 10;
 
-	self.max_damage_taken = level.THRESHOLD_MAX_ZOMBIE_HEALTH*round_factor*(self.times_died+1)*num_players;
+	self.max_damage_taken = level.director_zombie_max_health;
 	if(level.round_number < 16 )
 		self.max_damage_taken = int(self.max_damage_taken * 0.33);
 	else if(level.round_number < 25 )
@@ -1443,8 +1440,31 @@ director_zombie_think()
 	self.meleeAttackDist = 96;
 
 	//Max health = level.zombie_max_health*level.round_num*level.director_times_defeated
-	self.maxhealth = level.THRESHOLD_MAX_ZOMBIE_HEALTH*level.round_number*(self.times_died+1);
+	
+	if( !IsDefined( self.times_died ) )
+		self.times_died = 0;
+	 
+	death_factor = 1;
+	//Death_factor 0.5 to death_factor for each time the director has died
+	for( i = 0; i < self.times_died; i++ ) {
+		death_factor += 0.5;
+	}
+
+	//Player factor - 0.5 to death_factor for each player
+	players = get_players();
+	player_factor = 0.5;
+	for( i = 0; i < players.size; i++ ) {
+		player_factor += 0.5;
+	}
+
+
+	maxhealth = int( level.THRESHOLD_MAX_ZOMBIE_HEALTH*level.round_number*death_factor*player_factor );
+	if( isDefined( maxhealth ) )
+		level.director_zombie_max_health = int( maxhealth*level.VALUE_COAST_DIRECTOR_BOSS_HEALTH_FACTOR );
+
+	self.maxhealth = level.director_zombie_max_health;
 	self.health = level.director_zombie_max_health;
+	
 
 	//try to prevent always turning towards the enemy
 	self.maxsightdistsqrd = 96 * 96;
