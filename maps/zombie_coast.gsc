@@ -715,17 +715,6 @@ wait_for_power()
 
 	master_switch playsound("zmb_turn_on");
 	
-
-	level thread maps\zombie_coast_fx::blizzard_tidyup();
-	while(1)
-	{
-		wait(1);
-		if( !isdefined( level.blizzard_thread ) )
-		{
-			break;
-		}
-	}
-	
 }
 
 threaded_kill_blizzard()

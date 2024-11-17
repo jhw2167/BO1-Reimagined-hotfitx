@@ -228,7 +228,7 @@ player_add_points( event, mod, hit_location, zombie)
 			if( IsDefined( zombie ) && ( is_in_array( level.ARRAY_VALID_DESPAWN_ZOMBIES, zombie.animname ) ) )
 			{
 				if ( zombie.respawn_zombie )
-					return 0;
+					return level.VALUE_ZOMBIE_DAMAGE_POINTS_RESPAWN;
 			}				
 			//iprintln("Points after multiplier: " + player_points);
 

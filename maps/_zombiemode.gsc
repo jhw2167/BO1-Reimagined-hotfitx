@@ -544,13 +544,15 @@ reimagined_init_level()
 	level.VALUE_APOCALYPSE_ZOMBIE_DEATH_POINTS = 75;	//up from 75, down from 100
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_LOW = 5;
-	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_LOW = 5000; //before this round awward damage_points_low
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_MED = 5;
-	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 15;
+	level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_MED = 15;	//before this round awward damage_points_med
 
 	level.VALUE_ZOMBIE_DAMAGE_POINTS_HIGH = 1;
 	//level.LIMIT_ZOMBIE_DAMAGE_POINTS_ROUND_HIGH = 1000;
+
+	level.VALUE_ZOMBIE_DAMAGE_POINTS_RESPAWN = 1;
 
 	level.VALUE_ZOMBIE_DOG_HEALTH_PORTION = 0.6;			//dogs have 60% of normal zombie health
 
@@ -7089,22 +7091,24 @@ reimagined_expanded_round_start()
 	level thread last_zombies_speed_up();
 
 	//Increase max perks every 5 rounds after 15
-		if( level.round_number > 14 && level.round_number % 5 == 0 ) 
+	/*
+	if( level.round_number > 14 && level.round_number % 5 == 0 ) 
+	{
+		//Switch case for the maps:
+		switch( level.mapname ) 
 		{
-			//Switch case for the maps:
-			switch( level.mapname ) 
-			{
-				case "zombie_cod5_prototype":
-				//case "zombie_cod5_asylum":
-				//case "zombie_cod5_sumpf":
-				case "zombie_cod5_factory":
-				case "zombie_theater":
-				case "zombie_pentagon":
-					level.max_perks++;
-					break;	
-			}
-			
+			case "zombie_cod5_prototype":
+			//case "zombie_cod5_asylum":
+			//case "zombie_cod5_sumpf":
+			case "zombie_cod5_factory":
+			case "zombie_theater":
+			case "zombie_pentagon":
+				level.max_perks++;
+				break;	
 		}
+		
+	}
+	*/
 
 	//Drop Increment for later rounds
 	//if( level.extra_drops )
@@ -7116,6 +7120,21 @@ reimagined_expanded_round_start()
 			//iprintln( "Drop rate BLUE: " + (level.VALUE_ZOMBIE_DROP_RATE_BLUE + level.drop_rate_adjustment) );
 			//iprintln( "Drop rate GREEN: " + (level.VALUE_ZOMBIE_DROP_RATE_GREEN + level.drop_rate_adjustment) );
 		}
+
+		extra_restock = is_true( level.extra_restock_added );
+		if( level.round_number > 15 && !extra_restock )
+		{
+			level.zombie_powerup_array[level.zombie_powerup_array.size] = "restock";
+			level.extra_restock_added = true;
+		}
+			
+		extra_ammo = is_true( level.extra_ammo_added );
+		if( level.round_number > 20 && !extra_ammo )
+		{
+			level.zombie_powerup_array[level.zombie_powerup_array.size] = "full_ammo";
+			level.extra_ammo_added = true;
+		}
+			
 	}
 	
 

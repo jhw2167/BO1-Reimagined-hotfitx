@@ -167,6 +167,11 @@ manage_blizzard()
 {
 	level endon("kill_blizzard");	// will only be sent if we're in the intro_anim state - or using a levelnotify from Rex.
 	level thread blizzard_tidyup();
+
+	if( flag( "power_on" ) )
+	{
+		return;
+	}
 	
 	flag_wait("all_players_connected");
 	
@@ -248,6 +253,13 @@ manage_blizzard()
 			}
 
 			exploder( 110 );
+
+			//Reimagined-Expanded, no blizzard with power on
+			if( flag( "power_on" ) )
+			{
+				return;
+			}
+
 			wait(180);
 		}		
 		
