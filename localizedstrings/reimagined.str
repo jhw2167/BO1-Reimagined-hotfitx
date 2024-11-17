@@ -1251,13 +1251,20 @@ LANG_ENGLISH       	"- Rounds will automatically start if you wait too long; wit
 REFERENCE          	APOCALYPSE_POINTS
 LANG_ENGLISH       	"Apocalypse Mode Points"
 
-
+REFERENCE       	COWARDS_DOWN
+LANG_ENGLISH       	"Hold ^3[{+activate}]^7 to end the suffering"
 
 REFERENCE          	BABYJUGG_TITLE
 LANG_ENGLISH       	"Baby Jugg"
 
 REFERENCE          	BABYJUGG_HINT
-LANG_ENGLISH       	"- Health set to 140, permanently"
+LANG_ENGLISH       	"Health set to 140, permanently"
+
+REFERENCE          	QRV_PRK_TITLE
+LANG_ENGLISH       	"Quick Revive"
+
+REFERENCE          	QRV_PRK_HINT
+LANG_ENGLISH       	"- Revive teammates faster \n- Regenerate health slightly quicker \n- After being revived, a random perk is returned to you (Co-op Only)"
 
 REFERENCE          	QRV_PRO_TITLE
 LANG_ENGLISH       	"QuickRevive Pro"
@@ -1275,7 +1282,7 @@ REFERENCE          	JUG_PRO_TITLE
 LANG_ENGLISH       	"Juggernog Pro"
 
 REFERENCE          	JUG_PRO_HINT
-LANG_ENGLISH       	"- Max health set to 325, permanently"
+LANG_ENGLISH       	"Max health set to 325, permanently"
 
 REFERENCE 			SPD_PRO_TITLE
 LANG_ENGLISH 		"Speed Cola Pro"
@@ -1287,7 +1294,7 @@ REFERENCE 			DBT_PRK_TITLE
 LANG_ENGLISH 		"Double-Tap 2.0"
 
 REFERENCE 			DBT_PRK_HINT
-LANG_ENGLISH 		"- All bullet weapons do 50% increased damage"
+LANG_ENGLISH 		"All bullet weapons do 50% increased damage"
 
 REFERENCE 			DBT_PRO_TITLE
 LANG_ENGLISH 		"Double-Tap 2.0 Pro"

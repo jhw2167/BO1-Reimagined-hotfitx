@@ -2940,6 +2940,7 @@ give_perk( perk, bought )
 	if(perk == "specialty_quickrevive")
 	{
 		self SetClientDvar("cg_hudDamageIconTime", 2000);
+		self thread watch_player_qrevive();
 	}
 
 	if(perk == "specialty_armorvest")
@@ -3257,7 +3258,7 @@ perk_think( perk )
 		proPerkAvailable = self hasProPerk( proPerk ) && !self.PERKS_DISABLED[ proPerk ];
 	}
 	//iprintln( "Perk Think: " + result );
-
+	wait( 0.1 );
 
 	//always notify the perk stop string so we know to end perk specific stuff
 	if(result != perk_str)
@@ -4518,6 +4519,51 @@ remove_stockpile_ammo()
 // QUICKREV PRO
 //=========================================================================================================
 
+//Normal Qrevive
+watch_player_qrevive()
+{
+	
+	self endon("disconnect");
+	self endon("death");
+	self endon("fake_death");
+	self endon("end_game");
+
+
+	iprintln("watch_player_qrevive");
+
+	//if solo game, return
+	if( level.players_count == 1 )
+	{
+		return;
+	}
+		
+
+	self waittill("player_downed");
+	
+	//loop over self.purchased_perks
+	returnablePerks = [];
+	for(i=0;i<self.purchased_perks.size;i++)
+	{
+		if(self.purchased_perks[i] == level.QRV_PRK)
+			continue;
+
+		//if its a pro perk, continue
+		if(IsSubStr(self.purchased_perks[i], "_upgrade"))
+			continue;
+
+		returnablePerks[returnablePerks.size] = self.purchased_perks[i];
+	}
+
+	if(returnablePerks.size == 0)
+		return;
+
+	//waittill revived
+	self waittill("player_revived");
+
+	perkToReturn = array_randomize(returnablePerks)[0];
+	self give_perk(perkToReturn);
+	
+}
 
 //Reimagined-Expanded -- Quick Revive pro thread running for each player
 // HANDLED IN ZOMBIEMODE
@@ -4556,7 +4602,8 @@ watch_stamina_upgrade(perk_str)
 	{
 
 		//wait till player sprints
-		waittill_return = self waittill_any_return("melee", "damage");
+		//waittill_return = self waittill_any_return("melee", "damage");
+		waittill_return = self waittill_any_return("melee");
 
 		self waittill_notify_or_timeout("sprint", level.VALUE_STAMINA_PRO_SPRINT_WINDOW );
 		if( ! self IsSprinting() )

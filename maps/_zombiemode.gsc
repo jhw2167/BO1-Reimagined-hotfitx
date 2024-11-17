@@ -369,6 +369,7 @@ init_hitmarkers()
 
 reimagined_init_player_depedent_values()
 {
+	//players_count, total_players, count_players
 	if( !isDefined(level.players_size) )
 		level.players_size = GetPlayers().size;
 
@@ -691,7 +692,7 @@ reimagined_init_level()
 	//Stamina
 	level.VALUE_STAMINA_PRO_SPRINT_WINDOW = 2; //After player melees, 2s to sprint and activate ghost
 	level.TOTALTIME_STAMINA_PRO_GHOST = 3; //3 seconds
-	level.COOLDOWN_STAMINA_PRO_GHOST = 8; 	//8s
+	level.COOLDOWN_STAMINA_PRO_GHOST = 12; 	//8s
 	level.VALUE_STAMINA_PRO_GHOST_RANGE = 800; //After player melees, 2s to sprint and activate ghost
 
 	//PHD
@@ -1201,6 +1202,7 @@ reimagined_init_player()
 	self.perk_hud_queue_num = 0;
 	self.perk_hud_queue_unlocks_num = 0;
 	self.perk_hud_queue_locked = false;
+	self.qrevive_return_perk = undefined;	//special quick revive bonus
 
 	//Standard Perks
 	self UnsetPerk("specialty_armorvest");
@@ -1316,6 +1318,7 @@ reimagined_init_player()
 	//These need to be redone on respawn after death
 	self thread watch_player_button_press();
 	self thread watch_player_current_weapon();
+	level.cowards_down_func = ::player_cowards_down;
 
 	//iprintln(" User options: " + level.user_options + " Max Perks: " + level.max_perks);
 }
@@ -1653,7 +1656,7 @@ wait_set_player_visionset()
 		
 	}
 
-	spawned_boss = true;
+	spawned_boss = true && level.dev_only;
 	if( spawned_boss )
 	{
 		trigger_name = "trigger_teleport_pad_0";
@@ -1848,6 +1851,59 @@ watch_player_current_weapon()
 }
 
 
+//self thread player_cowards_down();
+
+
+//*
+player_cowards_down()
+{
+	if( level.players_size == 1 )
+	{
+		//return;
+	}
+
+	self endon("player_revived");
+	self endon("death");
+	self endon("fake_death");
+
+
+	//Title
+    title = NewClientHudElem( self );
+	title.alignX = "center";
+	title.alignY = "middle";
+	title.horzAlign = "user_center";
+	title.vertAlign = "user_bottom";
+	title.foreground = true;
+	title.font = "objective";
+	title.fontScale = 1.6;
+	title.alpha = 0;
+	title.color = ( 1.0, 1.0, 1.0 );
+
+    title.y -= 100;
+
+	//Text
+	title SetText( &"REIMAGINED_COWARDS_DOWN" );
+
+	title FadeOverTime( 1 );
+	title.alpha = 1;
+
+	self.cowards_down = false;
+	//Wait and check every 0.5 second for player holding Activate
+	while(1)
+	{
+		wait(0.5);
+		if(self UseButtonPressed())
+		{
+			self.cowards_down = true;
+			break;
+		}
+	}
+
+	title FadeOverTime( 2 );
+	title.alpha = 0;
+
+}
+//*/
 
 
 //Reimagined-Expanded -- check of obj is in range
@@ -9894,7 +9950,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	//if(weapon == "sniper_explosive_zm" || weapon == "sniper_explosive_upgraded_zm")
 	//The weapon is actually the bolt, not the gun
-	iprintln("Weapon: " + weapon);
+	
 	if(weapon == "sniper_explosive_bolt_zm" || weapon == "sniper_explosive_bolt_upgraded_zm")
 	{
 		factor = level.VALUE_COAST_SCAVENGER_ROUND_SCALING_FACTOR * level.round_number;

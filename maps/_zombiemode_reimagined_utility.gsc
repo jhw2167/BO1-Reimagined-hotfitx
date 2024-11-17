@@ -263,7 +263,11 @@ generate_perk_hint( perkOrWeapon, specialHint )
 			title SetText( &"REIMAGINED_JUG_PRO_TITLE" );
 			break;
 
-		//case "specialty_quickrevive":
+		case "specialty_quickrevive":
+			text SetText( &"REIMAGINED_QRV_PRK_HINT" );
+			title SetText( &"REIMAGINED_QRV_PRK_TITLE" );
+			break;
+			
 		case "specialty_quickrevive_upgrade":
 			text SetText( &"REIMAGINED_QRV_PRO_HINT" );
 			title SetText( &"REIMAGINED_QRV_PRO_TITLE" );

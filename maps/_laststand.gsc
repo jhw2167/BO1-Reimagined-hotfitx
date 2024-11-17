@@ -181,6 +181,9 @@ refire_player_downed()
 		self notify("player_downed");
 	}
 
+	if( isDefined(level.cowards_down_func))
+		self thread [[level.cowards_down_func]]();
+
 }
 
 laststand_allowed( sWeapon, sMeansOfDeath, sHitLoc )
@@ -390,10 +393,18 @@ Laststand_Bleedout( delay )
 	//self.bleedout_time = delay;
 	self.bleedout_time = level.VALUE_PLAYER_DOWNED_BLEEDOUT_TIME;
 
+	if( !IsDefined( self.cowards_down ) )
+	{
+		self.cowards_down = false;
+	}
+
 	while ( self.bleedout_time > Int( delay * 0.5 ) )
 	{
 		self.bleedout_time -= .5;
 		wait( .5 );
+
+		if( self.cowards_down )
+			break;
 	}
 
 	if ( GetDvar( #"zombiemode" ) == "1" )
@@ -409,6 +420,9 @@ Laststand_Bleedout( delay )
 	{
 		self.bleedout_time -= .5;
 		wait( .5 );
+
+		if( self.cowards_down )
+			break;
 	}
 
 	//CODER_MOD: TOMMYK 07/13/2008
