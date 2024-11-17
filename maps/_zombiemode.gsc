@@ -1859,10 +1859,10 @@ player_cowards_down()
 {
 	if( level.players_size == 1 )
 	{
-		//return;
+		return;
 	}
 
-	self endon("player_revived");
+	self endon("end_game");
 	self endon("death");
 	self endon("fake_death");
 
@@ -1888,21 +1888,37 @@ player_cowards_down()
 	title.alpha = 1;
 
 	self.cowards_down = false;
-	//Wait and check every 0.5 second for player holding Activate
-	while(1)
-	{
-		wait(0.5);
-		if(self UseButtonPressed())
-		{
-			self.cowards_down = true;
-			break;
-		}
-	}
-
+	self watch_player_cowards_down();
+	
 	title FadeOverTime( 2 );
 	title.alpha = 0;
+	wait(1);
 
+	self.cowards_down = false;
+	title Destroy();
 }
+
+	watch_player_cowards_down()
+	{
+		self endon("end_game");
+		self endon("bled_out");
+		self endon("player_revived");
+		self endon("death");
+		self endon("fake_death");
+
+		//Wait and check every 0.5 second for player holding Activate
+		while(1)
+		{
+			wait(0.5);
+			if(self UseButtonPressed())
+			{
+				self.cowards_down = true;
+				break;
+			}
+		}
+
+	}
+
 //*/
 
 

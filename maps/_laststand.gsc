@@ -404,7 +404,7 @@ Laststand_Bleedout( delay )
 		wait( .5 );
 
 		if( self.cowards_down )
-			break;
+			self.bleedout_time = 0;
 	}
 
 	if ( GetDvar( #"zombiemode" ) == "1" )
@@ -422,7 +422,7 @@ Laststand_Bleedout( delay )
 		wait( .5 );
 
 		if( self.cowards_down )
-			break;
+			self.bleedout_time = 0;
 	}
 
 	//CODER_MOD: TOMMYK 07/13/2008
