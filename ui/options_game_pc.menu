@@ -64,7 +64,7 @@
 			
 			if(dvarString(zombie_apocalypse_default) == "")
 			{
-				setDvar zombie_apocalypse_default 0;
+				setDvar zombie_apocalypse_default 1;
 			}
 			
 			//Each of these only set if the dvar is not already set

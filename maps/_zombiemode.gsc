@@ -57,13 +57,13 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
-	level.starting_round_override=10;	///
+	level.starting_round_override=30;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=16;	///per round
+	//level.calculate_amount_override=16;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1586,7 +1586,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
@@ -1657,7 +1657,7 @@ wait_set_player_visionset()
 			break;
 		
 	}
-
+	/*
 	spawned_boss = true && is_true( level.dev_only );
 	if( spawned_boss )
 	{
@@ -1670,6 +1670,7 @@ wait_set_player_visionset()
 		zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
 		
 	}
+	*/
 
 }
 
@@ -1928,7 +1929,7 @@ player_cowards_down()
 checkDist( a, b, distance)
 {
 	vars_defined = isDefined(a) && isDefined(b) && isDefined(distance);
-	if( !IsDefined( a ) || !IsDefined( b ) )
+	if( !vars_defined )
 	{
 		//iprintln("checkDist for distance: " + distance + " is undefined" );
 		return false;
@@ -3348,7 +3349,7 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.2.2" );
+	SetDvar( "zm_mod_version", "2.2.0" );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -9186,7 +9187,6 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			{
 				if ( IsDefined( level.zombiemode_divetonuke_perk_func ) )
 				{
-					iprintln( "divetonuke_perk_func" );
 					[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin, true );
 				}
 			}

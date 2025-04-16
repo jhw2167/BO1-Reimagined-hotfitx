@@ -1556,6 +1556,9 @@ divetonuke_explode( attacker, origin, isDamaged )
 				zombies[i] thread maps\_zombiemode_weapon_effects::bonus_fire_damage(
 					 zombies[i] , attacker, 0 , 2 );
 			}
+
+			if( i > 100 )	
+				break;
 			
 		}
 		
