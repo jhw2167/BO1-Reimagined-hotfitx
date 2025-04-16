@@ -13668,17 +13668,7 @@ character_names_hud()
 
 set_gamemode()
 {
-	if(GetDvar("zm_gamemode") == "random")
-	{
-		gamemodes = array("grief", "snr", "gg", "race");
-		gamemodes = array_randomize(gamemodes);
-		level.gamemode = gamemodes[RandomInt(gamemodes.size)];
-	}
-	else
-	{
-		level.gamemode = GetDvar("zm_gamemode");
-	}
-
+	level.gamemode = "survival";
 	if(level.gamemode != "survival")
 	{
 		level.vsteams = GetDvar("vs_teams");
@@ -13690,6 +13680,7 @@ set_gamemode()
 
 	level thread set_gamemode_name();
 }
+
 
 set_gamemode_name()
 {
