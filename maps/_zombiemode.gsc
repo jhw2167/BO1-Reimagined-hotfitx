@@ -1658,7 +1658,7 @@ wait_set_player_visionset()
 		
 	}
 
-	spawned_boss = true && level.dev_only;
+	spawned_boss = true && is_true( level.dev_only );
 	if( spawned_boss )
 	{
 		trigger_name = "trigger_teleport_pad_0";
@@ -3253,8 +3253,8 @@ init_levelvars()
 	set_zombie_var( "zombie_new_runner_interval", 		 10,	false,	column );	//	Interval between changing walkers who are too far away into runners
 	set_zombie_var( "zombie_move_speed_multiplier", 	  8,	false,	column );	//	Multiply by the round number to give the base speed value.  0-40 = walk, 41-70 = run, 71+ = sprint
 
-	set_zombie_var( "zombie_max_ai", 					24,		false,	column );	//	Base number of zombies per player (modified by round #)
-	set_zombie_var( "zombie_ai_per_player", 			6,		false,	column );	//	additional zombie modifier for each player in the game
+	set_zombie_var( "zombie_max_ai", 					40,		false,	column );	//	Base number of zombies per player (modified by round #)
+	set_zombie_var( "zombie_ai_per_player", 			12,		false,	column );	//	additional zombie modifier for each player in the game
 	set_zombie_var( "below_world_check", 				-1000 );					//	Check height to see if a zombie has fallen through the world.
 
 	// Round
@@ -3278,7 +3278,7 @@ init_levelvars()
 	set_zombie_var( "zombie_score_kill_4player", 		50 );		// Individual Points for a zombie kill in a 4 player game
 	set_zombie_var( "zombie_score_kill_3player",		50 );		// Individual Points for a zombie kill in a 3 player game
 	set_zombie_var( "zombie_score_kill_2player",		50 );		// Individual Points for a zombie kill in a 2 player game
-	set_zombie_var( "zombie_score_kill_1player",		7000 );		// Individual Points for a zombie kill in a 1 player game
+	set_zombie_var( "zombie_score_kill_1player",		50 );		// Individual Points for a zombie kill in a 1 player game
 
 	set_zombie_var( "zombie_score_kill_4p_team", 		30 );		// Team Points for a zombie kill in a 4 player game
 	set_zombie_var( "zombie_score_kill_3p_team",		35 );		// Team Points for a zombie kill in a 3 player game
@@ -13699,7 +13699,7 @@ set_gamemode_name()
 	players = get_players();
 	for(i=0;i<players.size;i++)
 	{
-		players[i] SetClientDvar("zm_gamemode_name", level.gamemode);
+		players[i] SetClientDvar("zm_gamemode_name", "survival");
 		players[i] SetClientDvar("zm_gamemode_name2", level.vsteams);
 	}
 }
