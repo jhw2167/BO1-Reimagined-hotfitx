@@ -4558,7 +4558,7 @@ watch_player_qrevive()
 	self waittill("player_revived");
 
 	perkToReturn = array_randomize(returnablePerks)[0];
-	self give_perk(perkToReturn);
+	self returnPerk(perkToReturn);
 	
 }
 

@@ -1561,6 +1561,7 @@ powerup_grab()
 
 					case "tesla":
 						level thread tesla_weapon_powerup( players[i], self );
+						players[i] thread generate_perk_hint( "superpower_powerup" );
 						players[i] thread powerup_vo( "tesla" ); // TODO: Audio should uncomment this once the sounds have been set up
 						break;
 
@@ -3471,7 +3472,6 @@ tesla_weapon_powerup( ent_player, powerup, time )
 		wait(0.02);
 	}
 
-	ent_player thread generate_perk_hint( "superpower_powerup" );
 
 	if( is_true( level.dev_only ) )
 		drop_time = 5; //dev

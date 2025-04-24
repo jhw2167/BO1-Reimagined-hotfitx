@@ -170,6 +170,8 @@ generate_perk_hint( perkOrWeapon, specialHint )
 		perkOrWeapon = "specialty_offhand_melee";
 	}
 
+
+	//iprintln( "check activated: " + perkOrWeapon );
 	hintCode = perkOrWeapon;
 	if( is_true( self.hints_activated[ hintCode ] ) )
 		return;
