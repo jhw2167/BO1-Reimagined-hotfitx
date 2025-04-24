@@ -409,6 +409,16 @@ generate_perk_hint( perkOrWeapon, specialHint )
 			title SetText( &"REIMAGINED_FREE_PERK_TITLE" );
 			break;
 
+		case "superpower_powerup":
+			text SetText( &"REIMAGINED_POWERUP_SUPERPOWER_HINT" );
+			title SetText( &"REIMAGINED_POWERUP_SUPERPOWER_TITLE" );
+			break;
+
+		case "restock_powerup":
+			text SetText( &"REIMAGINED_POWERUP_RESTOCK_HINT" );
+			title SetText( &"REIMAGINED_POWERUP_RESTOCK_TITLE" );
+			break;
+
 		/* Specific Weapons */
 		case "m1911_upgraded_zm":
 			//Dont set if player is in last stand

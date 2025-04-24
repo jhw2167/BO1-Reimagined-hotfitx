@@ -57,7 +57,7 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
-	level.starting_round_override=30;	///
+	level.starting_round_override=15;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -592,7 +592,7 @@ reimagined_init_level()
 	//	 8 is 0.8 drops expected per round 
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = 12;			//between 0-1000)
 	level.VALUE_ZOMBIE_DROP_RATE_GREEN = 10;			//between 0-1000)
-	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 6; //6;		//between 0-1000)	
+	level.VALUE_ZOMBIE_DROP_RATE_BLUE = 60; //6;		//between 0-1000)	
 	level.VALUE_ZOMBIE_DROP_RATE_RED = 4;		//between 0-1000)
 	level.rand_drop_rate = [];
 
@@ -921,7 +921,7 @@ reimagined_init_level()
 	level.THRESHOLD_TESLA_SHOCK_TIME = 3;
 
 	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2",
-							 "ithaca_upgraded_zm_x2", "makarov_upgraded_zm_x2");
+							 	"makarov_upgraded_zm_x2");
 	level.RANGE_SHEERCOLD_DIST = 120;
 	level.THRESHOLD_SHEERCOLD_DIST = 50;
 	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
@@ -1591,6 +1591,10 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.QRV_PRK );
+		self maps\_zombiemode_perks::returnPerk( level.JUG_PRK );
+		self maps\_zombiemode_perks::returnPerk( level.SPD_PRK );
+		self maps\_zombiemode_perks::returnPerk( level.DBT_PRK );
 
 		//give knife_ballistic_upgraded_zm_x2
 	}
@@ -3349,7 +3353,8 @@ init_dvars()
 	}
 		
 
-	SetDvar( "zm_mod_version", "2.2.0" );
+	level.zm_mod_version = "2.2.0";
+	SetDvar( "zm_mod_version", level.zm_mod_version );
 
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
@@ -7939,6 +7944,8 @@ print_apocalypse_options()
 			players[i] thread generate_hint_title(undefined, "Reimagined Zombies", OPTIONS_TIME);
 
 		wait (0.5);
+
+		{ players[i] thread generate_hint(undefined, "vers. " + level.zm_mod_version + zm_mod_version, offsets[j], OPTIONS_TIME ); j+=2; }
 
 		//BO2 Perks on and off
 		if( level.bo2_perks )

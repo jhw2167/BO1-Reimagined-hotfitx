@@ -1509,6 +1509,7 @@ powerup_grab()
 
 					case "restock":
 						level thread full_ammo_powerup_implementation( undefined, players[i], players[i].entity_num );
+						players[i] thread generate_perk_hint( "restock_powerup" );
 						//players[i] thread powerup_vo("full_ammo");
 						break;
 
@@ -3469,6 +3470,8 @@ tesla_weapon_powerup( ent_player, powerup, time )
 		ent_player maps\_zombiemode_perks::returnPerk( level.ARRAY_VALID_PRO_PERKS[i] );
 		wait(0.02);
 	}
+
+	ent_player thread generate_perk_hint( "superpower_powerup" );
 
 	if( is_true( level.dev_only ) )
 		drop_time = 5; //dev

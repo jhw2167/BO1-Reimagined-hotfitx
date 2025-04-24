@@ -4535,12 +4535,6 @@ watch_player_qrevive()
 	iprintln("watch_player_qrevive");
 
 	//if solo game, return
-	if( level.players_count == 1 )
-	{
-		return;
-	}
-		
-
 	self waittill("player_downed");
 	
 	//loop over self.purchased_perks

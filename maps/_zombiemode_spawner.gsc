@@ -299,7 +299,6 @@ zombie_spawn_init( animname_set )
 		( level.round_number >= level.THRESHOLD_ZOMBIE_RANDOM_DROP_ROUND )
 		&& ( !self.respawn_zombie )
 		&& ( is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname) )
-		&& ( level.total_drops_round < level.THRESHOLD_MAX_DROPS )
 		)
 			self thread zombie_wait_determine_drop();
 
@@ -416,8 +415,14 @@ zombie_determine_drop()
 
 		if( level.total_drops_round >= level.THRESHOLD_MAX_DROPS )
 		{
-			self.hasDrop = "NONE";
-			return;
+			if( is_true(level.dev_only ) ) {
+				//nothing
+			}
+			else {
+				self.hasDrop = "NONE";
+				return;
+			}
+			
 		}
 			
 

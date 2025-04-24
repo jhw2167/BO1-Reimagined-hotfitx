@@ -1264,7 +1264,7 @@ REFERENCE          	QRV_PRK_TITLE
 LANG_ENGLISH       	"Quick Revive"
 
 REFERENCE          	QRV_PRK_HINT
-LANG_ENGLISH       	"- Revive teammates faster \n- Regenerate health slightly quicker \n- After being revived, a random perk is returned to you (Co-op Only)"
+LANG_ENGLISH       	"- Quick Revive is no longer required to revive you in solo \n - Revive teammates faster \n- Regenerate health slightly quicker \n- After being revived, a random perk is returned to you"
 
 REFERENCE          	QRV_PRO_TITLE
 LANG_ENGLISH       	"QuickRevive Pro"
@@ -1492,6 +1492,18 @@ LANG_ENGLISH 		"SNIPERS"
 REFERENCE			SNIPER_DAMAGE_HINT
 LANG_ENGLISH 		"SNIPERS"
 
+
+REFERENCE			POWERUP_SUPERPOWER_TITLE
+LANG_ENGLISH 		"SUPERPOWER"
+
+REFERENCE			POWERUP_SUPERPOWER_HINT
+LANG_ENGLISH 		"Grants player all Pro Perks for a limited time"
+
+REFERENCE			POWERUP_RESTOCK_TITLE
+LANG_ENGLISH 		"RESTOCK"
+
+REFERENCE			POWERUP_RESTOCK_HINT
+LANG_ENGLISH 		"Replenishes all ammo and equipment for only one player"
 
 
 

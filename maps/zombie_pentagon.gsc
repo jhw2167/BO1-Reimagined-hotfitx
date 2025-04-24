@@ -1035,6 +1035,7 @@ override_blocker_prices()
 }
 
 /*
+	//Reimagined-Expanded
 	- Gas Appears in different tanks throughout the map after set number of rounds
 	- Gas waits arbitrary length of time between each spawn
 	- If player knifes the tank, get opportunity to fill tank with gas by knifing nova crawlers
