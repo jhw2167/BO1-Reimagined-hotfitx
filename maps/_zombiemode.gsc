@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									*/
+	/* 									/
 	//level.zombie_ai_limit_override=5;	///allowed on map
 	level.starting_round_override=4;	///
 	level.starting_points_override=100000;	///
