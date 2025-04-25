@@ -1276,11 +1276,11 @@ zmb_engineer( target )
     return;
   }
 
-  self thread zm_variant_on_death( "engineer" );
+  //self thread zm_variant_on_death( "engineer" );
 
   self detachAll();
   self.no_gib = 1;
-  //self setmodel( "char_ger_zombeng_body1_1" );
+  self setmodel( "char_ger_zombeng_body1_1" );
   //self.animname = "boss_zombie";
   self.moveplaybackrate = 0;
   self.talking = true;
@@ -1337,7 +1337,9 @@ zmb_engineer( target )
 
   count = 0;
 
-  Playfx( level._effect["fx_lighting_strike"], target );
+  //Playfx( level._effect["fx_lighting_strike"], target ); //didnt work
+  //level._effect["poltergeist"]
+  Playfx( level._effect["poltergeist"], target );
   playsoundatposition( "zmb_hellhound_prespawn", target );
   wait( 1.5 );
   playsoundatposition( "zmb_hellhound_bolt", target );
@@ -1354,6 +1356,7 @@ zmb_engineer( target )
   {
 	self.health = 12000;
   }
+  self.health=100;
   //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
   //self.custom_damage_func = ::eng_custom_damage;
   self show();

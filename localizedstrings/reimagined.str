@@ -1478,7 +1478,7 @@ REFERENCE			SHOTGUN_DAMAGE_TITLE
 LANG_ENGLISH 		"SHOTGUNS"
 
 REFERENCE			SHOTGUN_DAMAGE_HINT
-LANG_ENGLISH 		"- For each round you own a Shotgun, you do 10% more damage with all shotguns \n- All attrition is lost if you begin a round without owning a shotgun"
+LANG_ENGLISH 		"- For each round you own a Shotgun, you do 10% more damage with all shotguns\n- All attrition is lost if you begin a round without owning a shotgun\n- Shotguns don't do very much damage to bosses"
 
 REFERENCE			SIDEARM_DAMAGE_TITLE
 LANG_ENGLISH 		"SIDEARMS"

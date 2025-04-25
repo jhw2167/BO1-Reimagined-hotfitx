@@ -206,7 +206,10 @@ material,specialty_bo4hitmarker_white
 material,specialty_bo4hitmarker_red__
 material,punch_zm
 material,mtl_sabretooth
-
+material,mtl_zombieengineer_wrench
+material,mtl_zombieengineer_body_skin
+material,mtl_zombieengineer_body_leather
+material,mtl_zombieengineer_body_canvas
 
 material,hud_icon_pistol
 //{{NEW_MATERIAL_LINE}}
@@ -478,6 +481,9 @@ xmodel,bo3_t7_ww_grenade_proj
 xmodel,t5_weapon_sabretooth_viewmodel
 xmodel,t5_weapon_sabretooth_world
 //{{NEW_XMODEL_LINE}}
+
+//boss
+xmodel,char_ger_zombeng_body1_1
 
 //ANIMS
 xanim,p_zombie_perkacola_drink

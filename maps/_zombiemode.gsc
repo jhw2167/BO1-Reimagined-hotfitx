@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									/
+	/* 									*/
 	//level.zombie_ai_limit_override=5;	///allowed on map
 	level.starting_round_override=4;	///
 	level.starting_points_override=100000;	///
@@ -1662,7 +1662,7 @@ wait_set_player_visionset()
 			break;
 		
 	}
-	/*
+	
 	spawned_boss = true && is_true( level.dev_only );
 	if( spawned_boss )
 	{
@@ -1675,7 +1675,6 @@ wait_set_player_visionset()
 		zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
 		
 	}
-	*/
 
 }
 
@@ -10152,6 +10151,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	// damage for non-shotgun bullet weapons - deals the same amount of damage through walls and multiple zombies
 	// all body shots deal the same damage
 	// neck, head, and healmet shots all deal the same damage
+
+	//print the weapon
+	iprintln("Weapon: " + weapon);
 	
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
 	{
@@ -10336,6 +10338,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "m14_upgraded_zm":
 		case "m1garand_upgraded_zm":
+		case "zombie_m1garand_upgraded":
 			final_damage = 1400;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
@@ -10419,6 +10422,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 		case "stoner63_upgraded_zm":
 		case "bar_upgraded_zm":
+		case "zombie_bar_upgraded":
 			final_damage = 2100;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
@@ -10473,13 +10477,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 
 		case "zombie_fg42_upgraded":
-			final_damage = 1200;
+			final_damage = 1000;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
 			break;
 
 		case "zombie_stg44_upgraded":
-			final_damage = 1000;
+			final_damage = 1200;
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck")
 				final_damage *= 3;
 			break;
@@ -10542,7 +10546,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;
 		}
 
-		//iprintln("Final Damage 6: " + final_damage);
+		iprintln("Final Damage 6: " + final_damage);
 		
 		if( IsSubStr( weapon, "x2" ) ) 
 		{
