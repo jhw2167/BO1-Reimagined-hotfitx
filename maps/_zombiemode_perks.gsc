@@ -2906,7 +2906,7 @@ unlocked_perk_upgrade( perk )
 
 give_perk( perk, bought )
 {
-	//iprintln( "Giving Perk " + perk );
+	iprintln( "Giving Perk " + perk );
 	//iprintln(" Player " + self.entity_num );
 
 	self thread generate_perk_hint( perk );

@@ -1281,6 +1281,8 @@ zmb_engineer( target )
   self detachAll();
   self.no_gib = 1;
   self setmodel( "char_ger_zombeng_body1_1" );
+  //self setmodel( "t5_weapon_sabretooth_world" );
+  //t5_weapon_sabretooth_world
   //self.animname = "boss_zombie";
   self.moveplaybackrate = 0;
   self.talking = true;

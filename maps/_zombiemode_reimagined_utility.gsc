@@ -937,6 +937,7 @@ start_properk_placer()
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
 	//object SetModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+	//object SetModel( "t5_weapon_sabretooth_world" );
   	object SetModel( "char_ger_zombeng_body1_1" );
 
 	/*
