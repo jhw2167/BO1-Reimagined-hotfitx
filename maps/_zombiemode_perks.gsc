@@ -1521,7 +1521,7 @@ turn_divetonuke_on()
 divetonuke_explode( attacker, origin, isDamaged )
 {
 	// tweakable vars
-	//iprintln("divetonuke_explode");
+	iprintln("divetonuke_explode");
 	radius = level.zombie_vars["zombie_perk_divetonuke_radius"];
 	min_damage = level.VALUE_PHD_MIN_DAMAGE;
 	max_damage = level.VALUE_PHD_MAX_DAMAGE;

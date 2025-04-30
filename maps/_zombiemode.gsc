@@ -2888,6 +2888,8 @@ precache_models()
 	PrecacheModel( "p_zom_counter_8" );
 	PrecacheModel( "p_zom_counter_9" );
 
+	precachemodel( "char_ger_zombeng_body1_1" );
+
 	// Player Tombstone
 	precachemodel("zombie_revive");
 
@@ -10001,7 +10003,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( IsSubStr( weapon, "upgraded" ) )
 			final_damage *= 2;
 
-		iprintln("Final Damage 6: " + final_damage);
 	}
 
 
@@ -10153,7 +10154,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	// neck, head, and healmet shots all deal the same damage
 
 	//print the weapon
-	iprintln("Weapon: " + weapon);
+	//iprintln("Weapon: " + weapon);
 	
 	if(meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET")
 	{
