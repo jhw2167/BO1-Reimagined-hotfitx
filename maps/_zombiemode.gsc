@@ -56,8 +56,8 @@ main()
 
 	//Overrides	
 	/* 									*/
-	//level.zombie_ai_limit_override=5;	///allowed on map
-	level.starting_round_override=4;	///
+	level.zombie_ai_limit_override=1;	///allowed on map
+	level.starting_round_override=1;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -3976,6 +3976,10 @@ init_animscripts()
 	anim.idleAnimWeights	["crouch"] = [];
 	anim.idleAnimArray		["crouch"][0][0] 	= %ai_zombie_idle_crawl_delta;
 	anim.idleAnimWeights	["crouch"][0][0] 	= 10;
+
+	//init from _zombimeode_ai_boss
+	maps\_zombiemode_ai_boss::init_boss_zombie_anims();
+	 
 }
 
 // Handles the intro screen

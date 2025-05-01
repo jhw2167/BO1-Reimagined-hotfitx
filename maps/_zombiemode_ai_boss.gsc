@@ -137,6 +137,7 @@ init()
 	level.boss_health_reduce = 0.7;
 	level thread boss_adjust_max_ammo();
 }
+
 #using_animtree( "generic_human" );
 boss_prespawn()
 {
@@ -208,192 +209,7 @@ boss_health_watch()
 		wait( 1 );
 	}
 }
-boss_set_airstrike_damage()
-{
-	flag_wait( "all_players_connected" );
-	players = GetPlayers();
-	if ( players.size == 4 )
-	{
-		self.maxAirstrikeDamage = 125;
-	}
-	else
-	{
-		self.maxAirstrikeDamage = 100;
-	}
-}
-boss_zombie_idle_setup()
-{
-	self.a.array["turn_left_45"] = %exposed_tracking_turn45L;
-	self.a.array["turn_left_90"] = %exposed_tracking_turn90L;
-	self.a.array["turn_left_135"] = %exposed_tracking_turn135L;
-	self.a.array["turn_left_180"] = %exposed_tracking_turn180L;
-	self.a.array["turn_right_45"] = %exposed_tracking_turn45R;
-	self.a.array["turn_right_90"] = %exposed_tracking_turn90R;
-	self.a.array["turn_right_135"] = %exposed_tracking_turn135R;
-	self.a.array["turn_right_180"] = %exposed_tracking_turn180L;
-	self.a.array["exposed_idle"] = array( %ai_zombie_boss_idle_a, %ai_zombie_boss_idle_b );
-	self.a.array["straight_level"] = %ai_zombie_boss_idle_a;
-	self.a.array["stand_2_crouch"] = %ai_zombie_shot_leg_right_2_crawl;
-}
-init_boss_zombie_anims()
-{
-	
-	level.scr_anim["boss_zombie"]["death1"] 	= %ai_zombie_boss_death;
-	level.scr_anim["boss_zombie"]["death2"] 	= %ai_zombie_boss_death_a;
-	level.scr_anim["boss_zombie"]["death3"] 	= %ai_zombie_boss_death_explode;
-	level.scr_anim["boss_zombie"]["death4"] 	= %ai_zombie_boss_death_mg;
-	
-	
-	level.scr_anim["boss_zombie"]["walk1"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk2"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk3"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk4"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk5"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk6"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk7"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["walk8"] 	= %ai_zombie_boss_walk_a;
-	level.scr_anim["boss_zombie"]["run1"] 	= %ai_zombie_walk_fast_v1;
-	level.scr_anim["boss_zombie"]["run2"] 	= %ai_zombie_walk_fast_v2;
-	level.scr_anim["boss_zombie"]["run3"] 	= %ai_zombie_walk_fast_v3;
-	level.scr_anim["boss_zombie"]["run4"] 	= %ai_zombie_run_v2;
-	level.scr_anim["boss_zombie"]["run5"] 	= %ai_zombie_run_v4;
-	level.scr_anim["boss_zombie"]["run6"] 	= %ai_zombie_run_v3;
-	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
-	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
-	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_b;
-	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
-	
-	level.scr_anim["boss_zombie"]["crawl1"] 	= %ai_zombie_crawl;
-	level.scr_anim["boss_zombie"]["crawl2"] 	= %ai_zombie_crawl_v1;
-	level.scr_anim["boss_zombie"]["crawl3"] 	= %ai_zombie_crawl_v2;
-	level.scr_anim["boss_zombie"]["crawl4"] 	= %ai_zombie_crawl_v3;
-	level.scr_anim["boss_zombie"]["crawl5"] 	= %ai_zombie_crawl_v4;
-	level.scr_anim["boss_zombie"]["crawl6"] 	= %ai_zombie_crawl_v5;
-	level.scr_anim["boss_zombie"]["crawl_hand_1"] = %ai_zombie_walk_on_hands_a;
-	level.scr_anim["boss_zombie"]["crawl_hand_2"] = %ai_zombie_walk_on_hands_b;
-	level.scr_anim["boss_zombie"]["crawl_sprint1"] 	= %ai_zombie_crawl_sprint;
-	level.scr_anim["boss_zombie"]["crawl_sprint2"] 	= %ai_zombie_crawl_sprint_1;
-	level.scr_anim["boss_zombie"]["crawl_sprint3"] 	= %ai_zombie_crawl_sprint_2;
-	if( !isDefined( level._zombie_melee ) )
-	{
-		level._zombie_melee = [];
-	}
-	if( !isDefined( level._zombie_walk_melee ) )
-	{
-		level._zombie_walk_melee = [];
-	}
-	if( !isDefined( level._zombie_run_melee ) )
-	{
-		level._zombie_run_melee = [];
-	}
-	level._zombie_melee["boss_zombie"] = [];
-	level._zombie_walk_melee["boss_zombie"] = [];
-	level._zombie_run_melee["boss_zombie"] = [];
-	level._zombie_melee["boss_zombie"][0] 				= %ai_zombie_boss_attack_multiswing_a; 
-	level._zombie_melee["boss_zombie"][1] 				= %ai_zombie_boss_attack_multiswing_b; 
-	level._zombie_melee["boss_zombie"][2] 				= %ai_zombie_boss_attack_swing_overhead; 
-	level._zombie_melee["boss_zombie"][3] 				= %ai_zombie_boss_attack_swing_swipe;	
-	level._zombie_melee["boss_zombie"][3] 				= %ai_zombie_boss_headbutt;	
-	if( isDefined( level.boss_zombie_anim_override ) )
-	{
-		[[ level.boss_zombie_anim_override ]]();
-	}
-	
-	
-	level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
-	level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
-	level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
-	
-	if( !isDefined( level._zombie_melee_crawl ) )
-	{
-		level._zombie_melee_crawl = [];
-	}
-	level._zombie_melee_crawl["boss_zombie"] = [];
-	level._zombie_melee_crawl["boss_zombie"][0] 		= %ai_zombie_attack_crawl; 
-	level._zombie_melee_crawl["boss_zombie"][1] 		= %ai_zombie_attack_crawl_lunge;
-	if( !isDefined( level._zombie_stumpy_melee ) )
-	{
-		level._zombie_stumpy_melee = [];
-	}
-	level._zombie_stumpy_melee["boss_zombie"] = [];
-	level._boss_zombie_stumpy_melee["boss_zombie"][0] = %ai_zombie_walk_on_hands_shot_a;
-	level._boss_zombie_stumpy_melee["boss_zombie"][1] = %ai_zombie_walk_on_hands_shot_b;
-	
-	if( !isDefined( level._zombie_tesla_deaths ) )
-	{
-		level._zombie_tesla_deaths = [];
-	}
-	level._zombie_tesla_death["boss_zombie"] = [];
-	level._zombie_tesla_death["boss_zombie"][0] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["boss_zombie"][1] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["boss_zombie"][2] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["boss_zombie"][3] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["boss_zombie"][4] = %ai_zombie_boss_tesla_death_a;
-	if( !isDefined( level._zombie_tesla_crawl_death ) )
-	{
-		level._zombie_tesla_crawl_death = [];
-	}
-	level._zombie_tesla_crawl_death["boss_zombie"] = [];
-	level._zombie_tesla_crawl_death["boss_zombie"][0] = %ai_zombie_tesla_crawl_death_a;
-	level._zombie_tesla_crawl_death["boss_zombie"][1] = %ai_zombie_tesla_crawl_death_b;
-	
-	if( !isDefined( level._zombie_deaths ) )
-	{
-		level._zombie_deaths = [];
-	}
-	level._zombie_deaths["boss_zombie"] = [];
-	level._zombie_deaths["boss_zombie"][0] = %ai_zombie_boss_death;
-	level._zombie_deaths["boss_zombie"][1] = %ai_zombie_boss_death_a;
-	level._zombie_deaths["boss_zombie"][2] = %ai_zombie_boss_death_explode;
-	level._zombie_deaths["boss_zombie"][3] = %ai_zombie_boss_death_mg;
-	
-	
-	if( !isDefined( level._zombie_rise_anims ) )
-	{
-		level._zombie_rise_anims = [];
-	}
-	level._zombie_rise_anims["boss_zombie"] = [];
-	level._zombie_rise_anims["boss_zombie"][1]["walk"][0]		= %ai_zombie_traverse_ground_v1_walk;
-	level._zombie_rise_anims["boss_zombie"][1]["run"][0]		= %ai_zombie_traverse_ground_v1_run;
-	level._zombie_rise_anims["boss_zombie"][1]["sprint"][0]	= %ai_zombie_traverse_ground_climbout_fast;
-	level._zombie_rise_anims["boss_zombie"][2]["walk"][0]		= %ai_zombie_traverse_ground_v2_walk_altA;
-	
-	if( !isDefined( level._zombie_rise_death_anims ) )
-	{
-		level._zombie_rise_death_anims = [];
-	}
-	level._zombie_rise_death_anims["boss_zombie"] = [];
-	level._zombie_rise_death_anims["boss_zombie"][1]["in"][0]		= %ai_zombie_traverse_ground_v1_deathinside;
-	level._zombie_rise_death_anims["boss_zombie"][1]["in"][1]		= %ai_zombie_traverse_ground_v1_deathinside_alt;
-	level._zombie_rise_death_anims["boss_zombie"][1]["out"][0]		= %ai_zombie_traverse_ground_v1_deathoutside;
-	level._zombie_rise_death_anims["boss_zombie"][1]["out"][1]		= %ai_zombie_traverse_ground_v1_deathoutside_alt;
-	level._zombie_rise_death_anims["boss_zombie"][2]["in"][0]		= %ai_zombie_traverse_ground_v2_death_low;
-	level._zombie_rise_death_anims["boss_zombie"][2]["in"][1]		= %ai_zombie_traverse_ground_v2_death_low_alt;
-	level._zombie_rise_death_anims["boss_zombie"][2]["out"][0]		= %ai_zombie_traverse_ground_v2_death_high;
-	level._zombie_rise_death_anims["boss_zombie"][2]["out"][1]		= %ai_zombie_traverse_ground_v2_death_high_alt;
-	
-	
-	if( !isDefined( level._zombie_run_taunt ) )
-	{
-		level._zombie_run_taunt = [];
-	}
-	if( !isDefined( level._zombie_board_taunt ) )
-	{
-		level._zombie_board_taunt = [];
-	}
-	
-	level._zombie_run_taunt["boss_zombie"] = [];
-	level._zombie_board_taunt["boss_zombie"] = [];
-	
-	level._zombie_board_taunt["boss_zombie"][0] = %ai_zombie_taunts_4;
-	level._zombie_board_taunt["boss_zombie"][1] = %ai_zombie_taunts_7;
-	level._zombie_board_taunt["boss_zombie"][2] = %ai_zombie_taunts_9;
-	level._zombie_board_taunt["boss_zombie"][3] = %ai_zombie_taunts_5b;
-	level._zombie_board_taunt["boss_zombie"][4] = %ai_zombie_taunts_5c;
-	level._zombie_board_taunt["boss_zombie"][5] = %ai_zombie_taunts_5d;
-	level._zombie_board_taunt["boss_zombie"][6] = %ai_zombie_taunts_5e;
-	level._zombie_board_taunt["boss_zombie"][7] = %ai_zombie_taunts_5f;
-}
+
 boss_zombie_spawn()
 {
 	self.script_moveoverride = true; 
@@ -1281,9 +1097,8 @@ zmb_engineer( target )
   self detachAll();
   self.no_gib = 1;
   self setmodel( "char_ger_zombeng_body1_1" );
-  //self setmodel( "t5_weapon_sabretooth_world" );
-  //t5_weapon_sabretooth_world
-  //self.animname = "boss_zombie";
+
+  self.animname = "boss_zombie";
   self.moveplaybackrate = 0;
   self.talking = true;
   self hide();
@@ -1376,32 +1191,82 @@ zmb_engineer( target )
 	movement = "run";
   }
   
-  self.run_combatanim = level.scr_anim["boss_zombie"][movement+rnd];
-  self set_run_anim( movement+rnd );
+  self PushPlayer( true );
+  numAnim = "walk1";
+  self.run_combatanim = level.scr_anim["boss_zombie"][numAnim];
+  self set_run_anim( numAnim );
   self ClearAnim( %exposed_modern, 0 );
-  self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
+  //self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
   self.needs_run_update = false;
   self.script_moveoverride = false;
   self.ignoreall = false;
   level.engineer_zms_alive++;
 
-  self notify( "stop_find_flesh" );
+  self thread maps\_zombiemode_spawner::find_flesh();
+  self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+  //self thread maps\_zombiemode_spawner::reset_attack_spot();
+
+  //self notify( "stop_find_flesh" );
   self notify( "zombie_acquire_enemy" );
-  self notify( "goal" );
+  //self notify( "goal" );
 
-  while( count < 20 )
-  {
-    self thread maps\_zombiemode_spawner::find_flesh();
-    self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
-    self thread maps\_zombiemode_spawner::reset_attack_spot();
-    count++;
 
-    wait .1;
-  }
-  
-  self thread eng_enrage_think();
+  self thread eng_watch_goals();
 
 }
+
+/**
+
+	Threaded method loops and occaisionally sets new goal for engineer zombie
+
+	//good sprints
+	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
+
+**/
+eng_watch_goals()
+{
+	animsArr = array("run1", "run2", "run3", "run4", "sprint1", "sprint2", "sprint3", "sprint4");
+	attackAnimsArr = array("multiA", "multiB", "overhead", "swipe", "headbutt", "runAttackA", "sprintAttack", "runAttackB");
+
+
+	/*
+	i = 0;
+	while( IsAlive(self) )
+	{
+		self thread maps\_zombiemode_spawner::find_flesh();
+		//self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+		//self thread maps\_zombiemode_spawner::reset_attack_spot();
+		wait 5;
+		
+		
+		//self.run_combatanim = level.scr_anim["boss_zombie"][ animsArr[i] ];
+  		//self set_run_anim( animsArr[i] );
+		//self.zombie_move_speed = "sprint";
+		//self.moveplaybackrate = 1.25;
+		//iprintln( "Engineer Zombie: Setting run anim to " + animsArr[i] );
+		if( i < 5 )
+		self animscripted( "attack_anim", self.origin, self.angles, level._zombie_melee["boss_zombie"][randomintrange(0,4)] );
+			else
+		self animscripted( "attack_anim", self.origin, self.angles, level._zombie_run_melee["boss_zombie"][i-5] );
+
+		iprintln( "Engineer Zombie: Setting run anim to anim: " + i );
+		i++;
+
+		//self ClearAnim( %exposed_modern, 0 );
+	}
+	*/
+
+}
+
+
+eng_set_goal()
+{
+
+}
+
+
+
 
 eng_custom_damage( player )
 {
@@ -1450,7 +1315,7 @@ eng_enrage_think()
 	
 	self animscripted( "enraged", self.origin, self.angles, level.scr_anim["boss_zombie"]["enrage"] );
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint"+randomintrange( 1, 3 )];
-	self.zombie_move_speed = "sprint"; 
+	self.zombie_move_speed = "sprint";
 	self.moveplaybackrate = 1.25;
 	
 	wait 1;
@@ -1510,10 +1375,167 @@ boss_zombie_idle_setup()
 	self.a.array["stand_2_crouch"] = %ai_zombie_shot_leg_right_2_crawl;
 }
 
-zm_variant_on_death( zm_type )
+
+init_boss_zombie_anims()
 {
-	// nothing
+	level.scr_anim["boss_zombie"]["death1"] 	= %ai_zombie_boss_death;
+	level.scr_anim["boss_zombie"]["death2"] 	= %ai_zombie_boss_death_a;
+	level.scr_anim["boss_zombie"]["death3"] 	= %ai_zombie_boss_death_explode;
+	level.scr_anim["boss_zombie"]["death4"] 	= %ai_zombie_boss_death_mg;
+	
+	
+	level.scr_anim["boss_zombie"]["walk1"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk2"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk3"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk4"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk5"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk6"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk7"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk8"] 	= %ai_zombie_boss_walk_a;
+
+	level.scr_anim["boss_zombie"]["run1"] 	= %ai_zombie_walk_fast_v1;
+	level.scr_anim["boss_zombie"]["run2"] 	= %ai_zombie_walk_fast_v2;
+	level.scr_anim["boss_zombie"]["run3"] 	= %ai_zombie_walk_fast_v3;
+	level.scr_anim["boss_zombie"]["run4"] 	= %ai_zombie_run_v2;
+	level.scr_anim["boss_zombie"]["run5"] 	= %ai_zombie_run_v4;
+	level.scr_anim["boss_zombie"]["run6"] 	= %ai_zombie_run_v3;
+	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_b;
+	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
+	
+	level.scr_anim["boss_zombie"]["crawl1"] 	= %ai_zombie_crawl;
+	level.scr_anim["boss_zombie"]["crawl2"] 	= %ai_zombie_crawl_v1;
+	level.scr_anim["boss_zombie"]["crawl3"] 	= %ai_zombie_crawl_v2;
+	level.scr_anim["boss_zombie"]["crawl4"] 	= %ai_zombie_crawl_v3;
+	level.scr_anim["boss_zombie"]["crawl5"] 	= %ai_zombie_crawl_v4;
+	level.scr_anim["boss_zombie"]["crawl6"] 	= %ai_zombie_crawl_v5;
+	level.scr_anim["boss_zombie"]["crawl_hand_1"] = %ai_zombie_walk_on_hands_a;
+	level.scr_anim["boss_zombie"]["crawl_hand_2"] = %ai_zombie_walk_on_hands_b;
+	level.scr_anim["boss_zombie"]["crawl_sprint1"] 	= %ai_zombie_crawl_sprint;
+	level.scr_anim["boss_zombie"]["crawl_sprint2"] 	= %ai_zombie_crawl_sprint_1;
+	level.scr_anim["boss_zombie"]["crawl_sprint3"] 	= %ai_zombie_crawl_sprint_2;
+	if( !isDefined( level._zombie_melee ) )
+	{
+		level._zombie_melee = [];
+	}
+	if( !isDefined( level._zombie_walk_melee ) )
+	{
+		level._zombie_walk_melee = [];
+	}
+	if( !isDefined( level._zombie_run_melee ) )
+	{
+		level._zombie_run_melee = [];
+	}
+	level._zombie_melee["boss_zombie"] = [];
+	level._zombie_walk_melee["boss_zombie"] = [];
+	level._zombie_run_melee["boss_zombie"] = [];
+	level._zombie_melee["boss_zombie"][0] 				= %ai_zombie_boss_attack_multiswing_a; 
+	level._zombie_melee["boss_zombie"][1] 				= %ai_zombie_boss_attack_multiswing_b; 
+	level._zombie_melee["boss_zombie"][2] 				= %ai_zombie_boss_attack_swing_overhead; 
+	level._zombie_melee["boss_zombie"][3] 				= %ai_zombie_boss_attack_swing_swipe;	
+	level._zombie_melee["boss_zombie"][4] 				= %ai_zombie_boss_headbutt;	
+	if( isDefined( level.boss_zombie_anim_override ) )
+	{
+		[[ level.boss_zombie_anim_override ]]();
+	}
+	
+	
+	level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
+	level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
+	
+	if( !isDefined( level._zombie_melee_crawl ) )
+	{
+		level._zombie_melee_crawl = [];
+	}
+	level._zombie_melee_crawl["boss_zombie"] = [];
+	level._zombie_melee_crawl["boss_zombie"][0] 		= %ai_zombie_attack_crawl; 
+	level._zombie_melee_crawl["boss_zombie"][1] 		= %ai_zombie_attack_crawl_lunge;
+	if( !isDefined( level._zombie_stumpy_melee ) )
+	{
+		level._zombie_stumpy_melee = [];
+	}
+	level._zombie_stumpy_melee["boss_zombie"] = [];
+	level._boss_zombie_stumpy_melee["boss_zombie"][0] = %ai_zombie_walk_on_hands_shot_a;
+	level._boss_zombie_stumpy_melee["boss_zombie"][1] = %ai_zombie_walk_on_hands_shot_b;
+	
+	if( !isDefined( level._zombie_tesla_deaths ) )
+	{
+		level._zombie_tesla_deaths = [];
+	}
+	level._zombie_tesla_death["boss_zombie"] = [];
+	level._zombie_tesla_death["boss_zombie"][0] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death["boss_zombie"][1] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death["boss_zombie"][2] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death["boss_zombie"][3] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death["boss_zombie"][4] = %ai_zombie_boss_tesla_death_a;
+	if( !isDefined( level._zombie_tesla_crawl_death ) )
+	{
+		level._zombie_tesla_crawl_death = [];
+	}
+	level._zombie_tesla_crawl_death["boss_zombie"] = [];
+	level._zombie_tesla_crawl_death["boss_zombie"][0] = %ai_zombie_tesla_crawl_death_a;
+	level._zombie_tesla_crawl_death["boss_zombie"][1] = %ai_zombie_tesla_crawl_death_b;
+	
+	if( !isDefined( level._zombie_deaths ) )
+	{
+		level._zombie_deaths = [];
+	}
+	level._zombie_deaths["boss_zombie"] = [];
+	level._zombie_deaths["boss_zombie"][0] = %ai_zombie_boss_death;
+	level._zombie_deaths["boss_zombie"][1] = %ai_zombie_boss_death_a;
+	level._zombie_deaths["boss_zombie"][2] = %ai_zombie_boss_death_explode;
+	level._zombie_deaths["boss_zombie"][3] = %ai_zombie_boss_death_mg;
+	
+	
+	if( !isDefined( level._zombie_rise_anims ) )
+	{
+		level._zombie_rise_anims = [];
+	}
+	level._zombie_rise_anims["boss_zombie"] = [];
+	level._zombie_rise_anims["boss_zombie"][1]["walk"][0]		= %ai_zombie_traverse_ground_v1_walk;
+	level._zombie_rise_anims["boss_zombie"][1]["run"][0]		= %ai_zombie_traverse_ground_v1_run;
+	level._zombie_rise_anims["boss_zombie"][1]["sprint"][0]	= %ai_zombie_traverse_ground_climbout_fast;
+	level._zombie_rise_anims["boss_zombie"][2]["walk"][0]		= %ai_zombie_traverse_ground_v2_walk_altA;
+	
+	if( !isDefined( level._zombie_rise_death_anims ) )
+	{
+		level._zombie_rise_death_anims = [];
+	}
+	level._zombie_rise_death_anims["boss_zombie"] = [];
+	level._zombie_rise_death_anims["boss_zombie"][1]["in"][0]		= %ai_zombie_traverse_ground_v1_deathinside;
+	level._zombie_rise_death_anims["boss_zombie"][1]["in"][1]		= %ai_zombie_traverse_ground_v1_deathinside_alt;
+	level._zombie_rise_death_anims["boss_zombie"][1]["out"][0]		= %ai_zombie_traverse_ground_v1_deathoutside;
+	level._zombie_rise_death_anims["boss_zombie"][1]["out"][1]		= %ai_zombie_traverse_ground_v1_deathoutside_alt;
+	level._zombie_rise_death_anims["boss_zombie"][2]["in"][0]		= %ai_zombie_traverse_ground_v2_death_low;
+	level._zombie_rise_death_anims["boss_zombie"][2]["in"][1]		= %ai_zombie_traverse_ground_v2_death_low_alt;
+	level._zombie_rise_death_anims["boss_zombie"][2]["out"][0]		= %ai_zombie_traverse_ground_v2_death_high;
+	level._zombie_rise_death_anims["boss_zombie"][2]["out"][1]		= %ai_zombie_traverse_ground_v2_death_high_alt;
+	
+	
+	if( !isDefined( level._zombie_run_taunt ) )
+	{
+		level._zombie_run_taunt = [];
+	}
+	if( !isDefined( level._zombie_board_taunt ) )
+	{
+		level._zombie_board_taunt = [];
+	}
+	
+	level._zombie_run_taunt["boss_zombie"] = [];
+	level._zombie_board_taunt["boss_zombie"] = [];
+	
+	level._zombie_board_taunt["boss_zombie"][0] = %ai_zombie_taunts_4;
+	level._zombie_board_taunt["boss_zombie"][1] = %ai_zombie_taunts_7;
+	level._zombie_board_taunt["boss_zombie"][2] = %ai_zombie_taunts_9;
+	level._zombie_board_taunt["boss_zombie"][3] = %ai_zombie_taunts_5b;
+	level._zombie_board_taunt["boss_zombie"][4] = %ai_zombie_taunts_5c;
+	level._zombie_board_taunt["boss_zombie"][5] = %ai_zombie_taunts_5d;
+	level._zombie_board_taunt["boss_zombie"][6] = %ai_zombie_taunts_5e;
+	level._zombie_board_taunt["boss_zombie"][7] = %ai_zombie_taunts_5f;
 }
+
 
 //List all called functions that are not found in this file
 //

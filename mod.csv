@@ -536,6 +536,30 @@ xanim,ai_zombie_quad_death_tesla_4
 
 xanim,ai_zombie_flinger_flail
 
+xanim,ai_zombie_boss_attack_multiswing_a
+xanim,ai_zombie_boss_attack_multiswing_b
+xanim,ai_zombie_boss_attack_running
+xanim,ai_zombie_boss_attack_sprinting
+xanim,ai_zombie_boss_attack_swing_overhead
+xanim,ai_zombie_boss_attack_swing_swipe
+xanim,ai_zombie_boss_death
+xanim,ai_zombie_boss_death_a
+xanim,ai_zombie_boss_enrage_short
+xanim,ai_zombie_boss_enrage_start
+xanim,ai_zombie_boss_headbutt
+xanim,ai_zombie_boss_idle_a
+xanim,ai_zombie_boss_idle_b
+xanim,ai_zombie_boss_run_a
+xanim,ai_zombie_boss_run_b
+xanim,ai_zombie_boss_run_c
+xanim,ai_zombie_boss_run_d
+xanim,ai_zombie_boss_run_hitground
+xanim,ai_zombie_boss_run_hitground_new
+xanim,ai_zombie_boss_sprint_a
+xanim,ai_zombie_boss_sprint_b
+xanim,ai_zombie_boss_walk_a
+
+
 //Weapons
 xanim,viewmodel_asp_sw_d2p_in
 xanim,viewmodel_asp_sw_d2p_loop

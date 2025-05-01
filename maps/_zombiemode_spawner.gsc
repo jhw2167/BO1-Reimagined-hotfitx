@@ -4739,6 +4739,8 @@ find_flesh()
 	self.goalradius = 32;
 	while( 1 )
 	{
+		if( self.animname == "boss_zombie")
+			iprintln("Attempting find flesh for boss");
 		zombie_poi = undefined;
 		// try to split the zombies up when the bunch up
 		// see if a bunch zombies are already near my current target; if there's a bunch
