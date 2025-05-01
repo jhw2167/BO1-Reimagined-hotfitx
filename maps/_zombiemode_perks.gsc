@@ -4531,9 +4531,6 @@ watch_player_qrevive()
 	self endon("fake_death");
 	self endon("end_game");
 
-
-	iprintln("watch_player_qrevive");
-
 	//if solo game, return
 	self waittill("player_downed");
 	
@@ -6671,7 +6668,7 @@ init_widows_wine()
 
 player_watch_widowswine()
 {
-	self thread player_give_wine_grenades( level.WWN_PRK + "_stop" );
+	//self thread player_give_wine_grenades( level.WWN_PRK + "_stop" );
 	self thread player_watch_widows_warning();
 }
 
@@ -7163,12 +7160,12 @@ player_zombie_handle_widows_poison( zombie )
 
 player_watch_widows_grenade( stop_str )
 {
+
 	self endon( "disconnect" );
 	self endon( "death" );
 
 	while( self hasProPerk( level.WWN_PRO ) || (level.classic && self HasPerk( level.WWN_PRK )) )
 	{
-
 		self waittill( "grenade_fire", grenade, weapName );
 		if( weapName == "bo3_zm_widows_grenade" )
 			self thread player_widows_grenade_explode( grenade );

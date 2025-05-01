@@ -922,8 +922,8 @@ reimagined_init_level()
 
 	level.ARRAY_SHEERCOLD_WEAPONS = array("hk21_upgraded_zm_x2", "galil_upgraded_zm_x2", "spectre_upgraded_zm_x2",
 							 	"makarov_upgraded_zm_x2");
-	level.RANGE_SHEERCOLD_DIST = 120;
-	level.THRESHOLD_SHEERCOLD_DIST = 50;
+	level.RANGE_SHEERCOLD_DIST = 256;
+	level.THRESHOLD_SHEERCOLD_DIST = 100;
 	level.THRESHOLD_SHEERCOLD_ACTIVE_TIME = 2;
 	level.THRESHOLD_SHEERCOLD_ZOMBIE_THAW_TIME = 3;
 
@@ -1615,7 +1615,7 @@ wait_set_player_visionset()
 
 	*/
 	
-	wait( 5 );
+	//wait( 5 );
 	
 
 	/*
@@ -3954,6 +3954,13 @@ init_standard_zombie_anims()
 	level._zombie_board_taunt["zombie"][5] = %ai_zombie_taunts_5d;
 	level._zombie_board_taunt["zombie"][6] = %ai_zombie_taunts_5e;
 	level._zombie_board_taunt["zombie"][7] = %ai_zombie_taunts_5f;
+
+
+	level._zombie_run_melee["zombie"][0]				=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_sprint_melee["zombie"][0]				=	%ai_zombie_boss_attack_sprinting;
+	//level._zombie_run_melee["zombie"][2]				=	%ai_zombie_boss_attack_running;
+	//level._zombie_run_melee["zombie"][0]				=	%ai_zombie_boss_attack_running;
+	
 }
 
 init_anims()

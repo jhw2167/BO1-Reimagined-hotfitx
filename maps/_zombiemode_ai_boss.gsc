@@ -1154,13 +1154,12 @@ zmb_engineer( target )
 
   count = 0;
 
-  //Playfx( level._effect["fx_lighting_strike"], target ); //didnt work
   //level._effect["poltergeist"]
-  Playfx( level._effect["poltergeist"], target );
+  //Playfx( level._effect["poltergeist"], target );
   playsoundatposition( "zmb_hellhound_prespawn", target );
-  wait( 1.5 );
   playsoundatposition( "zmb_hellhound_bolt", target );
-
+  Playfx( level._effect["fx_lighting_strike"], target ); //didnt work
+  wait(0.5);
   Earthquake( 0.5, 0.75, target, 1000 );
   PlayRumbleOnPosition( "explosion_generic", target );
   playsoundatposition( "zmb_hellhound_spawn", target );
@@ -1191,7 +1190,6 @@ zmb_engineer( target )
 	movement = "run";
   }
   
-  self PushPlayer( true );
   numAnim = "walk1";
   self.run_combatanim = level.scr_anim["boss_zombie"][numAnim];
   self set_run_anim( numAnim );
@@ -1203,7 +1201,7 @@ zmb_engineer( target )
   level.engineer_zms_alive++;
 
   self thread maps\_zombiemode_spawner::find_flesh();
-  self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+  self thread eng_attack_properties();
   //self thread maps\_zombiemode_spawner::reset_attack_spot();
 
   //self notify( "stop_find_flesh" );
@@ -1211,7 +1209,17 @@ zmb_engineer( target )
   //self notify( "goal" );
 
 
-  self thread eng_watch_goals();
+  self thread watch_eng_goals();
+
+}
+
+eng_attack_properties() {
+
+	self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+	self PushPlayer( true );
+
+	self.pathEnemyFightDist = 96;
+	self.meleeAttackDist = 256;
 
 }
 
@@ -1224,20 +1232,31 @@ zmb_engineer( target )
 	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
 
 **/
-eng_watch_goals()
+watch_eng_goals()
 {
 	animsArr = array("run1", "run2", "run3", "run4", "sprint1", "sprint2", "sprint3", "sprint4");
 	attackAnimsArr = array("multiA", "multiB", "overhead", "swipe", "headbutt", "runAttackA", "sprintAttack", "runAttackB");
 
 
-	/*
 	i = 0;
 	while( IsAlive(self) )
 	{
-		self thread maps\_zombiemode_spawner::find_flesh();
+		//self thread maps\_zombiemode_spawner::find_flesh();
 		//self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
 		//self thread maps\_zombiemode_spawner::reset_attack_spot();
-		wait 5;
+
+
+		self waittill( "stop_find_flesh" );
+		iprintln( "Engineer Zombie: Stopping find flesh" );
+		self notify( "zombie_acquire_enemy" );
+
+		//1. Target POI
+
+		//2. Target Perk Machine
+
+		//3. Chase Player
+
+		//4. Enrage
 		
 		
 		//self.run_combatanim = level.scr_anim["boss_zombie"][ animsArr[i] ];
@@ -1245,17 +1264,10 @@ eng_watch_goals()
 		//self.zombie_move_speed = "sprint";
 		//self.moveplaybackrate = 1.25;
 		//iprintln( "Engineer Zombie: Setting run anim to " + animsArr[i] );
-		if( i < 5 )
-		self animscripted( "attack_anim", self.origin, self.angles, level._zombie_melee["boss_zombie"][randomintrange(0,4)] );
-			else
-		self animscripted( "attack_anim", self.origin, self.angles, level._zombie_run_melee["boss_zombie"][i-5] );
-
-		iprintln( "Engineer Zombie: Setting run anim to anim: " + i );
-		i++;
 
 		//self ClearAnim( %exposed_modern, 0 );
 	}
-	*/
+	
 
 }
 
@@ -1393,6 +1405,7 @@ init_boss_zombie_anims()
 	level.scr_anim["boss_zombie"]["walk7"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["walk8"] 	= %ai_zombie_boss_walk_a;
 
+	/*
 	level.scr_anim["boss_zombie"]["run1"] 	= %ai_zombie_walk_fast_v1;
 	level.scr_anim["boss_zombie"]["run2"] 	= %ai_zombie_walk_fast_v2;
 	level.scr_anim["boss_zombie"]["run3"] 	= %ai_zombie_walk_fast_v3;
@@ -1403,6 +1416,17 @@ init_boss_zombie_anims()
 	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
 	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_b;
 	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
+	*/
+	level.scr_anim["boss_zombie"]["run1"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run2"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run3"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run4"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run5"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run6"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_a;
 	
 	level.scr_anim["boss_zombie"]["crawl1"] 	= %ai_zombie_crawl;
 	level.scr_anim["boss_zombie"]["crawl2"] 	= %ai_zombie_crawl_v1;
@@ -1430,20 +1454,27 @@ init_boss_zombie_anims()
 	level._zombie_melee["boss_zombie"] = [];
 	level._zombie_walk_melee["boss_zombie"] = [];
 	level._zombie_run_melee["boss_zombie"] = [];
+	/*
 	level._zombie_melee["boss_zombie"][0] 				= %ai_zombie_boss_attack_multiswing_a; 
 	level._zombie_melee["boss_zombie"][1] 				= %ai_zombie_boss_attack_multiswing_b; 
 	level._zombie_melee["boss_zombie"][2] 				= %ai_zombie_boss_attack_swing_overhead; 
 	level._zombie_melee["boss_zombie"][3] 				= %ai_zombie_boss_attack_swing_swipe;	
 	level._zombie_melee["boss_zombie"][4] 				= %ai_zombie_boss_headbutt;	
+	*/
+	level._zombie_melee["boss_zombie"][0] 				= %ai_zombie_boss_attack_swing_overhead; 
+	level._zombie_melee["boss_zombie"][1] 				= %ai_zombie_boss_attack_swing_swipe;	
+	level._zombie_melee["boss_zombie"][2] 				= %ai_zombie_boss_attack_swing_overhead;
+	level._zombie_melee["boss_zombie"][3] 				= %ai_zombie_boss_attack_swing_swipe;	
+	level._zombie_melee["boss_zombie"][4] 				= %ai_zombie_boss_attack_swing_swipe;	
 	if( isDefined( level.boss_zombie_anim_override ) )
 	{
 		[[ level.boss_zombie_anim_override ]]();
 	}
 	
 	
-	level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
-	level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
-	level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
+	//level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
+	//level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
+	//level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
 	
 	if( !isDefined( level._zombie_melee_crawl ) )
 	{

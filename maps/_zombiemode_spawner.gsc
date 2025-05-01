@@ -764,6 +764,8 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 
 	
 	//if zombie doesnt have legs, return
+	self.pathEnemyFightDist = 64;
+	self.meleeAttackDist = 64;
 	if( !is_true(self.has_legs ) )
 		return;
 
@@ -787,6 +789,9 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 		self.zombie_move_speed_supersprint = true;
 		if( !IsDefined(self.zombie_speed_up) ) 
 			self.zombie_speed_up = 1.15;
+
+		self.pathEnemyFightDist = 80;
+		self.meleeAttackDist = 80;
 	}
 
 	self.needs_run_update = true;
@@ -4739,8 +4744,6 @@ find_flesh()
 	self.goalradius = 32;
 	while( 1 )
 	{
-		if( self.animname == "boss_zombie")
-			iprintln("Attempting find flesh for boss");
 		zombie_poi = undefined;
 		// try to split the zombies up when the bunch up
 		// see if a bunch zombies are already near my current target; if there's a bunch
@@ -4763,10 +4766,6 @@ find_flesh()
 			}
 		}
 
-		if (same_enemy_count > 12)
-		{
-			self.ignore_player[self.ignore_player.size] = self.favoriteenemy;
-		}
 
 		//PI_CHANGE_BEGIN - 6/18/09 JV It was requested that we use the poi functionality to set the "wait" point while all players
 		//are in the process of teleportation. It should not intefere with the monkey.  The way it should work is, if all players are in teleportation,

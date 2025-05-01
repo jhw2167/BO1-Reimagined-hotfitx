@@ -178,12 +178,14 @@ generate_perk_hint( perkOrWeapon, specialHint )
 
 	self.hints_activated[ hintCode ] = true;
 
-	//iprintln( "notify: " + hintCode );
+	iprintln( "notify: " + hintCode );
 
 	while( self.new_perk_hint ) {
 		self waittill( "perk_hint_end" );
 	}
 	self.new_perk_hint = true;
+
+	iprintln( "notify 2: " + hintCode );
 
 	returnVultureVision = false;
 	if( self.vulture_vison_toggle )
@@ -493,6 +495,8 @@ generate_perk_hint( perkOrWeapon, specialHint )
 
 	title destroy_hud();
 	text destroy_hud();
+
+	iprintln( "notify 3: " + hintCode );
 }
 
 wait_print( msg, data )
