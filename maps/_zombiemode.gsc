@@ -1669,8 +1669,9 @@ wait_set_player_visionset()
 		trigger_name = "trigger_teleport_pad_0";
 		core = getent( trigger_name, "targetname" );
 		pad = getent( core.target, "targetname" );
-		location = pad.origin;
-
+		//location = pad.origin - ( 0, 0, 40);
+		location = (-962,-619,75);
+		location += ( 0, 0, 20);
 		zombie = zombies[0];
 		zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
 		

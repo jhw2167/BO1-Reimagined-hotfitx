@@ -1068,24 +1068,6 @@ boss_zombie_default_enter_level()
 #using_animtree( "generic_human" );
 zmb_engineer( target )
 {
-	/*
-  players = GetPlayers();
-  target_num = randomIntRange( 0, players.size );
-  plr_target = players[target_num];
-
-  nodes = GetAllNodes();
-  spawn_target = get_array_of_closest( plr_target.origin, nodes, undefined, 65, level.max_eng_spawn_dist );
-  target = undefined;
-
-  for( i = 0; i < spawn_target.size; i++ )
-  {
-    if( distance( spawn_target[i].origin, plr_target.origin ) >= level.min_eng_spawn_dist && randomIntRange( 0, 100 ) >= 50 && check_point_in_active_zone( spawn_target[i].origin ) && check_point_in_playable_area( spawn_target[i].origin ) )
-    {
-      target = spawn_target[i].origin;
-      break;
-    }
-  }
-  */
 
   if( !isDefined( target ) ) // then ill guess it just be a piece of shit normal zombie
   {
@@ -1153,6 +1135,7 @@ zmb_engineer( target )
   }
 
   count = 0;
+  wait(1.5);
 
   //level._effect["poltergeist"]
   //Playfx( level._effect["poltergeist"], target );
@@ -1200,26 +1183,98 @@ zmb_engineer( target )
   self.ignoreall = false;
   level.engineer_zms_alive++;
 
-  self thread maps\_zombiemode_spawner::find_flesh();
+  self thread eng_determine_poi();
   self thread eng_attack_properties();
+  //self thread maps\_zombiemode_spawner::find_flesh();
   //self thread maps\_zombiemode_spawner::reset_attack_spot();
 
   //self notify( "stop_find_flesh" );
-  self notify( "zombie_acquire_enemy" );
+  //self notify( "zombie_acquire_enemy" );
   //self notify( "goal" );
+
+
 
 
   self thread watch_eng_goals();
 
 }
 
+eng_determine_poi()
+{
+	//speed, jug, cherry
+	self.eng_perk_poi = [];
+
+	self.eng_trap_activate_poi = array(
+		//(-825, -943, 130)			//2
+		//,(933, 1646, 36)			//1
+		//,(-1626, 1241, 220)		//4 electric upstairs (-1691, 1627, 220) alt upstairs
+	);
+
+	self.eng_trap_death_poi = array( 
+		(-962,-619,75)		//fire trap stamina
+		//,(997,1535,-13)		//electric trap stage
+		//,(-1567,1341,174)		//electric upstairs
+	);
+
+	traps = GetEntArray( "zombie_trap", "targetname" );
+	//iprintln( "print traps " + traps.size );
+	//maps\_zombiemode_traps::print_traps( traps );
+
+	allTraps = get_trap_objects( traps );
+	valid_eng_trap_indices = array( 2, 1, 4 );
+	iprintln("All traps size" + allTraps.size );
+	self.eng_trap_activate_poi = [];
+	    self.eng_trap_activate_poi[0]  = allTraps[2]; //fire trap stamina
+		self.eng_trap_activate_poi[1]  = allTraps[1]; //electric trap stage
+		self.eng_trap_activate_poi[2]  = allTraps[4]; //electric upstairs
+
+	
+	allPerks = GetEntArray("zombie_vending", "targetname");
+	for( i = 0; i < allPerks.size; i++ ) {
+		//iprintln( "print perk " + allPerks[i].script_noteworthy + " | " + allPerks[i].origin );
+	}
+	self.eng_perk_poi = [];
+		self.eng_perk_poi[0] = allPerks[1]; //speed
+		self.eng_perk_poi[1] = allPerks[3]; //jug
+		self.eng_perk_poi[2] = allPerks[9]; //cherry
+		
+	iprintln( "print perks " + allPerks.size );
+
+}
+
+get_trap_objects( arr )
+{
+	mapObjects = [];
+	k = 0;
+	for( i = 0; i < arr.size; i++ )
+	{
+		if( isDefined( arr[i].target ) )
+		{
+			components = GetEntArray( arr[i].target, "targetname" );
+			for( j = 0; j < components.size; j++ )
+			{
+				if( components[j].classname == "trigger_use" )
+				{
+					mapObjects[k] = components[j];
+					k++;
+				}
+			}
+		}
+	}
+
+	return mapObjects;
+}
+
+
+
 eng_attack_properties() {
 
 	self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
 	self PushPlayer( true );
 
+	self.animplaybackrate = 2.0;
 	self.pathEnemyFightDist = 96;
-	self.meleeAttackDist = 256;
+	self.meleeAttackDist = 96;
 
 }
 
@@ -1239,6 +1294,8 @@ watch_eng_goals()
 
 
 	i = 0;
+	level.valid_eng_states = array( "trap", "perk", "attack", "enrage", "death" );
+	self.state = "trap";
 	while( IsAlive(self) )
 	{
 		//self thread maps\_zombiemode_spawner::find_flesh();
@@ -1246,18 +1303,31 @@ watch_eng_goals()
 		//self thread maps\_zombiemode_spawner::reset_attack_spot();
 
 
-		self waittill( "stop_find_flesh" );
-		iprintln( "Engineer Zombie: Stopping find flesh" );
-		self notify( "zombie_acquire_enemy" );
+		//self waittill( "stop_find_flesh" );
+		self thread maps\_zombiemode_spawner::find_flesh();
+		//self notify( "stop_find_flesh" );
+		//self notify( "zombie_acquire_enemy" );
+
+		iprintln( "Enge choose new goal: " + self.state );
 
 		//1. Target POI
+		if( self.state == "trap") 
+		{
+			self eng_target_poi();
 
-		//2. Target Perk Machine
+		} else if( self.state == "perk" ) {
 
-		//3. Chase Player
+			self eng_target_poi();
 
-		//4. Enrage
-		
+		} else if( self.state == "attack" ) {
+
+		} else if( self.state == "enrage" ) {
+
+		} else if( self.state == "death" ) {
+			//self eng_suicide();
+		}
+
+	
 		
 		//self.run_combatanim = level.scr_anim["boss_zombie"][ animsArr[i] ];
   		//self set_run_anim( animsArr[i] );
@@ -1272,8 +1342,172 @@ watch_eng_goals()
 }
 
 
-eng_set_goal()
-{
+eng_target_poi() {
+
+	poi = (0, 0, 0);
+	randIndex = 0;
+	if(self.state == "trap") {
+		poi = self.eng_trap_activate_poi[ randIndex ];
+		poi.death_pos = self.eng_trap_death_poi[ randIndex ];
+		poi.randIndex = randIndex;
+	} else if(self.state == "perk") {
+		poi = self.eng_perk_poi[ randIndex ];
+	}
+
+	//Get ready to seek goal
+	self notify( "stop_find_flesh" );
+	self.poi = undefined;
+	self.favoriteenemy = undefined;
+	self.ignoreall = true;
+	self.ignore_transition=true;
+	//self notify( "zombie_acquire_enemy" );
+	
+	//write a for loop to count to 10
+	iprintln( "Set goal " );
+	iprintln( poi.origin );
+	self.goalradius = 60;
+	self SetGoalPos( poi.origin );
+
+
+	//wait
+	notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
+	iprintln( "goal reached " + notif ); 
+
+	if( notif == "activated" ) {
+		//someone pissed off eng
+		self.state = "attack";
+	}
+	else if( notif == "goal_interrupted" ) {
+		//goal interrupted, reset
+		iprintln( "Engineer Zombie: Goal interrupted, resetting state" );
+	}
+	else
+	{
+		//Goal Reached
+		self.immunity = true;
+		if(self.state == "trap") {
+			self eng_execute_trap( poi );
+		} else if(self.state == "perk") {
+			self eng_execute_perk( poi );
+		} else {
+			//nothing
+		}
+
+	}
+	
+	iprintln( "Engineer Zombie: Goal reached, state: " + self.state );
+
+	self.immunity = false;
+
+}
+
+eng_execute_trap( poi ) {
+
+	//1. Do attack anim
+	attackAnim = level._zombie_melee["boss_zombie"][0];
+	self animscripted( "overhead_attack", self.origin, self.angles, attackAnim );
+
+	//2. wait for anim to finish
+	animscripts\traverse\zombie_shared::wait_anim_length( attackAnim, .02 );
+
+	//3. trigger tap, wait to turn on
+	self.marked_for_death = true;
+	poi notify( "trigger" );
+	wait( 1 );
+
+	if(poi.randIndex == 0) {
+		self thread boss_fire_damage();
+	}
+
+	//4. Walk over to Trap
+	iprintln( "Set goal 2" + poi.death_pos );
+	self.goalradius = 16;
+	self SetGoalPos( poi.death_pos );
+	notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
+	iprintln( "goal 2 reached " + notif );
+
+	if( notif == "activated" ) {
+		self.state = "attack";
+		return;
+	}
+	else if( notif == "goal_interrupted" ) {
+		//goal interrupted, reset
+		iprintln( "Engineer Zombie: Goal interrupted, resetting state" );
+	}
+
+	self.immunity = true;
+
+	/*
+	iprintln( "Test trap is in use: ");
+	iprintln( "Waiting for trap use " + poi.targetname );
+	iprintln( poi.origin );
+	iprintln( poi._trap_in_use );
+	while( poi._trap_in_use ) {
+		wait( 0.05 );
+	}
+	*/
+
+	//4. Activate Trap
+	//self.a.nodeath = true;
+	//self.deathAnim = undefined;
+
+	
+
+	//5. eng do anim scream and death anim
+	iprintln( "Engineer Zombie: Enraged" );
+	//enrageAnim = %ai_zombie_boss_enrage_short;
+	//%ai_zombie_boss_enrage_start_slamground_coast - for attacking
+	enrageAnim = %ai_zombie_boss_enrage_start_scream_coast;
+	self animscripted( "enraged", self.origin, self.angles, enrageAnim );
+	animscripts\traverse\zombie_shared::wait_anim_length( enrageAnim, 0.02 );
+	wait( 0.2 );
+
+	//HERE
+	deathAnim = undefined;
+	if( poi.randIndex == 0 ) 
+	{  //fire death
+		self.deathAnim = %ai_zombie_boss_death_a;
+
+		//swing attack
+		attackAnim = %ai_zombie_boss_attack_swing_swipe;
+		self animscripted( "swing_attack", self.origin, self.angles, attackAnim );
+		animscripts\traverse\zombie_shared::wait_anim_length( attackAnim, 0.02 );
+		wait( 0.2 );
+
+		enrageAnim = %ai_zombie_boss_enrage_start_scream_coast;
+		self animscripted( "enraged", self.origin, self.angles, enrageAnim );
+		animscripts\traverse\zombie_shared::wait_anim_length( enrageAnim, 0.02 );
+
+	} else {	//tesla death
+		self.deathAnim = %ai_zombie_boss_tesla_death_a_coast;
+	}
+
+	iprintln( "Engineer Zombie: Death" );
+	//self animscripted( "eng_death", self.origin, self.angles, deathAnim );
+	//animscripts\traverse\zombie_shared::wait_anim_length( deathAnim, .02 );
+
+	self dodamage(self.health + 666, self.origin, undefined);
+
+}
+
+	boss_fire_damage() 
+	{
+		wait(4);
+		PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
+		PlayFxOnTag( level._effect["character_fire_death_torso"], self, "J_SpineLower" );
+		self playsound("evt_zombie_ignite");
+
+		wait(2);
+		PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
+		PlayFxOnTag( level._effect["character_fire_death_torso"], self, "J_SpineLower" );
+		self playsound("evt_zombie_ignite");
+	}
+
+eng_execute_perk() {
+
+}
+
+eng_execute_attack() {
 
 }
 
