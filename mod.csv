@@ -183,6 +183,13 @@ fx,acidgat/fx_acidgat_explode
 //fx,acidgat/fx_acidgat_zombiesplash
 
 
+//boss - need to be in kino exclusive fx file
+//fx/fx_zombie_boss_footstep.efx
+//fx/fx_zombie_boss_grnd_hit.efx
+//fx/fx_zombie_boss_spawn.efx
+//fx/fx_zombie_boss_spawn_buildup.efx
+//fx/fx_zombie_boss_spawn_ground.efx
+
 
 
 //MATERIALS

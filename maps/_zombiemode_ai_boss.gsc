@@ -1162,7 +1162,7 @@ zmb_engineer( target )
   self.moveplaybackrate = 1;
   self.needs_run_update = true;
   
-  self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
+  self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
   self ClearAnim( %exposed_modern, 0 );
   //self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
   self.needs_run_update = false;
@@ -1170,19 +1170,21 @@ zmb_engineer( target )
   self.ignoreall = false;
   level.engineer_zms_alive++;
 
-  self thread eng_determine_poi();
-  self thread eng_attack_properties();
-  //self thread maps\_zombiemode_spawner::find_flesh();
+  self eng_determine_poi();
+  self eng_attack_properties();
+  self thread maps\_zombiemode_spawner::find_flesh();
+  self.favoriteenemy = get_players()[0];
+  self.following_player = true;
+
   //self thread maps\_zombiemode_spawner::reset_attack_spot();
 
   //self notify( "stop_find_flesh" );
+  self waittill( "stop_find_flesh" );
+  iprintln( "Engineer zombie stopping find_flesh" );
   //self notify( "zombie_acquire_enemy" );
   //self notify( "goal" );
 
-
-
-
-  self thread watch_eng_goals();
+  //self thread watch_eng_goals();
 
 }
 
@@ -1278,13 +1280,16 @@ eng_determine_poi()
 
 eng_attack_properties() {
 
-	self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
 	//self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	self PushPlayer( false );
 
 	self.animplaybackrate = 1;
 	self.pathEnemyFightDist = 64;
 	self.meleeAttackDist = 64;
+
+	self.script_noteworthy = "find_flesh";
+	self.script_moveoverride = true;
 
 	self.activated = false; //variable tracks when he's enraged
 	//self.marked_for_death = true; //makes eng immune to traps
@@ -1299,36 +1304,25 @@ eng_attack_properties() {
 **/
 watch_eng_goals()
 {
-	animsArr = array("run1", "run2", "run3", "run4", "sprint1", "sprint2", "sprint3", "sprint4");
-	attackAnimsArr = array("multiA", "multiB", "overhead", "swipe", "headbutt", "runAttackA", "sprintAttack", "runAttackB");
-
-
 	i = 0;
 	level.valid_eng_states = array( "trap", "perk", "attack", "enrage", "death" );
 
 	//self.state = "trap";
-	self.state = "enrage";
-	self.perkTargetIndex = randomInt(3);
+	//self.state = "enrage";
+	self.state = "attack";
+	//self.perkTargetIndex = randomInt(3);
+	self.perkTargetIndex = 0;
 	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );	
 
 	self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
-	//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
-	self.favoriteenemy = get_players()[0];
-	self notify( "stop_find_flesh" );
-	self thread maps\_zombiemode_spawner::find_flesh();
-	self notify( "zombie_acquire_enemy" );
-	self notify( "goal" );
-	
-	if( true )
-		return;
+	//self notify( "stoping_find_flesh" );
 
+	//self thread maps\_zombiemode_spawner::find_flesh();
+	//self notify( "zombie_acquire_enemy" );
+	
 	while( IsAlive(self) )
 	{
 		//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
-		
-		//self notify( "stop_find_flesh" );
-		//self notify( "zombie_acquire_enemy" );
-
 		iprintln( "Enge choose new goal: " + self.state );
 
 		//1. Target POI
@@ -1352,11 +1346,15 @@ watch_eng_goals()
 		} else if( self.state == "death" ) {
 			iprintln("4");
 			//self eng_suicide();
+			break;
 		}
 
 	
 		wait(0.05);
 	}
+
+	if(isDefined( self.powerup_fx ) )
+		self.powerup_fx delete();
 	
 
 }
@@ -1559,11 +1557,11 @@ eng_execute_perk( poi  )
 	playsoundatposition("evt_bottle_dispense", self.origin);
 
 	//2. Drink the perk
-	self GiveWeapon( "zombie_perk_bottle", poi.modelIndex );
-	self SwitchToWeapon( "zombie_perk_bottle" );
+	//self GiveWeapon( "zombie_perk_bottle", poi.modelIndex );
+	//self SwitchToWeapon( "zombie_perk_bottle" );
 	drinkAnim = %p_zombie_perkacola_drink;
 	self animscripted( "perk_drink", self.origin, self.angles, drinkAnim );
-	self TakeWeapon ( "zombie_perk_bottle" );
+	//self TakeWeapon ( "zombie_perk_bottle" );
 
 	wait(0.5);
 
@@ -1571,7 +1569,13 @@ eng_execute_perk( poi  )
 	self eng_groundslam();
 	
 	//4. Start fx on zombie
-	PlayFxOnTag( poi.powerupColor, self, "J_SpineLower" );
+		if(isDefined( self.powerup_fx ) )
+			self.powerup_fx delete();
+		self.powerup_fx = Spawn( "script_model", self GetTagOrigin( "j_SpineUpper" ) );
+		self.powerup_fx LinkTo( self, "j_SpineUpper" );
+		self.powerup_fx SetModel( "tag_origin" );
+
+	PlayFxOnTag( poi.powerupColor, self.powerup_fx, "tag_origin" );
 	self.eng_perks[poi.index] = poi.script_noteworthy;
 
 	//5. Set state to enrage and return
@@ -1591,6 +1595,8 @@ eng_execute_perk( poi  )
 */
 eng_execute_enrage( poi ) 
 {
+	self notify( "stop_find_flesh" );
+
 	self thread magic_bullet_shield();
 	self.activated = true;
 	self.maxHealth = self eng_calculate_enraged_health();
@@ -1602,9 +1608,7 @@ eng_execute_enrage( poi )
 	self.disableArrivals = true;
 	self.disableExits = true;
 
-	self.goal = undefined;
-	self.ignore_player = false;
-	self.following_player = true;
+	//self.goal = undefined;
 	self.favoriteenemy = poi;
 
 	self.state = "attack";
@@ -1645,24 +1649,25 @@ eng_execute_attack()
 {
 	self endon( "death" );	
 
-	//self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
-	self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
+	if( self.zombie_move_speed != "sprint")
+		self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
+	//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
 	//self thread animscripts\zombie_combat::main();
-	self.moveplaybackrate = 1.25;
+	self.moveplaybackrate = 1.10;
 	if( is_in_array( self.eng_perks, level.SPD_PRK ) )
-		self.moveplaybackrate = 1.4;
+		self.moveplaybackrate = 1.25;
 
-	self.script_noteworthy = "find_flesh";
-	self.script_moveoverride = true;
 	self thread maps\_zombiemode_spawner::find_flesh();
-	self notify( "zombie_acquire_enemy" );
+	self.following_player = true;
+	self.ignore_player = false;
 
-		self thread eng_watch_near_perk();
+		//self thread eng_watch_near_perk();
 
 		//self thread eng_watch_near_trap();
 
-
 	self waittill( "stop_find_flesh" );
+	iprintln( "Stopping find flesh Triggered" );
+	self waittill( "zombie_end_traverse" );
 	self notify( "stop_eng_watcher" );
 }
 
@@ -1697,10 +1702,12 @@ eng_execute_attack()
 		trap = undefined;
 		i = 0;
 		iprintln( "watch near trap" );
-		while(1) 
+		while( IsAlive(self) ) 
 		{
+			wait(0.05);
+
 			trap = allTraps[i];
-			if( trap._is_trap_in_use )
+			if( is_true(trap._is_trap_in_use) )
 				continue;
 
 			if( checkDist( self.origin, trap.origin, 64 ) ) {
@@ -1713,7 +1720,6 @@ eng_execute_attack()
 			if( i == allTraps.size )
 				i = 0;
 
-			wait(0.05);
 		}
 
 		//Activate trap
@@ -1887,8 +1893,8 @@ init_boss_zombie_anims()
 	level.scr_anim["boss_zombie"]["run8"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
 	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
-	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_a;
-	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_a;
+	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_b;
+	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
 	
 	level.scr_anim["boss_zombie"]["crawl1"] 	= %ai_zombie_crawl;
 	level.scr_anim["boss_zombie"]["crawl2"] 	= %ai_zombie_crawl_v1;
@@ -1930,15 +1936,22 @@ init_boss_zombie_anims()
 	level._zombie_melee["boss_zombie"][4] 				= %ai_zombie_boss_attack_swing_swipe;	
 	level._zombie_melee["boss_zombie"][5] 				= %ai_zombie_boss_attack_swing_swipe;
 
+	level._zombie_walk_melee["boss_zombie"][0]				= %ai_zombie_boss_attack_swing_overhead;
+	level._zombie_walk_melee["boss_zombie"][1]				= %ai_zombie_boss_attack_swing_swipe;
+	level._zombie_walk_melee["boss_zombie"][2]				= %ai_zombie_boss_attack_swing_overhead;
+	level._zombie_walk_melee["boss_zombie"][3]				= %ai_zombie_boss_attack_swing_swipe;
+	
 	if( isDefined( level.boss_zombie_anim_override ) )
 	{
 		[[ level.boss_zombie_anim_override ]]();
 	}
 	
-	
 	level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
 	level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
 	level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
+
+	level._zombie_sprint_melee["boss_zombie"][0]			=	%ai_zombie_boss_attack_sprinting;
+	//level._zombie_sprint_melee["boss_zombie"][1]			=	%ai_zombie_boss_attack_swing_swipe;
 	
 	if( !isDefined( level._zombie_melee_crawl ) )
 	{
