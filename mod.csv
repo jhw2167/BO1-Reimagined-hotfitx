@@ -148,7 +148,7 @@ sound,reimagined
 stringtable,weaponoptions.csv
 
 //FX
-//fx,misc/fx_zombie_powerup_on_red
+fx,misc/fx_zombie_powerup_on_red
 //fx,misc/fx_zombie_powerup_red_grab
 //fx,misc/fx_zombie_powerup_red_wave
 //fx,eyes/fx_zombie_eye_single_red

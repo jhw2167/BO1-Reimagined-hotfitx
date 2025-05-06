@@ -1086,7 +1086,7 @@ zmb_engineer( target )
   self hide();
   self.ignore_all_poi = true;
   self.ignoreall = true;
-  self.meleeDamage = 95;
+  self.meleeDamage = 130;
   self.flame_damage_time = 0;
   self.is_on_fire = true;
   self.a.disablePain = true;
@@ -1161,21 +1161,8 @@ zmb_engineer( target )
   self show();
   self.moveplaybackrate = 1;
   self.needs_run_update = true;
-  rnd = randomIntRange( 1, 8 );
-  movement = undefined;
   
-  if( randomintrange( 0, 2 ) == 0 )
-  {
-	movement = "walk";
-  }
-  else
-  {
-	movement = "run";
-  }
-  
-  numAnim = "walk1";
-  self.run_combatanim = level.scr_anim["boss_zombie"][numAnim];
-  self set_run_anim( numAnim );
+  self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
   self ClearAnim( %exposed_modern, 0 );
   //self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
   self.needs_run_update = false;
@@ -1212,8 +1199,8 @@ eng_determine_poi()
 
 	self.eng_trap_death_poi = array( 
 		(-962,-619,75)		//fire trap stamina
-		//,(997,1535,-13)		//electric trap stage
-		//,(-1567,1341,174)		//electric upstairs
+		,(997,1535,-13)		//electric trap stage
+		,(-1567,1341,174)		//electric upstairs
 	);
 
 	traps = GetEntArray( "zombie_trap", "targetname" );
@@ -1221,70 +1208,93 @@ eng_determine_poi()
 	//maps\_zombiemode_traps::print_traps( traps );
 
 	allTraps = get_trap_objects( traps );
-	valid_eng_trap_indices = array( 2, 1, 4 );
-	iprintln("All traps size" + allTraps.size );
+	valid_eng_trap_indices = array( 2, 1, 5 );
+	//iprintln("All traps size" + allTraps.size );
 	self.eng_trap_activate_poi = [];
 	    self.eng_trap_activate_poi[0]  = allTraps[2]; //fire trap stamina
 		self.eng_trap_activate_poi[1]  = allTraps[1]; //electric trap stage
-		self.eng_trap_activate_poi[2]  = allTraps[4]; //electric upstairs
+		self.eng_trap_activate_poi[2]  = allTraps[5]; //electric upstairs
 
 	
 	allPerks = GetEntArray("zombie_vending", "targetname");
 	for( i = 0; i < allPerks.size; i++ ) {
 		//iprintln( "print perk " + allPerks[i].script_noteworthy + " | " + allPerks[i].origin );
 	}
+	//here
 	self.eng_perk_poi = [];
-		self.eng_perk_poi[0] = allPerks[1]; //speed
-		self.eng_perk_poi[1] = allPerks[3]; //jug
-		self.eng_perk_poi[2] = allPerks[9]; //cherry
+
+			jug = SpawnStruct();
+			jug.index = 0;
+			jug.origin = (-323, -480, 22);
+			jug.modelIndex = 0;
+			jug.powerupColor = level._effect["powerup_on_red"];
+			jug.script_noteworthy = level.JUG_PRK;
+		self.eng_perk_poi[0] = jug;
+
+			speed = SpawnStruct();
+			speed.index = 1;
+			speed.origin = (1281, 168, -6);
+			speed.script_noteworthy = level.SPD_PRK;
+			speed.powerupColor = level._effect["powerup_on"];
+			speed.modelIndex = 2;
+		self.eng_perk_poi[1] = speed;
+
+			cherry = SpawnStruct();
+			cherry.index = 2;
+			cherry.origin = (-1215, 1168, 180);
+			cherry.script_noteworthy = level.ECH_PRK;
+			cherry.powerupColor = level._effect["powerup_on_solo"];
+			cherry.modelIndex = 8;
+		self.eng_perk_poi[2] = cherry;
 		
-	iprintln( "print perks " + allPerks.size );
+	//iprintln( "print perks " + allPerks.size );
 
 }
 
-get_trap_objects( arr )
-{
-	mapObjects = [];
-	k = 0;
-	for( i = 0; i < arr.size; i++ )
+	get_trap_objects( arr )
 	{
-		if( isDefined( arr[i].target ) )
+		mapObjects = [];
+		k = 0;
+		for( i = 0; i < arr.size; i++ )
 		{
-			components = GetEntArray( arr[i].target, "targetname" );
-			for( j = 0; j < components.size; j++ )
+			if( isDefined( arr[i].target ) )
 			{
-				if( components[j].classname == "trigger_use" )
+				components = GetEntArray( arr[i].target, "targetname" );
+				for( j = 0; j < components.size; j++ )
 				{
-					mapObjects[k] = components[j];
-					k++;
+					if( components[j].classname == "trigger_use" )
+					{
+						mapObjects[k] = components[j];
+						k++;
+					}
 				}
 			}
 		}
-	}
 
-	return mapObjects;
-}
+		return mapObjects;
+	}
 
 
 
 eng_attack_properties() {
 
 	self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
-	self PushPlayer( true );
+	//self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
+	self PushPlayer( false );
 
-	self.animplaybackrate = 2.0;
-	self.pathEnemyFightDist = 96;
-	self.meleeAttackDist = 96;
+	self.animplaybackrate = 1;
+	self.pathEnemyFightDist = 64;
+	self.meleeAttackDist = 64;
+
+	self.activated = false; //variable tracks when he's enraged
+	//self.marked_for_death = true; //makes eng immune to traps
+	self.eng_perks = array( "", "", "", "" );
 
 }
 
 /**
 
 	Threaded method loops and occaisionally sets new goal for engineer zombie
-
-	//good sprints
-	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
-	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
 
 **/
 watch_eng_goals()
@@ -1295,16 +1305,27 @@ watch_eng_goals()
 
 	i = 0;
 	level.valid_eng_states = array( "trap", "perk", "attack", "enrage", "death" );
-	self.state = "trap";
+
+	//self.state = "trap";
+	self.state = "enrage";
+	self.perkTargetIndex = randomInt(3);
+	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );	
+
+	self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
+	//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
+	self.favoriteenemy = get_players()[0];
+	self notify( "stop_find_flesh" );
+	self thread maps\_zombiemode_spawner::find_flesh();
+	self notify( "zombie_acquire_enemy" );
+	self notify( "goal" );
+	
+	if( true )
+		return;
+
 	while( IsAlive(self) )
 	{
-		//self thread maps\_zombiemode_spawner::find_flesh();
-		//self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
-		//self thread maps\_zombiemode_spawner::reset_attack_spot();
-
-
-		//self waittill( "stop_find_flesh" );
-		self thread maps\_zombiemode_spawner::find_flesh();
+		//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
+		
 		//self notify( "stop_find_flesh" );
 		//self notify( "zombie_acquire_enemy" );
 
@@ -1313,45 +1334,51 @@ watch_eng_goals()
 		//1. Target POI
 		if( self.state == "trap") 
 		{
+			//iprintln("0");
 			self eng_target_poi();
 
 		} else if( self.state == "perk" ) {
-
+			//iprintln("1");
 			self eng_target_poi();
 
 		} else if( self.state == "attack" ) {
+			//iprintln("2");
+			self eng_execute_attack();
 
 		} else if( self.state == "enrage" ) {
+			//iprintln("3");
+			self eng_execute_enrage();
 
 		} else if( self.state == "death" ) {
+			iprintln("4");
 			//self eng_suicide();
 		}
 
 	
-		
-		//self.run_combatanim = level.scr_anim["boss_zombie"][ animsArr[i] ];
-  		//self set_run_anim( animsArr[i] );
-		//self.zombie_move_speed = "sprint";
-		//self.moveplaybackrate = 1.25;
-		//iprintln( "Engineer Zombie: Setting run anim to " + animsArr[i] );
-
-		//self ClearAnim( %exposed_modern, 0 );
+		wait(0.05);
 	}
 	
 
 }
 
+checkDist(a, b, distance ) {
+	return maps\_zombiemode::checkDist( a, b, distance );
+}
 
-eng_target_poi() {
+
+eng_target_poi() 
+{
 
 	poi = (0, 0, 0);
 	randIndex = 0;
+
+	poi.randIndex = randIndex;
 	if(self.state == "trap") {
 		poi = self.eng_trap_activate_poi[ randIndex ];
 		poi.death_pos = self.eng_trap_death_poi[ randIndex ];
-		poi.randIndex = randIndex;
 	} else if(self.state == "perk") {
-		poi = self.eng_perk_poi[ randIndex ];
+		poi = self.eng_perk_poi[ self.perkTargetIndex ];
+		poi.randIndex = self.perkTargetIndex;
 	}
 
 	//Get ready to seek goal
@@ -1370,38 +1397,42 @@ eng_target_poi() {
 
 
 	//wait
-	notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
+	notif = self waittill_any_return( "goal", "goal_interrupted", "activated",
+	 "zombie_start_traverse",  "zombie_end_traverse" );
 	iprintln( "goal reached " + notif ); 
 
 	if( notif == "activated" ) {
 		//someone pissed off eng
-		self.state = "attack";
+		self.state = "enrage";
 	}
 	else if( notif == "goal_interrupted" ) {
 		//goal interrupted, reset
 		iprintln( "Engineer Zombie: Goal interrupted, resetting state" );
 	}
-	else
+	else if( notif == "goal" )
 	{
 		//Goal Reached
 		self.immunity = true;
 		if(self.state == "trap") {
 			self eng_execute_trap( poi );
+			self.immunity = false;
 		} else if(self.state == "perk") {
 			self eng_execute_perk( poi );
 		} else {
 			//nothing
 		}
 
+	} else {
+		//Goal Failed
+		iprintln( "Engineer Zombie: Goal undefined or unmatched, continue seking trap" );
 	}
 	
 	iprintln( "Engineer Zombie: Goal reached, state: " + self.state );
 
-	self.immunity = false;
-
 }
 
-eng_execute_trap( poi ) {
+eng_execute_trap( poi ) 
+{
 
 	//1. Do attack anim
 	attackAnim = level._zombie_melee["boss_zombie"][0];
@@ -1411,23 +1442,23 @@ eng_execute_trap( poi ) {
 	animscripts\traverse\zombie_shared::wait_anim_length( attackAnim, .02 );
 
 	//3. trigger tap, wait to turn on
-	self.marked_for_death = true;
 	poi notify( "trigger" );
-	wait( 1 );
 
 	if(poi.randIndex == 0) {
-		self thread boss_fire_damage();
+		self thread boss_fire_death_fx( poi );
+	} else {
+		self thread boss_shock_death_fx( poi );
 	}
 
 	//4. Walk over to Trap
 	iprintln( "Set goal 2" + poi.death_pos );
-	self.goalradius = 16;
+	self.goalradius = 8;
 	self SetGoalPos( poi.death_pos );
 	notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
 	iprintln( "goal 2 reached " + notif );
 
 	if( notif == "activated" ) {
-		self.state = "attack";
+		self.state = "enrage";
 		return;
 	}
 	else if( notif == "goal_interrupted" ) {
@@ -1437,48 +1468,23 @@ eng_execute_trap( poi ) {
 
 	self.immunity = true;
 
-	/*
-	iprintln( "Test trap is in use: ");
-	iprintln( "Waiting for trap use " + poi.targetname );
-	iprintln( poi.origin );
-	iprintln( poi._trap_in_use );
-	while( poi._trap_in_use ) {
-		wait( 0.05 );
-	}
-	*/
-
-	//4. Activate Trap
-	//self.a.nodeath = true;
-	//self.deathAnim = undefined;
-
-	
-
-	//5. eng do anim scream and death anim
-	iprintln( "Engineer Zombie: Enraged" );
-	//enrageAnim = %ai_zombie_boss_enrage_short;
-	//%ai_zombie_boss_enrage_start_slamground_coast - for attacking
-	enrageAnim = %ai_zombie_boss_enrage_start_scream_coast;
-	self animscripted( "enraged", self.origin, self.angles, enrageAnim );
-	animscripts\traverse\zombie_shared::wait_anim_length( enrageAnim, 0.02 );
-	wait( 0.2 );
-
-	//HERE
 	deathAnim = undefined;
 	if( poi.randIndex == 0 ) 
 	{  //fire death
 		self.deathAnim = %ai_zombie_boss_death_a;
 
+		enrageAnim = %ai_zombie_boss_enrage_start_scream_coast;
+		self animscripted( "enraged", self.origin, self.angles, enrageAnim );
+		animscripts\traverse\zombie_shared::wait_anim_length( enrageAnim, 0.02 );
+		wait( 0.2 );
+
 		//swing attack
 		attackAnim = %ai_zombie_boss_attack_swing_swipe;
 		self animscripted( "swing_attack", self.origin, self.angles, attackAnim );
 		animscripts\traverse\zombie_shared::wait_anim_length( attackAnim, 0.02 );
-		wait( 0.2 );
-
-		enrageAnim = %ai_zombie_boss_enrage_start_scream_coast;
-		self animscripted( "enraged", self.origin, self.angles, enrageAnim );
-		animscripts\traverse\zombie_shared::wait_anim_length( enrageAnim, 0.02 );
 
 	} else {	//tesla death
+
 		self.deathAnim = %ai_zombie_boss_tesla_death_a_coast;
 	}
 
@@ -1490,9 +1496,30 @@ eng_execute_trap( poi ) {
 
 }
 
-	boss_fire_damage() 
+	boss_close_to_fx_point( point, dist ) 
 	{
-		wait(4);
+		self endon("death" );
+		self endon("delete" );
+		level endon( "end_game" );
+
+		while(1) 
+		{
+			if(self.activated) {
+				break;
+			}
+
+			if( checkDist( self.origin, point, dist ) ) {
+				break;
+			}
+
+			wait(0.05);
+		}
+	}
+
+	boss_fire_death_fx( poi ) 
+	{
+		self boss_close_to_fx_point( poi.death_pos, 128 );
+
 		PlayFxOnTag( level._effect["character_fire_death_sm"], self, "J_SpineLower" );
 		PlayFxOnTag( level._effect["character_fire_death_torso"], self, "J_SpineLower" );
 		self playsound("evt_zombie_ignite");
@@ -1503,14 +1530,212 @@ eng_execute_trap( poi ) {
 		self playsound("evt_zombie_ignite");
 	}
 
-eng_execute_perk() {
+	boss_shock_death_fx( poi ) {
+		self boss_close_to_fx_point( poi.death_pos, 8 );
+		self maps\_zombiemode_perks::electric_cherry_shock_fx();
+
+		wait(2);
+		self maps\_zombiemode_perks::electric_cherry_shock_fx();
+
+	}
+
+
+/*
+	Drinking a perk enrages and strengthens the engineer zombie
+
+*/
+//here
+eng_execute_perk( poi  ) 
+{
+	self.immunity = true;
+	self thread magic_bullet_shield();
+  
+	//1. Do attack anim
+	bumpAnim = %ai_zombie_boss_headbutt;
+	self animscripted( "perk_bump", self.origin, self.angles, bumpAnim );
+	animscripts\traverse\zombie_shared::wait_anim_length( bumpAnim, .02 );
+	PlaySoundAtPosition( "fly_bump_bottle", self.origin );
+	wait(0.2);
+	playsoundatposition("evt_bottle_dispense", self.origin);
+
+	//2. Drink the perk
+	self GiveWeapon( "zombie_perk_bottle", poi.modelIndex );
+	self SwitchToWeapon( "zombie_perk_bottle" );
+	drinkAnim = %p_zombie_perkacola_drink;
+	self animscripted( "perk_drink", self.origin, self.angles, drinkAnim );
+	self TakeWeapon ( "zombie_perk_bottle" );
+
+	wait(0.5);
+
+	//3. Play enrage anim
+	self eng_groundslam();
+	
+	//4. Start fx on zombie
+	PlayFxOnTag( poi.powerupColor, self, "J_SpineLower" );
+	self.eng_perks[poi.index] = poi.script_noteworthy;
+
+	//5. Set state to enrage and return
+	self.state = "enrage";
+	
+}
+
+	threadAnim( name, sampleAnim ) {
+		self endon( "death" );
+		self animscripted( name, self.origin, self.angles, sampleAnim );
+		animscripts\traverse\zombie_shared::wait_anim_length( sampleAnim, 0.02 );
+	}
+
+/**
+
+
+*/
+eng_execute_enrage( poi ) 
+{
+	self thread magic_bullet_shield();
+	self.activated = true;
+	self.maxHealth = self eng_calculate_enraged_health();
+	self.health = self.maxHealth;
+
+	//start_find_flesh
+	self.ignoreall = false;
+	self.ignore_transition = false;
+	self.disableArrivals = true;
+	self.disableExits = true;
+
+	self.goal = undefined;
+	self.ignore_player = false;
+	self.following_player = true;
+	self.favoriteenemy = poi;
+
+	self.state = "attack";
+	self thread stop_magic_bullet_shield();
 
 }
 
-eng_execute_attack() {
+/**
+	Function of round, times died, and perks
+*/
+	eng_calculate_enraged_health()
+	{
+		if(!isDefined( level.eng_times_died ) )
+			level.eng_times_died = 0;
 
+		//Should be like killing 16 zombies
+		zombsScale = 16;
+		zombieHealth = level.zombie_health;
+
+		baseHealth = zombieHealth * (zombsScale + level.eng_times_died);
+		if( is_in_array( self.eng_perks, level.JUG_PRK ) ) {
+			return baseHealth * 2;
+		}
+
+		return baseHealth;
+
+	}
+
+
+/**
+	1. Engineer chases players relentlessly for 60s or 120s if he has a perk
+	2. Attacks player
+	3. May stop by perk machine if he doesn't already have one
+	4. may activate trap if he runs by it
+
+*/
+eng_execute_attack() 
+{
+	self endon( "death" );	
+
+	//self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
+	self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
+	//self thread animscripts\zombie_combat::main();
+	self.moveplaybackrate = 1.25;
+	if( is_in_array( self.eng_perks, level.SPD_PRK ) )
+		self.moveplaybackrate = 1.4;
+
+	self.script_noteworthy = "find_flesh";
+	self.script_moveoverride = true;
+	self thread maps\_zombiemode_spawner::find_flesh();
+	self notify( "zombie_acquire_enemy" );
+
+		self thread eng_watch_near_perk();
+
+		//self thread eng_watch_near_trap();
+
+
+	self waittill( "stop_find_flesh" );
+	self notify( "stop_eng_watcher" );
 }
 
+
+	//1. Watch if perk is nearby, maybe grab a drink
+	eng_watch_near_perk() 
+	{
+		self endon( "death" );
+		self endon( "stop_eng_watcher" );
+
+		iprintln( "watch near perk" );
+		perk = self.eng_perk_poi[ self.perkTargetIndex ];
+		while(1) 
+		{
+			if( !IsDefined( perk ) || !isDefined( perk.origin ) )
+				break;
+
+			if( checkDist( self.origin, perk.origin, 192 ) ) {
+				self.state = "perk";
+				break;
+			}
+			wait(0.05);
+		}
+	}
+
+	eng_watch_near_trap() 
+	{
+		self endon( "death" );
+		self endon( "stop_eng_watcher" );
+
+		allTraps = get_trap_objects( GetEntArray( "zombie_trap", "targetname" ) );
+		trap = undefined;
+		i = 0;
+		iprintln( "watch near trap" );
+		while(1) 
+		{
+			trap = allTraps[i];
+			if( trap._is_trap_in_use )
+				continue;
+
+			if( checkDist( self.origin, trap.origin, 64 ) ) {
+					iprintln( "Engineer Zombie: Trap nearby, testing" );
+				if( randomInt(100) < 20 )
+					break;
+			}
+
+			i++;
+			if( i == allTraps.size )
+				i = 0;
+
+			wait(0.05);
+		}
+
+		//Activate trap
+		self notify( "stop_find_flesh" );
+		self eng_groundslam();
+		iprintln( "Engineer Zombie: Trap nearby, activating " + trap.targetname );
+		trap notify( "trigger" );
+
+	}
+
+	//maps\_zombiemode_ai_director::player_electrify() for eCherry hits
+
+	eng_groundslam() {
+
+		enrageAnim = %ai_zombie_boss_enrage_start_slamground_coast;
+		self thread threadAnim( "enraged", enrageAnim );
+		//screenShake
+		wait(1.5);
+		Earthquake( 0.5, 0.75, self.origin, 1000 );
+		PlayRumbleOnPosition( "explosion_generic", self.origin );
+
+	}
 
 
 
@@ -1638,6 +1863,7 @@ init_boss_zombie_anims()
 	level.scr_anim["boss_zombie"]["walk6"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["walk7"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["walk8"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["walk9"] 	= %ai_zombie_boss_walk_a;
 
 	/*
 	level.scr_anim["boss_zombie"]["run1"] 	= %ai_zombie_walk_fast_v1;
@@ -1657,6 +1883,8 @@ init_boss_zombie_anims()
 	level.scr_anim["boss_zombie"]["run4"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["run5"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["run6"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run7"] 	= %ai_zombie_boss_walk_a;
+	level.scr_anim["boss_zombie"]["run8"] 	= %ai_zombie_boss_walk_a;
 	level.scr_anim["boss_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
 	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
 	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_a;
@@ -1700,15 +1928,17 @@ init_boss_zombie_anims()
 	level._zombie_melee["boss_zombie"][2] 				= %ai_zombie_boss_attack_swing_overhead;
 	level._zombie_melee["boss_zombie"][3] 				= %ai_zombie_boss_attack_swing_swipe;	
 	level._zombie_melee["boss_zombie"][4] 				= %ai_zombie_boss_attack_swing_swipe;	
+	level._zombie_melee["boss_zombie"][5] 				= %ai_zombie_boss_attack_swing_swipe;
+
 	if( isDefined( level.boss_zombie_anim_override ) )
 	{
 		[[ level.boss_zombie_anim_override ]]();
 	}
 	
 	
-	//level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
-	//level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
-	//level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
+	level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
+	level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
 	
 	if( !isDefined( level._zombie_melee_crawl ) )
 	{

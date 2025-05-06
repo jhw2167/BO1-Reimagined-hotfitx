@@ -308,8 +308,6 @@ trap_use_think( trap )
 		self._trap_in_use = false;
 		self waittill("trigger",who);
 
-		iprintln( "Notify trap started" );
-
 		if( isDefined(who) && who in_revive_trigger() )
 		{
 			continue;

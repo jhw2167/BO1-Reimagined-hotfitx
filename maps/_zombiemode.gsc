@@ -1670,8 +1670,9 @@ wait_set_player_visionset()
 		core = getent( trigger_name, "targetname" );
 		pad = getent( core.target, "targetname" );
 		//location = pad.origin - ( 0, 0, 40);
-		location = (-962,-619,75);
-		location += ( 0, 0, 20);
+		//location = (-1567,1341,174);	//2
+		location = (-962,-619,75); 		//0
+		location += ( 0, 0, 10);
 		zombie = zombies[0];
 		zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
 		
@@ -10559,7 +10560,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;
 		}
 
-		iprintln("Final Damage 6: " + final_damage);
+		//iprintln("Final Damage 6: " + final_damage);
 		
 		if( IsSubStr( weapon, "x2" ) ) 
 		{
