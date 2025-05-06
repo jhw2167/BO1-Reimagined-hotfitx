@@ -1172,19 +1172,16 @@ zmb_engineer( target )
 
   self eng_determine_poi();
   self eng_attack_properties();
-  self thread maps\_zombiemode_spawner::find_flesh();
-  self.favoriteenemy = get_players()[0];
-  self.following_player = true;
+  //self thread maps\_zombiemode_spawner::find_flesh();
+  //self.following_player = true;
+  //self notify( "zombie_acquire_enemy" );
+  //self notify( "goal" );
+  //here
 
   //self thread maps\_zombiemode_spawner::reset_attack_spot();
 
-  //self notify( "stop_find_flesh" );
-  self waittill( "stop_find_flesh" );
-  iprintln( "Engineer zombie stopping find_flesh" );
-  //self notify( "zombie_acquire_enemy" );
-  //self notify( "goal" );
 
-  //self thread watch_eng_goals();
+  self thread watch_eng_goals();
 
 }
 
@@ -1222,7 +1219,7 @@ eng_determine_poi()
 	for( i = 0; i < allPerks.size; i++ ) {
 		//iprintln( "print perk " + allPerks[i].script_noteworthy + " | " + allPerks[i].origin );
 	}
-	//here
+	
 	self.eng_perk_poi = [];
 
 			jug = SpawnStruct();
@@ -1281,7 +1278,7 @@ eng_determine_poi()
 eng_attack_properties() {
 
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
-	//self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
+	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	self PushPlayer( false );
 
 	self.animplaybackrate = 1;
@@ -1314,12 +1311,6 @@ watch_eng_goals()
 	self.perkTargetIndex = 0;
 	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );	
 
-	self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
-	//self notify( "stoping_find_flesh" );
-
-	//self thread maps\_zombiemode_spawner::find_flesh();
-	//self notify( "zombie_acquire_enemy" );
-	
 	while( IsAlive(self) )
 	{
 		//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
@@ -1658,8 +1649,9 @@ eng_execute_attack()
 		self.moveplaybackrate = 1.25;
 
 	self thread maps\_zombiemode_spawner::find_flesh();
-	self.following_player = true;
 	self.ignore_player = false;
+	self.following_player = true;
+	self notify( "zombie_acquire_enemy" );
 
 		//self thread eng_watch_near_perk();
 
