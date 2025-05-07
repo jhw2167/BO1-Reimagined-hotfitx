@@ -1666,6 +1666,7 @@ wait_set_player_visionset()
 	spawned_boss = true && is_true( level.dev_only );
 	if( spawned_boss )
 	{
+		//iprintln( "Spawning boss zombie" );
 		trigger_name = "trigger_teleport_pad_0";
 		core = getent( trigger_name, "targetname" );
 		pad = getent( core.target, "targetname" );

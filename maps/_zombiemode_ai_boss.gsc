@@ -1074,6 +1074,11 @@ zmb_engineer( target )
     return;
   }
 
+  if( !is_true(self.zombie_init_done) ) {
+	//self waittill( "zombie_init_done");
+  }
+	
+
   //self thread zm_variant_on_death( "engineer" );
 
   self detachAll();
@@ -1126,7 +1131,7 @@ zmb_engineer( target )
     self.first_node = undefined;
     self ClearEnemy();
     self ClearGoalVolume();
-    self.zombie_move_speed = "sprint";
+    self.zombie_move_speed = "walk";
     self.zombie_can_sidestep = false;
     self.zombie_can_forwardstep = false;
     self.shouldSideStepFunc = ::no_reaction;
@@ -1164,9 +1169,18 @@ zmb_engineer( target )
   self.moveplaybackrate = 1;
   self.needs_run_update = true;
   
-  //runAnim = "walk1";
-  //self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
-  //self set_run_anim( runAnim );
+  /*
+  runAnim = "walk1";
+  self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
+  self set_run_anim( runAnim );
+  self.marked_for_death = undefined;
+  self.ignoreall = false;
+  self.ignore_transition = false;
+	self.disableArrivals = true;
+	self.disableExits = true;
+ */
+
+  
   self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
   self ClearAnim( %exposed_modern, 0 );
   self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
@@ -1187,13 +1201,15 @@ zmb_engineer( target )
   while( count < 20 )
   {
     self thread maps\_zombiemode_spawner::find_flesh();
+	self.following_player = true;
     self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
-    self thread maps\_zombiemode_spawner::reset_attack_spot();
+    //self thread maps\_zombiemode_spawner::reset_attack_spot();
     count++;
 
     wait .1;
   }
   */
+  
   
   
   //here
@@ -1336,8 +1352,8 @@ watch_eng_goals()
 	i = 0;
 	level.valid_eng_states = array( "trap", "perk", "attack", "enrage", "death" );
 
-	self.state = "trap";
-	//self.state = "enrage";
+	//self.state = "trap";
+	self.state = "enrage";
 	//self.state = "attack";
 	//self.state = "perk";
 	//self.perkTargetIndex = randomInt(3);
@@ -1729,6 +1745,23 @@ eng_execute_enrage()
 		self.favoriteenemy = get_players()[randomInt(get_players().size)];
 	}
 	self.enemyoverride = self.favoriteenemy;
+
+	
+	//if( self.zombie_move_speed != "sprint") 
+	{
+		self.moveplaybackrate = 1.10;
+		if( is_in_array( self.eng_perks, level.SPD_PRK ) )
+			self.moveplaybackrate = 1.25;
+
+		iprintln( "Engineer Zombie: Setting run cycle to sprint " + self.zombie_move_speed );
+		runAnim = "sprint1";
+		if( randomInt(2) > 0 )
+			runAnim = "sprint3";
+		self.zombie_move_speed = "sprint";
+  		self set_run_anim( runAnim );
+		self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
+		self.needs_run_update = true;
+	}
 		
 
 	//Play enrage anim
@@ -1783,23 +1816,18 @@ eng_execute_attack()
 	self.activated = true;
 	self endon( "death" );	
 
-	if( self.zombie_move_speed != "sprint") {
-		iprintln( "Engineer Zombie: Setting run cycle to sprint" );
-		self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
-	}
-
-	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	//start_find_flesh
 	self.ignoreall = false;
 	//self.ignore_all_poi = false;	engineer just walks whereever
 	self.ignore_transition = false;
 	self.disableArrivals = true;
 	self.disableExits = true;
+	self.goalradius = self.pathEnemyFightDist;
+	faveEnemy = self.favoriteenemy;
+	self ClearGoalVolume();
+	self ClearEnemy();
+	self.favoriteenemy = faveEnemy;
 	
-	self.moveplaybackrate = 1.10;
-	if( is_in_array( self.eng_perks, level.SPD_PRK ) )
-		self.moveplaybackrate = 1.25;
-
   	self notify( "stop_find_flesh" );
   	self notify( "zombie_acquire_enemy" );
   	self notify( "goal" );
@@ -1815,13 +1843,17 @@ eng_execute_attack()
 	}
 
 	//self thread eng_watch_near_trap();
+	//self thread eng_watch_near_perk();
+	//self thread eng_watch_time_alive();
 
-	self waittill( "stop_find_flesh" );
+	notif = self waittill_any_return( "stop_find_flesh", "perk", "teleport", "death" );
+
+	iprintln( "Stopping attack, notif: " + notif );
 	self notify( "stop_eng_watcher" );
-	iprintln( "goal radius: " + self.goalradius );
-	iprintln( "goal: " + self.goal.origin );
-	iprintln( "fave enemy: " + self.favoriteenemy GetEntityNumber() );
-	iprintln( "attacking_spot: " + self.attacking_spot );
+	//iprintln( "goal radius: " + self.goalradius );
+	//iprintln( "goal: " + self.goal.origin );
+	//iprintln( "fave enemy: " + self.favoriteenemy GetEntityNumber() );
+	//iprintln( "attacking_spot: " + self.attacking_spot );
 	iprintln( "zombie_move_speed: " + self.zombie_move_speed );
 
 
@@ -1919,8 +1951,9 @@ eng_execute_attack()
 		wait(1.5);
 		Earthquake( 0.5, 0.75, self.origin, 1000 );
 
-		wait(1);
+		wait(1.5);
 		//screenShake
+		Earthquake( 0.5, 0.75, self.origin, 1000 );
 		PlayRumbleOnPosition( "explosion_generic", self.origin );
 		self.ground_hit = false;
 
