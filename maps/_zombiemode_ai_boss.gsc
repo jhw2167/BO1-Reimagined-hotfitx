@@ -1074,10 +1074,6 @@ zmb_engineer( target )
     return;
   }
 
-  if( ! is_true(self.zombie_init_done) )
-  	self waittill( "zombie_init_done" );
- iprintln("zombie init finished");
-
   //self thread zm_variant_on_death( "engineer" );
 
   self detachAll();
@@ -1160,7 +1156,6 @@ zmb_engineer( target )
   {
 	self.health = 12000;
   }
-  self eng_determine_poi();
 
   self.health=100;
   //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
@@ -1172,6 +1167,7 @@ zmb_engineer( target )
   //runAnim = "walk1";
   //self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
   //self set_run_anim( runAnim );
+  self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
   self ClearAnim( %exposed_modern, 0 );
   self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
   self.needs_run_update = false;
@@ -1310,17 +1306,17 @@ eng_attack_properties()
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	self PushPlayer( false );
 	self.animplaybackrate = 1;
-	self.pathEnemyFightDist = 96;
-	self.meleeAttackDist = 96;
-	self.goalradius = 64;
+	self.pathEnemyFightDist = 80;
+	self.meleeAttackDist = 80;
 
 	self.script_noteworthy = "find_flesh";
 	self.script_moveoverride = false; //spawners will go before fighting
+	self.deathAnim = %ai_zombie_boss_death_a;
 
 	self.activated = false; //variable tracks when he's enraged
 	self.performing_activation = false; //variable tracks when he's performing activation
 	self.ground_hit = false; //variable tracks when he's performing ground hit
-	self.marked_for_death = true; //makes eng immune to traps
+	//self.marked_for_death = true; //makes eng immune to traps, also makes him not attack
 	self.eng_perks = array( "", "", "", "" );
 
 }
@@ -1633,6 +1629,7 @@ eng_execute_enrage( poi )
 	self.activated = true;
 	self.maxHealth = self eng_calculate_enraged_health();
 	self.health = self.maxHealth;
+	self.deathAnim = %ai_zombie_boss_death_a;
 
 	//self.goal = undefined;
 	if( isDefined(poi) )
@@ -1684,13 +1681,11 @@ eng_execute_enrage( poi )
 */
 eng_execute_attack() 
 {
-	//self.activated = true;
+	self.activated = true;
 	self endon( "death" );	
 
-	self.needs_run_update = true;
-	if( self.zombie_move_speed != "sprint" || self.needs_run_update )
+	if( self.zombie_move_speed != "sprint")
 		self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
-	self.needs_run_update = false;
 
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	//start_find_flesh
@@ -1713,7 +1708,7 @@ eng_execute_attack()
 	{
 		self thread maps\_zombiemode_spawner::find_flesh();
 		self.following_player = true;
-		self thread maps\_zombiemode_spawner::reset_attack_spot();
+		//self thread maps\_zombiemode_spawner::reset_attack_spot();
 		count++;
 		wait .1;
 	}

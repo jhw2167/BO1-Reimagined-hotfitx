@@ -811,6 +811,17 @@ trap_damage(activator)
 		}
 		else
 		{
+
+			if( isDefined(ent.animname) && ent.animname == "boss_zombie") {
+				if(!isDefined(ent.damaged_by_trap) || ent.damaged_by_trap != self.targetname)
+				{
+					self doDamage( self.trap_damage, ent.origin, activator );
+					ent.damaged_by_trap = self.targetname;
+					iprintln("Boss Zombie damaged by trap: " + self.targetname);
+				}
+				return;
+			}
+
 			if(!isDefined(ent.marked_for_death))
 			{
 				switch ( self._trap_type )
@@ -826,15 +837,6 @@ trap_damage(activator)
 				default:
 					ent thread zombie_trap_death( self, randomint(100), activator );
 					break;
-				}
-			}
-
-			if( isDefined(ent.animname) && ent.animname == "boss_zombie") {
-				if(!isDefined(ent.damaged_by_trap) || ent.damaged_by_trap != self.targetname)
-				{
-					self doDamage( self.trap_damage, ent.origin, activator );
-					ent.damaged_by_trap = self.targetname;
-					iprintln("Boss Zombie damaged by trap: " + self.targetname);
 				}
 			}
 
