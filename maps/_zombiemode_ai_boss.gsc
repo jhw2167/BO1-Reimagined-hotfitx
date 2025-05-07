@@ -1074,6 +1074,10 @@ zmb_engineer( target )
     return;
   }
 
+  if( ! is_true(self.zombie_init_done) )
+  	self waittill( "zombie_init_done" );
+ iprintln("zombie init finished");
+
   //self thread zm_variant_on_death( "engineer" );
 
   self detachAll();
@@ -1101,6 +1105,7 @@ zmb_engineer( target )
   self.script_disable_bleeder = 1;
   self.script_noteworthy = "find_flesh";
   self.script_moveoverride = true;
+  self.first_node.script_noteworthy = "no_blocker";
 
   self.custom_idle_setup = ::boss_zombie_idle_setup;
 
@@ -1164,9 +1169,9 @@ zmb_engineer( target )
   self.moveplaybackrate = 1;
   self.needs_run_update = true;
   
-  runAnim = "sprint1";
-  self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
-  self set_run_anim( runAnim );
+  //runAnim = "walk1";
+  //self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
+  //self set_run_anim( runAnim );
   self ClearAnim( %exposed_modern, 0 );
   self SetFlaggedAnimKnobAllRestart( "run_anim", animscripts\zombie_run::GetRunAnim(), %body, 1, 0.2, self.moveplaybackrate );
   self.needs_run_update = false;
@@ -1174,28 +1179,30 @@ zmb_engineer( target )
   self.ignoreall = false;
   level.engineer_zms_alive++;
 
-  //self eng_determine_poi();
-  //self eng_attack_properties();
-  self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
-  self PushPlayer( false );
-  
+  self eng_determine_poi();
+  self eng_attack_properties();
+  //self thread animscripts\zombie_combat::main();
 
+  /*
   self notify( "stop_find_flesh" );
   self notify( "zombie_acquire_enemy" );
   self notify( "goal" );
-  self.following_player = true;
-  
-  count = 0;
-	while( count < 20 ) {
-	self thread maps\_zombiemode_spawner::find_flesh();
-  	self maps\_zombiemode_spawner::zombie_setup_attack_properties(); 
-	count++;
-	wait(0.1);
+
+  while( count < 20 )
+  {
+    self thread maps\_zombiemode_spawner::find_flesh();
+    self thread maps\_zombiemode_spawner::zombie_setup_attack_properties();
+    self thread maps\_zombiemode_spawner::reset_attack_spot();
+    count++;
+
+    wait .1;
   }
+  */
+  
   
   //here
 
-  //self thread watch_eng_goals();
+  self thread watch_eng_goals();
 
 }
 
@@ -1303,13 +1310,16 @@ eng_attack_properties()
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	self PushPlayer( false );
 	self.animplaybackrate = 1;
-	self.pathEnemyFightDist = 64;
-	self.meleeAttackDist = 64;
+	self.pathEnemyFightDist = 96;
+	self.meleeAttackDist = 96;
+	self.goalradius = 64;
 
 	self.script_noteworthy = "find_flesh";
-	self.script_moveoverride = true;
+	self.script_moveoverride = false; //spawners will go before fighting
 
 	self.activated = false; //variable tracks when he's enraged
+	self.performing_activation = false; //variable tracks when he's performing activation
+	self.ground_hit = false; //variable tracks when he's performing ground hit
 	self.marked_for_death = true; //makes eng immune to traps
 	self.eng_perks = array( "", "", "", "" );
 
@@ -1326,8 +1336,8 @@ watch_eng_goals()
 	level.valid_eng_states = array( "trap", "perk", "attack", "enrage", "death" );
 
 	//self.state = "trap";
-	//self.state = "enrage";
-	self.state = "attack";
+	self.state = "enrage";
+	//self.state = "attack";
 	//self.state = "perk";
 	//self.perkTargetIndex = randomInt(3);
 	self.perkTargetIndex = 0;
@@ -1616,6 +1626,7 @@ eng_execute_perk( poi  )
 */
 eng_execute_enrage( poi ) 
 {
+	self.performing_activation = true;
 	self notify( "stop_find_flesh" );
 
 	self thread magic_bullet_shield();
@@ -1623,18 +1634,16 @@ eng_execute_enrage( poi )
 	self.maxHealth = self eng_calculate_enraged_health();
 	self.health = self.maxHealth;
 
-	//start_find_flesh
-	self.ignoreall = false;
-	self.ignore_transition = false;
-	self.disableArrivals = true;
-	self.disableExits = true;
-
 	//self.goal = undefined;
-	self.favoriteenemy = poi;
+	if( isDefined(poi) )
+		self.favoriteenemy = poi;
+	else
+		self.favoriteenemy = get_players()[randomInt(get_players().size)];
 
 	self.state = "attack";
 	self.enraged_time = GetTime();
 	self thread stop_magic_bullet_shield();
+	self.performing_activation = false;
 
 }
 
@@ -1678,8 +1687,18 @@ eng_execute_attack()
 	//self.activated = true;
 	self endon( "death" );	
 
-	if( self.zombie_move_speed != "sprint")
+	self.needs_run_update = true;
+	if( self.zombie_move_speed != "sprint" || self.needs_run_update )
 		self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
+	self.needs_run_update = false;
+
+	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
+	//start_find_flesh
+	self.ignoreall = false;
+	//self.ignore_all_poi = false;	engineer just walks whereever
+	self.ignore_transition = false;
+	self.disableArrivals = true;
+	self.disableExits = true;
 	
 	self.moveplaybackrate = 1.10;
 	if( is_in_array( self.eng_perks, level.SPD_PRK ) )
@@ -1693,8 +1712,8 @@ eng_execute_attack()
 	while( count < 20 )
 	{
 		self thread maps\_zombiemode_spawner::find_flesh();
-		//self.following_player = true;
-		//self thread maps\_zombiemode_spawner::reset_attack_spot();
+		self.following_player = true;
+		self thread maps\_zombiemode_spawner::reset_attack_spot();
 		count++;
 		wait .1;
 	}
@@ -1703,6 +1722,14 @@ eng_execute_attack()
 
 	self waittill( "stop_find_flesh" );
 	self notify( "stop_eng_watcher" );
+	iprintln( "goal radius: " + self.goalradius );
+	iprintln( "goal: " + self.goal.origin );
+	iprintln( "fave enemy: " + self.favoriteenemy GetEntityNumber() );
+	iprintln( "attacking_spot: " + self.attacking_spot );
+	iprintln( "zombie_move_speed: " + self.zombie_move_speed );
+
+
+
 }
 
 
@@ -1789,7 +1816,8 @@ eng_execute_attack()
 	//maps\_zombiemode_ai_director::player_electrify() for eCherry hits
 
 	eng_groundslam() {
-
+		
+		self.ground_hit = true;
 		enrageAnim = %ai_zombie_boss_enrage_start_slamground_coast;
 		self thread threadAnim( "enraged", enrageAnim );
 		wait(1.5);
@@ -1798,6 +1826,7 @@ eng_execute_attack()
 		wait(1);
 		//screenShake
 		PlayRumbleOnPosition( "explosion_generic", self.origin );
+		self.ground_hit = false;
 
 	}
 
@@ -1953,6 +1982,7 @@ init_boss_zombie_anims()
 	level.scr_anim["boss_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
 	level.scr_anim["boss_zombie"]["sprint3"] = %ai_zombie_boss_sprint_b;
 	level.scr_anim["boss_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
+	level.scr_anim["boss_zombie"]["sprint5"] = %ai_zombie_boss_sprint_b;
 	
 	level.scr_anim["boss_zombie"]["crawl1"] 	= %ai_zombie_crawl;
 	level.scr_anim["boss_zombie"]["crawl2"] 	= %ai_zombie_crawl_v1;
@@ -2007,9 +2037,19 @@ init_boss_zombie_anims()
 	level._zombie_run_melee["boss_zombie"][0]				=	%ai_zombie_boss_attack_running;
 	level._zombie_run_melee["boss_zombie"][1]				=	%ai_zombie_boss_attack_sprinting;
 	level._zombie_run_melee["boss_zombie"][2]				=	%ai_zombie_boss_attack_running;
+	level._zombie_run_melee["boss_zombie"][3]				=	%ai_zombie_boss_attack_running;
+	level._zombie_run_melee["boss_zombie"][4]				=	%ai_zombie_boss_attack_running;
+	level._zombie_run_melee["boss_zombie"][5]				=	%ai_zombie_boss_attack_running;
 
 	level._zombie_sprint_melee["boss_zombie"][0]			=	%ai_zombie_boss_attack_sprinting;
-	//level._zombie_sprint_melee["boss_zombie"][1]			=	%ai_zombie_boss_attack_swing_swipe;
+	level._zombie_sprint_melee["boss_zombie"][1]			=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_sprint_melee["boss_zombie"][2]			=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_sprint_melee["boss_zombie"][3]			=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_sprint_melee["boss_zombie"][4]			=	%ai_zombie_boss_attack_sprinting;
+	level._zombie_sprint_melee["boss_zombie"][5]			=	%ai_zombie_boss_attack_sprinting;
+
+
+
 	
 	if( !isDefined( level._zombie_melee_crawl ) )
 	{

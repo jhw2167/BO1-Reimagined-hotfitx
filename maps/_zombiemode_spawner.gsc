@@ -4978,6 +4978,7 @@ zombie_pathing()
 		self.zombie_path_timer += 100;
 		self SetGoalPos( goal );
 		self waittill( "bad_path" );
+		iprintln( "Zombie pathing failed to breadcrumb at " + goal );
 
 		debug_print( "Zombie couldn't path to breadcrumb at " + goal + " Finding next breadcrumb" );
 		for( i = 0; i < crumb_list.size; i++ )
