@@ -1302,6 +1302,11 @@ eng_attack_properties()
 	self.enraged_time_to_live = 120;		//number of seconds before enraged engineer dies
 	self.damaged_by_trap = undefined; 	//tracks which traps damaged engineer
 
+	self.eng_near_perk_threshold = 200; //distance from perk to trigger enrage
+	self.eng_near_trap_threshold = 100; //distance from trap to trigger it
+	self.player_lookat_threshold = 1; //number of seconds player can look at engineer before enraging him
+
+
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	self PushPlayer( false );
@@ -1311,7 +1316,7 @@ eng_attack_properties()
 
 	self.script_noteworthy = "find_flesh";
 	self.script_moveoverride = false; //spawners will go before fighting
-	self.deathAnim = %ai_zombie_boss_death_a;
+	//self.deathAnim = %ai_zombie_boss_death_a;
 
 	self.activated = false; //variable tracks when he's enraged
 	self.performing_activation = false; //variable tracks when he's performing activation
@@ -1331,8 +1336,8 @@ watch_eng_goals()
 	i = 0;
 	level.valid_eng_states = array( "trap", "perk", "attack", "enrage", "death" );
 
-	//self.state = "trap";
-	self.state = "enrage";
+	self.state = "trap";
+	//self.state = "enrage";
 	//self.state = "attack";
 	//self.state = "perk";
 	//self.perkTargetIndex = randomInt(3);
@@ -1343,19 +1348,23 @@ watch_eng_goals()
 	{
 		//self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
 		iprintln( "Enge choose new goal: " + self.state );
+		self notify( "choose_new_goal" );
 
 		//1. Target POI
 		if( self.state == "trap") 
 		{
 			//iprintln("0");
+			//self thread eng_watch_trigger_enrage(true, true);
 			self eng_target_poi();
 
 		} else if( self.state == "perk" ) {
 			//iprintln("1");
+			//self thread eng_watch_trigger_enrage(true, false);
 			self eng_target_poi();
 
 		} else if( self.state == "attack" ) {
 			//iprintln("2");
+			//self thread eng_watch_trigger_enrage(false, true);
 			self eng_execute_attack();
 
 		} else if( self.state == "enrage" ) {
@@ -1381,6 +1390,86 @@ watch_eng_goals()
 checkDist(a, b, distance ) {
 	return maps\_zombiemode::checkDist( a, b, distance );
 }
+
+/*
+	Eng is enraged on 3 different events
+	1. Player looks at engineer too long
+	2. Player damages engineer
+	3. Engineer spontaneously drinks perk
+
+*/
+eng_watch_trigger_enrage(trackEyes, trackPerk)
+{
+	self endon("death");
+	self endon("choose_new_goal");
+
+	players = get_players();
+	for (i = 0; i < players.size; i++) {
+		if(trackEyes)
+			players[i] thread eng_track_player_eyes( self );
+	}
+
+	if(trackPerk)
+		self thread eng_track_near_perk();
+
+	self waittill("activated");
+	self.state = "enrage";
+}
+
+	//self is player
+	eng_track_player_eyes( eng ) 
+	{	
+		self endon("death");
+		self endon("disconnect");
+		eng endon("choose_new_goal");
+		eng endon("death");
+
+		while(!eng.activated) 
+		{
+			eng_face = eng.origin + (0,0,50);
+			self waittill_player_looking_at( eng_face, 0.95, true );
+			count = 0;
+			threshold = 10*self.player_lookat_threshold;
+
+			while( count < threshold ) 
+			{
+				if( !is_player_looking_at( eng_face, 0.95, true ) )
+					break;
+
+				eng_face = eng.origin + (0,0,50);
+				wait(0.1);
+				count++;
+			}
+
+			if( count >= threshold ) {
+				eng.favoriteenemy = self;
+				eng notify( "activated" );
+				break;
+			}
+
+			wait(0.05);
+				
+		}
+	}
+	
+	//self is eng
+	eng_track_near_perk()
+	{
+		self endon("death");
+		self endon("activated");
+		self endon("choose_new_goal");
+
+		while(!self.activated) 
+		{
+			chosen_perk = self.eng_perk_poi[ self.perkTargetIndex ];
+			if( checkDist( self.origin, chosen_perk.origin, self.eng_near_perk_threshold ) ) {
+				self notify( "perk" );
+				break;
+			}
+			wait(0.05);
+		}
+	}
+
 
 
 eng_target_poi() 
@@ -1415,12 +1504,17 @@ eng_target_poi()
 
 	//wait
 	notif = self waittill_any_return( "goal", "goal_interrupted", "activated",
-	 "zombie_start_traverse",  "zombie_end_traverse" );
+	 "zombie_start_traverse",  "zombie_end_traverse", "perk" );
 	iprintln( "goal reached " + notif ); 
 
 	if( notif == "activated" ) {
 		//someone pissed off eng
 		self.state = "enrage";
+	}
+	if( notif == "perk" ) {
+		//eng got close to a perk, lets follow that now
+		self.state = "perk";
+		return;
 	}
 	else if( notif == "goal_interrupted" ) {
 		//goal interrupted, reset
@@ -1468,11 +1562,11 @@ eng_execute_trap( poi )
 	}
 
 	//4. Walk over to Trap
-	iprintln( "Set goal 2" + poi.death_pos );
+	//iprintln( "Set goal 2" + poi.death_pos );
 	self.goalradius = 8;
 	self SetGoalPos( poi.death_pos );
 	notif = self waittill_any_return( "goal", "goal_interrupted", "activated" );
-	iprintln( "goal 2 reached " + notif );
+	//iprintln( "goal 2 reached " + notif );
 
 	if( notif == "activated" ) {
 		self.state = "enrage";
@@ -1591,11 +1685,8 @@ eng_execute_perk( poi  )
 	//self TakeWeapon ( "zombie_perk_bottle" );
 
 	wait(0.5);
-
-	//3. Play enrage anim
-	self eng_groundslam();
 	
-	//4. Start fx on zombie
+	//3. Start fx on zombie
 		if(isDefined( self.powerup_fx ) )
 			self.powerup_fx delete();
 		self.powerup_fx = Spawn( "script_model", self GetTagOrigin( "j_SpineUpper" ) );
@@ -1605,7 +1696,7 @@ eng_execute_perk( poi  )
 	PlayFxOnTag( poi.powerupColor, self.powerup_fx, "tag_origin" );
 	self.eng_perks[poi.index] = poi.script_noteworthy;
 
-	//5. Set state to enrage and return
+	//4. Set state to enrage and return
 	self.state = "enrage";
 	
 }
@@ -1620,7 +1711,7 @@ eng_execute_perk( poi  )
 
 
 */
-eng_execute_enrage( poi ) 
+eng_execute_enrage() 
 {
 	self.performing_activation = true;
 	self notify( "stop_find_flesh" );
@@ -1629,13 +1720,19 @@ eng_execute_enrage( poi )
 	self.activated = true;
 	self.maxHealth = self eng_calculate_enraged_health();
 	self.health = self.maxHealth;
-	self.deathAnim = %ai_zombie_boss_death_a;
+	//self.deathAnim = %ai_zombie_boss_death_a;
 
-	//self.goal = undefined;
-	if( isDefined(poi) )
-		self.favoriteenemy = poi;
-	else
+	if( isDefined(self.favoriteenemy) ) {
+		//good
+	}
+	else {
 		self.favoriteenemy = get_players()[randomInt(get_players().size)];
+	}
+	self.enemyoverride = self.favoriteenemy;
+		
+
+	//Play enrage anim
+	self eng_groundslam();
 
 	self.state = "attack";
 	self.enraged_time = GetTime();
@@ -1672,6 +1769,8 @@ eng_execute_enrage( poi )
 	}
 
 
+
+
 /**
 	1. Engineer chases players relentlessly for 60s or 120s if he has a perk
 	2. Attacks player
@@ -1684,8 +1783,10 @@ eng_execute_attack()
 	self.activated = true;
 	self endon( "death" );	
 
-	if( self.zombie_move_speed != "sprint")
+	if( self.zombie_move_speed != "sprint") {
+		iprintln( "Engineer Zombie: Setting run cycle to sprint" );
 		self maps\_zombiemode_spawner::set_zombie_run_cycle("sprint");
+	}
 
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
 	//start_find_flesh
