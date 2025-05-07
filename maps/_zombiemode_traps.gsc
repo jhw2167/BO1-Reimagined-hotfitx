@@ -67,7 +67,8 @@ print_traps( traps )
 			{
 				if( components[j].classname == "trigger_use" )
 				{
-					iprintln("Trap " + i + " in ent array at origin " + components[j].origin);
+					iprintln("Trap " + i + " in ent array at origin "
+					 + components[j].origin + "name: " + components[j].targetname);
 				}
 			}
 		}
@@ -312,6 +313,7 @@ trap_use_think( trap )
 		{
 			continue;
 		}
+		iprintln("Trap use triggered by " + self.targetname);
 
 		//reimagined-expanded, want to trigger trap without player
 		if( !trap._trap_in_use )
@@ -826,6 +828,16 @@ trap_damage(activator)
 					break;
 				}
 			}
+
+			if( isDefined(ent.animname) && ent.animname == "boss_zombie") {
+				if(!isDefined(ent.damaged_by_trap) || ent.damaged_by_trap != self.targetname)
+				{
+					self doDamage( self.trap_damage, ent.origin, activator );
+					ent.damaged_by_trap = self.targetname;
+					iprintlnbold("Boss Zombie damaged by trap: " + self.targetname);
+				}
+			}
+
 		}
 	}
 }
