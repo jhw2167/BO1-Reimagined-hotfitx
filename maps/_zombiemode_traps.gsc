@@ -834,7 +834,7 @@ trap_damage(activator)
 				{
 					self doDamage( self.trap_damage, ent.origin, activator );
 					ent.damaged_by_trap = self.targetname;
-					iprintlnbold("Boss Zombie damaged by trap: " + self.targetname);
+					iprintln("Boss Zombie damaged by trap: " + self.targetname);
 				}
 			}
 

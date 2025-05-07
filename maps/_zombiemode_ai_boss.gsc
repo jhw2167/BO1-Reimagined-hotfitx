@@ -1160,7 +1160,6 @@ zmb_engineer( target )
   self.health=100;
   //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
   //self.custom_damage_func = ::eng_custom_damage;
-  wait(1);
   self show();
   self.moveplaybackrate = 1;
   self.needs_run_update = true;
@@ -1175,17 +1174,28 @@ zmb_engineer( target )
   self.ignoreall = false;
   level.engineer_zms_alive++;
 
-  self eng_determine_poi();
-  self eng_attack_properties();
+  //self eng_determine_poi();
+  //self eng_attack_properties();
+  self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
+  self PushPlayer( false );
   
 
-  //self thread maps\_zombiemode_spawner::find_flesh();
-  //self.following_player = true;
-  //self notify( "zombie_acquire_enemy" );
-  //self notify( "goal" );
+  self notify( "stop_find_flesh" );
+  self notify( "zombie_acquire_enemy" );
+  self notify( "goal" );
+  self.following_player = true;
+  
+  count = 0;
+	while( count < 20 ) {
+	self thread maps\_zombiemode_spawner::find_flesh();
+  	self maps\_zombiemode_spawner::zombie_setup_attack_properties(); 
+	count++;
+	wait(0.1);
+  }
+  
   //here
 
-  self thread watch_eng_goals();
+  //self thread watch_eng_goals();
 
 }
 
@@ -1208,7 +1218,7 @@ eng_determine_poi()
 
 	traps = GetEntArray( "zombie_trap", "targetname" );
 	//iprintln( "print traps " + traps.size );
-	maps\_zombiemode_traps::print_traps( traps );
+	//maps\_zombiemode_traps::print_traps( traps );
 
 	allTraps = get_trap_objects( traps );
 	valid_eng_trap_indices = array( 2, 1, 5 );
@@ -1291,7 +1301,7 @@ eng_attack_properties()
 
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
 	self.run_combatanim = level.scr_anim["boss_zombie"]["sprint1"];
-	self PushPlayer( true );
+	self PushPlayer( false );
 	self.animplaybackrate = 1;
 	self.pathEnemyFightDist = 64;
 	self.meleeAttackDist = 64;
@@ -1300,7 +1310,7 @@ eng_attack_properties()
 	self.script_moveoverride = true;
 
 	self.activated = false; //variable tracks when he's enraged
-	//self.marked_for_death = true; //makes eng immune to traps
+	self.marked_for_death = true; //makes eng immune to traps
 	self.eng_perks = array( "", "", "", "" );
 
 }
@@ -1317,8 +1327,8 @@ watch_eng_goals()
 
 	//self.state = "trap";
 	//self.state = "enrage";
-	//self.state = "attack";
-	self.state = "perk";
+	self.state = "attack";
+	//self.state = "perk";
 	//self.perkTargetIndex = randomInt(3);
 	self.perkTargetIndex = 0;
 	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );	
@@ -1665,7 +1675,7 @@ eng_execute_enrage( poi )
 */
 eng_execute_attack() 
 {
-	self.activated = true;
+	//self.activated = true;
 	self endon( "death" );	
 
 	if( self.zombie_move_speed != "sprint")
@@ -1683,13 +1693,13 @@ eng_execute_attack()
 	while( count < 20 )
 	{
 		self thread maps\_zombiemode_spawner::find_flesh();
-		self.following_player = true;
+		//self.following_player = true;
 		//self thread maps\_zombiemode_spawner::reset_attack_spot();
 		count++;
 		wait .1;
 	}
 
-	self thread eng_watch_near_trap();
+	//self thread eng_watch_near_trap();
 
 	self waittill( "stop_find_flesh" );
 	self notify( "stop_eng_watcher" );
@@ -1763,7 +1773,7 @@ eng_execute_attack()
 		//here
 		if( isDefined( trap ) && isDefined( trap.targetname ) )
 		{
-			if(trap.targetname == "crematorium_fire_trap" ) //crema fire trap
+			if(trap.targetname == "crematorium_room_trap" ) //crema fire trap
 			{
 				self.death_pos = self.eng_trap_death_poi[0];
 				self boss_fire_death_fx(self);
