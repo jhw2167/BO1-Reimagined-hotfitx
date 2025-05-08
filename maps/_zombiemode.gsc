@@ -1055,6 +1055,7 @@ reimagined_init_level()
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
 	//Kino, theater
+	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns
 
 
 	//Pentagon, five
@@ -3986,9 +3987,6 @@ init_animscripts()
 	anim.idleAnimWeights	["crouch"] = [];
 	anim.idleAnimArray		["crouch"][0][0] 	= %ai_zombie_idle_crawl_delta;
 	anim.idleAnimWeights	["crouch"][0][0] 	= 10;
-
-	//init from _zombimeode_ai_boss
-	maps\_zombiemode_ai_boss::init_boss_zombie_anims();
 	 
 }
 

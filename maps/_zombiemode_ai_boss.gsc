@@ -2178,6 +2178,23 @@ no_reaction( player )
   // nothing
 }
 
+int_boss_zombie_fx()
+{
+	level._effect["fx_zombie_boss_footstep"] = loadfx( "fx_zombie_boss_footstep" );
+	/*
+	fx,misc/fx_zombie_powerup_on_red
+	fx,fx_zombie_boss_footstep
+	fx,fx_zombie_boss_grnd_hit
+	fx,fx_zombie_boss_spawn
+	fx,fx_zombie_boss_spawn_buildup
+	fx,fx_zombie_boss_spawn_ground
+	*/
+	level._effect["fx_zombie_boss_grnd_hit"] = loadfx( "fx_zombie_boss_grnd_hit" );
+	level._effect["fx_zombie_boss_spawn"] = loadfx( "fx_zombie_boss_spawn" );
+	level._effect["fx_zombie_boss_spawn_buildup"] = loadfx( "fx_zombie_boss_spawn_buildup" );
+	level._effect["fx_zombie_boss_spawn_ground"] = loadfx( "fx_zombie_boss_spawn_ground" );
+}
+
 boss_zombie_idle_setup()
 {
 	self.a.array["turn_left_45"] = %exposed_tracking_turn45L;
@@ -2397,5 +2414,83 @@ init_boss_zombie_anims()
 }
 
 
-//List all called functions that are not found in this file
-//
+/**
+	Entry thread called on level from zombie_theater
+	initializes all boss_zombie aspects
+
+*/
+init_boss_zombie()
+{
+	init_boss_zombie_anims();
+	init_boss_zombie_fx();
+
+	level thread boss_zombie_manager();
+}
+
+/*
+	Manges boss zombie spawning
+	- power must be on
+	- all doors except 1 must be open
+	- spawns every 3 rounds
+	- spawn is guaranteed round after tp is used
+
+*/
+boss_zombie_manager()
+{
+
+	level endon("end_game");
+
+
+	//Preconditions
+	flag_wait("power_on");
+	wait_doors_open();
+
+	level.theater_rounds_until_boss = 0;
+	while(1)
+	{
+		if( level.theater_rounds_until_boss == 0 ) {
+			level thread watch_eng_spawn();
+			level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
+		}	
+			
+		wait(1);
+	}
+
+}
+
+	wait_doors_open()
+	{
+		while(true)
+		{
+			zkeys = GetArrayKeys( level.zones );
+
+			zonesClosed = 0;
+			for( z=0; z<zkeys.size; z++ )
+			{
+				zone = level.zones[ zkeys[z] ];
+				if ( zone.is_enabled )
+					continue;
+
+				zonesClosed++;	
+			}
+
+			if( zonesClosed < 2 )
+				break;
+
+			wait(2);
+		}
+	}
+
+	watch_eng_spawn()
+	{
+		level waittill("round_start");
+		randWait = randomInt(15, 60);
+		if( is_true(level.dev_only))
+			randWait = 5;
+
+		wait(randWait);
+
+		//wait for fresh zombie spawn, seize him and force him to engineer
+		//zomb zmg_engineer()
+		iprintln( "Engineer Zombie: Spawning" );
+	}

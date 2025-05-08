@@ -120,6 +120,8 @@ main()
 	maps\zombie_theater_teleporter::teleport_pad_hide_use();
 
 	level thread maps\zombie_theater_ffotd::main_end();
+
+	level thread maps\_zombiemode_ai_boss::init_boss_zombie();
 }
 
 
