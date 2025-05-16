@@ -65,7 +65,7 @@ main()
 	level.custom_ai_type = [];
 	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_quad::init );
 	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_dogs::init );
-	//level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_boss::init );
+	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_boss::init_boss_zombie );
 
 	level.door_dialog_function = maps\_zombiemode::play_door_dialog;
 	level.first_round_spawn_func = true;
@@ -120,8 +120,6 @@ main()
 	maps\zombie_theater_teleporter::teleport_pad_hide_use();
 
 	level thread maps\zombie_theater_ffotd::main_end();
-
-	level thread maps\_zombiemode_ai_boss::init_boss_zombie();
 }
 
 

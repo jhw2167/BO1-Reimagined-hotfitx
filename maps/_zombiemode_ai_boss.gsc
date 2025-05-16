@@ -1141,10 +1141,17 @@ zmb_engineer( target )
   }
 
   count = 0;
-  wait(1.5);
+  //play boss spawn build up
+  Playfx( level._effect["fx_zombie_boss_spawn_buildup"], target );
+  Playfx( level._effect["fx_teleporter_pad_glow"], target );
+  Playfx( level._effect["fx_transporter_start"], target );
+  wait(0.9);
+  //play boss spawn ground
+  Playfx( level._effect["fx_zombie_boss_spawn_ground"], target );
+  Playfx( level._effect["fx_zombie_boss_spawn"], target );
 
   //level._effect["poltergeist"]
-  Playfx( level._effect["poltergeist"], target );
+  //Playfx( level._effect["poltergeist"], target );
   playsoundatposition( "zmb_hellhound_prespawn", target );
   playsoundatposition( "zmb_hellhound_bolt", target );
   //Playfx( level._effect["fx_lighting_strike"], target ); //didnt work
@@ -1154,6 +1161,7 @@ zmb_engineer( target )
   playsoundatposition( "zmb_hellhound_spawn", target );
 
   self ForceTeleport( target );
+  //self ForceTeleport( get_players()[0].origin );
 
   self thread stop_magic_bullet_shield();
   self.health = 9500+level.zombie_health;
@@ -1209,10 +1217,6 @@ zmb_engineer( target )
     wait .1;
   }
   */
-  
-  
-  
-  //here
 
   self thread watch_eng_goals();
 
@@ -1320,7 +1324,7 @@ eng_attack_properties()
 
 	self.eng_near_perk_threshold = 200; //distance from perk to trigger enrage
 	self.eng_near_trap_threshold = 100; //distance from trap to trigger it
-	self.player_lookat_threshold = 1.5; //number of seconds player can look at engineer before enraging him
+	self.player_lookat_threshold = 10.5; //number of seconds player can look at engineer before enraging him
 
 
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
@@ -1688,7 +1692,6 @@ eng_execute_trap( poi )
 	Drinking a perk enrages and strengthens the engineer zombie
 
 */
-//here
 eng_execute_perk( poi  ) 
 {
 	self.immunity = true;
@@ -1768,31 +1771,58 @@ eng_execute_enrage()
 		
 
 	//Play enrage anim
-	self thread eng_groundslam();
+	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
+	//self animscripted( name, self.origin, self.angles, screamAnim );
+	self threadAnim( "scream", screamAnim );
+	self.performing_activation = false;
 
 	if( isDefined(self.favoriteenemy) ) 
 	{
-		wait(1);
+		self thread magic_bullet_shield();
 		iprintln( "Engineer Zombie: Teleporting to favorite enemy" );
 		iprintln( "self.favoriteenemy "  + self.favoriteenemy.origin );
-		self notify( "teleporting" );
-		self hide();
-		self unlink();
-		self.anchor delete();
-		self ForceTeleport( self.favoriteenemy.origin + (0,0,2) );
-		self show();
+		count = 0;
+		//while( count < 40 ) // double check to make sure its hiding and not going to be force to teleport to barriers
+  		{
+			self.ignore_all_poi = true;
+			self.using_teleport = true;
+			self notify( "stop_find_flesh" );
+			self notify( "teleporting" );
+			self hide();
+			self unlink();
+			self.anchor delete();
+			self.first_node = undefined;
+			self ClearEnemy();
+			self ClearGoalVolume();
+			/*
+			self.zombie_move_speed = "walk";
+			self.zombie_can_sidestep = false;
+			self.zombie_can_forwardstep = false;
+			self.shouldSideStepFunc = ::no_reaction;
+
+			wait(0.05);
+			count++;
+			*/
+		}
+
+		self ForceTeleport( self.favoriteenemy.origin );
+		self.ignore_all_poi = false;
+		self.using_teleport = false;
+
 	}
 	else {
 		self.favoriteenemy = get_players()[randomInt(get_players().size)];
 	}
-	//self.enemyoverride = self.favoriteenemy;
-	self waittill_notify_or_timeout("groundslam_done", 2);
 
+	//3. Start enrage anim while hidden
+	self thread eng_groundslam();
+	wait(0.5);
+	self show();
+
+	//self.enemyoverride = self.favoriteenemy;
 	self.enraged_time = GetTime();
-	//self thread stop_magic_bullet_shield();
 	self.performing_activation = false;
 	self.state = "attack";
-	
 
 }
 
@@ -1959,7 +1989,6 @@ eng_execute_attack()
 
 		}
 
-		//here
 		if( isDefined( trap ) && isDefined( trap.targetname ) )
 		{
 			if(trap.targetname == "crematorium_room_trap" ) //crema fire trap
@@ -2006,19 +2035,53 @@ eng_execute_attack()
 		self.ground_hit = true;
 		enrageAnim = %ai_zombie_boss_enrage_start_slamground_coast;
 		self thread threadAnim( "enraged", enrageAnim );
-		wait(1.4);
-		//electric groundslam fx
-		Earthquake( 0.5, 0.75, self.origin, 500 );
+		wait(1.0);
+		//electric groundslam fx (magnitude, time, origin, radius)
+		Earthquake( 1.5, 1.5, self.origin, 1000 );
+		PlayRumbleOnPosition( "explosion_generic", self.origin );
+		fxTarget = self.origin - (0,0,10);
+		Playfx( level._effect["fx_zombie_boss_grnd_hit"], fxTarget );
+		wait(0.3);
+		//here
+		Playfx( level._effect["fx_transporter_start"], self.origin );
+		/*
+		Playfx( level._effect["fx_teleporter_pad_glow"], target );
 
-		wait(1.4);
+  		//play boss spawn ground
+  		Playfx( level._effect["fx_zombie_boss_spawn_ground"], target );
+  		Playfx( level._effect["fx_zombie_boss_spawn"], target );
+		*/
+
+
+		//for players in area, shellshock their screen
+		players = get_players();
+		for( i = 0; i < players.size; i++ ) {
+			if( checkDist( players[i].origin, self.origin, 300 ) ) {
+				players[i] thread shellShockPlayer();
+			}
+		}
+
+		wait(0.5);
 		//screenShake
-		Earthquake( 0.5, 0.75, self.origin, 1000 );
-		PlayRumbleOnPosition( "explosion_generic", self.origin );
-		PlayRumbleOnPosition( "explosion_generic", self.origin );
+		//Earthquake( 0.5, 0.75, self.origin, 1000 );
+		//PlayRumbleOnPosition( "explosion_generic", self.origin );
+
 		self.ground_hit = false;
 		self notify( "groundslam_done" );
 	}
 
+		shellShockPlayer() 
+		{
+			self shellshock( "explosion", 1.1 );
+			self SetMoveSpeedScale( 0.1 );
+			wait(.75);
+			self SetMoveSpeedScale( 0.6 );
+			wait(.25);
+			if(!IsDefined(self.move_speed))
+				self.move_speed = 1;
+
+			self SetMoveSpeedScale( self.move_speed );
+		}
 
 /*
 	Eng teleports away just before he dies
@@ -2031,26 +2094,39 @@ eng_tp_death() {
 	self.ignore_all_poi = true;
 	self ClearEnemy();
     self ClearGoalVolume();
-  	
+
+
+	//1.5 get him walkinging then stop
+	runAnim = "walk1";
+	self.needs_run_update = true;
+	self.zombie_move_speed = "walk";
+	self set_run_anim( runAnim );
+	self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
+	self.needs_run_update = false;
+  	wait(1);
+
 	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
+	//self animscripted( name, self.origin, self.angles, screamAnim );
 	self thread threadAnim( "death", screamAnim );
+	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	wait(0.5);
-	playsoundatposition( "zmb_hellhound_spawn", self.origin );
-	wait(0.5);
-	playsoundatposition( "zmb_hellhound_spawn", self.origin );
-	wait(0.5);
+	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
+	//wait(0.5);
+
 
 	//2. poltergeist fx
 	//play 8 fx in a circle around the engineer at radius 10
-	r=15;
+	/*
+	r=50;
 	a=8;
 	for( i = 0; i < a; i++ ) {
 		angle = (i * (180/a)) * (3.14159 / 180); //convert to radians
 		offset = (r * cos(angle), r * sin(angle), 0);
 		fx_pos = self.origin + offset;
-		Playfx( level._effect["poltergeist"], fx_pos );
-		wait(0.05);
+		//Playfx( level._effect["poltergeist"], fx_pos );
+		//wait(0.05);
 	}
+	*/
 	wait(0.2);
 	//Playfx( level._effect["poltergeist"], self.origin );
 	Playfx( level._effect["fx_zombie_mainframe_flat_start"], self.origin );
@@ -2065,7 +2141,7 @@ eng_tp_death() {
 	PlayRumbleOnPosition( "explosion_generic", self.origin );
 	playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	playsoundatposition( "zmb_hellhound_bolt", self.origin );
-	wait(0.2);
+	wait(0.5);
 
 	//3. hide model, kill, delete
 	death_pos = self.origin;
@@ -2178,7 +2254,7 @@ no_reaction( player )
   // nothing
 }
 
-int_boss_zombie_fx()
+init_boss_zombie_fx()
 {
 	level._effect["fx_zombie_boss_footstep"] = loadfx( "fx_zombie_boss_footstep" );
 	/*
@@ -2189,10 +2265,10 @@ int_boss_zombie_fx()
 	fx,fx_zombie_boss_spawn_buildup
 	fx,fx_zombie_boss_spawn_ground
 	*/
-	level._effect["fx_zombie_boss_grnd_hit"] = loadfx( "fx_zombie_boss_grnd_hit" );
-	level._effect["fx_zombie_boss_spawn"] = loadfx( "fx_zombie_boss_spawn" );
-	level._effect["fx_zombie_boss_spawn_buildup"] = loadfx( "fx_zombie_boss_spawn_buildup" );
-	level._effect["fx_zombie_boss_spawn_ground"] = loadfx( "fx_zombie_boss_spawn_ground" );
+	level._effect["fx_zombie_boss_grnd_hit"] = loadfx( "maps/zombie/fx_zombie_boss_grnd_hit" );
+	level._effect["fx_zombie_boss_spawn"] = loadfx( "maps/zombie/fx_zombie_boss_spawn" );
+	level._effect["fx_zombie_boss_spawn_buildup"] = loadfx( "maps/zombie/fx_zombie_boss_spawn_buildup" );
+	level._effect["fx_zombie_boss_spawn_ground"] = loadfx( "maps/zombie/fx_zombie_boss_spawn_ground" );
 }
 
 boss_zombie_idle_setup()
@@ -2423,6 +2499,7 @@ init_boss_zombie()
 {
 	init_boss_zombie_anims();
 	init_boss_zombie_fx();
+	
 
 	level thread boss_zombie_manager();
 }

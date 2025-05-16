@@ -1,10 +1,10 @@
 //boss - need to be in kino exclusive fx file
 fx,misc/fx_zombie_powerup_on_red
-fx,fx_zombie_boss_footstep
-fx,fx_zombie_boss_grnd_hit
-fx,fx_zombie_boss_spawn
-fx,fx_zombie_boss_spawn_buildup
-fx,fx_zombie_boss_spawn_ground
+fx,maps/zombie/fx_zombie_boss_footstep
+fx,maps/zombie/fx_zombie_boss_grnd_hit
+fx,maps/zombie/fx_zombie_boss_spawn
+fx,maps/zombie/fx_zombie_boss_spawn_buildup
+fx,maps/zombie/fx_zombie_boss_spawn_ground
 
 
 

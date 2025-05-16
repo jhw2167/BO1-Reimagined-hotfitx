@@ -2903,6 +2903,7 @@ precache_models()
 init_shellshocks()
 {
 	level.player_killed_shellshock = "zombie_death";
+	PrecacheShellshock( "explosion" );
 	PrecacheShellshock( level.player_killed_shellshock );
 }
 
