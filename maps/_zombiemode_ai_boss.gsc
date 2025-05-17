@@ -1077,7 +1077,17 @@ zmb_engineer( target )
   if( !is_true(self.zombie_init_done) ) {
 	//self waittill( "zombie_init_done");
   }
-	
+
+	//chosenSpawner = logic;
+	iprintln("Spawning eng sounds");
+	for(i=0;i< level.enemy_spawns.size; i++) {
+		//iprintln("Enemy spawn origin: " + level.enemy_spawns[i].origin);
+		level.enemy_spawns[i] playsound( "zmb_engineer_spawn" );
+	}
+	chosenSpawner = level.enemy_spawns[0];
+	//chosenSpawner = level.zombie_rise_spawners[0];
+	//chosenSpawner playsound( "zmb_engineer_spawn" );	//WORKS! With no soundalias
+	//chosenSpawner playsound( "zmb_engineer_death_bells" );	//WORKS! With no soundalias
 
   //self thread zm_variant_on_death( "engineer" );
 
@@ -1142,13 +1152,14 @@ zmb_engineer( target )
 
   count = 0;
   //play boss spawn build up
-  Playfx( level._effect["fx_zombie_boss_spawn_buildup"], target );
-  Playfx( level._effect["fx_teleporter_pad_glow"], target );
-  Playfx( level._effect["fx_transporter_start"], target );
-  wait(0.9);
+  fxTarget = target - (0,0,25);
+  Playfx( level._effect["fx_zombie_boss_spawn_buildup"], fxTarget );
+  Playfx( level._effect["fx_teleporter_pad_glow"], fxTarget );
+  Playfx( level._effect["fx_transporter_start"], fxTarget );
+  wait(1.5);
   //play boss spawn ground
-  Playfx( level._effect["fx_zombie_boss_spawn_ground"], target );
-  Playfx( level._effect["fx_zombie_boss_spawn"], target );
+  Playfx( level._effect["fx_zombie_boss_spawn_ground"], fxTarget );
+  //Playfx( level._effect["fx_zombie_boss_spawn"], target );
 
   //level._effect["poltergeist"]
   //Playfx( level._effect["poltergeist"], target );
@@ -1433,6 +1444,9 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 	if(trackPerk)
 		self thread eng_track_near_perk();
 
+
+	self thread eng_amb_vocals();
+
 	self waittill("activated");
 	self.state = "enrage";
 }
@@ -1496,6 +1510,23 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 				break;
 			}
 			wait(0.05);
+		}
+	}
+
+	//Play ambient vocals for the guy every few seconds
+	eng_amb_vocals()
+	{
+		self endon("death");
+		self endon("choose_new_goal");
+		self endon("activated");
+
+		while(IsAlive(self)) 
+		{
+			iprintln("Eng: Amb vocals");
+			playsoundatposition( "zmb_engineer_vocals_amb", self.origin );
+			//self PlaySound( "zmb_engineer_vocals_amb" );
+			//wait( randomintrange( 1, 5 ) );
+			wait(2);
 		}
 	}
 
@@ -1729,10 +1760,12 @@ eng_execute_perk( poi  )
 	
 }
 
-	threadAnim( name, sampleAnim ) {
+	threadAnim( name, sampleAnim ) 
+	{
 		self endon( "death" );
 		self animscripted( name, self.origin, self.angles, sampleAnim );
 		animscripts\traverse\zombie_shared::wait_anim_length( sampleAnim, 0.02 );
+		self notify( "anim_dome" );
 	}
 
 /**
@@ -1773,7 +1806,11 @@ eng_execute_enrage()
 	//Play enrage anim
 	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
 	//self animscripted( name, self.origin, self.angles, screamAnim );
-	self threadAnim( "scream", screamAnim );
+	playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
+	wait(1);
+	self thread threadAnim( "scream", screamAnim );
+	PlayRumbleOnPosition( "explosion_generic", self.origin );
+	self waittill_notify_or_timeout( "anim_dome", 1.0 );
 	self.performing_activation = false;
 
 	if( isDefined(self.favoriteenemy) ) 
@@ -1809,16 +1846,25 @@ eng_execute_enrage()
 		self.ignore_all_poi = false;
 		self.using_teleport = false;
 
+		//3. Start enrage anim while hidden
+		self thread eng_groundslam();
+		//Play hellhound prespawn sound
+		PlaySoundAtPosition( "zmb_hellhound_prespawn", self.origin );
+		wait(0.5);
+		//Play hellhound bolt
+		PlaySoundAtPosition( "zmb_hellhound_bolt", self.origin );
+		Playfx( level._effect["poltergeist"], self.origin + (0,0,10) );
+		wait(0.1);
+		self show();
+
 	}
 	else {
 		self.favoriteenemy = get_players()[randomInt(get_players().size)];
+		self thread eng_groundslam();
+		wait(1);
 	}
 
-	//3. Start enrage anim while hidden
-	self thread eng_groundslam();
-	wait(0.5);
-	self show();
-
+	
 	//self.enemyoverride = self.favoriteenemy;
 	self.enraged_time = GetTime();
 	self.performing_activation = false;
@@ -2035,14 +2081,17 @@ eng_execute_attack()
 		self.ground_hit = true;
 		enrageAnim = %ai_zombie_boss_enrage_start_slamground_coast;
 		self thread threadAnim( "enraged", enrageAnim );
-		wait(1.0);
+		wait(.5);
+		playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
+		wait(.5);
 		//electric groundslam fx (magnitude, time, origin, radius)
-		Earthquake( 1.5, 1.5, self.origin, 1000 );
+		Earthquake( 1.2, 1.5, self.origin, 1000 );
 		PlayRumbleOnPosition( "explosion_generic", self.origin );
 		fxTarget = self.origin - (0,0,10);
 		Playfx( level._effect["fx_zombie_boss_grnd_hit"], fxTarget );
 		wait(0.3);
-		//here
+		PlaySoundAtPosition( "zmb_engineer_groundbang", self.origin );
+		PlayRumbleOnPosition( "explosion_generic", self.origin );
 		Playfx( level._effect["fx_transporter_start"], self.origin );
 		/*
 		Playfx( level._effect["fx_teleporter_pad_glow"], target );
@@ -2058,6 +2107,17 @@ eng_execute_attack()
 		for( i = 0; i < players.size; i++ ) {
 			if( checkDist( players[i].origin, self.origin, 300 ) ) {
 				players[i] thread shellShockPlayer();
+			}
+		}
+
+		//for players too close deal damage
+		players = get_players();
+		damage = self.meleeDamage;
+		for( i = 0; i < players.size; i++ ) {
+			if( checkDist( players[i].origin, self.origin, 100 )
+			 	&& !players[i] maps\_laststand::player_is_in_laststand() 
+				&& players[i].sessionstate != "spectator") {
+				radiusdamage(players[i].origin + (0, 0, 5), 10, damage, damage, undefined, "MOD_UNKNOWN");
 			}
 		}
 
@@ -2103,11 +2163,14 @@ eng_tp_death() {
 	self set_run_anim( runAnim );
 	self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
 	self.needs_run_update = false;
+	playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
+	
   	wait(1);
 
 	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
 	//self animscripted( name, self.origin, self.angles, screamAnim );
-	self thread threadAnim( "death", screamAnim );
+	self thread threadAnim( "scream", screamAnim );
+	PlayRumbleOnPosition( "explosion_generic", self.origin );
 	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	wait(0.5);
 	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
@@ -2561,7 +2624,7 @@ boss_zombie_manager()
 	watch_eng_spawn()
 	{
 		level waittill("round_start");
-		randWait = randomInt(15, 60);
+		randWait = randomintrange(15, 60);
 		if( is_true(level.dev_only))
 			randWait = 5;
 

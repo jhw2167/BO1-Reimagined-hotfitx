@@ -1671,7 +1671,7 @@ wait_set_player_visionset()
 		trigger_name = "trigger_teleport_pad_0";
 		core = getent( trigger_name, "targetname" );
 		pad = getent( core.target, "targetname" );
-		location = pad.origin - ( 0, 0, 40);
+		location = pad.origin - ( 0, 0, 60);
 		//location = (-1567,1341,174);	//2
 		//location = (-962,-619,75); 		//0
 		//location += ( 0, 0, 10);
