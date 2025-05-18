@@ -56,14 +56,14 @@ main()
 
 	//Overrides	
 	/* 									*/
-	level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=1;	///
+	//level.zombie_ai_limit_override=1;	///allowed on map
+	level.starting_round_override=2;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	//level.calculate_amount_override=16;	///per round
+	level.calculate_amount_override=5;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1054,8 +1054,17 @@ reimagined_init_level()
 	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
-	//Kino, theater
+	//Kino, theater //here
+	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 32000;	//minimum engineer health
 	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns
+	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
+		//(-14, -1262, 114)		//tp pad main room (345, 262, 0)
+		//,(788,-514, 336)		//upper balcony, Widows (350, -30, 0)
+		//,(-1317, 112, 5) 		//Alleyway (0, 10, 0)
+		(-302, 1107, 5)		//teleporter (353, 21, 0)
+	);
+
+
 
 
 	//Pentagon, five
@@ -1671,7 +1680,9 @@ wait_set_player_visionset()
 		trigger_name = "trigger_teleport_pad_0";
 		core = getent( trigger_name, "targetname" );
 		pad = getent( core.target, "targetname" );
-		location = pad.origin - ( 0, 0, 60);
+		//location = pad.origin - ( 0, 0, 60);
+		location = level.ARRAY_ENGINEER_SPAWN_LOCS[0].origin;
+		
 		//location = (-1567,1341,174);	//2
 		//location = (-962,-619,75); 		//0
 		//location += ( 0, 0, 10);
@@ -9592,6 +9603,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Has Drop: " + self.hasDrop);
 	//iprintln("Final Damage 0: ");
 	//iprintln("Zombie hash: " + self.zombie_hash);
+	//iprintln("Zombie animname: " + self.animname);
 	//iprintln("Zomb health: " + self.health);
 	//iprintln("Zomb max health: " + self.maxhealth);
 

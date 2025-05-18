@@ -313,7 +313,7 @@ trap_use_think( trap )
 		{
 			continue;
 		}
-		iprintln("Trap use triggered by " + self.targetname);
+		//iprintln("Trap use triggered by " + self.targetname);
 
 		//reimagined-expanded, want to trigger trap without player
 		if( !trap._trap_in_use )

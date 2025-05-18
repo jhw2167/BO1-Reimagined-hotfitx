@@ -1078,18 +1078,20 @@ zmb_engineer( target )
 	//self waittill( "zombie_init_done");
   }
 
-	//chosenSpawner = logic;
-	iprintln("Spawning eng sounds");
-	for(i=0;i< level.enemy_spawns.size; i++) {
-		//iprintln("Enemy spawn origin: " + level.enemy_spawns[i].origin);
-		level.enemy_spawns[i] playsound( "zmb_engineer_spawn" );
-	}
-	chosenSpawner = level.enemy_spawns[0];
-	//chosenSpawner = level.zombie_rise_spawners[0];
-	//chosenSpawner playsound( "zmb_engineer_spawn" );	//WORKS! With no soundalias
-	//chosenSpawner playsound( "zmb_engineer_death_bells" );	//WORKS! With no soundalias
-
   //self thread zm_variant_on_death( "engineer" );
+  	for(i=0;i< level.enemy_spawns.size; i++) {
+		//iprintln("Enemy spawn origin: " + level.enemy_spawns[i].origin);
+		//level.enemy_spawns[i] playsound( "zmb_engineer_spawn" );
+		level.enemy_spawns[i] playsound( "evt_electrical_surge" );
+	}
+
+	spawner = level.enemy_spawns[0];
+	self.count=666; 
+	self.script_noteworthy = spawner.script_noteworthy;
+	self.targetname = spawner.targetname;
+	self.target = spawner.target;
+	self.deathFunction = ::boss_die;
+	self.animname = "boss_zombie";
 
   self detachAll();
   self.no_gib = 1;
@@ -1109,6 +1111,7 @@ zmb_engineer( target )
   self.allowpain = false;
   self.no_damage_points = true;
   self.zombie_can_sidestep = false;
+  self.sideStepType = "none";
   self.noChangeDuringMelee = true;
   self.script_string = undefined;
   self thread magic_bullet_shield();
@@ -1175,13 +1178,10 @@ zmb_engineer( target )
   //self ForceTeleport( get_players()[0].origin );
 
   self thread stop_magic_bullet_shield();
-  self.health = 9500+level.zombie_health;
-  if( self.health >= 12000 )
-  {
-	self.health = 12000;
-  }
 
-  self.health=100;
+  
+  self.maxHealth=level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH;
+  self.health=self.maxHealth;
   //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
   //self.custom_damage_func = ::eng_custom_damage;
   self show();
@@ -1459,12 +1459,11 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 		eng endon("choose_new_goal");
 		eng endon("death");
 
-		face_dot = 0.9;
+		face_dot = 0.94;
 		while(!eng.activated) 
 		{
 			eng_face = eng.origin + (0,0,40);
 			self waittill_player_looking_at( eng_face, face_dot, true);
-			iprintln("Player is looking at eng");
 			count = 0;
 			threshold = 10*eng.player_lookat_threshold;
 
@@ -1477,10 +1476,8 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 				eng_face = eng.origin + (0,0,40);
 				count++;
 			}
-			iprintln("Player stopped looking at eng " + count);
-			iprintln("Player stopped looking at eng thresh " + threshold);
-			iprintln("decision" + (count >= threshold) );
-
+			//iprintln("Player stopped looking at eng " + count);
+			//iprintln("Player stopped looking at eng thresh " + threshold);
 			if( count >= threshold ) {
 				eng.favoriteenemy = self;
 				eng notify( "activated" );
@@ -1491,7 +1488,6 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 				
 		}
 
-		iprintln("Player stopped tracking eng");
 	}
 	
 	//self is eng
@@ -1520,12 +1516,15 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 		self endon("choose_new_goal");
 		self endon("activated");
 
-		while(IsAlive(self)) 
+		while(IsAlive(self) || is_true(self.useAmbientVocals) ) 
 		{
 			iprintln("Eng: Amb vocals");
 			playsoundatposition( "zmb_engineer_vocals_amb", self.origin );
-			//self PlaySound( "zmb_engineer_vocals_amb" );
-			//wait( randomintrange( 1, 5 ) );
+
+			if( randomInt(100) < 20) {
+				playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
+			}
+			
 			wait(2);
 		}
 	}
@@ -1534,11 +1533,10 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 
 eng_target_poi() 
 {
-
-	poi = (0, 0, 0);
+	
+	//here - _TRAP
+	poi = undefined;
 	randIndex = 1;
-
-	poi.randIndex = randIndex;
 	if(self.state == "trap") {
 		poi = self.eng_trap_activate_poi[ randIndex ];
 		poi.death_pos = self.eng_trap_death_poi[ randIndex ];
@@ -1546,6 +1544,8 @@ eng_target_poi()
 		poi = self.eng_perk_poi[ self.perkTargetIndex ];
 		poi.randIndex = self.perkTargetIndex;
 	}
+	poi.randIndex = randIndex;
+	iprintln( "Eng: Targeting POI: " + poi.randIndex );
 
 	//Get ready to seek goal
 	self notify( "stop_find_flesh" );
@@ -1573,6 +1573,7 @@ eng_target_poi()
 	}
 	if( notif == "perk" ) {
 		//eng got close to a perk, lets follow that now
+		iprintln( "Eng: Perk reached" );
 		self.state = "perk";
 		return;
 	}
@@ -1582,6 +1583,8 @@ eng_target_poi()
 	}
 	else if( notif == "goal" )
 	{
+		iprintln( "Goal reached" );
+		iprintln( "Goal reached, state: " + poi.randIndex );
 		//Goal Reached
 		self.immunity = true;
 		if(self.state == "trap") {
@@ -1613,6 +1616,8 @@ eng_execute_trap( poi )
 	animscripts\traverse\zombie_shared::wait_anim_length( attackAnim, .02 );
 
 	//3. trigger tap, wait to turn on
+	iprintln( "Engineer Zombie: Triggering trap" );
+	iprintln( "Trap: " + poi.randIndex );
 	poi notify( "trigger" );
 
 	if(poi.randIndex == 0) {
@@ -1883,8 +1888,10 @@ eng_execute_enrage()
 		//Should be like killing 16 zombies
 		zombsScale = 16;
 		zombieHealth = level.zombie_health;
+		iprintln( "Engineer Zombie: Base health: " + zombieHealth );
+		baseHealth = level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH;
 
-		baseHealth = zombieHealth * (zombsScale + level.eng_times_died);
+		baseHealth += ( zombieHealth * (zombsScale + 4*level.eng_times_died));
 		if( is_in_array( self.eng_perks, level.JUG_PRK ) ) {
 			return baseHealth * 2;
 		}
@@ -2024,7 +2031,22 @@ eng_execute_attack()
 						wait(0.05);
 						self eng_groundslam();
 						trap notify( "trigger" );
-						break;
+						blackListedTrap = trap.targetname;
+
+
+					//play fx on boss as he runs through trap
+					if( isDefined( trap ) && isDefined( trap.targetname ) )
+					{
+						if(trap.targetname == "crematorium_room_trap" ) //crema fire trap
+						{
+							self.death_pos = self.eng_trap_death_poi[0];
+							self boss_fire_death_fx(self);
+						} else {
+							self.death_pos = self.origin;
+							self boss_shock_death_fx(self);
+						}
+					}
+
 					}
 					else {
 						blackListedTrap = trap.targetname;
@@ -2033,18 +2055,6 @@ eng_execute_attack()
 				}
 			}
 
-		}
-
-		if( isDefined( trap ) && isDefined( trap.targetname ) )
-		{
-			if(trap.targetname == "crematorium_room_trap" ) //crema fire trap
-			{
-				self.death_pos = self.eng_trap_death_poi[0];
-				self boss_fire_death_fx(self);
-			} else {
-				self.death_pos = self.origin;
-				self boss_shock_death_fx(self);
-			}
 		}
 
 		//self notify( "stop_find_flesh" );
@@ -2164,7 +2174,7 @@ eng_tp_death() {
 	self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
 	self.needs_run_update = false;
 	playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
-	
+
   	wait(1);
 
 	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
@@ -2577,23 +2587,32 @@ init_boss_zombie()
 */
 boss_zombie_manager()
 {
-
 	level endon("end_game");
-
 
 	//Preconditions
 	flag_wait("power_on");
+	iprintln( "Engineer Zombie: Power is on" );
 	wait_doors_open();
+	iprintln( "Engineer Zombie: Doors are open" );
 
+	//level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
 	level.theater_rounds_until_boss = 0;
 	while(1)
 	{
+		level waittill( "start_of_round" );
+
+		wait(5);
+
+		//if dog round, continue
+		if( is_true(flag("dog_round")) )
+			continue;
+
+		iprintln( "Engineer Zombie: Round start, checking for boss spawn " + level.theater_rounds_until_boss );
 		if( level.theater_rounds_until_boss == 0 ) {
 			level thread watch_eng_spawn();
 			level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
 		}	
 			
-		wait(1);
 	}
 
 }
@@ -2614,7 +2633,7 @@ boss_zombie_manager()
 				zonesClosed++;	
 			}
 
-			if( zonesClosed < 2 )
+			if( zonesClosed < 1 )
 				break;
 
 			wait(2);
@@ -2623,14 +2642,53 @@ boss_zombie_manager()
 
 	watch_eng_spawn()
 	{
-		level waittill("round_start");
-		randWait = randomintrange(15, 60);
-		if( is_true(level.dev_only))
-			randWait = 5;
+		iprintln( "Engineer Zombie: Watching for spawn" );
 
+		//1. Bells toll to indicate eng is coming
+		for(i=0;i< level.enemy_spawns.size; i++) {
+			//iprintln("Enemy spawn origin: " + level.enemy_spawns[i].origin);
+			level.enemy_spawns[i] playsound( "zmb_engineer_spawn" );
+			//level.enemy_spawns[i] playsound( "evt_electrical_surge" );
+		}
+		//chosenSpawner playsound( "zmb_engineer_death_bells" );	//Doesn't work
+
+		spawnPos = SpawnStruct();
+		spawnCounts = level.ARRAY_ENGINEER_SPAWN_LOCS.size;
+		spawnPos.origin = level.ARRAY_ENGINEER_SPAWN_LOCS[randomInt(spawnCounts)];
+		spawnPos.useAmbientVocals = true;
+
+		spawnPos thread eng_amb_vocals();
+
+		randWait = randomintrange(10, 60);
+
+		if( is_true(level.dev_only) )
+			randWait = 10;
+
+		//iprintln( "Engineer Zombie: Waiting for spawn, wait time: " + randWait );
 		wait(randWait);
 
-		//wait for fresh zombie spawn, seize him and force him to engineer
-		//zomb zmg_engineer()
-		iprintln( "Engineer Zombie: Spawning" );
+		self playsound( "zmb_engineer_death_bells" );
+
+		wait(5);
+
+		spawner = level.enemy_spawns[0];
+		boss = spawner maps\_zombiemode_net::network_safe_stalingrad_spawn( "boss_zombie_spawn", 1 );
+
+		if( spawn_failed( boss ) ) {
+			//iprintln( "Engineer Zombie: Spawn failed, aborting" );
+			level.theater_rounds_until_boss = 0;
+			return;
+		}
+
+		boss zmb_engineer(spawnPos.origin);
+		spawnPos.useAmbientVocals = false;
+		spawnPos Delete();
+
+		//iprintln( "Engineer Zombie: Spawned susscesfully at " + spawnPos.origin );
+	}
+
+	boss_die()
+	{		
+		//self playsound( "zmb_engineer_death_bells" );
+		return false;
 	}

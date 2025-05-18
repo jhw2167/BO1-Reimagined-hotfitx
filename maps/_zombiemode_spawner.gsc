@@ -4978,7 +4978,6 @@ zombie_pathing()
 		self.zombie_path_timer += 100;
 		self SetGoalPos( goal );
 		self waittill( "bad_path" );
-		iprintln( "Zombie pathing failed to breadcrumb at " + goal );
 
 		debug_print( "Zombie couldn't path to breadcrumb at " + goal + " Finding next breadcrumb" );
 		for( i = 0; i < crumb_list.size; i++ )
@@ -5980,7 +5979,7 @@ delete_zombie_noone_looking(how_close)
 			return;
 		}*/
 
-		//IPrintLnBold("deleting zombie out of view");
+		IPrintLnBold("deleting zombie out of view");
 		level.zombie_total++;
 		self DoDamage(self.health + 1000, self.origin);
 		//self maps\_zombiemode_spawner::reset_attack_spot();
