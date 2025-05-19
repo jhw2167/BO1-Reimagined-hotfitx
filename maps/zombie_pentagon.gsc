@@ -1148,7 +1148,7 @@ watch_start_gas()
 	gas_point Hide();
 	level.pentagon_gas_point = gas_point;
 
-	trigger = Spawn( "trigger_damage", gas_point.origin, 1, 30, 72 ); // org, flags, radius, height
+	trigger = Spawn( "trigger_damage", gas_point.origin, 1, 96, 72 ); // org, flags, radius, height
 	trigger enablelinkto();
 	trigger LinkTo( gas_point );
 

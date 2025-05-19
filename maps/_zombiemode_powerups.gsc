@@ -1500,6 +1500,9 @@ powerup_grab()
 						zombies = getaiarray("axis");
 						players[i].zombie_nuked = get_array_of_closest( self.origin, zombies );
 						players[i] notify("nuke_triggered");
+						if( IsDefined(level.currentEngineer) ) {
+							level.currentEngineer notify("nuke_triggered");
+						}
 						break;
 
 					case "full_ammo":

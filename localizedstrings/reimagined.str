@@ -1256,7 +1256,7 @@ REFERENCE          	QRV_PRK_TITLE
 LANG_ENGLISH       	"Quick Revive"
 
 REFERENCE          	QRV_PRK_HINT
-LANG_ENGLISH       	"- Quick Revive is no longer required to revive you in solo \n- Revive teammates faster \n- Regenerate health slightly quicker \n- After being revived, a random perk is returned to you"
+LANG_ENGLISH       	"- Quick Revive is no longer required to revive you in solo \n- A revived player has a random perk returned to them"
 
 REFERENCE          	QRV_PRO_TITLE
 LANG_ENGLISH       	"QuickRevive Pro"
@@ -1316,7 +1316,7 @@ REFERENCE 			DST_PRK_TITLE
 LANG_ENGLISH 		"Deadshot Daiquiri 2.0"
 
 REFERENCE 			DST_PRK_HINT
-LANG_ENGLISH 		"- All bullet weapons do 100% increased headshot damage"
+LANG_ENGLISH 		"All bullet weapons do 100% increased headshot damage"
 
 REFERENCE 			DST_PRO_TITLE
 LANG_ENGLISH 		"Deadshot Daiquiri 2.0 Pro"

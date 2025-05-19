@@ -1055,8 +1055,8 @@ reimagined_init_level()
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
 	//Kino, theater //here
-	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 32000;	//minimum engineer health
-	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns
+	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 256000;	//minimum engineer health
+	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 1;	//4 rounds between spawns
 	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
 		//(-14, -1262, 114)		//tp pad main room (345, 262, 0)
 		//,(788,-514, 336)		//upper balcony, Widows (350, -30, 0)
@@ -4452,6 +4452,13 @@ onPlayerDowned()
 					pap_trigger[i] notify("pap_force_timeout");
 				}
 			}
+		}
+
+		if( IsDefined(level.currentEngineer) )
+		{
+			iprintln("Notifying player down: ");
+			level.lastPlayerDowned = self;
+			level.currentEngineer notify("player_downed");
 		}
 	}
 }
@@ -8480,6 +8487,7 @@ round_spawn_failsafe()
 }
 
 // Waits for the time and the ai to die
+//level.round_wait_func
 round_wait()
 {
 /#
@@ -8521,7 +8529,7 @@ round_wait()
 
 	//Reimagined-Epanded
 	//We don't care about dog rounds, dogs and zombies/mokeys etc come at once
-	while( level.zombie_total > 0 || get_enemy_count() > 0 )
+	while( get_total_remaining_enemies() > 0 )
 	{
 		if( flag( "end_round_wait" ) )
 		{
@@ -8562,6 +8570,10 @@ reimagined_expanded_apocalypse_bonus( giveBonus )
 
 get_total_remaining_enemies()
 {
+	if( !IsDefined(level.zombie_dog_total) ){
+		level.zombie_dog_total = 0;
+	}
+
 	return level.zombie_total + get_enemy_count() + level.zombie_dog_total;
 }
 
@@ -9766,7 +9778,21 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		END DEADSHOT usePlayerHitmarkers
 	***/
 
-	if((is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill)) && !is_true(self.magic_bullet_shield) && self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "sonic_zombie" && self.animname != "napalm_zombie" && self.animname != "astro_zombie" && !is_true(self.upgraded_dog))
+	//reimagined_expanded - activate boss zombie
+	if( is_boss_zombie( self.animname ) )
+	{
+		isBossZombie = IsDefined( level.currentEngineer) && ( self.animname == "boss_zombie");
+		if( isBossZombie )
+		{
+			if( !is_true(self.activated) )
+			{
+				self.favoriteenemy = attacker;
+				level.currentEngineer notify( "activated" );
+			}
+		}
+	}
+
+	if((is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill)) && !is_boss_zombie(self.animname) &&  !is_true(self.upgraded_dog))
 	{
 		// insta kill should not effect these weapons as they already are insta kill, causes special anims and scripted things to not work
 		no_insta_kill_on_weps = array("tesla_gun_zm", "tesla_gun_upgraded_zm", "tesla_gun_powerup_zm", "tesla_gun_powerup_upgraded_zm", "humangun_zm", "humangun_upgraded_zm", "microwavegundw_zm", "microwavegundw_upgraded_zm");
@@ -9797,12 +9823,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			return self.maxhealth + 1000;
 		}
 	}
-	//If its install and a boss zombie, double damage
-	if( is_true(level.zombie_vars["zombie_insta_kill"]) && is_boss_zombie(self.animname) )
-	{
-		damage *= 2;
-	}
-
+	
 	if(meansofdeath == "MOD_MELEE" )
 	{
 
@@ -11116,8 +11137,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	//iprintln("Final Damage 7: " + final_damage);
 
-
-	
+	//If its install and a boss zombie, double damage
+	if( is_true(level.zombie_vars["zombie_insta_kill"]) && is_boss_zombie(self.animname) )
+	{
+		final_damage *= 2;
+	}
 
 	if(!is_true(self.nuked) && !is_true(self.marked_for_death))
 	{
@@ -11132,11 +11156,23 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
-	if(self.animname == "director_zombie")
+
+	if( is_boss_zombie( self.animname ) )
 	{
 
-		self.dmg_taken += int(final_damage);
-		iprintln("Director Damage: " + self.dmg_taken);
+		if(self.animname == "director_zombie")
+		{
+
+			self.dmg_taken += int(final_damage);
+			iprintln("Director Damage: " + self.dmg_taken);
+		}
+
+		if( self.animname == "boss_zombie")
+		{
+			if ( self.health-final_damage < 0 ) {
+				self.was_slain = true;
+			}
+		}
 	}
 
 	//Shino Special Behavior
@@ -13218,7 +13254,7 @@ watch_faulty_rounds()
 	while(1)
 	{
 		wait(1);
-		enemy_count = get_enemy_count();
+		enemy_count = get_total_remaining_enemies();
 		if(enemy_count <= 0)
 			time_no_enemies++;
 		else
