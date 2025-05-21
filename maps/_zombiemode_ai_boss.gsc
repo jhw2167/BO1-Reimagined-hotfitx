@@ -254,7 +254,7 @@ eng_attack_properties()
 	//basic properties
 	self.trap_damage = 5000;
 	self.enraged_time = undefined; 		//tracks when engineer was enraged
-	self.time_to_live = 60; //60				//number of seconds before engineer dies
+	self.time_to_live = 15; //60				//number of seconds before engineer dies
 	self.empowered_time_to_live = 120;	//120	//number of seconds before enraged engineer dies
 	self.damaged_by_trap = undefined; 	//tracks which traps damaged engineer
 

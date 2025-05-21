@@ -245,10 +245,22 @@ generate_perk_hint( perkOrWeapon, specialHint )
     /* SET APPROPRIATE HINT */
 		switch( hintCode )
 		{
-		case "Apocalypse":
+		case "apocalypse":
 		//\n- Zombies will respawn at full health if not killed quickly \n- Rounds will automatically start if you wait too long; with a break every 5 rounds \n- Damaging zombies gives less points; kills and headshots give more points \n- Points are rewarded for finishing a round quickly \n- Doors and upgrades are more expensive
 			title SetText( &"REIMAGINED_APOCALYPSE_TITLE" );
 			text SetText( &"REIMAGINED_APOCALYPSE_HINT" );
+			break;
+
+		case "apocalypse_rounds":
+		//\n- Zombies will respawn at full health if not killed quickly \n- Rounds will automatically start if you wait too long; with a break every 5 rounds \n- Damaging zombies gives less points; kills and headshots give more points \n- Points are rewarded for finishing a round quickly \n- Doors and upgrades are more expensive
+			title SetText( &"REIMAGINED_APOCALYPSE_ROUNDS_TITLE" );
+			text SetText( &"REIMAGINED_APOCALYPSE_ROUNDS_HINT" );
+			break;
+
+		case "apocalypse_points":
+		//\n- Zombies will respawn at full health if not killed quickly \n- Rounds will automatically start if you wait too long; with a break every 5 rounds \n- Damaging zombies gives less points; kills and headshots give more points \n- Points are rewarded for finishing a round quickly \n- Doors and upgrades are more expensive
+			title SetText( &"REIMAGINED_APOCALYPSE_POINTS_TITLE" );
+			text SetText( &"REIMAGINED_APOCALYPSE_POINTS_HINT" );
 			break;
 
 		case "babyjugg":

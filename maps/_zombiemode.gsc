@@ -57,14 +57,14 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=2;	///
-	level.starting_points_override=100000;	///
+	level.starting_round_override=19;	///
+	level.starting_points_override=1000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
 	level.calculate_amount_override=5;	///per round
-	level.apocalypse_override=false;		///
+	level.apocalypse_override=true;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -1585,7 +1585,8 @@ wait_set_player_visionset()
 
 	//Print entitity number and random char
 	//iprintln( "Entity Number: " + self.entity_num);
-
+	//perk_override
+	//give perks, give_perk
 	if( is_true( level.dev_only ) )
 	{
 		//GIVE PERKS
@@ -1603,7 +1604,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRK );
-		self maps\_zombiemode_perks::returnPerk( level.JUG_PRK );
+		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRK );
 
@@ -8043,7 +8044,7 @@ print_apocalypse_options()
 			//apocalypse_hints += "- Points are rewarded for finishing a round quickly \n";
 			//apocalypse_hints += "- Doors and upgrades are more expensive";
 
-			players[i] generate_perk_hint("Apocalypse", true);
+			players[i] generate_perk_hint("apocalypse", true);
 
 		}
 		else if( level.classic )
@@ -8545,13 +8546,34 @@ round_wait()
 		wait( .05 );
 	}
 
-	//Reimagined-Expanded, apocalypse mode bonus
-	if( level.apocalypse && level.round_number <= level.THRESHOLD_MAX_APOCALYSE_ROUND ) 
+	//Reimagined-Expanded, apocalypse mode hints
+	round = level.round_number;
+	if( level.apocalypse)
 	{
-		if( level.round_number % level.VALUE_APOCALYPSE_WAIT_ROUNDS == 0 )
+		players = GetPlayers();
+		if( round == 4) {
+			for(i=0; i<players.size; i++)	{
+				players[i] thread generate_perk_hint("apocalypse_rounds", true);
+			}
+		}
+
+		if( round == 20 ) {
+			for(i=0; i<players.size; i++)	{
+				iprintln("Apocalypse points hint");
+				players[i] thread generate_perk_hint("apocalypse_points", true);
+			}
+		}
+	}
+		
+	//Reimagined-Expanded, apocalypse mode bonus
+	if( level.apocalypse && round <= level.THRESHOLD_MAX_APOCALYSE_ROUND ) 
+	{
+		if( round % level.VALUE_APOCALYPSE_WAIT_ROUNDS == 0 )
 			return;	//Intermission round, no bonus every 5 rounds
 		level thread reimagined_expanded_apocalypse_bonus();
 	}
+
+	
 
 }
 
@@ -8618,6 +8640,7 @@ reimagined_expanded_apocalypse_rounds()
 		self thread clear_flag("end_round_wait", 5);
 		flag_set("end_round_wait");
 	}
+
 }
 // */
 
