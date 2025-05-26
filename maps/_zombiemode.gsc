@@ -57,13 +57,13 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=19;	///
-	level.starting_points_override=1000;	///
+	level.starting_round_override=31;	///
+	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=5;	///per round
+	level.calculate_amount_override=1;	///per round
 	level.apocalypse_override=true;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1058,7 +1058,7 @@ reimagined_init_level()
 	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 256000;	//minimum engineer health
 	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 1;	//4 rounds between spawns
 	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
-		//(-14, -1262, 114)		//tp pad main room (345, 262, 0)
+		//(-14, -1262, 114)		//tp pad spawn room (345, 262, 0)
 		//,(788,-514, 336)		//upper balcony, Widows (350, -30, 0)
 		//,(-1317, 112, 5) 		//Alleyway (0, 10, 0)
 		(-302, 1107, 5)		//teleporter (353, 21, 0)
@@ -1480,7 +1480,7 @@ watch_player_dev_utility()
 				skipKill = true;
 			}
 			else if( isQuadZombie ) {
-				skipKill = true;
+				skipKill = false;
 			}
 
 			if( !skipKill )
@@ -1594,17 +1594,17 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.MUL_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.ECH_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.WWN_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRO );
 
 		//self maps\_zombiemode_perks::returnPerk( level.QRV_PRK );
-		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRK );
+		self maps\_zombiemode_perks::returnPerk( level.JUG_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRK );
 
@@ -1687,8 +1687,8 @@ wait_set_player_visionset()
 		//location = (-1567,1341,174);	//2
 		//location = (-962,-619,75); 		//0
 		//location += ( 0, 0, 10);
-		zombie = zombies[0];
-		zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
+		//zombie = zombies[0];
+		//zombie thread maps\_zombiemode_ai_boss::zmb_engineer( location );
 		
 	}
 
@@ -9180,7 +9180,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 						}
 						else
 						{
-							iDamage = int(iDamage * 0.5);
+							//iDamage = int(iDamage * 0.5);
 						}
 
 					}
@@ -9205,6 +9205,21 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		}
 		
 		eAttacker notify( "hit_player" );
+
+		//zombie is boss_zombie, engineer
+		if( is_true(eattacker.is_zombie) && eattacker.animname == "boss_zombie" )
+		{
+			iprintln("boss_zombie hit player");
+			if( is_in_array( eattacker.eng_perks, level.ECH_PRK ) )
+			{
+				iprintln("boss_zombie cherry attack");
+				fxTarget = self GetWeaponMuzzlePoint();
+				Playfx( level._effect["fx_zombie_boss_grnd_hit"], fxTarget.origin );
+				self thread maps\_zombiemode_ai_boss::electroShellShockPlayer();
+				iDamage += 25;
+			}	
+		}
+		
 
 		if( is_true(eattacker.is_zombie) && eattacker.animname == "director_zombie" )
 		{
@@ -10963,7 +10978,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if( is_in_array(level.ARRAY_VALID_SNIPERS, weapon) ) 
 		{
 			if( is_boss_zombie(self.animname) ) {
-				final_damage =  int(final_damage / 5);
+				final_damage =  int(final_damage / 20);
+				iprintln("Sniper damage reduced for boss zombie: " + final_damage);
 			}
 			//Zombie knockdown
 			else if( final_damage >= self.health ) {
@@ -11147,7 +11163,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln( "Mod 10: " + ((attacker GetWeaponAmmoStock(weapon)) % 10) );
 
 	//Classic Special Damage Multipliers (perks and conditions)
-	if(weapon == "molotov_zm")
+	if(weapon == "molotov_zm" &&  !is_boss_zombie(self) )
 	{
 		return self.maxhealth + 1000;
 	}
@@ -11164,6 +11180,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( is_true(level.zombie_vars["zombie_insta_kill"]) && is_boss_zombie(self.animname) )
 	{
 		final_damage *= 2;
+		iprintln("Insta Kill Damage: " + final_damage);
 	}
 
 	if(!is_true(self.nuked) && !is_true(self.marked_for_death))
@@ -11192,8 +11209,14 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( self.animname == "boss_zombie")
 		{
-			if ( self.health-final_damage < 0 ) {
+			if( is_true(self.was_slain))
+				return 0;
+
+			if ( self.health - final_damage < 0 ) {
 				self.was_slain = true;
+				self notify("teleport");
+				self thread magic_bullet_shield();
+				return 0;
 			}
 		}
 	}
@@ -11256,6 +11279,9 @@ is_boss_zombie( animname )
 {
 	if(!isDefined(animname))
 		return false;
+
+	if( isDefined(animname.animname) )
+		animname = animname.animname;
 
 	return (
 	   animname == "thief_zombie"

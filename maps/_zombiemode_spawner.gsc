@@ -424,6 +424,13 @@ zombie_determine_drop()
 			}
 			
 		}
+
+		wait(0.5);	//Wait for zombie to be in playable area
+
+		if( maps\_zombiemode::is_boss_zombie( self.animname ) ) {
+			self.hasDrop = "NONE";
+			return;
+		}
 			
 
 		total = 1000;
@@ -488,7 +495,7 @@ zombie_determine_drop()
 			{
 				self setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 				wait 0.5;
-				self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+				//self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 			}
 			else
 			{
@@ -4598,6 +4605,8 @@ zombie_death_event( zombie )
 	{
 		return;
 	}
+
+	zombie clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 
 	//Track all zombies killed
 	level.global_zombies_killed++;

@@ -18,17 +18,14 @@ zmb_engineer( target )
   }
 
   //self thread zm_variant_on_death( "engineer" );
-	for(i=0;i< 4; i++) {
-	playsoundatposition( "amb_circuit", target );
-	}
-
-	spawner = level.enemy_spawns[0];
-	self.count=666; 
-	self.script_noteworthy = spawner.script_noteworthy;
-	self.targetname = spawner.targetname;
-	self.target = spawner.target;
-	self.deathFunction = ::boss_die;
-	self.animname = "boss_zombie";
+		
+  spawner = level.enemy_spawns[0];
+  self.count=666; 
+  self.script_noteworthy = spawner.script_noteworthy;
+  self.targetname = spawner.targetname;
+  self.target = spawner.target;
+  self.deathFunction = ::boss_die;
+  self.animname = "boss_zombie";
 
   self detachAll();
   self.no_gib = 1;
@@ -72,6 +69,8 @@ zmb_engineer( target )
 
   count = 0;
 
+  target playsound( "zmb_elec_start" );
+
   while( count < 40 ) // double check to make sure its hiding and not going to be force to teleport to barriers
   {
     self notify( "teleporting" );
@@ -93,8 +92,10 @@ zmb_engineer( target )
   count = 0;
   //play boss spawn build up
   fxTarget = target - (0,0,25);
+  target playsound( "zmb_elec_start" );
+  
   Playfx( level._effect["fx_zombie_boss_spawn_buildup"], fxTarget );
-  Playfx( level._effect["fx_teleporter_pad_glow"], fxTarget );
+  //Playfx( level._effect["fx_teleporter_pad_glow"], fxTarget );
   Playfx( level._effect["fx_transporter_start"], fxTarget );
   wait(1.5);
   //play boss spawn ground
@@ -116,7 +117,7 @@ zmb_engineer( target )
 
   self thread stop_magic_bullet_shield();
 
-  self.maxHealth=16000000;
+  self.maxHealth=999999999;
   self.health = self.maxhealth*1;
   //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
   //self.custom_damage_func = ::eng_custom_damage;
@@ -131,6 +132,8 @@ zmb_engineer( target )
   self.needs_run_update = false;
   self.script_moveoverride = false;
   self.ignoreall = false;
+  self.hasDrop = undefined; //no drops
+  self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
   level.engineer_zms_alive++;
 
   self eng_determine_poi();
@@ -154,9 +157,33 @@ zmb_engineer( target )
   }
   */
 
+  self.thundergun_disintegrate_func = ::thundergun_disintegrate;
+  self.thundergun_knockdown_func = ::thundergun_knockdown;
+  self.tesla_head_gib_func = ::tesla_gib;
+
   self thread watch_eng_goals();
 
 }
+
+	thundergun_disintegrate(player) {
+		//nothing
+	}
+
+	thundergun_knockdown(player, gib) {
+		screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
+		//self animscripted( name, self.origin, self.angles, screamAnim );
+		playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
+		wait(1);
+		self thread threadAnim( "scream", screamAnim );
+		PlayRumbleOnPosition( "explosion_generic", self.origin );
+		self waittill_notify_or_timeout( "anim_dome", 1.0 );
+	}
+
+	tesla_gib() {
+		//nothing
+	}
+
+
 
 eng_determine_poi()
 {
@@ -254,13 +281,13 @@ eng_attack_properties()
 	//basic properties
 	self.trap_damage = 5000;
 	self.enraged_time = undefined; 		//tracks when engineer was enraged
-	self.time_to_live = 15; //60				//number of seconds before engineer dies
+	self.time_to_live = 60; //60				//number of seconds before engineer dies
 	self.empowered_time_to_live = 120;	//120	//number of seconds before enraged engineer dies
 	self.damaged_by_trap = undefined; 	//tracks which traps damaged engineer
 
 	self.eng_near_perk_threshold = 200; //distance from perk to trigger enrage
 	self.eng_near_trap_threshold = 100; //distance from trap to trigger it
-	self.player_lookat_threshold = 10.5; //number of seconds player can look at engineer before enraging him
+	self.player_lookat_threshold = 1.5; //number of seconds player can look at engineer before enraging him
 
 
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
@@ -285,7 +312,7 @@ eng_attack_properties()
 /**
 
 	Threaded method loops and occaisionally sets new goal for engineer zombie
-
+	//watch_eng_goals
 **/
 watch_eng_goals()
 {
@@ -296,8 +323,12 @@ watch_eng_goals()
 	//self.state = "enrage";
 	//self.state = "attack";
 	//self.state = "perk";
-	//self.perkTargetIndex = randomInt(3);
-	self.perkTargetIndex = 0;
+
+	//fire trap, electric trap, electric upstairs
+	self.trapTargetIndex = randomInt( self.eng_trap_activate_poi.size );
+	self.trapTargetIndex = 0; //fire trap = 0, electric trap = 1, electric upstairs = 2
+	self.perkTargetIndex = randomInt(3);
+	self.perkTargetIndex = 0; //jug=0, speed=1, cherry=2
 	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );
 
 	self thread eng_watch_teleport_triggers();
@@ -330,7 +361,7 @@ watch_eng_goals()
 			self eng_execute_enrage();
 
 		} else if( self.state == "teleport" ) {
-			iprintln("4");
+			//iprintln("4");
 			self eng_tp_death();
 			break;
 		}
@@ -368,7 +399,7 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 	}
 
 	if(trackPerk)
-		self thread eng_track_near_perk();
+		self thread eng_watch_near_perk();
 
 
 	self thread eng_amb_vocals();
@@ -378,6 +409,7 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 }
 
 	//self is player
+	//watch_eyes, track_eyes
 	eng_track_player_eyes( eng ) 
 	{	
 		self endon("death");
@@ -385,7 +417,8 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 		eng endon("choose_new_goal");
 		eng endon("death");
 
-		face_dot = 0.94;
+		//iprintln( "Eng: Tracking player eyes" );
+		face_dot = 0.9;
 		while(!eng.activated) 
 		{
 			eng_face = eng.origin + (0,0,40);
@@ -416,25 +449,7 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 
 	}
 	
-	//self is eng
-	eng_track_near_perk()
-	{
-		self endon("death");
-		self endon("activated");
-		self endon("choose_new_goal");
-
-		iprintln("watching near perk");
-		while(IsAlive(self)) 
-		{
-			chosen_perk = self.eng_perk_poi[ self.perkTargetIndex ];
-			if( checkDist( self.origin, chosen_perk.origin, self.eng_near_perk_threshold ) ) {
-				self notify( "perk" );
-				break;
-			}
-			wait(0.05);
-		}
-	}
-
+	
 	//Play ambient vocals for the guy every few seconds
 	eng_amb_vocals()
 	{
@@ -462,7 +477,7 @@ eng_target_poi()
 	
 	//here - _TRAP
 	poi = undefined;
-	randIndex = 1;
+	randIndex = self.trapTargetIndex;
 	if(self.state == "trap") {
 		poi = self.eng_trap_activate_poi[ randIndex ];
 		poi.death_pos = self.eng_trap_death_poi[ randIndex ];
@@ -697,6 +712,7 @@ eng_execute_perk( poi  )
 	PlayFxOnTag( poi.powerupColor, self.powerup_fx, "tag_origin" );
 	self.eng_perks[poi.index] = poi.script_noteworthy;
 	self.empowered = true;
+	self.perkTargetIndex = undefined;	//or could set to random perk
 
 	//4. Set state to enrage and return
 	self.state = "enrage";
@@ -864,6 +880,8 @@ eng_execute_enrage()
 		//Do damage such the the engineer's remaining health is baseHealth
 		if( self.health > baseHealth )
 			 self DoDamage( self.health - baseHealth, self.origin, undefined );
+		else
+			self.health = baseHealth;
 
 		//self.maxHealth = baseHealth;
 	}
@@ -943,7 +961,12 @@ eng_execute_attack()
 	eng_watch_near_perk() 
 	{
 		self endon( "death" );
+		self endon("activated");
+		self endon("choose_new_goal");
 		self endon( "stop_eng_watcher" );
+
+		if(!isDefined( self.perkTargetIndex ) )
+			return;
 
 		iprintln( "watch near perk" );
 		perk = self.eng_perk_poi[ self.perkTargetIndex ];
@@ -1031,21 +1054,23 @@ eng_execute_attack()
 		enragedTimeToLive = self.time_to_live;
 		if( is_true( self.empowered ) )
 			enragedTimeToLive = self.empowered_time_to_live;
-		while( IsAlive(self) ) 
-		{
-			wait(1);
-			if( !isDefined( self.enraged_time ) )
-				continue;
 
+		if( !isDefined( self.enraged_time ) )
+			return;
+		enragedTime = self.enraged_time;
+		while( isDefined(self) && IsAlive(self) && !is_true(self.was_slain) )
+		{
 			//iprintln( "Get Time: " + GetTime() );
 			//iprintln( "Enraged Time: " + self.enraged_time );
-			iprintln( "diff: " + (GetTime() - self.enraged_time) );
-			if( (GetTime() - self.enraged_time) >= (enragedTimeToLive * 1000) ) 
+			//iprintln( "diff: " + (GetTime() - self.enraged_time) );
+			if( (GetTime() - enragedTime) >= (enragedTimeToLive * 1000) ) 
 			{
 				iprintln( "Time to live expired, going to death state" );
 				self notify( "teleport" );
 				break;
 			}
+
+			wait(1);
 		}
 	}
 
@@ -1155,6 +1180,21 @@ eng_execute_attack()
 			self SetMoveSpeedScale( self.move_speed );
 		}
 
+		electroShellShockPlayer() 
+		{
+			//SetTransported( 2 );
+			self setelectrified(1.5);
+			self shellshock( "electrocution", 1.5 );
+			self SetMoveSpeedScale( 0.3 );
+			wait(1.0);
+			self SetMoveSpeedScale( 0.6 );
+			wait(.25);
+			if(!IsDefined(self.move_speed))
+				self.move_speed = 1;
+
+			self SetMoveSpeedScale( self.move_speed );
+		}
+
 /*
 	Eng teleports away just before he dies
 */
@@ -1177,45 +1217,42 @@ eng_tp_death() {
 	self.needs_run_update = false;
 	playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
 
-  	wait(1);
+	wait(1);
 
 	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
 	//self animscripted( name, self.origin, self.angles, screamAnim );
 	self thread threadAnim( "scream", screamAnim );
 	PlayRumbleOnPosition( "explosion_generic", self.origin );
 	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
-	wait(0.5);
+	
 	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	//wait(0.5);
 
+	
 
-	//2. poltergeist fx
-	//play 8 fx in a circle around the engineer at radius 10
-	/*
-	r=50;
-	a=8;
-	for( i = 0; i < a; i++ ) {
-		angle = (i * (180/a)) * (3.14159 / 180); //convert to radians
-		offset = (r * cos(angle), r * sin(angle), 0);
-		fx_pos = self.origin + offset;
-		//Playfx( level._effect["poltergeist"], fx_pos );
-		//wait(0.05);
+	if( is_true(self.was_slain) ) 
+	{
+		deathAnim = %ai_zombie_boss_death_a;
+		self thread threadAnim( "death", deathAnim );
+		wait(1);
+	} else {
+		wait(0.5);
 	}
-	*/
+
 	wait(0.2);
+
 	//Playfx( level._effect["poltergeist"], self.origin );
 	Playfx( level._effect["fx_zombie_mainframe_flat_start"], self.origin );
-	Playfx( level._effect["fx_teleporter_pad_glow"], self.origin );
+	//Playfx( level._effect["fx_teleporter_pad_glow"], self.origin );
 	Playfx( level._effect["fx_transporter_start"], self.origin );
 	Playfx( level._effect["fx_zombie_mainframe_beam"], self.origin );
-	Playfx( level._effect["fx_zombie_mainframe_flat"], self.origin );
-	
-	
+	Playfx( level._effect["fx_zombie_mainframe_flat"], self.origin );	
 	
 	Earthquake( 0.5, 0.75, self.origin, 1000 );
 	PlayRumbleOnPosition( "explosion_generic", self.origin );
 	playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	playsoundatposition( "zmb_hellhound_bolt", self.origin );
+
 	wait(0.5);
 
 	//3. hide model, kill, delete
@@ -1223,6 +1260,8 @@ eng_tp_death() {
 	if( isDefined(self.powerup_fx) ) {
 		self.powerup_fx delete();
 	}
+	
+	self stop_magic_bullet_shield();
 	self hide();
 	self dodamage(self.health + 666, self.origin, undefined);
 }
@@ -1607,6 +1646,8 @@ boss_zombie_manager()
 			level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
 		}	
 
+		level waittill( "end_of_round" );
+
 		level.theater_rounds_until_boss--;	
 	}
 
@@ -1642,11 +1683,24 @@ boss_zombie_manager()
 	{
 		iprintln( "Engineer Zombie: Watching for spawn" );
 
+		if( !IsDefined(level.theater_last_boss_round) ) {
+			level.theater_last_boss_round = level.round_number;
+		} else if( level.round_number - level.theater_last_boss_round < 1 ) {
+			iprintln( "Engineer Zombie: Spawn too soon, waiting" );
+			return;
+		} else if ( isDefined(level.currentEngineer) ) {
+			iprintln( "Engineer Zombie: Already spawned, waiting" );
+			return;
+		}
+		 
+
 		//1. Bells toll to indicate eng is coming
 		for(i=0;i< level.enemy_spawns.size; i++) {
 			//iprintln("Enemy spawn origin: " + level.enemy_spawns[i].origin);
 			level.enemy_spawns[i] playsound( "zmb_engineer_spawn" );
-			//level.enemy_spawns[i] playsound( "evt_electrical_surge" );
+			//sound_origin playsound( "zmb_elec_start" );
+			//playsoundatposition( "evt_beam_fx_2d", (0,0,0) );
+	    	//here
 		}
 		//chosenSpawner playsound( "zmb_engineer_death_bells" );	//Doesn't work
 
@@ -1695,6 +1749,8 @@ boss_zombie_manager()
 
 		if( is_true(self.was_slain) )
 		{
+			level.eng_times_died++;
+
 			if( is_true( self.empowered) ) {
 				//drop free perk powerup
 				maps\_zombiemode_powerups::specific_powerup_drop( "free_perk",  self.origin );
@@ -1706,6 +1762,7 @@ boss_zombie_manager()
 		
 		level.theater_rounds_until_boss+=2;
 		level.currentEngineer = undefined;
+		self hide();
 		self delete();
 
 		return false;
@@ -1714,7 +1771,9 @@ boss_zombie_manager()
 	watch_teleporter()
 	{
 		self endon( "end_game" );
-		
+
+		self thread watch_teleporter_end();
+
 		while(1)
 		{
 			self waittill("teleporter_start");
@@ -1728,4 +1787,19 @@ boss_zombie_manager()
 			}
 		}
 
+	}
+
+	watch_teleporter_end()
+	{
+		self endon( "end_game" );
+		
+		while(1)
+		{
+			self waittill("teleporter_end");
+
+			if( IsDefined(level.currentEngineer) ) {
+				iprintln("Teleport ended, reset engineer goals");
+				level.currentEngineer notify("zombie_end_traverse");
+			}
+		}
 	}

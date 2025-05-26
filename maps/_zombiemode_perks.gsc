@@ -5316,7 +5316,7 @@ test_disable_vulture()
 		{
 			zombies[i] setclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 			wait( 0.1 );
-			zombies[i] clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
+			//zombies[i] clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
 		}
 	
 	}
