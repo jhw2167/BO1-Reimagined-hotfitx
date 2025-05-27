@@ -57,13 +57,13 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=31;	///
+	level.starting_round_override=11;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=1;	///per round
+	level.calculate_amount_override=5;	///per round
 	level.apocalypse_override=true;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1056,12 +1056,12 @@ reimagined_init_level()
 	
 	//Kino, theater //here
 	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 256000;	//minimum engineer health
-	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 1;	//4 rounds between spawns
+	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns
 	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
-		//(-14, -1262, 114)		//tp pad spawn room (345, 262, 0)
-		//,(788,-514, 336)		//upper balcony, Widows (350, -30, 0)
-		//,(-1317, 112, 5) 		//Alleyway (0, 10, 0)
-		(-302, 1107, 5)		//teleporter (353, 21, 0)
+		(-14, -1262, 114)		//tp pad spawn room (345, 262, 0)
+		,(788,-514, 336)		//upper balcony, Widows (350, -30, 0)
+		,(-1317, 112, 5) 		//Alleyway (0, 10, 0)
+		,(-302, 1107, 5)		//teleporter (353, 21, 0)
 	);
 
 
@@ -1593,7 +1593,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.JUG_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
-		//self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
+		self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
 		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
@@ -11177,10 +11177,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Final Damage 7: " + final_damage);
 
 	//If its install and a boss zombie, double damage
-	if( is_true(level.zombie_vars["zombie_insta_kill"]) && is_boss_zombie(self.animname) )
+	if( is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill) )
 	{
-		final_damage *= 2;
-		iprintln("Insta Kill Damage: " + final_damage);
+		if( is_boss_zombie(self.animname) )
+		{
+			final_damage *= 2;
+		}
+		
 	}
 
 	if(!is_true(self.nuked) && !is_true(self.marked_for_death))
@@ -11212,10 +11215,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			if( is_true(self.was_slain))
 				return 0;
 
+			iprintln("Boss Zombie Damage: " + final_damage);
+
 			if ( self.health - final_damage < 0 ) {
 				self.was_slain = true;
 				self notify("teleport");
-				self thread magic_bullet_shield();
 				return 0;
 			}
 		}

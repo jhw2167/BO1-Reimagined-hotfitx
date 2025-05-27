@@ -176,7 +176,7 @@ zmb_engineer( target )
 		wait(1);
 		self thread threadAnim( "scream", screamAnim );
 		PlayRumbleOnPosition( "explosion_generic", self.origin );
-		self waittill_notify_or_timeout( "anim_dome", 1.0 );
+		self waittill_notify_or_timeout( "anim_done", 1.0 );
 	}
 
 	tesla_gib() {
@@ -279,7 +279,7 @@ eng_attack_properties()
 {
 
 	//basic properties
-	self.trap_damage = 5000;
+	self.trap_damage = 50000;
 	self.enraged_time = undefined; 		//tracks when engineer was enraged
 	self.time_to_live = 60; //60				//number of seconds before engineer dies
 	self.empowered_time_to_live = 120;	//120	//number of seconds before enraged engineer dies
@@ -287,7 +287,7 @@ eng_attack_properties()
 
 	self.eng_near_perk_threshold = 200; //distance from perk to trigger enrage
 	self.eng_near_trap_threshold = 100; //distance from trap to trigger it
-	self.player_lookat_threshold = 1.5; //number of seconds player can look at engineer before enraging him
+	self.player_lookat_threshold = 1.0; //number of seconds player can look at engineer before enraging him
 
 
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();
@@ -326,9 +326,12 @@ watch_eng_goals()
 
 	//fire trap, electric trap, electric upstairs
 	self.trapTargetIndex = randomInt( self.eng_trap_activate_poi.size );
-	self.trapTargetIndex = 0; //fire trap = 0, electric trap = 1, electric upstairs = 2
 	self.perkTargetIndex = randomInt(3);
-	self.perkTargetIndex = 0; //jug=0, speed=1, cherry=2
+	
+	if( is_true(level.dev_only)) {
+		self.perkTargetIndex = 0; //jug=0, speed=1, cherry=2
+		self.trapTargetIndex = 0; //fire trap = 0, electric trap = 1, electric upstairs = 2
+	}
 	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );
 
 	self thread eng_watch_teleport_triggers();
@@ -724,7 +727,7 @@ eng_execute_perk( poi  )
 		self endon( "death" );
 		self animscripted( name, self.origin, self.angles, sampleAnim );
 		animscripts\traverse\zombie_shared::wait_anim_length( sampleAnim, 0.02 );
-		self notify( "anim_dome" );
+		self notify( "anim_done" );
 	}
 
 /**
@@ -755,7 +758,7 @@ eng_execute_enrage()
 	wait(1);
 	self thread threadAnim( "scream", screamAnim );
 	PlayRumbleOnPosition( "explosion_generic", self.origin );
-	self waittill_notify_or_timeout( "anim_dome", 1.0 );
+	self waittill_notify_or_timeout( "anim_done", 1.0 );
 	self.performing_activation = false;
 
 	if( isDefined(self.favoriteenemy) ) 
@@ -1198,7 +1201,13 @@ eng_execute_attack()
 /*
 	Eng teleports away just before he dies
 */
-eng_tp_death() {
+eng_tp_death() 
+{
+	self disable_react();
+  	self.allowpain = false;
+  	self.no_damage_points = true;
+	self thread magic_bullet_shield();
+
 
 	//1. thread scream anim, no groudhit
 	self notify( "stop_find_flesh" );
@@ -1217,8 +1226,6 @@ eng_tp_death() {
 	self.needs_run_update = false;
 	playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
 
-	wait(1);
-
 	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
 	//self animscripted( name, self.origin, self.angles, screamAnim );
 	self thread threadAnim( "scream", screamAnim );
@@ -1228,15 +1235,14 @@ eng_tp_death() {
 	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	//wait(0.5);
 
-	
-
 	if( is_true(self.was_slain) ) 
 	{
-		deathAnim = %ai_zombie_boss_death_a;
+		self waittill( "anim_done" );
+		deathAnim = %ai_zombie_boss_death;
 		self thread threadAnim( "death", deathAnim );
-		wait(1);
 	} else {
-		wait(0.5);
+		//wait(0.5);
+		self.goal = undefined;
 	}
 
 	wait(0.2);
@@ -1253,7 +1259,7 @@ eng_tp_death() {
 	playsoundatposition( "zmb_hellhound_spawn", self.origin );
 	playsoundatposition( "zmb_hellhound_bolt", self.origin );
 
-	wait(0.5);
+	wait(0.4);
 
 	//3. hide model, kill, delete
 	death_pos = self.origin;
@@ -1264,6 +1270,7 @@ eng_tp_death() {
 	self stop_magic_bullet_shield();
 	self hide();
 	self dodamage(self.health + 666, self.origin, undefined);
+	self delete();
 }
 
 /*
@@ -1622,15 +1629,16 @@ boss_zombie_manager()
 {
 	level endon("end_game");
 
-
 	//Preconditions
 	flag_wait("power_on");
-	iprintln( "Engineer Zombie: Power is on" );
+	//iprintln( "Engineer Zombie: Power is on" );
 	wait_doors_open();
-	iprintln( "Engineer Zombie: Doors are open" );
+	//iprintln( "Engineer Zombie: Doors are open" );
 
-	//level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
-	level.theater_rounds_until_boss = 0;
+	level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
+	if( is_true(level.dev_only)) {
+		level.theater_rounds_until_boss = 0;
+	}
 	level thread watch_teleporter();
 	while(1)
 	{
@@ -1758,9 +1766,11 @@ boss_zombie_manager()
 				//drop restock
 				maps\_zombiemode_powerups::specific_powerup_drop( "restock",  self.origin );
 			}
+
+			level.theater_rounds_until_boss+=1;
 		}
 		
-		level.theater_rounds_until_boss+=2;
+		
 		level.currentEngineer = undefined;
 		self hide();
 		self delete();
