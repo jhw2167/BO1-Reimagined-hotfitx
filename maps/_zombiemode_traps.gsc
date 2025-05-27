@@ -67,8 +67,7 @@ print_traps( traps )
 			{
 				if( components[j].classname == "trigger_use" )
 				{
-					iprintln("Trap " + i + " in ent array at origin "
-					 + components[j].origin + "name: " + components[j].targetname);
+					//iprintln("Trap " + i + " in ent array at origin " + components[j].origin + "name: " + components[j].targetname);
 				}
 			}
 		}

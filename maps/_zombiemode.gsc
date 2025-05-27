@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									*/
+	/* 									/
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=11;	///
 	level.starting_points_override=100000;	///
@@ -63,7 +63,7 @@ main()
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=5;	///per round
+	level.calculate_amount_override=1;	///per round
 	level.apocalypse_override=true;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1594,7 +1594,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.STM_PRO );
 		self maps\_zombiemode_perks::returnPerk( level.SPD_PRO );
-		self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
+		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRO );
 		//self maps\_zombiemode_perks::returnPerk( level.VLT_PRK );
 		//self maps\_zombiemode_perks::returnPerk( level.PHD_PRO );
 		self maps\_zombiemode_perks::returnPerk( level.DST_PRO );
@@ -9651,7 +9651,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Inflictor: " + inflictor);
 	//iprintln("Flags: " + flags);
 	//iprintln("Has Drop: " + self.hasDrop);
-	//iprintln("Final Damage 0: ");
+	//iprintln("Final Damage 0: " + damage);
 	//iprintln("Zombie hash: " + self.zombie_hash);
 	//iprintln("Zombie animname: " + self.animname);
 	//iprintln("Zomb health: " + self.health);
@@ -11212,6 +11212,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( self.animname == "boss_zombie")
 		{
+			if( damage > self.maxHealth) {
+				return self.maxhealth + 1000; // should always kill
+			}
+				
 			if( is_true(self.was_slain))
 				return 0;
 

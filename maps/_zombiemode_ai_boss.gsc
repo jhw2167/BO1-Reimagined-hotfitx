@@ -117,7 +117,7 @@ zmb_engineer( target )
 
   self thread stop_magic_bullet_shield();
 
-  self.maxHealth=999999999;
+  self.maxHealth=99999999;
   self.health = self.maxhealth*1;
   //self.actor_full_damage_func = ::heavy_zombie_dmg_function;
   //self.custom_damage_func = ::eng_custom_damage;
@@ -133,6 +133,7 @@ zmb_engineer( target )
   self.script_moveoverride = false;
   self.ignoreall = false;
   self.hasDrop = undefined; //no drops
+  self.ignore_enemy_count = true;
   self clearclientflag(level._ZOMBIE_ACTOR_ZOMBIE_HAS_DROP);
   level.engineer_zms_alive++;
 
@@ -330,7 +331,7 @@ watch_eng_goals()
 	
 	if( is_true(level.dev_only)) {
 		self.perkTargetIndex = 0; //jug=0, speed=1, cherry=2
-		self.trapTargetIndex = 0; //fire trap = 0, electric trap = 1, electric upstairs = 2
+		self.trapTargetIndex = 2; //fire trap = 0, electric trap = 1, electric upstairs = 2
 	}
 	iprintln(" Targeting perk: " + self.eng_perk_poi[self.perkTargetIndex].script_noteworthy );
 
@@ -539,7 +540,6 @@ eng_target_poi()
 		self.immunity = true;
 		if(self.state == "trap") {
 			self eng_execute_trap( poi );
-			self.immunity = false;
 		} else if(self.state == "perk") {
 			self eng_execute_perk( poi );
 		} else {
@@ -601,8 +601,7 @@ eng_execute_trap( poi )
 	deathAnim = undefined;
 	if( poi.randIndex == 0 ) 
 	{  //fire death
-		self.deathAnim = %ai_zombie_boss_death_a;
-
+		
 		enrageAnim = %ai_zombie_boss_enrage_start_scream_coast;
 		self animscripted( "enraged", self.origin, self.angles, enrageAnim );
 		animscripts\traverse\zombie_shared::wait_anim_length( enrageAnim, 0.02 );
@@ -613,16 +612,21 @@ eng_execute_trap( poi )
 		self animscripted( "swing_attack", self.origin, self.angles, attackAnim );
 		animscripts\traverse\zombie_shared::wait_anim_length( attackAnim, 0.02 );
 
+		self.deathAnim = %ai_zombie_boss_death_a;
+
 	} else {	//tesla death
 
 		self.deathAnim = %ai_zombie_boss_tesla_death_a_coast;
 	}
 
+	self threadAnim( "death", self.deathAnim );
+
 	iprintln( "Engineer Zombie: Death" );
 	//self animscripted( "eng_death", self.origin, self.angles, deathAnim );
 	//animscripts\traverse\zombie_shared::wait_anim_length( deathAnim, .02 );
 
-	self dodamage(self.health + 666, self.origin, undefined);
+	//self dodamage(self.health + 666, self.origin, undefined);
+	self.state = "teleport";
 
 }
 
@@ -668,8 +672,7 @@ eng_execute_trap( poi )
 		if( !closeEnough ) {
 			return;
 		}
-
-
+		
 		self maps\_zombiemode_perks::electric_cherry_shock_fx();
 
 		wait(2);
@@ -748,7 +751,7 @@ eng_execute_enrage()
 	//self eng_calculate_enraged_health();
 	//self.a.disablePain = true;
 	//self.allowpain = true;
-	self.deathAnim = %ai_zombie_boss_death_a;
+	//self.deathAnim = %ai_zombie_boss_death;
 		
 
 	//Play enrage anim
@@ -763,9 +766,6 @@ eng_execute_enrage()
 
 	if( isDefined(self.favoriteenemy) ) 
 	{
-		//self thread magic_bullet_shield();
-		iprintln( "Engineer Zombie: Teleporting to favorite enemy" );
-		iprintln( "self.favoriteenemy "  + self.favoriteenemy.origin );
 		count = 0;
 		//while( count < 40 ) // double check to make sure its hiding and not going to be force to teleport to barriers
   		{
@@ -971,7 +971,6 @@ eng_execute_attack()
 		if(!isDefined( self.perkTargetIndex ) )
 			return;
 
-		iprintln( "watch near perk" );
 		perk = self.eng_perk_poi[ self.perkTargetIndex ];
 		while(1) 
 		{
@@ -995,7 +994,7 @@ eng_execute_attack()
 		allTraps = get_trap_objects( GetEntArray( "zombie_trap", "targetname" ) );
 		trap = undefined;
 		i = 0;
-		iprintln( "watch near trap" );
+	
 		blackListedTrap = undefined;
 		while( IsAlive(self) ) 
 		{
@@ -1083,12 +1082,10 @@ eng_execute_attack()
 
 		while( IsAlive(self) ) 
 		{
-			iprintln( "Eng: Waiting for teleport trigger 1" );
 			notif = self waittill_any_return( "player_downed", "nuke_triggered", "teleporter_used" );
-			iprintln( "Eng: A trigger received" );
-
+			
 			//if notif is nuke drop or teleporter_used, go to teleport state
-			if( notif == "nuke_drop" || notif == "teleporter_used" ) 
+			if( notif == "nuke_triggered" || notif == "teleporter_used" ) 
 			{
 				iprintln( "nuke drop or tp used" );
 				self.was_slain = false;
@@ -1203,10 +1200,14 @@ eng_execute_attack()
 */
 eng_tp_death() 
 {
+	iprintln( "Engineer Zombie: Teleporting away" );
+	/*
 	self disable_react();
+	self.a.disablePain = true;
   	self.allowpain = false;
   	self.no_damage_points = true;
 	self thread magic_bullet_shield();
+	*/
 
 
 	//1. thread scream anim, no groudhit
@@ -1216,33 +1217,34 @@ eng_tp_death()
 	self ClearEnemy();
     self ClearGoalVolume();
 
-
-	//1.5 get him walkinging then stop
-	runAnim = "walk1";
-	self.needs_run_update = true;
-	self.zombie_move_speed = "walk";
-	self set_run_anim( runAnim );
-	self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
-	self.needs_run_update = false;
-	playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
-
-	screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
-	//self animscripted( name, self.origin, self.angles, screamAnim );
-	self thread threadAnim( "scream", screamAnim );
-	PlayRumbleOnPosition( "explosion_generic", self.origin );
-	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
-	
-	//playsoundatposition( "zmb_hellhound_spawn", self.origin );
-	//wait(0.5);
-
-	if( is_true(self.was_slain) ) 
 	{
-		self waittill( "anim_done" );
-		deathAnim = %ai_zombie_boss_death;
-		self thread threadAnim( "death", deathAnim );
-	} else {
+		//1.5 get him walkinging then stop
+		runAnim = "walk1";
+		self.needs_run_update = true;
+		self.zombie_move_speed = "walk";
+		self set_run_anim( runAnim );
+		self.run_combatanim = level.scr_anim["boss_zombie"][runAnim];
+		self.needs_run_update = false;
+		playsoundatposition( "zmb_engineer_vocals_hit", self.origin );
+
+		screamAnim = %ai_zombie_boss_enrage_start_scream_coast;
+		//self animscripted( name, self.origin, self.angles, screamAnim );
+		self thread threadAnim( "scream", screamAnim );
+		PlayRumbleOnPosition( "explosion_generic", self.origin );
+		//playsoundatposition( "zmb_hellhound_spawn", self.origin );
+		
+		//playsoundatposition( "zmb_hellhound_spawn", self.origin );
 		//wait(0.5);
-		self.goal = undefined;
+
+		if( is_true(self.was_slain) ) 
+		{
+			self waittill( "anim_done" );
+			deathAnim = %ai_zombie_boss_death;
+			self thread threadAnim( "death", deathAnim );
+		} else {
+			//wait(0.5);
+			self.goal = undefined;
+		}
 	}
 
 	wait(0.2);
@@ -1267,9 +1269,16 @@ eng_tp_death()
 		self.powerup_fx delete();
 	}
 	
-	self stop_magic_bullet_shield();
 	self hide();
-	self dodamage(self.health + 666, self.origin, undefined);
+	//self stop_magic_bullet_shield();
+	//self.a.disablePain = false;
+  	//self.allowpain = true;
+  	//self.no_damage_points = false;
+
+	//Name: DoDamage( <health>, <source position>, <attacker>, <destructible_piece_index>, <means of death>, <hitloc> )
+	self dodamage(self.maxHealth + 666, self.origin, undefined );
+	self notify( "death" );
+	wait(0.1);
 	self delete();
 }
 
@@ -1715,6 +1724,9 @@ boss_zombie_manager()
 		spawnPos = SpawnStruct();
 		spawnCounts = level.ARRAY_ENGINEER_SPAWN_LOCS.size;
 		spawnPos.origin = level.ARRAY_ENGINEER_SPAWN_LOCS[randomInt(spawnCounts)];
+		if(is_true(level.dev_only)) {
+			spawnPos.origin = (-1317, 112, 5); //dev spawn
+		}
 		spawnPos.useAmbientVocals = true;
 
 		spawnPos thread eng_amb_vocals();
@@ -1722,7 +1734,7 @@ boss_zombie_manager()
 		randWait = randomintrange(10, 60);
 
 		if( is_true(level.dev_only) )
-			randWait = 10;
+			randWait = 1;
 
 		//iprintln( "Engineer Zombie: Waiting for spawn, wait time: " + randWait );
 		wait(randWait);
@@ -1753,7 +1765,6 @@ boss_zombie_manager()
 	boss_die()
 	{		
 		//self playsound( "zmb_engineer_death_bells" );
-		iprintln( "Engineer Zombie: Boss died" );
 
 		if( is_true(self.was_slain) )
 		{
