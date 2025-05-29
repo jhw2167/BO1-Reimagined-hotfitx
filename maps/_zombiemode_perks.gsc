@@ -5662,9 +5662,6 @@ init_vulture()
 
 		player_vulture_zombie_boss_waypoints( specials )
 		{
-			if( specials.size > 0 )
-				iprintln( "total special zombs: " +  specials.size );
-
 			for( i = 0; i < specials.size; i++ )
 			{
 				zombie = specials[i];
@@ -5698,10 +5695,6 @@ init_vulture()
 				wp setWaypoint( true, icon);
 				wp.color = ( 1, 0, 0); //red for boss zombies
 				zombie.vulture_waypoint = wp;
-				
-				iprintln( "Vulture waypoint for zombie: " + zombie GetEntityNumber() + " created." );
-				iprintln( "anim: " + zombie.animname );
-				iprintln( "health: " + zombie.health );
 				
 				while( keep_waypoint )
 				{

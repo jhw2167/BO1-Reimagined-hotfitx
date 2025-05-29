@@ -734,7 +734,7 @@ quad_death_explo( origin, death_vars )
 
         if( IsAlive(zombies[i]) && zombies[i] != self && Distance( origin, zombies[i].origin ) <= death_vars["explo_radius_zomb"] )
         {
-            if( zombies[i].animname != "quad_zombie" )
+            if( zombies[i].animname != "quad_zombie" &&  !maps\_zombiemode::is_boss_zombie( zombies[i].animname ) )
             {
             	zombies[i].trap_death = true;
 				zombies[i].no_powerups = true;

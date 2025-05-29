@@ -1,6 +1,7 @@
 #include maps\_utility;
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
+#include maps\_zombiemode_reimagined_utility;
 #include animscripts\zombie_Utility;
 
 //Renn Script
@@ -54,6 +55,7 @@ zmb_engineer( target )
   self.script_noteworthy = "find_flesh";
   self.script_moveoverride = true;
   self.first_node.script_noteworthy = "no_blocker";
+  self.ignore_round_spawn_failsafe = true;
 
   self.custom_idle_setup = ::boss_zombie_idle_setup;
 
@@ -163,6 +165,7 @@ zmb_engineer( target )
   self.tesla_head_gib_func = ::tesla_gib;
 
   self thread watch_eng_goals();
+  level thread engineer_healthcheck();
 
 }
 
@@ -184,6 +187,79 @@ zmb_engineer( target )
 		//nothing
 	}
 
+
+	engineer_healthcheck()
+	{
+		start = GetTime();
+		engData = SpawnStruct();
+		while(1)
+		{
+			timeAlive = (GetTime() - start) / 1000; 
+			//iprintln( "Clocking eng time alive: " + timeAlive + " seconds" );
+			if( !isDefined( level.currentEngineer ) )
+			{
+				iprintln( "Engineer is undefined, exiting health check" );
+				engData printEngData(timeAlive);
+				return;
+			}
+
+			if( !IsAlive(level.currentEngineer) )
+			{
+				iprintln( "Engineer is dead, exiting health check" );
+				engData printEngData(timeAlive);
+				return;
+			}
+
+			engData setEngData();
+			wait(.1);
+		}
+	
+	}
+
+	setEngData()
+	{
+		if( isDefined(level.currentEngineer.was_slain) ) {
+			self.was_slain = level.currentEngineer.was_slain;
+		}
+		
+		if( isDefined(level.currentEngineer.immunity ) ) {
+			self.immunity = level.currentEngineer.immunity;
+		}
+		
+		if( isDefined( level.currentEngineer.state ) ) {
+			self.state = level.currentEngineer.state;
+		}
+
+		if( isDefined( level.currentEngineer.health ) ) {
+			self.health = level.currentEngineer.health;
+		}
+
+		if( isDefined( level.currentEngineer.dmg_taken ) ) {
+			self.dmg_taken = level.currentEngineer.dmg_taken;
+			self.lastDmgTaken = level.currentEngineer.lastDmgTaken;
+		}
+
+		if( isDefined( level.currentEngineer.origin ) ) {
+			self.origin = level.currentEngineer.origin;
+			self.inPlayableArea = checkObjectInPlayableArea( level.currentEngineer );
+		}
+	}
+
+	printEngData( timeAlive )
+	{
+		iprintln( "Engineer Data: " );
+		iprintln( "Eng Defined: " + isDefined(level.currentEngineer) );
+		iprintln( "Time Alive: " + timeAlive + " seconds" );
+		iprintln( "Was Slain: " + self.was_slain );
+		iprintln( "Immunity: " + self.immunity );
+		iprintln( "State: " + self.state );
+		iprintln( "Health: " + self.health );
+		iprintln( "Dmg Taken: " + self.dmg_taken );
+		iprintln( "Last Dmg Taken: " + self.lastDmgTaken );
+		iprintln( "Origin: " + self.origin );
+		iprintln( "In Playable Area: " + self.inPlayableArea );
+
+	}
 
 
 eng_determine_poi()
@@ -284,6 +360,7 @@ eng_attack_properties()
 	self.enraged_time = undefined; 		//tracks when engineer was enraged
 	self.time_to_live = 60; //60				//number of seconds before engineer dies
 	self.empowered_time_to_live = 120;	//120	//number of seconds before enraged engineer dies
+	self.zombs_health_scale = 12; 		//scales eng health to this integer number of zombies
 	self.damaged_by_trap = undefined; 	//tracks which traps damaged engineer
 
 	self.eng_near_perk_threshold = 200; //distance from perk to trigger enrage
@@ -306,8 +383,36 @@ eng_attack_properties()
 	self.performing_activation = false; //variable tracks when he's performing activation
 	self.ground_hit = false; //variable tracks when he's performing ground hit
 	//self.marked_for_death = true; //makes eng immune to traps, also makes him not attack
+	self.ignore_poi = array("zombie_cymbal_monkey"); //variable tracks when he's ignoring all POI
 	self.eng_perks = array( "", "", "", "" );
 
+	self thread watch_eng_footsteps( "walkanim" ); //watch footsteps for sprint1
+	self thread watch_eng_footsteps( "runanim" ); //watch footsteps for runanim
+	self thread watch_eng_footsteps( "sprintanim" ); //watch footsteps for sprint1
+	//self thread watch_eng_footsteps( "attackanim" ); //watch footsteps for sprint1
+
+}
+
+watch_eng_footsteps( ani ) 
+{
+    self endon( "death" );
+
+	while( isDefined( self ) && isAlive(self) && !is_true(self.was_slain) )
+	{
+		self waittill( ani, note );
+		if( note == "footstep_right_large")
+		{
+			self playsound( "fly_step_engineer" );
+			PlayFxOnTag( level._effect["fx_zombie_boss_footstep"], self, "j_Ankle_R" );
+			earthquake( 0.25, .5, self.origin, 600 );
+		}
+		if(note == "footstep_left_large" ) {
+			self playsound( "fly_step_engineer" );
+			PlayFxOnTag( level._effect["fx_zombie_boss_footstep"], self, "j_Foot_L" );
+			earthquake( 0.25, .5, self.origin, 600 );
+		}
+	}
+ 
 }
 
 /**
@@ -856,7 +961,7 @@ eng_execute_enrage()
 			level.eng_times_died = 0;
 
 		//Should be like killing 16 zombies
-		zombsScale = level.zombie_health*(16 + 4*level.eng_times_died);
+		zombsScale = level.zombie_health*(self.zombs_health_scale + 4*level.eng_times_died);
 		playerScale = 1;
 		for( i=0;i < get_players().size; i++ ) {
 			playerScale += 0.1;
@@ -902,7 +1007,7 @@ eng_execute_enrage()
 eng_execute_attack()
 {
 	self.activated = true;
-	self endon( "death" );	
+	
 
 	//start_find_flesh
 	self.ignoreall = false;
@@ -937,15 +1042,19 @@ eng_execute_attack()
 		wait .1;
 	}
 
+	self.immunity = false;
 	self thread eng_watch_near_trap();
 	self thread eng_watch_near_perk();
 	self thread eng_watch_time_alive();
 
-	notif = self waittill_any_return( "stop_find_flesh", "perk", "teleport" );
+	notif = self waittill_any_return( "stop_find_flesh", "perk", "teleport", "death" );
 	if( notif == "perk" ) {
 		self.state = "perk";
 		iprintln( "Engineer Zombie: Going to perk" );
 	} else if( notif == "teleport" ) {
+		self.state = "teleport";
+		iprintln( "Engineer Zombie: Going to tp death" );
+	} else if( notif == "death" ) {
 		self.state = "teleport";
 		iprintln( "Engineer Zombie: Going to tp death" );
 	}
@@ -1059,6 +1168,7 @@ eng_execute_attack()
 
 		if( !isDefined( self.enraged_time ) )
 			return;
+
 		enragedTime = self.enraged_time;
 		while( isDefined(self) && IsAlive(self) && !is_true(self.was_slain) )
 		{
@@ -1074,6 +1184,8 @@ eng_execute_attack()
 
 			wait(1);
 		}
+
+		self notify( "teleport" );
 	}
 
 	eng_watch_teleport_triggers() 
@@ -1083,7 +1195,7 @@ eng_execute_attack()
 		while( IsAlive(self) ) 
 		{
 			notif = self waittill_any_return( "player_downed", "nuke_triggered", "teleporter_used" );
-			
+
 			//if notif is nuke drop or teleporter_used, go to teleport state
 			if( notif == "nuke_triggered" || notif == "teleporter_used" ) 
 			{
@@ -1378,7 +1490,7 @@ no_reaction( player )
 
 init_boss_zombie_fx()
 {
-	level._effect["fx_zombie_boss_footstep"] = loadfx( "fx_zombie_boss_footstep" );
+	level._effect["fx_zombie_boss_footstep"] = loadfx( "maps/zombie/fx_zombie_boss_footstep" );
 	/*
 	fx,misc/fx_zombie_powerup_on_red
 	fx,fx_zombie_boss_footstep
@@ -1641,6 +1753,7 @@ boss_zombie_manager()
 	//Preconditions
 	flag_wait("power_on");
 	//iprintln( "Engineer Zombie: Power is on" );
+	//GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( 100000 );
 	wait_doors_open();
 	//iprintln( "Engineer Zombie: Doors are open" );
 

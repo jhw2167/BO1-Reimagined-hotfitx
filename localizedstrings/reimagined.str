@@ -1325,13 +1325,13 @@ REFERENCE 			DST_PRO_TITLE
 LANG_ENGLISH 		"Deadshot Daiquiri 2.0 Pro"
 
 REFERENCE 			DST_PRO_HINT
-LANG_ENGLISH 		"- All bullet weapons do 50% increased damage while ADS \n- Hitmarkers on hitting zombies \n- Each successive headshot gives your next shot an additional 5% damage, stackable"
+LANG_ENGLISH 		"- Hitmarkers on hitting zombies \n- All bullet weapons do 50% increased damage while ADS \n- Each successive headshot gives your next shot an additional 5% damage, stackable"
 
 REFERENCE 			MUL_PRO_TITLE
 LANG_ENGLISH 		"Mule Kick Pro"
 
 REFERENCE 			MUL_PRO_HINT
-LANG_ENGLISH 		"- 3rd weapon is permanent \n- Rewards player a Max Ammo on purchase"
+LANG_ENGLISH 		"- 3rd weapon is permanent \n- Rewards a Max Ammo on purchase\n- Superpower drops now replenish your ammo as well"
 
 REFERENCE 			ECH_PRK_TITLE
 LANG_ENGLISH 		"Electric Cherry 2.0"

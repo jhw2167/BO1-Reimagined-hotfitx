@@ -529,12 +529,28 @@ zombie_watch_despawn_no_damage( initialDelay )
 		wait( level.VALUE_DESPAWN_ZOMBIES_UNDAMGED_TIME_MAX );
 
 	//iprintln("1: initial delay" + self.zombie_hash);
-	while( !checkObjectInPlayableArea( self ) ) {
-		wait(0.5);
-	}
-	
-	//iprintln("2: Playble area" + self.zombie_hash);
+	if( !IsDefined(self) || !IsAlive(self) )
+		return;
 
+	players = get_players();
+	while( !checkObjectInPlayableArea( self ) ) 
+	{
+		//if we arne't within 1000 units of a player, kill him
+		for(i=0; i < players.size ; i++) {
+			if ( checkDist(self.origin, players[i].origin, 1000 ) ) {
+				respawn_queue_interface("PUSH", self.zombie_type);
+				level.zombie_total++;
+				self DoDamage(self.health + 100, self.origin);
+				return;
+			}
+		}
+		wait(0.5);
+
+		if( !IsDefined(self) || !IsAlive(self) )
+			return;
+	}
+
+	//iprintln("2: Playble area" + self.zombie_hash);
 	if( !Isdefined(self) || !IsAlive(self) )
 		return;
 
@@ -593,7 +609,9 @@ zombie_watch_despawn_no_damage( initialDelay )
 
 		}
 	
-			
+	if( maps\_zombiemode::is_boss_zombie( self.animname ) ) {
+		return;	//Boss zombies don't despawn
+	}
 
 	//Only reached in apocalypse mode - kill the zombie and no points can be salvaged
 	respawn_queue_interface("PUSH", self.zombie_type);
@@ -622,6 +640,33 @@ zombie_watch_despawn_no_damage( initialDelay )
 				return;
 		}
 		self.zombie_despawn=true;
+	}
+
+	watch_zombie_in_playable_area() 
+	{
+		//iprintln("1: initial delay" + self.zombie_hash);
+		if( !IsDefined(self) || !IsAlive(self) )
+			return;
+
+		self.monitoring_playable_area = true;
+		wait(7);
+		players = get_players();
+		while( !checkObjectInPlayableArea( self ) ) 
+		{
+			//if we arne't within 1000 units of a player, kill him
+			for(i=0; i < players.size ; i++) {
+				if ( checkDist(self.origin, players[i].origin, 500 ) ) {
+					respawn_queue_interface("PUSH", self.zombie_type);
+					level.zombie_total++;
+					self DoDamage(self.health + 100, self.origin);
+					return;
+				}
+			}
+			wait(0.5);
+
+			if( !IsDefined(self) || !IsAlive(self) )
+				return;
+		}
 	}
 
 	checkDist(a, b, distance )

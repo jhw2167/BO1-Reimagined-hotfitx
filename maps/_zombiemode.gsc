@@ -63,8 +63,8 @@ main()
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=1;	///per round
-	level.apocalypse_override=true;		///
+	level.calculate_amount_override=5;	///per round
+	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
 	//level.override_give_all_perks=true;	///
@@ -1056,7 +1056,7 @@ reimagined_init_level()
 	
 	//Kino, theater //here
 	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 256000;	//minimum engineer health
-	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns
+	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns, between_engineer
 	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
 		(-14, -1262, 114)		//tp pad spawn room (345, 262, 0)
 		,(788,-514, 336)		//upper balcony, Widows (350, -30, 0)
@@ -1609,6 +1609,7 @@ wait_set_player_visionset()
 		//self maps\_zombiemode_perks::returnPerk( level.DBT_PRK );
 
 		//give knife_ballistic_upgraded_zm_x2
+		self maps\_zombiemode_weap_cymbal_monkey::player_give_cymbal_monkey();
 	}
 	//self.ignoreme = true;
 
@@ -3372,7 +3373,7 @@ init_dvars()
 	}
 		
 
-	level.zm_mod_version = "2.2.0";
+	level.zm_mod_version = "2.4.1";
 	SetDvar( "zm_mod_version", level.zm_mod_version );
 
 
@@ -7227,6 +7228,10 @@ reimagined_expanded_round_start()
 		if( !isDefined( zombies ) || zombies.size < 1 )
 			return;
 
+		if( level.round_number > 5) {
+			level thread last_zombies_prune_playable_area();
+		}
+		
 		for( i = 0; i < zombies.size; i++ )
 		{
 			if( !isDefined( zombies[i].animname ) )
@@ -7246,6 +7251,34 @@ reimagined_expanded_round_start()
 		}
 
 	}
+
+	last_zombies_prune_playable_area()
+	{
+		level endon( "end_of_round" );
+		level endon( "intermission" );
+
+		while(1)
+		{
+			zombies = GetAiSpeciesArray( "axis", "all" );
+
+			for(i=0; i < zombies.size; i++)
+			{
+				if( !isDefined(zombies[i]) || !isdefined( zombies[i].animname ) )
+					continue;
+
+				if( self.animname == "zombie" || self.animname == "quad_zombie" )
+				{
+					if( !is_true(zombies[i].monitoring_playable_area) )
+						zombies[i] thread maps\_zombiemode_spawner::watch_zombie_in_playable_area();
+				}
+			}
+		
+			wait(1);
+		}
+		
+	}
+
+		
 
 
 //	Zombie spawning
@@ -8089,8 +8122,10 @@ pre_round_think()
 		}
 	}
 
-	if( IsDefined(level.starting_points_override) )
+	if( IsDefined(level.starting_points_override) ) {
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
+	}
+		
 
 	/*	MAP SPECFIC				*/
 
@@ -9651,10 +9686,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Inflictor: " + inflictor);
 	//iprintln("Flags: " + flags);
 	//iprintln("Has Drop: " + self.hasDrop);
-	//iprintln("Final Damage 0: " + damage);
+	iprintln("Final Damage 0: " + damage);
 	//iprintln("Zombie hash: " + self.zombie_hash);
-	//iprintln("Zombie animname: " + self.animname);
-	//iprintln("Zomb health: " + self.health);
+	iprintln("Zombie animname: " + self.animname);
+	iprintln("Zomb health: " + self.health);
 	//iprintln("Zomb max health: " + self.maxhealth);
 
 	
@@ -10182,10 +10217,19 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		if(weapon != "tesla_gun_zm" && weapon != "tesla_gun_upgraded_zm" && weapon != "tesla_gun_powerup_zm" && weapon != "tesla_gun_powerup_upgraded_zm" && weapon != "freezegun_zm" && weapon != "freezegun_upgraded_zm")
 		{
 			// boss zombie types do not get damage scaling
-			if( !is_boss_zombie(self.animname) )
+			if( is_boss_zombie(self.animname) ) 
+			{
+				if( is_true( attacker.divetonuke_damage ) )
+				{
+					final_damage = damage / 10; //boss zombie balancing
+				} else {
+					final_damage = 20000;	//flat damage for boss zombies
+				}	
+			}
+			else
 			{
 				if( is_true( attacker.divetonuke_damage ) ) {
-					return damage;
+					final_damage = damage;
 				}
 
 				if( level.round_number < 15 )
@@ -10218,10 +10262,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					final_damage = min_damage;
 					
 			} 
-			else if( is_true( attacker.divetonuke_damage ) )
-			{
-				return damage / 10; //boss zombie balancing
-			}
+			
 
 		}
 
@@ -10664,7 +10705,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 				final_damage *= 2;
 			}
 
-			if(self.animname != "thief_zombie" && self.animname != "director_zombie" && self.animname != "astro_zombie")
+			if(self.animname != "thief_zombie" 
+				&& self.animname != "director_zombie" 
+				&& self.animname != "astro_zombie"
+				&& self.animname != "boss_zombie"
+				)
 			{
 				min_damage = final_damage;
 				final_damage = int(self.maxhealth / 4) + 1;
@@ -10979,7 +11024,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			if( is_boss_zombie(self.animname) ) {
 				final_damage =  int(final_damage / 20);
-				iprintln("Sniper damage reduced for boss zombie: " + final_damage);
 			}
 			//Zombie knockdown
 			else if( final_damage >= self.health ) {
@@ -11212,14 +11256,23 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( self.animname == "boss_zombie")
 		{
+			//hack so method doesn't short circuit and skip necessary processing
+			if( !isDefined(self.dmg_taken) ) {
+				self.dmg_taken = 0;
+			}
+			self.dmg_taken += int(final_damage);
+			self.lastDmgTaken = int(final_damage);
+			
 			if( damage > self.maxHealth) {
+				iprintln("Boss Zombie Damaged with proxy damage: " + damage - self.maxHealth);
 				return self.maxhealth + 1000; // should always kill
 			}
 				
-			if( is_true(self.was_slain))
+			if( is_true(self.was_slain) ) {
+				self notify("teleport");
 				return 0;
-
-			iprintln("Boss Zombie Damage: " + final_damage);
+			}
+				
 
 			if ( self.health - final_damage < 0 ) {
 				self.was_slain = true;
