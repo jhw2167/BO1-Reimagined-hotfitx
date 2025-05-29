@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									/
+	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=11;	///
 	level.starting_points_override=100000;	///
@@ -9754,6 +9754,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( IsDefined( self._black_hole_bomb_collapse_death ) && self._black_hole_bomb_collapse_death == 1 )
 	{
 		return self.maxhealth + 1000;
+	}
+
+	if( isDefined(self) && is_boss_zombie(self.animname ) ) {
+		if( damage > self.health ) {
+			iprintln("Incoming death damage: ");
+			iprintln(damage);
+			iprintln("Boss zombie health: " + self.health);
+			iprintln("Difference: " + (damage - self.health));
+		}
 	}
 
 	// skip conditions

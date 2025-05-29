@@ -1185,7 +1185,11 @@ eng_execute_attack()
 			wait(1);
 		}
 
-		self notify( "teleport" );
+		
+		if( isDefined( self )) {
+			iprintln( "Was slain, no timeout" );
+		}
+
 	}
 
 	eng_watch_teleport_triggers() 
@@ -1757,8 +1761,9 @@ boss_zombie_manager()
 	wait_doors_open();
 	//iprintln( "Engineer Zombie: Doors are open" );
 
-	level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN;
+	level.theater_rounds_until_boss = level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN; //engineer_spawn
 	if( is_true(level.dev_only)) {
+		level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN=0;
 		level.theater_rounds_until_boss = 0;
 	}
 	level thread watch_teleporter();
