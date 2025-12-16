@@ -4108,6 +4108,15 @@ get_pack_a_punch_weapon_options( weapon )
 		reticle_color_index = green_reticle_color_index;
 	}
 
+	if(is_in_array( level.ARRAY_BIGDMG_WEAPONS, weapon ))
+	{
+		camo_index = 4; // camo_red, art of
+	}
+	else if( is_in_array( level.ARRAY_WW_WEAPONS, weapon ) )
+	{
+		camo_index = 10; // camo_ww, wonder weapon
+	}
+
 	self.pack_a_punch_weapon_options[weapon] = self CalcWeaponOptions( camo_index, lens_index, reticle_index, reticle_color_index );
 	return self.pack_a_punch_weapon_options[weapon];
 }
