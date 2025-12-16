@@ -4531,7 +4531,6 @@ watch_player_qrevive()
 	self endon("fake_death");
 	self endon("end_game");
 
-	//if solo game, return
 	self waittill("player_downed");
 	
 	//loop over self.purchased_perks

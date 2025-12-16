@@ -365,7 +365,7 @@ eng_attack_properties()
 
 	self.eng_near_perk_threshold = 200; //distance from perk to trigger enrage
 	self.eng_near_trap_threshold = 100; //distance from trap to trigger it
-	self.player_lookat_threshold = 1.0; //number of seconds player can look at engineer before enraging him
+	self.player_lookat_threshold = 4.0; //number of seconds player can look at engineer before enraging him
 
 
 	self maps\_zombiemode_spawner::zombie_setup_attack_properties();

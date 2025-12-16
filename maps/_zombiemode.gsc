@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									*/
+	/* 									/
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=11;	///
 	level.starting_points_override=100000;	///
@@ -797,6 +797,7 @@ reimagined_init_level()
 		"humangun_zm",
 		"humangun_upgraded_zm",
 		"m1911_upgraded_zm",
+		"m1911lh_upgraded_zm",
 		"asp_upgraded_zm",
 		"asp_upgraded_zm_x2",
 		//Add all combnat knives and fists
@@ -3373,7 +3374,7 @@ init_dvars()
 	}
 		
 
-	level.zm_mod_version = "2.4.1";
+	level.zm_mod_version = "2.5.0";
 	SetDvar( "zm_mod_version", level.zm_mod_version );
 
 
