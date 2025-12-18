@@ -4111,6 +4111,8 @@ get_pack_a_punch_weapon_options( weapon )
 	//if(is_in_array( level.ARRAY_BIGDMG_WEAPONS, weapon ))
 	
 	camo_index = 15; // camo_red, art of
+	if(weapon == "m60_upgraded_zm") camo_index = 3;
+	if(weapon == "commando_upgraded_zm_x2") camo_index = 22;
 	iprintln( "Pack-a-Punch weapon options for weapon " + weapon + " camo index " + camo_index);
 
 	self.pack_a_punch_weapon_options[weapon] = self CalcWeaponOptions( camo_index, lens_index, reticle_index, reticle_color_index );
