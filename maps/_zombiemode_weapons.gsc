@@ -2,6 +2,7 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 #include maps\_zombiemode_audio;
+#include maps\_zombiemode_reimagined_utility;
 
 init()
 {
@@ -1123,17 +1124,23 @@ is_weapon_upgraded( weaponname )
 //Reimagined-Expanded
 is_weapon_double_upgraded( weaponname )
 {
-	if( !isdefined( weaponname ) || weaponname == "" )
-	{
+	if( !isDefined( weaponname ) || weaponname == "" ) {
 		return false;
 	}
 
+	if( !IsSubStr( weaponname, "upgraded" ) ) {
+		return false;
+	} 
+	if( IsSubStr( weaponname, "_x2" ) ) {
+		return true;
+	}
+
+	
 	if( IsDefined( self.packapunch_weapons[ weaponname ] ) )
 	{
 		return ( self.packapunch_weapons[ weaponname ] > 1 );
 	}
-	else
-	{
+	else {
 		return false;
 	}
 
@@ -1211,7 +1218,8 @@ get_weapon_camo_index( weapon )
 		return 0;
 	}
 	
-	if( !self is_weapon_double_upgraded( weapon ) ) {
+	if( !(self is_weapon_double_upgraded( weapon )) ) {
+		iprintln( "not x2 weapon " + weapon );
 		return 15;
 	}
 
@@ -1265,6 +1273,7 @@ get_weapon_camo_index( weapon )
 
 	iprintln( "Pack-a-Punch weapon options for weapon " + weapon + " camo index " + camo_index);
 
+	return camo_index;
 }
 
 

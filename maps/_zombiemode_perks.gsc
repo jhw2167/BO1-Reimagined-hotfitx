@@ -982,6 +982,7 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				self notify( "pap_taken" );
 				player notify( "pap_taken" );
 				player.pap_used = true;
+				player handle_player_packapunch(weapon, true);
 
 				weapon_limit = 2;
 				if ( player HasPerk( "specialty_additionalprimaryweapon" ) )
@@ -1003,7 +1004,6 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				}
 
 				//Upgraded weapon, upgrade_weapon, weap_upgrade
-				player handle_player_packapunch(weapon, true);
 				player SwitchToWeapon( upgrade_weapon );
 				player notify("weapon_upgrade_complete");
 				player maps\_zombiemode_weapons::play_weapon_vo(upgrade_weapon);

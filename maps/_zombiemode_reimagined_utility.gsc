@@ -1251,6 +1251,18 @@ get_upgraded_weapon_string( weapon )
 	return weapon;
 }
 
+get_base_weapon_string( base_wep ) 
+{
+	//iprintln( "base_wep: " + base_wep );
+	if( IsSubStr( base_wep, "_x2" ) )
+		base_wep = GetSubStr( base_wep, 0, base_wep.size - "_x2".size );
+
+	if( IsSubStr( base_wep, "_upgraded" ) )
+		base_wep = GetSubStr( base_wep, 0, base_wep.size - "upgraded_zm".size ) + "_zm";
+
+	return base_wep;	
+}
+
 
 /*
 	###############################

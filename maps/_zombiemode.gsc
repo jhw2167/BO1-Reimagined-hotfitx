@@ -2352,7 +2352,7 @@ watch_player_weapon_special_bonuses()
 					baseRate -= 2;
 
 				if( stock < 91 )
-					baseRate -= 3;
+					baseRate -= 4;
 
 				stock = self GetWeaponAmmoStock( wep );
 				if( randomInt( baseRate ) == 0 )
@@ -2685,8 +2685,7 @@ handle_player_packapunch(weapon, didUpgrade)
 	self.packapunch_weapons[upgraded_weapon] = state;
 	self.packapunch_weapons[upgraded_weapon + "_x2"] = state;
 	
-	//iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
-
+	iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
 }
 
 	
