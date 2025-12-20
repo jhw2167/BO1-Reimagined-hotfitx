@@ -63,7 +63,7 @@ main()
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=5;	///per round
+	level.calculate_amount_override=10;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1005,9 +1005,13 @@ reimagined_init_level()
 
 
 	//Real Time Zombie type vars chance to spawn special zombie n/1000 + .5% each round
+	//here
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
-	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 7;  //chance of spawning type zombies increases by this every round
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 70;  //chance of spawning type zombies increases by this every round
+
+	level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 4;	//upgraded to 8 and 12 later
+	level.VALUE_ZOMBIE_TYPE_PURPLE_HEALTH_MULTIPLIER = 2;
 	level.zombie_type_red_chance = 0;
 	level.zombie_type_purple_chance = 0;
 
@@ -7921,6 +7925,7 @@ setApocalypseOptions()
 		level.starting_round=GetDvarInt("zombie_round_start");
 		level.server_cheats=GetDvarInt("reimagined_cheat");
 	}
+	level.zombie_types=true;
 	
 	
 	//Set the gamemode from player chose apocalypse or not
@@ -8145,15 +8150,7 @@ pre_round_think()
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 	}
 
-	/* ZOMBIE TYPES 
-
-	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
-	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
-	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 25;  //chance of spawning type zombies increases by this every round
-	level.zombie_type_red_chance = 0;
-	level.zombie_type_purple_chance = 0;
-	
-	*/
+	/* ZOMBIE TYPES */
 
 	if(level.round_number < level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND) {
 		//nothing
@@ -8162,6 +8159,11 @@ pre_round_think()
 	} else {
 		level.zombie_type_red_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
 		level.zombie_type_purple_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+		if( level.round_number >= 35)
+			level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 12;
+		else if( level.round_number >= 25)
+			level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 8;
+		
 	}
 
 
@@ -9625,7 +9627,7 @@ zombie_knockdown( wait_anim, upgraded )
 	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
 		return;
 
-	if( self.animname != "zombie" )
+	if( self.animname != "zombie" || self.zombie_type == "red" )
 		return;
 
 	if( !IsDefined(wait_anim) )
@@ -9673,6 +9675,20 @@ zombie_knockdown( wait_anim, upgraded )
 	wait(0.25);
 	self.knockdown = false;
 
+}
+
+check_zombie_type( s_type )
+{
+	if( !IsDefined(self) || !IsAlive(self) )
+		return false;
+
+	if(!(self.animname == "zombie") )
+		return false;
+
+	if( self.zombie_type == s_type )
+		return true;
+
+	return false;
 }
 
 //Reimagined-Expanded - kill zombie while he is down, Self is zombie
@@ -9728,7 +9744,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Has Drop: " + self.hasDrop);
 	iprintln("Final Damage 0: " + damage);
 	//iprintln("Zombie hash: " + self.zombie_hash);
-	iprintln("Zombie animname: " + self.animname);
+	//iprintln("Zombie animname: " + self.animname);
+	iprintln("Zombie type: " + self.zombie_type);
 	iprintln("Zomb health: " + self.health);
 	//iprintln("Zomb max health: " + self.maxhealth);
 
@@ -9798,10 +9815,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	if( isDefined(self) && is_boss_zombie(self.animname ) ) {
 		if( damage > self.health ) {
-			iprintln("Incoming death damage: ");
-			iprintln(damage);
-			iprintln("Boss zombie health: " + self.health);
-			iprintln("Difference: " + (damage - self.health));
+			//iprintln("Incoming death damage: ");
+			//iprintln(damage);
+			//iprintln("Boss zombie health: " + self.health);
+			//iprintln("Difference: " + (damage - self.health));
 		}
 	}
 
@@ -10158,6 +10175,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			rayDmg = basedDmg / 10;
 
 		final_damage = rayDmg;
+
+		if( (self check_zombie_type("purple")) && weapon == "m1911_upgraded_zm" )
+			final_damage = 1;
 	}
 
 	//if(weapon == "sniper_explosive_zm" || weapon == "sniper_explosive_upgraded_zm")
@@ -10170,6 +10190,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( IsSubStr( weapon, "upgraded" ) )
 			final_damage *= 2;
+
+		if( self check_zombie_type("purple") )
+			final_damage = 1;
 
 	}
 
@@ -10311,8 +10334,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					final_damage = min_damage;
 					
 			} 
-			
 
+			if( self check_zombie_type("purple") )
+				final_damage = 1;
+			
 		}
 
 		//if thief zombie, trigger explosive damage
@@ -11185,8 +11210,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
+
+		if( self check_zombie_type("purple") )
+				return 1;
+
 		return self.maxhealth + 1000; // should always kill
-			
 	}
 	
 	///*
@@ -11216,6 +11244,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//Reimagined-Expanded, can china-lake be upgraded??
 	if(weapon == "m72_law_zm" || weapon == "china_lake_zm" || weapon == "asp_upgraded_zm" ) 
 	{
+		if( self check_zombie_type("purple") ) return 1;
+
 		radius=level.VALUE_EXPLOSIVE_BASE_RANGE;
 		dmg=level.VALUE_EXPLOSIVE_BASE_DMG;
 		hellfire_time=level.VALUE_HELLFIRE_TIME;
@@ -11263,6 +11293,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	if((weapon == "sniper_explosive_bolt_zm" || weapon == "sniper_explosive_bolt_upgraded_zm") && self.animname != "director_zombie")
 	{
+		if( self check_zombie_type("purple") ) return 1;
 		return self.maxhealth + 1000;
 	}
 

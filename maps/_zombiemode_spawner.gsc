@@ -208,6 +208,38 @@ zombie_spawn_init( animname_set )
 	self.gibbed = false;
 	self.head_gibbed = false;
 
+	if(self.animname == "zombie" ) 
+	{
+		//Check respawn queue
+		if( respawn_queue_interface("SIZE") > 0)
+		{
+			self.zombie_type = respawn_queue_interface("POP");
+			self.respawn_zombie = true;
+		} else 
+		{
+			self.zombie_type = "normal";
+			if(level.zombie_types)
+			{
+				chance = RandomInt(1000);
+				level.zombie_type_red_chance = 0;
+				level.zombie_type_purple_chance = 0;
+				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
+				if(chance < sum) 
+				{
+				
+					if(chance < level.zombie_type_red_chance) {
+						self.zombie_type = "red";
+						//setModel
+					} else {
+						self.zombie_type = "purple";
+						//setModel
+					}
+					iprintln("Spawning special zombie type: " + self.zombie_type);
+				}
+			}
+		}
+	}
+
 	// might need this so co-op zombie players cant block zombie pathing
 //	self PushPlayer( true );
 //	self.meleeRange = 128;
@@ -232,11 +264,24 @@ zombie_spawn_init( animname_set )
 
 	self.maxhealth = level.zombie_health;
 	self.health = level.zombie_health;
-
+	if(self.animname == "zombie" ) 
+	{
+		if( self.zombie_type == "red" ) {
+			self.maxhealth = Int( level.zombie_health * level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER );
+			self.health = self.maxhealth;
+		} else if( self.zombie_type == "purple" ) 
+		{
+			self.maxhealth = Int( level.zombie_health * level.VALUE_ZOMBIE_TYPE_PURPLE_HEALTH_MULTIPLIER );
+			self.health = self.maxhealth;
+		}
+	}
+	
 	self.freezegun_damage = 0;
 
 	self.dropweapon = false;
 	level thread zombie_death_event( self );
+
+
 
 	// We need more script/code to get this to work properly
 //	self add_to_spectate_list();
@@ -274,11 +319,13 @@ zombie_spawn_init( animname_set )
 			if(level.zombie_types)
 			{
 				chance = RandomInt(1000);
+				iprintln("Chance for special zombie: " + chance);
 				level.zombie_type_red_chance = 0;
 				level.zombie_type_purple_chance = 0;
 				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
 				if(chance < sum) 
 				{
+				
 					if(chance < level.zombie_type_red_chance) {
 						self.zombie_type = "red";
 						//setModel
@@ -286,6 +333,7 @@ zombie_spawn_init( animname_set )
 						self.zombie_type = "purple";
 						//setModel
 					}
+					iprintln("Spawning special zombie type: " + self.zombie_type);
 				}
 			}
 		}
