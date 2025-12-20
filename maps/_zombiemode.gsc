@@ -57,7 +57,7 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=11;	///
+	level.starting_round_override=15;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -1004,6 +1004,14 @@ reimagined_init_level()
 	level.vulture_waypoint_structs_update = false;
 
 
+	//Real Time Zombie type vars chance to spawn special zombie n/1000 + .5% each round
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 7;  //chance of spawning type zombies increases by this every round
+	level.zombie_type_red_chance = 0;
+	level.zombie_type_purple_chance = 0;
+
+
 	//MISC
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
@@ -1861,15 +1869,24 @@ watch_player_current_weapon()
 	self endon("end_game");
 
 	weapName = self GetCurrentWeapon();
+	camo = 0;
 	while(1)
 	{
+		if(camo > 21) camo = 0;
 		/* Update Weapon Name in UI */
 
-		self waittill("weapon_change");
+		//self waittill("weapon_change");
 		weapName = self GetCurrentWeapon();
 
 		ui_weapon_name = self maps\_zombiemode_reimagined_utility::getWeaponUiName( weapName );
 		self SetClientDvar( "ui_playerWeaponName", ui_weapon_name );
+
+
+		// swap the cammo
+		//iprintln( "Updating weapon options for: " + camo );
+		//self UpdateWeaponOptions( weapName, self CalcWeaponOptions( camo ) );
+		camo++;
+		//wait(0.5);
 	
 
 	}
@@ -3617,8 +3634,10 @@ init_client_flags()
 init_fx()
 {
 	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
-	//level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
-	//level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
+	level._effect["eye_glow_purple"] = 			LoadFX( "misc/fx_zombie_eye_single_purple" );
+	//level._effect[ "dog_eye_glow" ]				= LoadFX( "misc/fx_zombie_eye_single_red" );
+	level._effect["eye_glow_red"] = 			LoadFX( "misc/fx_zombie_eye_single_red" );
+	
 
 	//Gives CSC error if not included
 	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
@@ -8125,6 +8144,27 @@ pre_round_think()
 	if( IsDefined(level.starting_points_override) ) {
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 	}
+
+	/* ZOMBIE TYPES 
+
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 25;  //chance of spawning type zombies increases by this every round
+	level.zombie_type_red_chance = 0;
+	level.zombie_type_purple_chance = 0;
+	
+	*/
+
+	if(level.round_number < level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND) {
+		//nothing
+	} else if(level.round_number > level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND) {
+		//nothing
+	} else {
+		level.zombie_type_red_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+		level.zombie_type_purple_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+	}
+
+
 		
 
 	/*	MAP SPECFIC				*/

@@ -273,7 +273,20 @@ zombie_spawn_init( animname_set )
 			self.zombie_type = "normal";
 			if(level.zombie_types)
 			{
-				//Others
+				chance = RandomInt(1000);
+				level.zombie_type_red_chance = 0;
+				level.zombie_type_purple_chance = 0;
+				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
+				if(chance < sum) 
+				{
+					if(chance < level.zombie_type_red_chance) {
+						self.zombie_type = "red";
+						//setModel
+					} else {
+						self.zombie_type = "purple";
+						//setModel
+					}
+				}
 			}
 		}
 
@@ -833,6 +846,25 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 	{
 		new_move_speed = self set_run_speed();
 		self.zombie_move_speed_original = self.zombie_move_speed;
+	}
+	
+	//Prevent red zombies from being no faster than sprint, then reduce its new move speed by 1
+	if( self.zombie_type == "red" )
+	{
+		if( self.zombie_speed_indx >= 3 ) {
+			new_move_speed = "super-sprint";
+			self.zombie_speed_indx = 3;
+		}
+		speed_enum = array("walk", "run", "sprint");
+		self.zombie_speed_indx = speed_enum[ max(0, self.zombie_speed_indx - 1) ];
+	}
+	//Purple zombies will be at least super sprint speed
+	if( self.zombie_type == "purple" )
+	{
+		if( self.zombie_speed_indx < 3 ) {
+			new_move_speed = "super-sprint";
+			self.zombie_speed_indx = 3;
+		}
 	}
 	
 	if( new_move_speed == "super-sprint" ) 
@@ -5224,6 +5256,10 @@ zombie_eye_glow()
 		if( self.animname == "zombie") 
 		{
 			fx = level.fx_eye_glow;
+			if(!isDefined(self.zombie_type)) { /*nothing*/ }
+			else if(self.zombie_type=="red") fx = "eye_glow_red";
+			else if(self.zombie_type=="purple") fx = "eye_glow_purple";
+
 			eye_glow = Spawn( "script_model", self GetTagOrigin( "J_EyeBall_LE" ) );
 
 			eye_glow.angles = self GetTagAngles( "J_EyeBall_LE" );

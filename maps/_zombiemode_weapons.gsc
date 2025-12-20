@@ -1211,7 +1211,6 @@ has_weapon_or_upgrade( weaponname )
 //self is player
 get_weapon_camo_index( weapon )
 {
-	iprintln( "testing weapon " + weapon );
 	//if weapon is not packapunched, return 0
 	camo_index = 0;
 	if( !IsSubStr( weapon, "upgraded" ) ) {
@@ -1219,7 +1218,6 @@ get_weapon_camo_index( weapon )
 	}
 	
 	if( !(self is_weapon_double_upgraded( weapon )) ) {
-		iprintln( "not x2 weapon " + weapon );
 		return 15;
 	}
 
@@ -1227,12 +1225,10 @@ get_weapon_camo_index( weapon )
 		weapon = weapon + "_x2";
 	}
 
-	iprintln( "x2 weapon " + weapon );
-
-	testWeapon = "";
+	testWeapon = "uzi_upgraded_zm_x2";
 	if(weapon == testWeapon)
 	{
-		camo_index = 21; // camo_gold
+		camo_index = 1; // camo_gold
 	}
 	else if(is_in_array( level.ARRAY_BIGDMG_WEAPONS, weapon ))
 	{
@@ -1240,15 +1236,15 @@ get_weapon_camo_index( weapon )
 	}
 	else if( is_in_array( level.ARRAY_SHEERCOLD_WEAPONS, weapon ) )
 	{
-		camo_index = 5; // camo_ww, wonder weapon
+		camo_index = 17; // camo_ww, wonder weapon
 	}
 	else if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon ) )
 	{
-		camo_index = 6; // electric camo - dust weapons
+		camo_index = 16; // electric camo - dust weapons
 	}
 	else if ( is_in_array( level.ARRAY_HELLFIRE_WEAPONS, weapon ) )
 	{
-		camo_index = 7; // hellfire_weapons - solid_camo_od
+		camo_index = 18; // hellfire_weapons - solid_camo_od
 	}
 	else if( is_in_array( level.ARRAY_POISON_WEAPONS, weapon ) )
 	{
@@ -1260,7 +1256,7 @@ get_weapon_camo_index( weapon )
 	}
 	else if ( is_in_array( level.ARRAY_VALID_SNIPERS, weapon ) )
 	{
-		camo_index = 10; // sniper damascus gold
+		camo_index = 19; // sniper damascus gold
 	}
 	else if( weapon == "famas_upgraded_zm_x2" )
 	{
@@ -1270,8 +1266,6 @@ get_weapon_camo_index( weapon )
 	{
 		camo_index = 12; // special details camo
 	}
-
-	iprintln( "Pack-a-Punch weapon options for weapon " + weapon + " camo index " + camo_index);
 
 	return camo_index;
 }
