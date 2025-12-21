@@ -1006,6 +1006,8 @@ reimagined_init_level()
 
 	//Real Time Zombie type vars chance to spawn special zombie n/1000 + .5% each round
 	//here
+
+	level.ZOMBIE_TYPE_RED_PLAYER_DAMAGE = 70;	//Red zombies do 70 damage on hit, normally 20
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 70;  //chance of spawning type zombies increases by this every round
@@ -8163,6 +8165,9 @@ pre_round_think()
 			level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 12;
 		else if( level.round_number >= 25)
 			level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 8;
+
+		iprintln("Spawning special zombie roll succeeded: " + level.zombie_type_red_chance);
+			iprintln("purple: " + level.zombie_type_purple_chance);
 		
 	}
 
@@ -9204,6 +9209,11 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			{
 				iDamage = 50;		// 45
 			}
+
+			//red zombies do 70
+			if( eAttacker check_zombie_type( "red" ) ){
+				iDamage = level.ZOMBIE_TYPE_RED_PLAYER_DAMAGE;
+			}
 		}
 
 
@@ -9691,6 +9701,12 @@ check_zombie_type( s_type )
 	return false;
 }
 
+zombie_type_hint( s_type )
+{
+	if( is_true( self.hints_activated[ s_type ] ) ) return;
+	self thread generate_perk_hint( s_type, false );
+}
+
 //Reimagined-Expanded - kill zombie while he is down, Self is zombie
 zombie_ragdoll_kill( player, power, kill_zomb )
 {
@@ -9748,7 +9764,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("Zombie type: " + self.zombie_type);
 	iprintln("Zomb health: " + self.health);
 	//iprintln("Zomb max health: " + self.maxhealth);
-
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	//DOUBLE_upgraded , _is_double_upgraded , upgraded_double_string
@@ -9794,6 +9809,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( isdefined( self.animname ) && is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname) )
 	{
 		self notify("zombie_damaged");
+
+		if(self check_zombie_type("red") )
+			attacker zombie_type_hint("zombie_type_red");
+		else if(self check_zombie_type("purple") )
+			attacker zombie_type_hint("zombie_type_purple");
+
 	}
 
 	// Turrets - kill in 4 shots
@@ -10085,6 +10106,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		if( attacker hasProPerk( level.STM_PRO ) ) {
 			final_damage *= 2;
+		}
+
+		//if its a red zombie, halve damage
+		if( self check_zombie_type("red") ) {
+			final_damage = int( final_damage / 2 );
 		}
 
 		//return final_damage;

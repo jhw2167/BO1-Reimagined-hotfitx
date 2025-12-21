@@ -4518,6 +4518,11 @@ remove_stockpile_ammo()
 	}
 }
 
+check_zombie_type( s_type )
+{
+	self maps\_zombiemode::check_zombie_type( s_type );
+}
+
 //=========================================================================================================
 // QUICKREV PRO
 //=========================================================================================================
@@ -5076,14 +5081,19 @@ player_watch_electric_cherry()
 	}
 
 	//Self is player, only triggers if player has Cherry Pro
+	
 	player_electric_cherry_defense( zombie )
 	{
 		self.cherry_defense = false;
 		cherry_damage = level.VALUE_CHERRY_SHOCK_DMG * level.VALUE_CHERRY_PRO_SCALAR;
 		kill_zombie = ( cherry_damage > zombie.health ) || zombie.animname != "zombie"; //just kill dogs and monkeys and quads, no stun fx
+		is_immune = (zombie check_zombie_type("purple"));
 
-		if( kill_zombie ) 
-		{
+
+		if(is_immune) {
+			//nothing
+		}
+		else if( kill_zombie ) {
 			zombie thread electric_cherry_death_fx();
 		}
 		else {
@@ -5093,8 +5103,12 @@ player_watch_electric_cherry()
 			zombie thread wait_reset_tesla_mark();
 		}
 
-		zombie.marked_for_tesla = true;
-		zombie DoDamage( cherry_damage, zombie.origin, self, level.ECH_PRK, "cush" );
+		if(!is_immune)
+		{
+			zombie.marked_for_tesla = true;
+			zombie DoDamage( cherry_damage, zombie.origin, self, level.ECH_PRK, "cush" );
+		}
+		
 
 		self thread electric_cherry_reload_attack( 2, "NONE" );
 		self player_cherry_defense_cooldown();

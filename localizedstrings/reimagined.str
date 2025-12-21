@@ -1498,7 +1498,7 @@ REFERENCE			POWERUP_RESTOCK_TITLE
 LANG_ENGLISH 		"RESTOCK"
 
 REFERENCE			POWERUP_RESTOCK_HINT
-LANG_ENGLISH 		"Replenishes all ammo and equipment for only one player"
+LANG_ENGLISH 		"Replenishes all ammo and equipment for one player"
 
 
 
@@ -1511,6 +1511,21 @@ LANG_ENGLISH 		"RESTOCK!!"
 
 REFERENCE			POWERUP_PAP_TELEPORT
 LANG_ENGLISH 		"TRANSPORTED!!"
+
+
+//Zombies
+REFERENCE			ZOMBIE_RED_TITLE
+LANG_ENGLISH 		"Red Zombie"
+
+REFERENCE			ZOMBIE_RED_HINT
+LANG_ENGLISH 		"- Glowing red eyes\n- Hit harder than normal zombies and cannot be knocked down\n- Much more health than normal zombies"
+
+REFERENCE			ZOMBIE_PURPLE_TITLE
+LANG_ENGLISH 		"Purple Zombie"
+
+REFERENCE			ZOMBIE_PURPLE_HINT
+LANG_ENGLISH 		"- Glowing purple eyes\n- Fast zombie variant that is immune to explosives, electric abilities, and Hellfire\n- 2x as much health as normal zombies"
+
 
 
 ENDMARKER

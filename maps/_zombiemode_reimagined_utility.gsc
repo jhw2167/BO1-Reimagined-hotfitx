@@ -478,6 +478,15 @@ generate_perk_hint( perkOrWeapon, specialHint )
 			title SetText( &"REIMAGINED_PAP_SPAS_TITLE" );
 			break;
 
+		case "zombie_type_red":
+			text SetText( &"REIMAGINED_ZOMBIE_RED_HINT" );
+			title SetText( &"REIMAGINED_ZOMBIE_RED_TITLE" );
+			break;
+
+		case "zombie_type_purple":
+			text SetText( &"REIMAGINED_ZOMBIE_PURPLE_HINT" );
+			title SetText( &"REIMAGINED_ZOMBIE_PURPLE_TITLE" );
+			break;
 		}
 
 	text FadeOverTime( 1 );

@@ -221,17 +221,15 @@ zombie_spawn_init( animname_set )
 			if(level.zombie_types)
 			{
 				chance = RandomInt(1000);
-				level.zombie_type_red_chance = 0;
-				level.zombie_type_purple_chance = 0;
 				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
-				if(chance < sum) 
+			
+				if(chance < sum)
 				{
-				
-					if(chance < level.zombie_type_red_chance) {
-						self.zombie_type = "red";
+					if(chance < (sum - level.zombie_type_red_chance)) {
+						self.zombie_type = "purple";
 						//setModel
 					} else {
-						self.zombie_type = "purple";
+						self.zombie_type = "red";
 						//setModel
 					}
 					iprintln("Spawning special zombie type: " + self.zombie_type);
@@ -303,43 +301,13 @@ zombie_spawn_init( animname_set )
 	self.is_water = false;
 	self.widows_posion_bullet_count = 0;
 
+	if( self.animname == "zombie" && self.zombie_type == "purple" ) {
+		self.marked_for_electric=true;
+		self.burned = true;
+	}
+
 	if(self.animname == "zombie" ) 
 	{
-		//Check respawn queue
-		if( respawn_queue_interface("SIZE") > 0)
-		{
-			self.zombie_type = respawn_queue_interface("POP");
-			self.respawn_zombie = true;
-
-			//iprintln("Respawning zombie from queue: " + self.zombie_type);
-			
-		} else {
-
-			self.zombie_type = "normal";
-			if(level.zombie_types)
-			{
-				chance = RandomInt(1000);
-				iprintln("Chance for special zombie: " + chance);
-				level.zombie_type_red_chance = 0;
-				level.zombie_type_purple_chance = 0;
-				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
-				if(chance < sum) 
-				{
-				
-					if(chance < level.zombie_type_red_chance) {
-						self.zombie_type = "red";
-						//setModel
-					} else {
-						self.zombie_type = "purple";
-						//setModel
-					}
-					iprintln("Spawning special zombie type: " + self.zombie_type);
-				}
-			}
-		}
-
-		
-
 		//Reimagined-Expanded, despawn or speed_up zombies if they are not damaged for a period
 		self.zombie_hash = randomint(level.VALUE_ZOMBIE_HASH_MAX);
 		if(
@@ -899,12 +867,13 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 	//Prevent red zombies from being no faster than sprint, then reduce its new move speed by 1
 	if( self.zombie_type == "red" )
 	{
+		minus=1;
 		if( self.zombie_speed_indx >= 3 ) {
-			new_move_speed = "super-sprint";
-			self.zombie_speed_indx = 3;
+			minus = 2;
 		}
 		speed_enum = array("walk", "run", "sprint");
-		self.zombie_speed_indx = speed_enum[ max(0, self.zombie_speed_indx - 1) ];
+		self.zombie_speed_indx = speed_enum[ max(0, self.zombie_speed_indx - minus) ];
+		new_move_speed = speed_enum[ self.zombie_speed_indx ];
 	}
 	//Purple zombies will be at least super sprint speed
 	if( self.zombie_type == "purple" )
