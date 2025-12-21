@@ -1526,6 +1526,15 @@ LANG_ENGLISH 		"Purple Zombie"
 REFERENCE			ZOMBIE_PURPLE_HINT
 LANG_ENGLISH 		"- Glowing purple eyes\n- Fast zombie variant that is immune to explosives, electric abilities, and Hellfire\n- 2x as much health as normal zombies"
 
+//Endgame
+REFERENCE			MIDGAME_ROUND_REQUIREMENT
+LANG_ENGLISH 		"Reach round &&1 to continue challenges"
 
+REFERENCE			ENDGAME_ROUND_REQUIREMENT
+LANG_ENGLISH 		"Reach round &&1 to beat the game"
+
+//endgame buy string, hold X and accept cost argument
+REFERENCE			ENDGAME_BUY_STRING
+LANG_ENGLISH 		"Hold ^3[{+activate}]^7 to escape [Cost: &&1 Points]"
 
 ENDMARKER

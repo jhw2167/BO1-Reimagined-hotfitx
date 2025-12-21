@@ -969,6 +969,165 @@ reimagined_init_level()
 	level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH = 0.34 * level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 
 
+	// CZ75 dual wield upgraded, HS10 dual wield, Ballistic Knife, AUG MK underbarrel,
+	// AK47 flamethrower, M16 grenade launcher
+	level.ARRAY_WEAPONS_DW_UNBARREL = array(
+		//add m1911
+		"m1911_upgraded_zm",
+		"m1911lh_upgraded_zm",
+
+		// CZ75 Dual Wield variants
+		"cz75_dw_upgraded_zm",
+		"cz75_dw_upgraded_zm_x2",
+		"cz75dw_upgraded_zm",
+		"cz75dw_upgraded_zm_x2",
+		
+		// HS10 Dual Wield variants
+		"hs10lh_upgraded_zm",
+		"hs10_upgraded_zm",
+		"hs10_upgraded_zm_x2",
+		"hs10lh_upgraded_zm_x2",
+		
+		// Ballistic Knife variants
+		"knife_ballistic_upgraded_zm",
+		"knife_ballistic_upgraded_zm_x2",
+		
+		// AUG Underbarrel variants
+		"mk_aug_upgraded_zm", "mk_aug_upgraded_zm_x2",
+		
+		// AK47 Flamethrower variants
+		//"ak47_ft_upgraded_zm","ak47_ft_upgraded_zm_x2",
+		"ft_ak47_upgraded_zm",
+		
+		// M16 Grenade Launcher variants
+		//"m16_gl_upgraded_zm",
+		"gl_m16_upgraded_zm"
+	);
+
+	level.ARRAY_WEAPONS_MAGIC = array(
+	// Ray Gun
+	"ray_gun_zm",
+	"ray_gun_upgraded_zm",
+	"starburst_ray_gun_zm",
+	
+	// Thundergun
+	"thundergun_zm",
+	"thundergun_upgraded_zm",
+	
+	// Freezegun / Winter's Howl
+	"freezegun_zm",
+	"freezegun_upgraded_zm",
+	
+	// Tesla Gun / Wunderwaffe DG-2
+	"tesla_gun_zm",
+	"tesla_gun_upgraded_zm",
+	"tesla_gun_powerup_zm",
+	"tesla_gun_powerup_upgraded_zm",
+	
+	// Scavenger (Sniper explosive)
+	"sniper_explosive_zm",
+	"sniper_explosive_upgraded_zm",
+	"sniper_explosive_bolt_zm",
+	"sniper_explosive_bolt_upgraded_zm",
+	
+	// V-R11 / Humangun
+	"humangun_zm",
+	"humangun_upgraded_zm",
+	
+	// Microwave Gun / 31-79 JGb215
+	"microwavegundw_zm",
+	"microwavegundw_upgraded_zm",
+	
+	// Shrink Ray
+	"shrink_ray_zm",
+	"shrink_ray_upgraded_zm",
+	);
+
+	level.ARRAY_WEAPONS_EXPLOSIVE = array(
+	// Grenades
+	"frag_grenade_zm", "sticky_grenade_zm", "molotov_zm",
+	
+	// M1911 Mustang & Sally (explosive pistol)
+	"m1911_upgraded_zm", "m1911lh_upgraded_zm",
+	
+	// M72 LAW
+	"m72_law_zm", "m72_law_upgraded_zm",
+	"china_lake_zm", "china_lake_upgraded_zm",
+	
+	// Explosive Crossbow
+	"crossbow_explosive_zm", "crossbow_explosive_upgraded_zm", "crossbow_explosive_upgraded_zm_x2",
+	"explosive_bolt_zm",  "explosive_bolt_upgraded_zm", "explosivbe_bolt_zm", "explosivbe_bolt_upgraded_zm",
+	
+	// ASP Pistol upgraded (explosive)
+	"asp_upgraded_zm",
+	
+	// Sabertooth Shotgun upgraded (explosive)
+	"sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2",
+	
+	// Equipment
+	"claymore_zm", "spikemore_zm"
+
+	);
+
+	level.ARRAY_WEAPONS_MELEE = array(
+	// Standard Knife
+	"knife_zm", "combat_knife_zm", "combat_knife_upgraded_zm", "upgraded_knife_zm",
+	
+	// Bowie Knife
+	"bowie_knife_zm", "combat_bowie_knife_zm",
+	"sickle_knife_zm", "combat_sickle_knife_zm",
+	
+	// Ballistic Knife (base melee versions)
+	"knife_ballistic_zm", "knife_ballistic_bowie_zm", "knife_ballistic_sickle_zm",
+	"knife_ballistic_bowie_upgraded_zm", "knife_ballistic_sickle_upgraded_zm",
+	
+	// Special melee
+	"rebirth_hands_sp", "vorkuta_knife_sp", "vorkuta_knife_zm", "falling_hands_zm"
+
+	//sabertooth
+	"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2"
+	);
+
+
+	level.ARRAY_WEAPONS_RIFLE = array( "m14_zm", "m14_upgraded_zm", "m16_zm", "m16_gl_zm", "m16_gl_upgraded_zm", "gl_m16_zm", "gl_m16_upgraded_zm",
+	"famas_zm", "famas_upgraded_zm", "famas_upgraded_zm_x2", "aug_acog_zm", "aug_acog_mk_upgraded_zm", "aug_acog_mk_upgraded_zm_x2", "mk_aug_upgraded_zm",
+	"commando_zm", "commando_upgraded_zm", "commando_upgraded_zm_x2", "galil_zm", "galil_upgraded_zm", "galil_upgraded_zm_x2", "ak47_zm", "ak47_ft_upgraded_zm", "ak47_ft_upgraded_zm_x2",
+	"enfield_zm", "enfield_upgraded_zm", "enfield_upgraded_zm_x2", "fnfal_zm", "fnfal_upgraded_zm", "fnfal_upgraded_zm_x2", "g11_lps_zm", "g11_lps_upgraded_zm", "m1garand_upgraded_zm", "springfield_upgraded_zm" );
+
+	level.ARRAY_WEAPONS_SMG = array( "ak74u_zm", "ak74u_upgraded_zm", "ak74u_upgraded_zm_x2", "mp40_zm", "mp40_upgraded_zm", "mpl_zm", "mpl_upgraded_zm",
+	"mp5k_zm", "mp5k_upgraded_zm", "pm63_zm", "pm63_upgraded_zm", "spectre_zm", "spectre_upgraded_zm", "spectre_upgraded_zm_x2",
+	"uzi_zm", "uzi_upgraded_zm", "uzi_upgraded_zm_x2", "mac11_zm", "mac11_upgraded_zm", "skorpion_zm", "skorpion_upgraded_zm", "skorpionlh_upgraded_zm",
+	"kiparis_zm", "kiparis_upgraded_zm", "ppsh_zm", "ppsh_upgraded_zm", "ppsh_upgraded_zm_x2" );
+
+	level.ARRAY_WEAPONS_LMG = array(
+	"rpk_zm", "rpk_upgraded_zm", "rpk_upgraded_zm_x2",
+	"hk21_zm", "hk21_upgraded_zm", "hk21_upgraded_zm_x2",
+	"stoner63_zm", "stoner63_upgraded_zm", "stoner63_upgraded_zm_x2",
+	"m60_zm", "m60_upgraded_zm", "m60_upgraded_zm_x2",
+	"bar_upgraded_zm", "minigun_zm"
+	);
+
+	level.ARRAY_WEAPONS_SHOTGUN = level.ARRAY_VALID_SHOTGUNS;
+	level.ARRAY_WEAPONS_SIDEARM = level.ARRAY_SIDEARMBONUS_WEAPONS;
+	level.ARRAY_WEAPONS_SNIPER = level.ARRAY_VALID_SNIPERS;
+
+	//Aggregate weapons
+	level.ARRAY_WEAPON_PRIMARY_TYPES = array( "SHOTGUN", "SNIPER", "RIFLE", "LMG", "SMG", "SIDEARM" );
+	level.ARRAY_WEAPON_NICHE_TYPES = array( "EXPLOSIVE", "MELEE", "MAGIC", "DUAL_WIELD_UNDERBARREL" );
+
+	level.ARRAY_WEAPON_TYPES[ "SHOTGUN" ] = level.ARRAY_WEAPONS_SHOTGUN;
+	level.ARRAY_WEAPON_TYPES[ "SNIPER" ] = level.ARRAY_WEAPONS_SNIPER;
+	level.ARRAY_WEAPON_TYPES[ "RIFLE" ] = level.ARRAY_WEAPONS_RIFLE;
+	level.ARRAY_WEAPON_TYPES[ "LMG" ] = level.ARRAY_WEAPONS_LMG;
+	level.ARRAY_WEAPON_TYPES[ "SMG" ] = level.ARRAY_WEAPONS_SMG;
+	level.ARRAY_WEAPON_TYPES[ "SIDEARM" ] = level.ARRAY_WEAPONS_SIDEARM;
+
+	level.ARRAY_WEAPON_TYPES[ "EXPLOSIVE" ] = level.ARRAY_WEAPONS_EXPLOSIVE;
+	level.ARRAY_WEAPON_TYPES[ "MELEE" ] = level.ARRAY_WEAPONS_MELEE;
+	level.ARRAY_WEAPON_TYPES[ "MAGIC" ] = level.ARRAY_WEAPONS_MAGIC;
+	level.ARRAY_WEAPON_TYPES[ "DUAL_WIELD_UNDERBARREL" ] = level.ARRAY_WEAPONS_DW_UNBARREL;
+
+
 	//WEAPON VARIABLES
 	level.WEAPON_SABERTOOTH_RANGE = 160;
 
@@ -1016,6 +1175,14 @@ reimagined_init_level()
 	level.VALUE_ZOMBIE_TYPE_PURPLE_HEALTH_MULTIPLIER = 2;
 	level.zombie_type_red_chance = 0;
 	level.zombie_type_purple_chance = 0;
+
+
+	//ENDGAME VARIABLES
+
+	level.VALUE_MIDGAME_ROUND = 25;
+	level.VALUE_ENDGAME_ROUND = 50;
+
+	level.VALUE_ENDGAME_BUY_COST = 50000;
 
 
 	//MISC

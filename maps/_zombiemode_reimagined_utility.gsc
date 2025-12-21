@@ -1355,3 +1355,237 @@ wait_print( msg, data )
 		
 		iprintln( a + " " + b + " " + c + " " + d + " " + e + " " + f );
 	}
+
+
+/** CHALLENGE METHOD HELPERS **/
+
+
+//sanchez_challenge_tomb
+
+start_challenges()
+{
+	PreCacheModel( "sanchez_challenge_tomb" );
+	origin = ( 0, 0, 0 );
+	angles = ( 0, 0, 0 );
+	switch( level.script )
+	{
+		case "zombie_theater":
+			origin = ( 180, -473.2, 320.1 );
+			angles = ( 0, 0, 0 );
+			break;
+
+		case "zombie_pentagon":
+			origin = ( -2283.8, 1871.6, -511.9 );
+			angles = ( 0, 270, 0 );
+			break;
+			
+		case "zombie_cosmodrome":
+			origin = ( 411.4, 87.6, -303.9 );
+			angles = ( 0, 270, 0 );
+			break;
+			
+		case "zombie_coast":
+			origin = ( -331.6, 877.1, 255.1 );
+			angles = ( 0, 0, 0 );
+			break;
+			
+		case "zombie_temple":
+			origin = ( 194.5, -532.1, -339.9 );
+			angles = ( 0, 266, 0 );
+			break;
+			
+		case "zombie_moon":
+			origin = ( 14393.2, -14860.7, -679.9 );
+			angles = ( 0, 270, 0 );
+			break;
+			
+		case "zombie_cod5_prototype":
+			origin = ( -188.1, 1109.4, 144.1 );
+			angles = ( 0, 90, 0 );
+			break;
+			
+		case "zombie_cod5_asylum":
+			origin = ( -721.8, -43.6, 64.1 );
+			angles = ( 0, 90, 0 );
+			break;
+			
+		case "zombie_cod5_sumpf":
+			origin = ( 9545, 577.1, -528.9 );
+			angles = ( 0, 180, 0 );
+			break;
+			
+		case "zombie_cod5_factory":
+			origin = ( 337, 535.9, -2.9 );
+			angles = ( 0, 0, 0 );
+			break;
+	}
+	model = Spawn( "script_model", origin );
+	model.angles = angles;
+	model SetModel( "sanchez_challenge_tomb" );
+	level.endgame_challenge_tomb = model;
+	flag_wait( "all_players_connected" );
+
+	while( true )
+	{
+		players = GetPlayers();
+		players_complete = true;
+		for( i = 0; i < players.size; i ++ )
+		{
+			if( !is_true( players[i].all_challenges_completed ) )
+			{
+				players_complete = false;
+				break;
+			}
+		}
+		if( players_complete ) {
+			break;
+		}
+		wait 0.05;
+	}
+
+	if(level.round_number < level.VALUE_ENDGAME_ROUND ) {
+		trigger SetCursorHint( "HINT_NOICON" );
+		trigger SetHintString( &"REIMAGINED_ENDGAME_ROUND_REQUIREMENT", level.VALUE_ENDGAME_ROUND );
+	}
+
+	trigger = Spawn( "trigger_radius_use", model.origin + ( 0, 0, 30 ), 0, 20, 70 );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger SetHintString( &"REIMAGINED_ENDGAME_BUY_STRING", level.VALUE_ENDGAME_BUY_COST );
+
+	wait 1;
+	level notify( "buyable_ending_ready" );
+	
+	while( true )
+	{
+		trigger waittill( "trigger", player );
+		if( player in_revive_trigger() || !is_player_valid( player ) || player.score < level.VALUE_ENDGAME_BUY_COST )
+		{
+			player PlaySound( "deny" );
+			player maps\_zombiemode_audio::create_and_play_dialog( "general", "sigh" );
+			continue;
+		}
+		play_sound_at_pos( "purchase", player.origin );
+		player maps\_zombiemode_score::minus_to_player_score( 50000 );
+		break;
+	}
+
+	wait 1;
+
+	trigger Delete();
+	level.beat_the_game = true;
+	level notify( "end_game" );
+}
+
+delete_on_disconnect( player )
+{
+	player waittill( "disconnect" );
+	self Delete();
+}
+
+endgame_player_think()
+{
+	self endon( "disconnect" );
+	flag_wait( "all_players_connected" );
+	wait 2;
+	trigger = Spawn( "trigger_radius_use", level.endgame_challenge_tomb.origin + ( 0, 0, 30 ), 0, 20, 70 );
+	trigger SetInvisibleToAll();
+	trigger SetVisibleToPlayer( self );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger thread delete_on_disconnect( self );
+
+	//Challenge restrictions per map
+	//None
+
+	challenge = SpawnStruct();
+	//	level.ARRAY_WEAPON_PRIMARY_TYPES = array( "SHOTGUN", "SNIPER", "RIFLE", "LMG", "SMG", "SIDEARM" );
+	//  level.ARRAY_WEAPON_NICHE_TYPES = array( "EXPLOSIVE", "MELEE", "MAGIC", "DUAL_WIELD_UNDERBARREL" );
+
+	challenge.primaryType = array_randomize( level.ARRAY_WEAPON_PRIMARY_TYPES )[0];
+	challenge.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
+
+	self.challengeData = challenge;
+
+
+	self.challenge_hintstring = [];
+	possible_challenges = [];
+	if( level.script != "zombie_temple" && level.script != "zombie_coast" )
+	{
+		possible_challenges[ possible_challenges.size ] = ::dog_challenge;
+	}
+	possible_challenges[ possible_challenges.size ] = ::points_challenge;
+	possible_challenges[ possible_challenges.size ] = ::kills_challenge;
+	possible_challenges[ possible_challenges.size ] = ::packapunch_challenge;
+	possible_challenges[ possible_challenges.size ] = ::headshot_challenge;
+	if( self.num_perks < 6 )
+	{
+		possible_challenges[ possible_challenges.size ] = ::perk_challenge;
+	}
+	if( level.script != "zombie_moon" && !flag( "solo_game" ) )
+	{
+		possible_challenges[ possible_challenges.size ] = ::boxshare_challenges;
+	}
+	possible_challenges[ possible_challenges.size ] = ::melee_challenge;
+	possible_challenges = array_randomize( possible_challenges );
+	self thread [[ possible_challenges[0] ]]( 0 );
+	self thread [[ possible_challenges[1] ]]( 1 );
+	self thread [[ possible_challenges[2] ]]( 2 );
+	self thread [[ possible_challenges[3] ]]( 3 );
+	trigger SetHintString( "" );
+	medal_1 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_1" );
+	medal_2 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_2" );
+	medal_3 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_3" );
+	medal_4 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_4" );
+	while( !( is_true( self.challenge_completed[0] ) && is_true( self.challenge_completed[1] ) && is_true( self.challenge_completed[2] ) && is_true( self.challenge_completed[3] ) ) )
+	{
+		if( self IsTouching( trigger ) && self maps\_laststand::is_facing( level.endgame_challenge_tomb ) )
+		{
+			view_pos = self GetWeaponMuzzlePoint();
+			forward_view_angles = self GetWeaponForwardDir();
+			end_pos = view_pos + vector_scale( forward_view_angles, 10000 );
+			radial_origin_1 = PointOnSegmentNearestToPoint( view_pos, end_pos, medal_1 );
+			radial_origin_2 = PointOnSegmentNearestToPoint( view_pos, end_pos, medal_2 );
+			radial_origin_3 = PointOnSegmentNearestToPoint( view_pos, end_pos, medal_3 );
+			radial_origin_4 = PointOnSegmentNearestToPoint( view_pos, end_pos, medal_4 );
+			distance_1 = DistanceSquared( medal_1, radial_origin_1 );
+			distance_2 = DistanceSquared( medal_2, radial_origin_2 );
+			distance_3 = DistanceSquared( medal_3, radial_origin_3 );
+			distance_4 = DistanceSquared( medal_4, radial_origin_4 );
+			if( distance_1 < distance_2 && distance_1 < distance_3 && distance_1 < distance_4 )
+			{
+				trigger SetHintString( self.challenge_hintstring[0] );
+			}
+			if( distance_2 < distance_1 && distance_2 < distance_3 && distance_2 < distance_4 )
+			{
+				trigger SetHintString( self.challenge_hintstring[1] );
+			}
+			if( distance_3 < distance_1 && distance_3 < distance_2 && distance_3 < distance_4 )
+			{
+				trigger SetHintString( self.challenge_hintstring[2] );
+			}
+			if( distance_4 < distance_1 && distance_4 < distance_2 && distance_4 < distance_3 )
+			{
+				trigger SetHintString( self.challenge_hintstring[3] );
+			}
+		}
+		else
+		{
+			trigger SetHintString( "" );
+		}
+		wait 0.05;
+	}
+	trigger SetHintString( "Waiting For Other Players To Complete Their Challenges" );
+	self.all_challenges_completed = true;
+	self drop_powerup_reward( 4, "free_perk_slot" );
+	self drop_powerup_reward( 5, "armour_reward" );
+	level waittill( "buyable_ending_ready" );
+	trigger Delete();
+}
+
+
+//** ORDERED CHALLEGNES - self is challenging player
+
+primary_type_kills( weaponType )
+{
+
+}
+
