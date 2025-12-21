@@ -232,7 +232,7 @@ zombie_spawn_init( animname_set )
 						self.zombie_type = "red";
 						//setModel
 					}
-					iprintln("Spawning special zombie type: " + self.zombie_type);
+					//iprintln("Spawning special zombie type: " + self.zombie_type);
 				}
 			}
 		}

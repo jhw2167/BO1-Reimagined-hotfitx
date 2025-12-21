@@ -23,7 +23,7 @@ init()
 place_babyjug()
 {
 	machine_origin = (-880, 2377, 65);
-	machine_angles = (0, 0, 0);
+	machine_angles = (0, -30, 0);
 	bottle = Spawn( "script_model", machine_origin );
 	bottle.angles = machine_angles;
 	bottle setModel( "t6_wpn_zmb_perk_bottle_jugg_world" );

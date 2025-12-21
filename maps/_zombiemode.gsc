@@ -1010,7 +1010,7 @@ reimagined_init_level()
 	level.ZOMBIE_TYPE_RED_PLAYER_DAMAGE = 70;	//Red zombies do 70 damage on hit, normally 20
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
-	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 70;  //chance of spawning type zombies increases by this every round
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 7;  //chance of spawning type zombies increases by this every round
 
 	level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 4;	//upgraded to 8 and 12 later
 	level.VALUE_ZOMBIE_TYPE_PURPLE_HEALTH_MULTIPLIER = 2;
@@ -8165,9 +8165,6 @@ pre_round_think()
 			level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 12;
 		else if( level.round_number >= 25)
 			level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 8;
-
-		iprintln("Spawning special zombie roll succeeded: " + level.zombie_type_red_chance);
-			iprintln("purple: " + level.zombie_type_purple_chance);
 		
 	}
 
