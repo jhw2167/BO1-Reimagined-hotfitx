@@ -1422,12 +1422,15 @@ start_challenges()
 	model = Spawn( "script_model", origin );
 	model.angles = angles;
 	model SetModel( "sanchez_challenge_tomb" );
-	level.endgame_challenge_tomb = model;
+	level.challenge_tomb = model;
 	flag_wait( "all_players_connected" );
 
+
+	level thread challenge_tomb_think();
+
+	players = getplayers();
 	while( true )
 	{
-		players = GetPlayers();
 		players_complete = true;
 		for( i = 0; i < players.size; i ++ )
 		{
@@ -1443,6 +1446,7 @@ start_challenges()
 		wait 0.05;
 	}
 
+	trigger = Spawn( "trigger_radius_use", level.challenge_tomb.origin + ( 0, 0, 30 ), 0, 20, 70 );
 	if(level.round_number < level.VALUE_ENDGAME_ROUND ) {
 		trigger SetCursorHint( "HINT_NOICON" );
 		trigger SetHintString( &"REIMAGINED_ENDGAME_ROUND_REQUIREMENT", level.VALUE_ENDGAME_ROUND );
@@ -1482,30 +1486,16 @@ delete_on_disconnect( player )
 	self Delete();
 }
 
-endgame_player_think()
+challenge_tomb_think()
 {
-	self endon( "disconnect" );
-	flag_wait( "all_players_connected" );
+	level endon( "end_game" );
 	wait 2;
-	trigger = Spawn( "trigger_radius_use", level.endgame_challenge_tomb.origin + ( 0, 0, 30 ), 0, 20, 70 );
-	trigger SetInvisibleToAll();
-	trigger SetVisibleToPlayer( self );
-	trigger SetCursorHint( "HINT_NOICON" );
-	trigger thread delete_on_disconnect( self );
+	players = getplayers();
+	for ( i = 0; i < players.size; i++ ) {
+		players[i] thread player_watch_challenges();
+	}
 
-	//Challenge restrictions per map
-	//None
-
-	challenge = SpawnStruct();
-	//	level.ARRAY_WEAPON_PRIMARY_TYPES = array( "SHOTGUN", "SNIPER", "RIFLE", "LMG", "SMG", "SIDEARM" );
-	//  level.ARRAY_WEAPON_NICHE_TYPES = array( "EXPLOSIVE", "MELEE", "MAGIC", "DUAL_WIELD_UNDERBARREL" );
-
-	challenge.primaryType = array_randomize( level.ARRAY_WEAPON_PRIMARY_TYPES )[0];
-	challenge.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
-
-	self.challengeData = challenge;
-
-
+	/*
 	self.challenge_hintstring = [];
 	possible_challenges = [];
 	if( level.script != "zombie_temple" && level.script != "zombie_coast" )
@@ -1531,14 +1521,114 @@ endgame_player_think()
 	self thread [[ possible_challenges[2] ]]( 2 );
 	self thread [[ possible_challenges[3] ]]( 3 );
 	trigger SetHintString( "" );
-	medal_1 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_1" );
-	medal_2 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_2" );
-	medal_3 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_3" );
-	medal_4 = level.endgame_challenge_tomb GetTagOrigin( "tag_medal_4" );
-	while( !( is_true( self.challenge_completed[0] ) && is_true( self.challenge_completed[1] ) && is_true( self.challenge_completed[2] ) && is_true( self.challenge_completed[3] ) ) )
+	
+	trigger SetHintString( "Waiting For Other Players To Complete Their Challenges" );
+	self.all_challenges_completed = true;
+	self drop_powerup_reward( 4, "free_perk_slot" );
+	self drop_powerup_reward( 5, "armour_reward" );
+	level waittill( "buyable_ending_ready" );
+	trigger Delete();
+	*/
+}
+
+
+/*
+	Relevant hooks:
+	self.challengeData.zombieDamageHook
+	self.challengeData.playerLocationHook
+
+	Challenge indices:
+	0 - press X to start
+	1 - primary weapon kills
+	2 - survive round in location
+	3 - specialty kills (headshots, one shot, damage)
+	4 - niche weapon kills
+	5 - Survive until round 25
+	6 - challenges 6-10
+
+
+	//useful
+	maps/_zombiemode_zone_manager.gsc:96:player_in_zone( zone_name )
+
+*/
+
+setInvisibleToAll() {
+	players = getplayers();
+	for ( i = 0; i < players.size; i++ ) {
+		self SetInvisibleToPlayer( players[i] );
+	}
+}
+
+player_watch_challenges()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	challenges = SpawnStruct();
+	challenges.primaryType = array_randomize( level.ARRAY_WEAPON_PRIMARY_TYPES )[0];
+	challenges.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
+	challenges.locations = array();
+	for(i=0;i<level.VALUE_CHALLENGE_LOCATION_ARRAY.size;i++) {
+		challenges.locations[i] = level.ARRAY_CHALLENGE_LOCATIONS[i];
+	}
+
+	challenges.current = 0;
+	challenges.completed = 0;
+	self.challengeData = challenges;
+
+	trigger = Spawn( "trigger_radius_use", level.challenge_tomb.origin + ( 0, 0, 30 ), 0, 20, 70 );
+	trigger setInvisibleToAll();
+	trigger SetVisibleToPlayer( self );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger thread delete_on_disconnect( self );
+	
+	while(true) 
 	{
-		if( self IsTouching( trigger ) && self maps\_laststand::is_facing( level.endgame_challenge_tomb ) )
+		if(challenges.completed == 0) {
+			self challenge_initChallenge( trigger );	//block
+			challenges.completed++; challenges.current++;
+			self thread player_watch_challenge_hintStrings( trigger );
+			continue;
+		} 
+
+		if(challenges.completed == 1) {
+			self thread challenge_watch_primaryKills( challenges.primaryType );
+		}
+
+		if(challenges.completed == 5) {
+			//wait till rd 25
+		}
+
+		if(challenges.completed == 6) {
+			//start challenges 6-10
+		}
+
+		self waittill( "challenge_complete" );
+		challenges.completed++;
+		challenges.current++;
+	}
+
+	self.all_challenges_completed = true;
+	trigger Delete();
+
+}
+
+player_watch_challenge_hintStrings( trigger )
+{
+	challenges = self.challengeData;
+	challenges.hintStrings = array();
+
+	medal_1 = level.challenge_tomb GetTagOrigin( "tag_medal_1" );
+	medal_2 = level.challenge_tomb GetTagOrigin( "tag_medal_2" );
+	medal_3 = level.challenge_tomb GetTagOrigin( "tag_medal_3" );
+	medal_4 = level.challenge_tomb GetTagOrigin( "tag_medal_4" );
+
+	while( challenges.completed < 11  )
+	{
+		if( self IsTouching( trigger ) && self maps\_laststand::is_facing( level.challenge_tomb ) )
 		{
+			firstLevelChallenges = challenges.current < 6;
+
 			view_pos = self GetWeaponMuzzlePoint();
 			forward_view_angles = self GetWeaponForwardDir();
 			end_pos = view_pos + vector_scale( forward_view_angles, 10000 );
@@ -1550,42 +1640,129 @@ endgame_player_think()
 			distance_2 = DistanceSquared( medal_2, radial_origin_2 );
 			distance_3 = DistanceSquared( medal_3, radial_origin_3 );
 			distance_4 = DistanceSquared( medal_4, radial_origin_4 );
+
+			if( challenges.current == 5) {
+				trigger SetHintString( &"REIMAGINED_MIDGAME_ROUND_REQUIREMENT", level.VALUE_MIDGAME_ROUND );
+				wait 0.05;
+				continue;
+			} else {
+				//iprintln("Triggering first challenges " + firstLevelChallenges);
+			}
+
 			if( distance_1 < distance_2 && distance_1 < distance_3 && distance_1 < distance_4 )
 			{
-				trigger SetHintString( self.challenge_hintstring[0] );
+					iprintln( "1 " + level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS + " | " + challenges.primaryType + " | " + challenges.primaryTypeKills );
+				if( firstLevelChallenges ) {
+					trigger SetHintString( &"REIMAGINED_CHALLENGE_PRIMARY_KILLS_HINT", level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS,
+					 challenges.primaryType, challenges.primaryTypeKills, level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS );
+				} else {
+					challenges.hintStrings[0] = "";
+				}
+				
 			}
 			if( distance_2 < distance_1 && distance_2 < distance_3 && distance_2 < distance_4 )
 			{
-				trigger SetHintString( self.challenge_hintstring[1] );
+				iprintln( "2 " );
+				//trigger SetHintString( challenges.hintStrings[1] );
 			}
 			if( distance_3 < distance_1 && distance_3 < distance_2 && distance_3 < distance_4 )
-			{
-				trigger SetHintString( self.challenge_hintstring[2] );
+			{ 
+				iprintln( "3 " );
+				//trigger SetHintString( challenges.hintStrings[2] );
 			}
 			if( distance_4 < distance_1 && distance_4 < distance_2 && distance_4 < distance_3 )
 			{
-				trigger SetHintString( self.challenge_hintstring[3] );
+				iprintln( "4 " );
+				//trigger SetHintString( challenges.hintStrings[3] );
 			}
 		}
-		else
-		{
+		else {
 			trigger SetHintString( "" );
 		}
 		wait 0.05;
+		wait 1;
 	}
-	trigger SetHintString( "Waiting For Other Players To Complete Their Challenges" );
-	self.all_challenges_completed = true;
-	self drop_powerup_reward( 4, "free_perk_slot" );
-	self drop_powerup_reward( 5, "armour_reward" );
-	level waittill( "buyable_ending_ready" );
-	trigger Delete();
+
 }
 
 
 //** ORDERED CHALLEGNES - self is challenging player
-
-primary_type_kills( weaponType )
+challenge_initChallenge( trigger )
 {
+	//watch for player to hit start trigger on challenge board
+	trigger SetHintString( "Hold ^3[{+activate}]^7 to Start Challenges" );
+	challenge_tomb = level.challenge_tomb;
+	iprintln("Waiting for player to start challenges");
 
+	while(true) 
+	{
+		trigger waittill( "trigger", player );
+
+		if( player != self ) continue;
+		if( player in_revive_trigger() || !is_player_valid( player ) ) {
+			player PlaySound( "deny" );
+			player maps\_zombiemode_audio::create_and_play_dialog( "general", "sigh" );
+			continue;
+		}
+
+		play_sound_at_pos( "purchase", player.origin );
+		break;
+	}
+
+	challenges = self.challengeData;
+
+	iprintln("Player Triggered Challenge Start");
+	trigger SetHintString( "" );
+	self notify( "challenge_complete" );
 }
+
+/* 
+		1. Weapon Class - SMG, LMG, AR, Shotgun, Sidearm
+		2. Location - survive a round without leaving
+		3. Challenge kills - headshots, damage, kills, location, points from specific weapon
+		4.  Niche class survive - Explosive, melee, dual wield, semi auto
+		5. Location + weapon class kills
+		6. Reach rd 25
+
+		Two sets of 4, one before r25, one after
+
+		1. Weapon Class kills - SMG, LMG, AR, Shotgun, Sidearm
+		2. Location - survive a round without leaving
+		3. Challenge kills - headshots, damage, kills, location, points from specific weapon
+		4.  Niche class kills - Explosive, melee, dual wield, magic
+
+		//We anticipate several set hooks to hook into
+		- zombie damage hook - fires when zombie is damaged by this player (player ~(zombie, weapon, damage, hitloc) )
+		- player location hook - fires when player enters a new location (player ~( zoneName ) )
+
+*/
+
+//index 1
+challenge_watch_primaryKills( weaponType ) 
+{
+	self.challengeData.primaryTypeKills = 0;
+	self.challengeData.zombieDamageHook = ::challenge_damageHook_validate_primaryKills;
+
+	while( true ) {
+		if( self.challengeData.primaryTypeKills >= level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS ) {
+			break;
+		}
+	}
+
+	iprintln("Completed challenge: 1");
+	self notify( "challenge_complete" );
+}
+
+challenge_damageHook_validate_primaryKills(zombie, weapon, damage, hitloc) {
+	//check if the weapon matches, and the damage is sufficient to kill the zombie
+	wepArray = level.ARRAY_WEAPON_PRIMARY_TYPES[ self.challengeData.primaryType ];
+	if( is_in_array( wepArray, weapon) ) {
+		if( zombie.health - damage <= 0 ) {
+			self.challengeData.primaryTypeKills++;
+		}
+	}
+
+	return;
+}
+
 

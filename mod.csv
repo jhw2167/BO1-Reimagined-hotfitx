@@ -209,6 +209,9 @@ material,mtl_zombieengineer_body_leather
 material,mtl_zombieengineer_body_canvas
 
 material,hud_icon_pistol
+material,mtl_sanchez_challenge_tomb_medal
+material,mtl_sanchez_challenge_tomb_wood
+
 //{{NEW_MATERIAL_LINE}}
 
 
@@ -348,7 +351,7 @@ material,t7_semtex_ww
 
 material,bo2_mtl_p6_zm_buildable_pswitch
 
-//{{NEW_MATERIAL_PROPERTY_LINE}
+//{{NEW_MATERIAL_PROPERTY_LINE}}
 
 //XMODELS
 xmodel,zombie_3rd_perk_bottle_jugg
@@ -481,6 +484,7 @@ xmodel,t5_weapon_sabretooth_world
 
 //boss
 xmodel,char_ger_zombeng_body1_1
+xmodel,sanchez_challenge_tomb
 
 //ANIMS
 xanim,p_zombie_perkacola_drink

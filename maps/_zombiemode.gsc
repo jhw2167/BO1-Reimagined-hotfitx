@@ -191,6 +191,7 @@ main()
 
 	// ww: init the pistols in the game so last stand has the importance order
 	level thread last_stand_pistol_rank_init();
+	level thread start_challenges();
 
 	//thread maps\_zombiemode_rank::init();
 
@@ -1040,7 +1041,7 @@ reimagined_init_level()
 	
 	// Shrink Ray
 	"shrink_ray_zm",
-	"shrink_ray_upgraded_zm",
+	"shrink_ray_upgraded_zm"
 	);
 
 	level.ARRAY_WEAPONS_EXPLOSIVE = array(
@@ -1082,7 +1083,7 @@ reimagined_init_level()
 	"knife_ballistic_bowie_upgraded_zm", "knife_ballistic_sickle_upgraded_zm",
 	
 	// Special melee
-	"rebirth_hands_sp", "vorkuta_knife_sp", "vorkuta_knife_zm", "falling_hands_zm"
+	"rebirth_hands_sp", "vorkuta_knife_sp", "vorkuta_knife_zm", "falling_hands_zm",
 
 	//sabertooth
 	"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2"
@@ -1126,6 +1127,8 @@ reimagined_init_level()
 	level.ARRAY_WEAPON_TYPES[ "MELEE" ] = level.ARRAY_WEAPONS_MELEE;
 	level.ARRAY_WEAPON_TYPES[ "MAGIC" ] = level.ARRAY_WEAPONS_MAGIC;
 	level.ARRAY_WEAPON_TYPES[ "DUAL_WIELD_UNDERBARREL" ] = level.ARRAY_WEAPONS_DW_UNBARREL;
+
+	
 
 
 	//WEAPON VARIABLES
@@ -1183,6 +1186,27 @@ reimagined_init_level()
 	level.VALUE_ENDGAME_ROUND = 50;
 
 	level.VALUE_ENDGAME_BUY_COST = 50000;
+
+	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 250;
+	level.VALUE_CHALLENGE_LOCATION_ARRAY = array();		//dynamically set to current maps zones list
+
+	level.VALUE_CHALLENGE_SPECIALTY_BOSS_KILLS = 2;						//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 20;				//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 100000;	//per round when activated
+
+	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = .8; //80% must be done by niche class
+
+	//Second round challenges
+	level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS = 40;		// 50 per location
+
+	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND_LATE = 40;				//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 400000;	//per round when activated
+
+
+
+
+
+
 
 
 	//MISC

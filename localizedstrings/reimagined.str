@@ -1528,13 +1528,17 @@ LANG_ENGLISH 		"- Glowing purple eyes\n- Fast zombie variant that is immune to e
 
 //Endgame
 REFERENCE			MIDGAME_ROUND_REQUIREMENT
-LANG_ENGLISH 		"Reach round &&1 to continue challenges"
+LANG_ENGLISH 		"Survive to round &&1 to continue challenges"
 
 REFERENCE			ENDGAME_ROUND_REQUIREMENT
-LANG_ENGLISH 		"Reach round &&1 to beat the game"
+LANG_ENGLISH 		"Survive to round &&1 to end the game"
 
 //endgame buy string, hold X and accept cost argument
 REFERENCE			ENDGAME_BUY_STRING
 LANG_ENGLISH 		"Hold ^3[{+activate}]^7 to escape [Cost: &&1 Points]"
+
+//Challenge Reference hints
+REFERENCE			CHALLENGE_PRIMARY_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using weapon class &&2. Progress &&3/&&4"
 
 ENDMARKER
