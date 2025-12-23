@@ -1423,8 +1423,7 @@ start_challenges()
 	model.angles = angles;
 	model SetModel( "sanchez_challenge_tomb" );
 	level.challenge_tomb = model;
-	flag_wait( "all_players_connected" );
-
+	level waittill( "challenges_configured" );
 
 	level thread challenge_tomb_think();
 
@@ -1568,8 +1567,10 @@ player_watch_challenges()
 	challenges.primaryType = array_randomize( level.ARRAY_WEAPON_PRIMARY_TYPES )[0];
 	challenges.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
 	challenges.locations = array();
-	for(i=0;i<level.VALUE_CHALLENGE_LOCATION_ARRAY.size;i++) {
-		challenges.locations[i] = level.ARRAY_CHALLENGE_LOCATIONS[i];
+	randomArr = array_randomize( level.VALUE_CHALLENGE_LOCATION_ARRAY );
+	for(i=0;i<3;i++) {
+		if(i==randomArr.size) break;
+		challenges.locations[i] = randomArr[i];
 	}
 
 	challenges.current = 0;
@@ -1582,28 +1583,42 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	while(true) 
+	//while(true) 
 	{
 		if(challenges.completed == 0) {
 			self challenge_initChallenge( trigger );	//block
 			challenges.completed++; challenges.current++;
 			self thread player_watch_challenge_hintStrings( trigger );
-			continue;
 		} 
 
-		if(challenges.completed == 1) {
+		if(challenges.completed < 5) {
 			self thread challenge_watch_primaryKills( challenges.primaryType );
+			self thread challenge_watch_locationSurvive( challenges.locations );
+			self thread challenge_watch_specialtyKills();
+			self thread challenge_watch_nicheKills( challenges.nicheType );
 		}
 
-		if(challenges.completed == 5) {
-			//wait till rd 25
+		while(challenges.completed < 5) {
+			self waittill( "challenge_complete" );
+			challenges.completed++;
+			challenges.current++;
 		}
 
-		if(challenges.completed == 6) {
-			//start challenges 6-10
+		while(challenges.completed == 5) {
+			if(level.round_number >= level.VALUE_MIDGAME_ROUND) {
+				break;
+			}
+			level waittill( "start_of_round" );
 		}
 
-		self waittill( "challenge_complete" );
+		if(challenges.completed < 11) {
+			//self thread challenge_watch_primaryKills( challenges.primaryType );
+			//self thread challenge_watch_locationSurvive( challenges.locations );
+			//self thread challenge_watch_specialtyKills();
+			//self thread challenge_watch_nicheKills( challenges.nicheType );
+		}
+
+		
 		challenges.completed++;
 		challenges.current++;
 	}
@@ -1651,7 +1666,7 @@ player_watch_challenge_hintStrings( trigger )
 
 			if( distance_1 < distance_2 && distance_1 < distance_3 && distance_1 < distance_4 )
 			{
-					iprintln( "1 " + level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS + " | " + challenges.primaryType + " | " + challenges.primaryTypeKills );
+					//iprintln( "1 " + level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS + " | " + challenges.primaryType + " | " + challenges.primaryTypeKills );
 				if( firstLevelChallenges ) {
 					trigger SetHintString( &"REIMAGINED_CHALLENGE_PRIMARY_KILLS_HINT", level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS,
 					 challenges.primaryType, challenges.primaryTypeKills, level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS );
@@ -1662,8 +1677,21 @@ player_watch_challenge_hintStrings( trigger )
 			}
 			if( distance_2 < distance_1 && distance_2 < distance_3 && distance_2 < distance_4 )
 			{
-				iprintln( "2 " );
-				//trigger SetHintString( challenges.hintStrings[1] );
+				if( firstLevelChallenges ) 
+				{
+					locations = "[";
+				
+					for(i=0;i<challenges.locations.size;i++) {
+						locations += level.ARRAY_ZONE_NAMES[ challenges.locations[i] ];
+						if(i < challenges.locations.size - 1) {
+							locations += ", ";
+						}
+					}
+					locations += "]";
+					trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCATIONS_SURVIVE_HINT", 1, locations );
+				} else {
+					challenges.hintStrings[0] = "";
+				}
 			}
 			if( distance_3 < distance_1 && distance_3 < distance_2 && distance_3 < distance_4 )
 			{ 
@@ -1680,7 +1708,7 @@ player_watch_challenge_hintStrings( trigger )
 			trigger SetHintString( "" );
 		}
 		wait 0.05;
-		wait 1;
+		
 	}
 
 }
@@ -1711,7 +1739,6 @@ challenge_initChallenge( trigger )
 
 	challenges = self.challengeData;
 
-	iprintln("Player Triggered Challenge Start");
 	trigger SetHintString( "" );
 	self notify( "challenge_complete" );
 }
@@ -1749,7 +1776,6 @@ challenge_watch_primaryKills( weaponType )
 		}
 	}
 
-	iprintln("Completed challenge: 1");
 	self notify( "challenge_complete" );
 }
 
@@ -1765,4 +1791,153 @@ challenge_damageHook_validate_primaryKills(zombie, weapon, damage, hitloc) {
 	return;
 }
 
+load_zone_names() {
 
+	level.ARRAY_ZONE_NAMES = array();
+	
+	// Nacht Der Untoten
+	load_name( "ZOMBIE_COD5_PROTOTYPE_START_ZONE", "Start" );
+	load_name( "ZOMBIE_COD5_PROTOTYPE_BOX_ZONE", "Help Room" );
+	load_name( "ZOMBIE_COD5_PROTOTYPE_UPSTAIRS_ZONE", "Upstairs" );
+	
+	// Verruckt
+	load_name( "ZOMBIE_COD5_ASYLUM_WEST_DOWNSTAIRS_ZONE", "Dentist Office" );
+	load_name( "ZOMBIE_COD5_ASYLUM_WEST2_DOWNSTAIRS_ZONE", "Morgue" );
+	load_name( "ZOMBIE_COD5_ASYLUM_NORTH_DOWNSTAIRS_ZONE", "North Downstairs Room" );
+	load_name( "ZOMBIE_COD5_ASYLUM_SOUTH_UPSTAIRS_ZONE", "South Balcony" );
+	load_name( "ZOMBIE_COD5_ASYLUM_SOUTH2_UPSTAIRS_ZONE", "Showers" );
+	load_name( "ZOMBIE_COD5_ASYLUM_POWER_UPSTAIRS_ZONE", "Power" );
+	load_name( "ZOMBIE_COD5_ASYLUM_KITCHEN_UPSTAIRS_ZONE", "Kitchen" );
+	load_name( "ZOMBIE_COD5_ASYLUM_NORTH_UPSTAIRS_ZONE", "North Balcony" );
+	load_name( "ZOMBIE_COD5_ASYLUM_NORTH2_UPSTAIRS_ZONE", "North Upstairs Room" );
+	
+	// Shi No Numa
+	load_name( "ZOMBIE_COD5_SUMPF_CENTER_BUILDING_UPSTAIRS", "Center Building Upstairs" );
+	load_name( "ZOMBIE_COD5_SUMPF_CENTER_BUILDING_UPSTAIRS_BUY", "Center Building Zipline" );
+	load_name( "ZOMBIE_COD5_SUMPF_CENTER_BUILDING_COMBINED", "Center Building Downstairs" );
+	load_name( "ZOMBIE_COD5_SUMPF_NORTHWEST_OUTSIDE", "Outside Fishing Hut" );
+	load_name( "ZOMBIE_COD5_SUMPF_NORTHWEST_BUILDING", "Fishing Hut" );
+	load_name( "ZOMBIE_COD5_SUMPF_SOUTHWEST_OUTSIDE", "Outside Comm Room" );
+	load_name( "ZOMBIE_COD5_SUMPF_SOUTHWEST_BUILDING", "Comm Room" );
+	load_name( "ZOMBIE_COD5_SUMPF_NORTHEAST_OUTSIDE", "Outside Doctor's Quarters" );
+	load_name( "ZOMBIE_COD5_SUMPF_NORTHEAST_BUILDING", "Doctor's Quarters" );
+	load_name( "ZOMBIE_COD5_SUMPF_SOUTHEAST_OUTSIDE", "Outside Storage" );
+	load_name( "ZOMBIE_COD5_SUMPF_SOUTHEAST_BUILDING", "Storage" );
+	
+	// Der Riese
+	load_name( "ZOMBIE_COD5_FACTORY_RECEIVER_ZONE", "Mainframe" );
+	load_name( "ZOMBIE_COD5_FACTORY_OUTSIDE_WEST_ZONE", "Outside Warehouse" );
+	load_name( "ZOMBIE_COD5_FACTORY_OUTSIDE_EAST_ZONE", "Outside Laboratory" );
+	load_name( "ZOMBIE_COD5_FACTORY_OUTSIDE_SOUTH_ZONE", "Courtyard" );
+	load_name( "ZOMBIE_COD5_FACTORY_WNUEN_ZONE", "Laboratory" );
+	load_name( "ZOMBIE_COD5_FACTORY_WNUEN_BRIDGE_ZONE", "Bridge Laboratory Side" );
+	load_name( "ZOMBIE_COD5_FACTORY_BRIDGE_ZONE", "Bridge Warehouse Side" );
+	load_name( "ZOMBIE_COD5_FACTORY_TP_EAST_ZONE", "Teleporter A" );
+	load_name( "ZOMBIE_COD5_FACTORY_TP_WEST_ZONE", "Teleporter B" );
+	load_name( "ZOMBIE_COD5_FACTORY_TP_SOUTH_ZONE", "Teleporter C" );
+	load_name( "ZOMBIE_COD5_FACTORY_WAREHOUSE_TOP_ZONE", "Upper Warehouse" );
+	load_name( "ZOMBIE_COD5_FACTORY_WAREHOUSE_BOTTOM_ZONE", "Warehouse" );
+	
+	// Kino Der Toten
+	load_name( "ZOMBIE_THEATER_FOYER_ZONE", "Lobby" );
+	load_name( "ZOMBIE_THEATER_FOYER2_ZONE", "Lobby Hallway" );
+	load_name( "ZOMBIE_THEATER_CREMATORIUM_ZONE", "Crematorium" );
+	load_name( "ZOMBIE_THEATER_ALLEYWAY_ZONE", "Alley" );
+	load_name( "ZOMBIE_THEATER_WEST_BALCONY_ZONE", "Boiler Room" );
+	load_name( "ZOMBIE_THEATER_STAGE_ZONE", "Stage" );
+	load_name( "ZOMBIE_THEATER_THEATER_ZONE", "Theater" );
+	load_name( "ZOMBIE_THEATER_DRESSING_ZONE", "Dressing Room" );
+	load_name( "ZOMBIE_THEATER_DINING_ZONE", "Dining Room" );
+	load_name( "ZOMBIE_THEATER_VIP_ZONE", "VIP Lounge" );
+	
+	// FIVE
+	load_name( "ZOMBIE_PENTAGON_CONFERENCE_LEVEL1", "Conference Room" );
+	load_name( "ZOMBIE_PENTAGON_HALLWAY_LEVEL1", "Hallway" );
+	load_name( "ZOMBIE_PENTAGON_WAR_ROOM_ZONE_TOP", "Upper War Room" );
+	load_name( "ZOMBIE_PENTAGON_WAR_ROOM_ZONE_NORTH", "North War Room" );
+	load_name( "ZOMBIE_PENTAGON_WAR_ROOM_ZONE_SOUTH", "South War Room" );
+	load_name( "ZOMBIE_PENTAGON_CONFERENCE_LEVEL2", "Panic Room" );
+	load_name( "ZOMBIE_PENTAGON_WAR_ROOM_ZONE_ELEVATOR", "Bottom Elevator" );
+	load_name( "ZOMBIE_PENTAGON_LABS_ELEVATOR", "Bottom Elevator" );
+	load_name( "ZOMBIE_PENTAGON_LABS_HALLWAY1", "South Labs" );
+	load_name( "ZOMBIE_PENTAGON_LABS_HALLWAY2", "North Labs" );
+	load_name( "ZOMBIE_PENTAGON_LABS_ZONE3", "Weapon Testing" );
+	load_name( "ZOMBIE_PENTAGON_LABS_ZONE2", "Pig Research" );
+	load_name( "ZOMBIE_PENTAGON_LABS_ZONE1", "Morgue" );
+	
+	// Ascension
+	load_name( "ZOMBIE_COSMODROME_CENTRIFUGE_ZONE", "Centrifuge" );
+	load_name( "ZOMBIE_COSMODROME_CENTRIFUGE_ZONE2", "Upper Centrifuge" );
+	load_name( "ZOMBIE_COSMODROME_ACCESS_TUNNEL_ZONE", "Stairs" );
+	load_name( "ZOMBIE_COSMODROME_STORAGE_ZONE", "Storage Hallway" );
+	load_name( "ZOMBIE_COSMODROME_STORAGE_ZONE2", "Storage" );
+	load_name( "ZOMBIE_COSMODROME_STORAGE_LANDER_ZONE", "Storage Lander" );
+	load_name( "ZOMBIE_COSMODROME_BASE_ENTRY_ZONE", "Base Entry Lander" );
+	load_name( "ZOMBIE_COSMODROME_CENTRIFUGE2POWER_ZONE", "Centrifuge Building" );
+	load_name( "ZOMBIE_COSMODROME_BASE_ENTRY_ZONE2", "Power Building" );
+	load_name( "ZOMBIE_COSMODROME_POWER_BUILDING", "Upper Power Building" );
+	load_name( "ZOMBIE_COSMODROME_POWER_BUILDING_ROOF", "Power Building Roof" );
+	load_name( "ZOMBIE_COSMODROME_ROOF_CONNECTOR_ZONE", "Roof Connector Area" );
+	load_name( "ZOMBIE_COSMODROME_NORTH_CATWALK_ZONE3", "Catwalk Lander" );
+	load_name( "ZOMBIE_COSMODROME_NORTH_PATH_ZONE", "Outside Launch Area" );
+	load_name( "ZOMBIE_COSMODROME_UNDER_ROCKET_ZONE", "Launch Area" );
+	load_name( "ZOMBIE_COSMODROME_CONTROL_ROOM_ZONE", "Control Room" );
+	
+	// Call of the Dead
+	load_name( "ZOMBIE_COAST_BEACH_ZONE", "Beach" );
+	load_name( "ZOMBIE_COAST_START_ZONE", "Lighthouse Cove" );
+	load_name( "ZOMBIE_COAST_SHIPBACK_FAR_ZONE", "Ship Stern" );
+	load_name( "ZOMBIE_COAST_SHIPBACK_NEAR_ZONE", "Ship Gangway" );
+	load_name( "ZOMBIE_COAST_SHIPBACK_NEAR2_ZONE", "Ship Sun Deck" );
+	load_name( "ZOMBIE_COAST_SHIPBACK_LEVEL3_ZONE", "Ship Bridge" );
+	load_name( "ZOMBIE_COAST_SHIPFRONT_NEAR_ZONE", "Ship Main Deck" );
+	load_name( "ZOMBIE_COAST_SHIPFRONT_BOTTOM_ZONE", "Ship Cargo Hold" );
+	load_name( "ZOMBIE_COAST_SHIPFRONT_FAR_ZONE", "Ship Forecastle" );
+	load_name( "ZOMBIE_COAST_SHIPFRONT_STORAGE_ZONE", "Ship Storage" );
+	load_name( "ZOMBIE_COAST_SHIPFRONT_2_BEACH_ZONE", "Ship Path" );
+	load_name( "ZOMBIE_COAST_BEACH_ZONE2", "Cave" );
+	load_name( "ZOMBIE_COAST_RESIDENCE_ROOF_ZONE", "Lighthouse Station Roof" );
+	load_name( "ZOMBIE_COAST_RESIDENCE1_ZONE", "Lighthouse Station" );
+	load_name( "ZOMBIE_COAST_LIGHTHOUSE1_ZONE", "Lighthouse Level 1 & 2" );
+	load_name( "ZOMBIE_COAST_LIGHTHOUSE2_ZONE", "Lighthouse Level 3" );
+	load_name( "ZOMBIE_COAST_CATWALK_ZONE", "Lighthouse Level 4" );
+	load_name( "ZOMBIE_COAST_START_CAVE_ZONE", "Lighthouse Extension" );
+	load_name( "ZOMBIE_COAST_START_BEACH_ZONE", "Lagoon" );
+	load_name( "ZOMBIE_COAST_REAR_LAGOON_ZONE", "Boathouse" );
+	
+	// Shangri La
+	load_name( "ZOMBIE_TEMPLE_TEMPLE_START_ZONE", "Temple" );
+	load_name( "ZOMBIE_TEMPLE_PRESSURE_PLATE_ZONE", "Minecart Area" );
+	load_name( "ZOMBIE_TEMPLE_CAVE_TUNNEL_ZONE", "Minecart Tunnel" );
+	load_name( "ZOMBIE_TEMPLE_CAVES1_ZONE", "Waterslide Exit" );
+	load_name( "ZOMBIE_TEMPLE_CAVES2_ZONE", "Turntable" );
+	load_name( "ZOMBIE_TEMPLE_CAVES3_ZONE", "Body Bags" );
+	load_name( "ZOMBIE_TEMPLE_POWER_ROOM_ZONE", "Water Wheels" );
+	load_name( "ZOMBIE_TEMPLE_CAVES_WATER_ZONE", "Water Cave" );
+	load_name( "ZOMBIE_TEMPLE_WATERFALL_LOWER_ZONE", "Waterfall" );
+	load_name( "ZOMBIE_TEMPLE_WATERFALL_TUNNEL_ZONE", "Waterfall Tunnel" );
+	load_name( "ZOMBIE_TEMPLE_WATERFALL_TUNNEL_A_ZONE", "Waterfall Tunnel" );
+	load_name( "ZOMBIE_TEMPLE_WATERFALL_UPPER_ZONE", "Upper Waterfall" );
+	load_name( "ZOMBIE_TEMPLE_WATERFALL_UPPER1_ZONE", "Mud Pit" );
+	
+	// Moon
+	load_name( "ZOMBIE_MOON_NML_ZONE", "No Man's Land" );
+	load_name( "ZOMBIE_MOON_BRIDGE_ZONE", "Receiving Bay" );
+	load_name( "ZOMBIE_MOON_WATER_ZONE", "Launch Area" );
+	load_name( "ZOMBIE_MOON_CATA_LEFT_START_ZONE", "Upper Tunnel 6" );
+	load_name( "ZOMBIE_MOON_CATA_LEFT_MIDDLE_ZONE", "Lower Tunnel 6" );
+	load_name( "ZOMBIE_MOON_GENERATOR_ZONE", "M.P.D." );
+	load_name( "ZOMBIE_MOON_CATA_RIGHT_START_ZONE", "Upper Tunnel 11" );
+	load_name( "ZOMBIE_MOON_CATA_RIGHT_MIDDLE_ZONE", "Middle Tunnel 11" );
+	load_name( "ZOMBIE_MOON_CATA_RIGHT_END_ZONE", "Lower Tunnel 11" );
+	load_name( "ZOMBIE_MOON_GENERATOR_EXIT_EAST_ZONE", "Laboratories" );
+	load_name( "ZOMBIE_MOON_ENTER_FOREST_EAST_ZONE", "Upper Laboratories" );
+	load_name( "ZOMBIE_MOON_TOWER_ZONE_EAST", "Teleporter Area" );
+	load_name( "ZOMBIE_MOON_TOWER_ZONE_EAST2", "Outside Biodome" );
+	load_name( "ZOMBIE_MOON_FOREST_ZONE", "Biodome" );
+}
+
+load_name( zone, common ) {
+	zone = "reimagined_" + tolower( zone );
+	level.ARRAY_ZONE_NAMES[ zone ] = common;
+}

@@ -1539,6 +1539,53 @@ LANG_ENGLISH 		"Hold ^3[{+activate}]^7 to escape [Cost: &&1 Points]"
 
 //Challenge Reference hints
 REFERENCE			CHALLENGE_PRIMARY_KILLS_HINT
-LANG_ENGLISH 		"Kill &&1 zombies using weapon class &&2. Progress &&3/&&4"
+LANG_ENGLISH 		"Kill &&1 zombies using primary weapon class [&&2]. Progress &&3/&&4"
+
+REFERENCE			CHALLENGE_NICHE_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using secondary weapon class [&&2]. Progress &&3/&&4"
+
+REFERENCE			CHALLENGE_CLASS_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using your assigned primary [&&2] or secondary weapon class [&&3]. Progress &&4/&&5"
+
+REFERENCE            CHALLENGE_LOCATIONS_SURVIVE_HINT
+LANG_ENGLISH         "Survive &&1 rounds without leaving one of the following areas: &&2"
+
+REFERENCE            CHALLENGE_TOTAL_DAMAGE_HINT
+LANG_ENGLISH         "Deal a total of &&1 damage to zombies. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_TOTAL_HEADSHOTS_HINT
+LANG_ENGLISH         "Kill &&1 zombies with a headshot. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_TOTAL_ONESHOTS_HINT
+LANG_ENGLISH         "Kill &&1 zombies in a single shot. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_TOTAL_POINTS_HINT
+LANG_ENGLISH         "Earn &&1 points. Progress &&2/&&3"
+
+
+REFERENCE            CHALLENGE_TOTAL_DAMAGE_CLASS_HINT
+LANG_ENGLISH         "Deal &&1 damage to zombies with weapon types: [&&2]. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_HEADSHOTS_CLASS_HINT
+LANG_ENGLISH         "Kill &&1 zombies with a headshot with weapon types: [&&2]. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_ONESHOTS_CLASS_HINT
+LANG_ENGLISH         "Kill &&1 zombies in a single shot with weapon types: [&&2]. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_POINTS_CLASS_HINT
+LANG_ENGLISH         "Earn &&1 points with weapon types: [&&2]. Progress &&3/&&4"
+
+
+REFERENCE            CHALLENGE_TOTAL_HEADSHOTS_LOCATION_HINT
+LANG_ENGLISH         "Kill &&1 zombies with a headshot while in any of these areas: &&2. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_LOCATIONS_DAMAGE_HINT
+LANG_ENGLISH         "Deal a total of &&1 damage to zombies while in any of these areas: &&2. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_ONESHOTS_LOCATION_HINT
+LANG_ENGLISH         "Kill &&1 zombies in a single shot while in any of these areas: &&2. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_POINTS_LOCATION_HINT
+LANG_ENGLISH         "Earn &&1 points in any of these areas: &&2. Progress &&3/&&4"
 
 ENDMARKER

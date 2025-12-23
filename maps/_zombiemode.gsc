@@ -1180,7 +1180,7 @@ reimagined_init_level()
 	level.zombie_type_purple_chance = 0;
 
 
-	//ENDGAME VARIABLES
+	//ENDGAME VARIABLES .challenge
 
 	level.VALUE_MIDGAME_ROUND = 25;
 	level.VALUE_ENDGAME_ROUND = 50;
@@ -1202,11 +1202,8 @@ reimagined_init_level()
 	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND_LATE = 40;				//HeadShots or One Shots - per round once activated
 	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 400000;	//per round when activated
 
-
-
-
-
-
+	//Load zone names in reimagined utility
+	load_zone_names();
 
 
 	//MISC
@@ -1319,6 +1316,7 @@ reimagined_init_level()
 	switch (Tolower(GetDvar(#"mapname")))
 {
     case "zombie_cod5_prototype":
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_cod5_asylum":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "Shock, Drop, & Reroll!";
@@ -1355,9 +1353,11 @@ reimagined_init_level()
 		level.special_dog_killstreak = 0;	//number of times in a row the special dog has been killed
         break;
     case "zombie_theater":
+		level thread challenge_populate_valid_zones( array("") );
 		//level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
         break;
     case "zombie_pentagon":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The 6";
 		//level._override_quad_explosion = maps\zombie_pentagon::pentagon_overide_quad_explosion; needs to be done from "pentagon" map files
 		level.pentagon_gas_point = undefined;
@@ -1377,6 +1377,35 @@ reimagined_init_level()
         break;
 }
 
+
+}
+
+
+challenge_populate_valid_zones( array_blacklist )
+{
+	flag_wait("all_players_spawned");
+	level.VALUE_CHALLENGE_LOCATION_ARRAY = array();
+	level.sessionstate = "";
+
+	zkeys = GetArrayKeys( level.zones );
+	size = 0;
+	for ( z = 0; z < zkeys.size; z++ )
+	{
+		zoneName = zkeys[z];
+		if( is_in_array( array_blacklist, zoneName ) )
+			continue;
+
+		reimaginedZoneName = (level choose_zone_name( zoneName, undefined ));
+		if(!isDefined(reimaginedZoneName))
+			continue;
+
+		//ref = &(toupper( reimagined_zoneName) );
+		//iprintln( "valid zone: " + ref );		
+		level.VALUE_CHALLENGE_LOCATION_ARRAY[size] = reimaginedZoneName;
+		size++;
+	}
+
+	level notify( "challenges_configured" );
 
 }
 
@@ -13844,8 +13873,7 @@ zone_hud()
 
 choose_zone_name(zone, current_name)
 {
-	if(self.sessionstate == "spectator")
-	{
+	if(self.sessionstate == "spectator"){
 		zone = undefined;
 	}
 
@@ -13889,11 +13917,13 @@ choose_zone_name(zone, current_name)
 	}
 
 	name = " ";
+	//level thread wait_print("ZONE HUD: " + zone);
 
 	if(IsDefined(zone))
 	{
 		name = "reimagined_" + level.script + "_" + zone;
 	}
+	//level thread wait_print("REF NAME: " + name);
 
 	return name;
 }
