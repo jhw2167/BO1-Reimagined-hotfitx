@@ -1515,13 +1515,13 @@ LANG_ENGLISH 		"TRANSPORTED!!"
 
 //Zombies
 REFERENCE			ZOMBIE_RED_TITLE
-LANG_ENGLISH 		"Red Zombie"
+LANG_ENGLISH 		"Tough Zombie (Red)"
 
 REFERENCE			ZOMBIE_RED_HINT
 LANG_ENGLISH 		"- Glowing red eyes\n- Hit harder than normal zombies and cannot be knocked down\n- Much more health than normal zombies"
 
 REFERENCE			ZOMBIE_PURPLE_TITLE
-LANG_ENGLISH 		"Purple Zombie"
+LANG_ENGLISH 		"Resistent Zombie (Purple)"
 
 REFERENCE			ZOMBIE_PURPLE_HINT
 LANG_ENGLISH 		"- Glowing purple eyes\n- Fast zombie variant that is immune to explosives, electric abilities, and Hellfire\n- 2x as much health as normal zombies"
@@ -1538,6 +1538,10 @@ REFERENCE			ENDGAME_BUY_STRING
 LANG_ENGLISH 		"Hold ^3[{+activate}]^7 to escape [Cost: &&1 Points]"
 
 //Challenge Reference hints
+//locked challenge
+REFERENCE			CHALLENGE_LOCKED_HINT
+LANG_ENGLISH 		"CHALLENGE LOCKED"
+
 REFERENCE			CHALLENGE_PRIMARY_KILLS_HINT
 LANG_ENGLISH 		"Kill &&1 zombies using primary weapon class [&&2]. Progress &&3/&&4"
 
@@ -1545,7 +1549,7 @@ REFERENCE			CHALLENGE_NICHE_KILLS_HINT
 LANG_ENGLISH 		"Kill &&1 zombies using secondary weapon class [&&2]. Progress &&3/&&4"
 
 REFERENCE			CHALLENGE_CLASS_KILLS_HINT
-LANG_ENGLISH 		"Kill &&1 zombies using your assigned primary [&&2] or secondary weapon class [&&3]. Progress &&4/&&5"
+LANG_ENGLISH 		"Kill &&1 zombies using your primary class [&&2] or secondary class [&&3]. Progress &&4/&&5"
 
 REFERENCE            CHALLENGE_LOCATIONS_SURVIVE_HINT
 LANG_ENGLISH         "Survive &&1 rounds without leaving one of the following areas: &&2"
@@ -1587,5 +1591,15 @@ LANG_ENGLISH         "Kill &&1 zombies in a single shot while in any of these ar
 
 REFERENCE            CHALLENGE_TOTAL_POINTS_LOCATION_HINT
 LANG_ENGLISH         "Earn &&1 points in any of these areas: &&2. Progress &&3/&&4"
+
+
+REFERENCE            CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT
+LANG_ENGLISH         "Deal &&1 damage to zombies with secondary weapon class [&&2]. Damage dealt in these areas [&&3] count double. Progress &&4/&&5"
+
+REFERENCE            CHALLENGE_TOTAL_NICHE_KILLS_LOCATION_HINT
+LANG_ENGLISH         "Kill &&1 zombies with secondary weapon class [&&2]. Kills in these areas [&&3] count double. Progress &&4/&&5"
+
+REFERENCE            CHALLENGE_TOTAL_DAMAGE_THRESHOLD_HINT
+LANG_ENGLISH         "At least &&1% damage dealt this round must be from weapon class [&&2]. Current &&3/&&4"
 
 ENDMARKER

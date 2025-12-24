@@ -177,6 +177,7 @@ player_add_points( event, mod, hit_location, zombie)
 
 	// Add the points
 	self add_to_player_score( player_points );
+	self maps\_zombiemode_reimagined_utility::points_hook( event, player_points, mod, zombie );
 	players = get_players();
 	if ( players.size > 1 )
 	{

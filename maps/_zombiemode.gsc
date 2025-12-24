@@ -57,7 +57,7 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=15;	///
+	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -1108,9 +1108,11 @@ reimagined_init_level()
 	"bar_upgraded_zm", "minigun_zm"
 	);
 
-	level.ARRAY_WEAPONS_SHOTGUN = level.ARRAY_VALID_SHOTGUNS;
-	level.ARRAY_WEAPONS_SIDEARM = level.ARRAY_SIDEARMBONUS_WEAPONS;
-	level.ARRAY_WEAPONS_SNIPER = level.ARRAY_VALID_SNIPERS;
+	level.ARRAY_WEAPONS_SHOTGUN = array_combine( level.ARRAY_VALID_SHOTGUNS, array());
+	level.ARRAY_WEAPONS_SIDEARM = array_combine( level.ARRAY_SIDEARMBONUS_WEAPONS,
+	 array("m1911_zm", "m1911_upgraded_zm", "m1911lh_upgraded_zm",
+			"ray_gun_zm", "ray_gun_upgraded_zm") );
+	level.ARRAY_WEAPONS_SNIPER = array_combine( level.ARRAY_VALID_SNIPERS, array() );
 
 	//Aggregate weapons
 	level.ARRAY_WEAPON_PRIMARY_TYPES = array( "SHOTGUN", "SNIPER", "RIFLE", "LMG", "SMG", "SIDEARM" );
@@ -1128,7 +1130,19 @@ reimagined_init_level()
 	level.ARRAY_WEAPON_TYPES[ "MAGIC" ] = level.ARRAY_WEAPONS_MAGIC;
 	level.ARRAY_WEAPON_TYPES[ "DUAL_WIELD_UNDERBARREL" ] = level.ARRAY_WEAPONS_DW_UNBARREL;
 
-	
+	level.ARRAY_WEAPON_TYPES_NAMES = [];
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SHOTGUN" ] = "Shotguns";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SNIPER" ] = "Sniper Rifles";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "RIFLE" ] = "Rifles";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "LMG" ] = "LMGs";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SMG" ] = "SMGs";
+
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SIDEARM" ] = "Pistols";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "EXPLOSIVE" ] = "Explosive Weapons";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "MELEE" ] = "Melee Weapons";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "MAGIC" ] = "Magic Weapons or Abilities";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "DUAL_WIELD_UNDERBARREL" ] = "Dual Wield Weapons or Underbarrel Attachments";
+
 
 
 	//WEAPON VARIABLES
@@ -1183,18 +1197,28 @@ reimagined_init_level()
 	//ENDGAME VARIABLES .challenge
 
 	level.VALUE_MIDGAME_ROUND = 25;
-	level.VALUE_ENDGAME_ROUND = 50;
+	level.VALUE_ENDGAME_ROUND = 45;
 
 	level.VALUE_ENDGAME_BUY_COST = 50000;
 
-	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 250;
-	level.VALUE_CHALLENGE_LOCATION_ARRAY = array();		//dynamically set to current maps zones list
+	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 10;
+	level.VALUE_CHALLENGE_CLASS_TYPE_KILLS = 10;
+	level.ARRAY_CHALLENGE_LOCATIONS = array();		//dynamically set to current maps zones list
 
+	level.ARRAY_CHALLENGE_SPECIALTIES = array( "HEADSHOTS", "POINTS", "DAMAGE" );
 	level.VALUE_CHALLENGE_SPECIALTY_BOSS_KILLS = 2;						//HeadShots or One Shots - per round once activated
-	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 20;				//HeadShots or One Shots - per round once activated
-	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 100000;	//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 2;				//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 1000;	//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 150;		//per round when activated
 
-	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = .8; //80% must be done by niche class
+	level.VALUE_CHALLENGE_NICHE_TYPE_KILLS = 8;
+	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 80*45000; 		//damage equivalent to killing 80 zombies at rd 20
+
+	//Zomvies 45k health, round 20
+
+
+	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = 80; //80% must be done by niche class
+
 
 	//Second round challenges
 	level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS = 40;		// 50 per location
@@ -1384,7 +1408,7 @@ reimagined_init_level()
 challenge_populate_valid_zones( array_blacklist )
 {
 	flag_wait("all_players_spawned");
-	level.VALUE_CHALLENGE_LOCATION_ARRAY = array();
+	level.ARRAY_CHALLENGE_LOCATIONS = array();
 	level.sessionstate = "";
 
 	zkeys = GetArrayKeys( level.zones );
@@ -1401,7 +1425,7 @@ challenge_populate_valid_zones( array_blacklist )
 
 		//ref = &(toupper( reimagined_zoneName) );
 		//iprintln( "valid zone: " + ref );		
-		level.VALUE_CHALLENGE_LOCATION_ARRAY[size] = reimaginedZoneName;
+		level.ARRAY_CHALLENGE_LOCATIONS[size] = reimaginedZoneName;
 		size++;
 	}
 
@@ -9967,7 +9991,13 @@ zombie_ragdoll_kill( player, power, kill_zomb )
 //
 
 //damage function
-actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
+actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime ) {
+	final_dmg = self actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime );
+	if( isplayer( attacker ) )
+		attacker maps\_zombiemode_reimagined_utility::damage_hook( self, weapon, final_dmg, sHitLoc );
+	return final_dmg;
+}
+actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
 {
 	//iprintln("Weapon: " + weapon);
 	//iprintln("Weapon Class: " + WeaponClass(weapon));
@@ -9978,9 +10008,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	iprintln("Final Damage 0: " + damage);
 	//iprintln("Zombie hash: " + self.zombie_hash);
 	//iprintln("Zombie animname: " + self.animname);
-	iprintln("Zombie type: " + self.zombie_type);
+	//iprintln("Zombie type: " + self.zombie_type);
 	iprintln("Zomb health: " + self.health);
-	//iprintln("Zomb max health: " + self.maxhealth);
+	iprintln("Zomb max health: " + self.maxhealth);
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	//DOUBLE_upgraded , _is_double_upgraded , upgraded_double_string
@@ -13863,11 +13893,13 @@ zone_hud()
 		}
 
 		current_name = name;
+		self.current_zone = name;
 
 		self send_message_to_csc("hud_anim_handler", "hud_zone_name_out");
 		wait .25;
 		self SetClientDvar("hud_zone_name", name);
 		self send_message_to_csc("hud_anim_handler", "hud_zone_name_in");
+		self maps\_zombiemode_reimagined_utility::zone_update_hook(name);
 	}
 }
 
