@@ -141,6 +141,7 @@ init_powerups()
 	add_zombie_powerup( "tesla", "lightning_bolt", &"REIMAGINED_POWERUP_SUPERPOWER", true, false, false, undefined, "BLUE");
 	add_zombie_powerup( "restock",  	"zombie_ammocan",	&"REIMAGINED_POWERUP_RESTOCK", true, false, false, undefined, "BLUE");
 	add_zombie_powerup( "pap_teleport",  	"zombie_pickup_bonfire",	&"REIMAGINED_POWERUP_PAP_TELEPORT", true, false, false, undefined, "BLUE");
+	add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", true, false, false, undefined, "BLUE");
 	/*
 	add_zombie_powerup("upgrade_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false, undefined, "BLUE");
 	add_zombie_powerup("quad_points", "zombie_x4_icon", &"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false, undefined, "BLUE");
@@ -165,7 +166,6 @@ init_powerups()
 		add_zombie_powerup( "random_weapon", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false );
 
 		// bonus points
-		add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", true, false, false );
 		add_zombie_powerup( "bonus_points_team", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", false, false, false );
 		add_zombie_powerup( "lose_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_LOSE_POINTS", false, false, true );
 
@@ -923,7 +923,7 @@ reset_powerup_chance()
 
 //
 //	Drop the specified powerup
-specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
+specific_powerup_drop( powerup_name, drop_spot, permament, weapon, soloDrop )
 {
 	if(!IsDefined(permament))
 		permament = false;
@@ -939,13 +939,17 @@ specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
 
 	if ( IsDefined(powerup) )
 	{
+		powerup.soloDrop = is_true(soloDrop);
 		powerup powerup_setup( powerup_name );
 
 		if(!permament)
 			powerup thread powerup_timeout();
 		powerup thread powerup_wobble();
 		powerup thread powerup_grab();
+		return powerup;
 	}
+
+	return undefined;
 }
 
 
@@ -2972,6 +2976,11 @@ free_perk_powerup( item, player )
 			continue;
 		}
 
+		if( is_true( item.soloDrop ) && players[i] != player )
+		{
+			continue;
+		}
+
 		if ( !players[i] maps\_laststand::player_is_in_laststand() && !(players[i].sessionstate == "spectator") )
 		{
 			players[i] thread maps\_zombiemode_perks::give_random_perk();
@@ -3103,6 +3112,11 @@ random_weapon_powerup( item, player )
 bonus_points_player_powerup( item, player )
 {
 	points = RandomIntRange( 1, 25 ) * 100;
+
+	if( isDefined(level.setBonusPowerupPoints)) {
+		points = level.setBonusPowerupPoints;
+		level.setBonusPowerupPoints = undefined;
+	}
 
 	if ( !player maps\_laststand::player_is_in_laststand() && !(player.sessionstate == "spectator") )
 	{

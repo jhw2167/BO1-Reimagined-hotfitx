@@ -1521,7 +1521,7 @@ REFERENCE			ZOMBIE_RED_HINT
 LANG_ENGLISH 		"- Glowing red eyes\n- Hit harder than normal zombies and cannot be knocked down\n- Much more health than normal zombies"
 
 REFERENCE			ZOMBIE_PURPLE_TITLE
-LANG_ENGLISH 		"Resistent Zombie (Purple)"
+LANG_ENGLISH 		"Resistant Zombie (Purple)"
 
 REFERENCE			ZOMBIE_PURPLE_HINT
 LANG_ENGLISH 		"- Glowing purple eyes\n- Fast zombie variant that is immune to explosives, electric abilities, and Hellfire\n- 2x as much health as normal zombies"

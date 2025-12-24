@@ -10005,12 +10005,12 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 	//iprintln("Inflictor: " + inflictor);
 	//iprintln("Flags: " + flags);
 	//iprintln("Has Drop: " + self.hasDrop);
-	iprintln("Final Damage 0: " + damage);
+	//iprintln("Final Damage 0: " + damage);
 	//iprintln("Zombie hash: " + self.zombie_hash);
 	//iprintln("Zombie animname: " + self.animname);
 	//iprintln("Zombie type: " + self.zombie_type);
-	iprintln("Zomb health: " + self.health);
-	iprintln("Zomb max health: " + self.maxhealth);
+	//iprintln("Zomb health: " + self.health);
+	//iprintln("Zomb max health: " + self.maxhealth);
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	//DOUBLE_upgraded , _is_double_upgraded , upgraded_double_string

@@ -961,7 +961,9 @@ start_properk_placer()
 	new_pos = self.origin + offset;
 	iprintln("new pos: " + new_pos );
 	object = Spawn( "script_model", new_pos);
-	object SetModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
+	//sanchez_challenge_tomb
+	object SetModel( "sanchez_challenge_tomb" );
+	//object SetModel( "t6_wpn_zmb_perk_bottle_jugg_world" );
 	//object SetModel( "t5_weapon_sabretooth_world" );
   	//object SetModel( "char_ger_zombeng_body1_1" );
 
@@ -1357,7 +1359,7 @@ wait_print( msg, data )
 	}
 
 
-generate_completed_hint()
+generate_completed_hint( claimReward )
 {
     self endon( "death" );
 	self endon( "disconnect" );
@@ -1372,11 +1374,30 @@ generate_completed_hint()
 	text.fontScale = 1.6;
 	text.alpha = 1;
 	text.color = ( 0.0, 1.0, 0.0 );
-	text SetText( "Completed!" );
+	text SetText( "Complete!" );
 	text.y -= 150;
+
+	//Put another text below that asks to claim reward
+	rewardText = undefined;
+	if( is_true( claimReward ) )
+	{
+		rewardText = NewClientHudElem( self );
+		rewardText.alignX = "center";
+		rewardText.alignY = "middle";
+		rewardText.horzAlign = "user_center";
+		rewardText.vertAlign = "user_bottom";
+		rewardText.foreground = true;
+		rewardText.font = "default";
+		rewardText.fontScale = 1.2;
+		rewardText.alpha = 1;
+		rewardText.color = ( 1.0, 1.0, 1.0 );
+		rewardText SetText( "Press ^3[{+activate}]^7 to claim your reward." );
+		rewardText.y -= 100;
+	}
 
 	wait 0.05;
 	text destroy_hud();
+	if( isdefined( rewardText ) ) rewardText destroy_hud();
 }
 
 
@@ -1390,34 +1411,37 @@ start_challenges()
 	PreCacheModel( "sanchez_challenge_tomb" );
 	origin = ( 0, 0, 0 );
 	angles = ( 0, 0, 0 );
+	rewardDrop = (30, 0, 0);
 	switch( level.script )
 	{
-		case "zombie_theater":
-			origin = ( 180, -473.2, 320.1 );
-			angles = ( 0, 0, 0 );
+		case "zombie_theater":	//alley
+			origin = (-1150, -180, 0);
+			//origin = ( 180, -473.2, 320.1 );	//pap
+			angles = ( 3, 0, 0 );
+			rewardDrop = (-30, 0, 0);
 			break;
 
-		case "zombie_pentagon":
+		case "zombie_pentagon": //center lab halllway
 			origin = ( -2283.8, 1871.6, -511.9 );
 			angles = ( 0, 270, 0 );
 			break;
 			
-		case "zombie_cosmodrome":
+		case "zombie_cosmodrome": //power
 			origin = ( 411.4, 87.6, -303.9 );
 			angles = ( 0, 270, 0 );
 			break;
 			
-		case "zombie_coast":
+		case "zombie_coast": // by light house
 			origin = ( -331.6, 877.1, 255.1 );
 			angles = ( 0, 0, 0 );
 			break;
 			
-		case "zombie_temple":
+		case "zombie_temple": //opposite jug side
 			origin = ( 194.5, -532.1, -339.9 );
 			angles = ( 0, 266, 0 );
 			break;
 			
-		case "zombie_moon":
+		case "zombie_moon":	//outside spawn
 			origin = ( 14393.2, -14860.7, -679.9 );
 			angles = ( 0, 270, 0 );
 			break;
@@ -1446,6 +1470,7 @@ start_challenges()
 	model.angles = angles;
 	model SetModel( "sanchez_challenge_tomb" );
 	level.challenge_tomb = model;
+	level.challenge_tomb.rewardOrigin = model.origin + rewardDrop;
 	level waittill( "challenges_configured" );
 
 	level thread challenge_tomb_think();
@@ -1563,8 +1588,9 @@ player_watch_challenges()
 	}
 
 	challenges.current = 0;
-	challenges.completed = 0;
+	challenges.claimed = 0;
 	challenges.completedArray = array(false, false, false, false, false, false, false, false, false, false, false);
+	challenges.rewardsClaimed = array(false, false, false, false, false, false, false, false, false, false, false);
 	self.challengeData = challenges;
 
 	trigger = Spawn( "trigger_radius_use", level.challenge_tomb.origin + ( 0, 0, 30 ), 0, 20, 70 );
@@ -1580,6 +1606,8 @@ player_watch_challenges()
 			self thread player_watch_challenge_hintStrings( trigger );
 		} 
 
+		self thread player_watch_challenge_rewards( trigger );
+
 		if(challenges.completed < 5) {
 			self thread challenge_watch_classKills();
 			self thread challenge_watch_locationSurvive();
@@ -1589,7 +1617,6 @@ player_watch_challenges()
 
 		while(challenges.completed < 5) {
 			self waittill( "challenge_complete" );
-			challenges.current++;
 			iprintln("Challenge completed: " + challenges.completed);
 		}
 
@@ -1608,9 +1635,6 @@ player_watch_challenges()
 			//self thread challenge_watch_nicheKills( challenges.nicheType );
 		}
 
-		
-		challenges.completed++;
-		challenges.current++;
 	}
 
 	self.all_challenges_completed = true;
@@ -1618,6 +1642,7 @@ player_watch_challenges()
 
 }
 
+//watch_hints
 player_watch_challenge_hintStrings( trigger )
 {
 	challenges = self.challengeData;
@@ -1649,7 +1674,8 @@ player_watch_challenge_hintStrings( trigger )
 			distance_3 = DistanceSquared( medal_3, radial_origin_3 );
 			distance_4 = DistanceSquared( medal_4, radial_origin_4 );
 
-			if( challenges.current == 5) {
+			if( challenges.completed == 4 && challenges.claimed == 4 ) {
+				challenges.current = -1;
 				trigger SetHintString( &"REIMAGINED_MIDGAME_ROUND_REQUIREMENT", level.VALUE_MIDGAME_ROUND );
 				wait 0.05;
 				continue;
@@ -1660,12 +1686,16 @@ player_watch_challenge_hintStrings( trigger )
 			if( distance_1 < distance_2 && distance_1 < distance_3 && distance_1 < distance_4 )
 			{
 					//iprintln( "1 " + level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS + " | " + challenges.primaryType + " | " + challenges.primaryTypeKills );
-				if( firstLevelChallenges ) {
+				if( firstLevelChallenges ) 
+				{
+					challenges.current = 1;
 					trigger SetHintString( &"REIMAGINED_CHALLENGE_CLASS_KILLS_HINT", level.VALUE_CHALLENGE_CLASS_TYPE_KILLS,
 					 primaryName, secondaryName, challenges.classTypeKills , level.VALUE_CHALLENGE_CLASS_TYPE_KILLS );
-					if( challenges.completedArray[1] ) self thread generate_completed_hint();
+					if( challenges.completedArray[1] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[1] );
 				} else {
-					challenges.hintStrings[0] = "";
+					challenges.current = 6;
+
 				}
 				
 			}
@@ -1673,6 +1703,7 @@ player_watch_challenge_hintStrings( trigger )
 			{
 				if( firstLevelChallenges ) 
 				{
+					challenges.current = 2;
 					locations = "[";
 				
 					for(i=0;i<challenges.locations.size;i++) {
@@ -1683,16 +1714,18 @@ player_watch_challenge_hintStrings( trigger )
 					}
 					locations += "]";
 					trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCATIONS_SURVIVE_HINT", 1, locations );
-					if( challenges.completedArray[2] ) self thread generate_completed_hint();
+					if( challenges.completedArray[2] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[2] );
 				} else {
-					challenges.hintStrings[0] = "";
+					challenges.current = 7;
+
 				}
 			}
 			if( distance_3 < distance_1 && distance_3 < distance_2 && distance_3 < distance_4 )
 			{ 
 				if( firstLevelChallenges ) 
 				{
-				
+					challenges.current = 3;
 					specialtyType = challenges.specialtyType;
 					if(specialtyType == "HEADSHOTS") {
 						total = level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND*challenges.specialtyChallengeStartRound;
@@ -1708,16 +1741,19 @@ player_watch_challenge_hintStrings( trigger )
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_POINTS_HINT", total, challenges.specialtyPoints, total );
 					}
 
-					if( challenges.completedArray[3] ) self thread generate_completed_hint();
+					if( challenges.completedArray[3] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[3] );
 
 				} else {
-					trigger SetHintString( "" );
+					challenges.current = 8;
+
 				}
 			}
 			if( distance_4 < distance_1 && distance_4 < distance_2 && distance_4 < distance_3 )
 			{
 				if( firstLevelChallenges ) 
 				{
+					challenges.current = 4;
 					specialtyType = challenges.nicheChallengeType;
 					if( !isDefined( specialtyType ) ) {
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT");
@@ -1730,13 +1766,23 @@ player_watch_challenge_hintStrings( trigger )
 						total = level.VALUE_CHALLENGE_SECONDARY_TYPE_DAMAGE;
 						trigger SetHintString( &"CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT", 
 						total, challenges.nicheType, challenges.locations, challenges.nicheTypeDamage, total );
-					} 
-					if( challenges.completedArray[4] ) self thread generate_completed_hint();
+					} else {
+						trigger SetHintString( "NOT WORKING" );
+					}
+					if( challenges.completedArray[4] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[4] );
+
+				} else {
+					challenges.current = 9;
+
+					if( challenges.completedArray[9] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[9] );
 				}
 				
 			}
 		}
 		else {
+			challenges.current = -1;
 			trigger SetHintString( "" );
 		}
 		wait 0.05;
@@ -1744,6 +1790,29 @@ player_watch_challenge_hintStrings( trigger )
 	}
 
 }
+
+player_watch_challenge_rewards( trigger ) {
+	challenges = self.challengeData;
+
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	while( challenges.completed < 11 ) 
+	{
+		if( challenges.current == -1 ) {
+			wait 0.1;
+			continue;
+		}
+
+		trigger waittill( "trigger", player );
+		iprintln("Player claiming reward for challenge " + challenges.current );
+		if( player in_revive_trigger() || !is_player_valid( player ) ) continue;
+		iprintln("1");
+		level level_player_claim_reward( player, challenges.current );
+		wait 1.5;
+	}
+}
+
 
 /**
 
@@ -2065,8 +2134,10 @@ challenge_watch_specialtyKills()
 challenge_watch_nicheChallenge()
 {
 	level endon( "end_game" );
+	self endon( "disconnect" );
 
 	while( self.challengeData.completed < 3 ) {	//complete all other tier one challenges first
+		iprintln("Challenges completed: " + self.challengeData.completed );
 		wait 1;
 	}
 
@@ -2080,7 +2151,7 @@ challenge_watch_nicheChallenge()
 		index = 0;	//force kills challenge
 	}
 	nicheChallengeType = nicheChallengeTypes[ index ];
-	challenges.nicheChallengeType = nicheChallengeType;
+	self.challengeData.nicheChallengeType = nicheChallengeType;
 
 	if(nicheChallengeType == "KILLS") {
 		self.challengeData.nicheTypeKills = 0;
@@ -2091,6 +2162,7 @@ challenge_watch_nicheChallenge()
 	}
 
 	while( true ) {
+
 		if( self.challengeData.nicheTypeKills >= level.VALUE_CHALLENGE_NICHE_TYPE_KILLS ) {
 			break;
 		}
@@ -2174,6 +2246,99 @@ points_hook( event, player_points, mod, zombie ) {
 	}
 	return false;
 }
+
+//here 
+//rewards level thread - called on level so 1 reward claimed at a time
+level_player_claim_reward( player, rewardIndex )
+{
+	level endon( "end_game" );
+
+	claimed = player.challengeData.rewardsClaimed;
+	if( rewardIndex < 0 || rewardIndex >= claimed.size ) {
+		player PlaySound( "deny" );
+		return false;
+	}
+	iprintln("2");
+	if( is_true( claimed[ rewardIndex ] ) ) {
+		player PlaySound( "deny" );
+		return false;
+	}
+
+	iprintln("3");
+	if( is_true( level.rewardInProgress) ) {
+		player PlaySound( "deny" );
+		return false;
+	}
+
+	iprintln("4");
+	level.rewardInProgress = true;
+
+	powerup = undefined;
+	useDrop = false;
+	switch( rewardIndex ) 
+	{
+		case 0:	// begin challenges
+			claimed[ rewardIndex ] = true;
+			break;
+		case 1:	//perk drop
+			powerup = rewardPerkDrop();
+			useDrop = true;
+			break;
+		case 2:	//5k points
+			powerup = rewardPointsDrop( 5000 );
+			useDrop = true;
+			break;
+		case 3:	//Restock
+			powerup = rewardRestockDrop();
+			useDrop = true;
+			break;
+		case 4:	//pap teleport
+			player.melee_upgrade = true;
+			claimed[ rewardIndex ] = true;
+			break;
+	}
+
+	if( useDrop ) {
+		if( isDefined( powerup ) ) {
+			player.challengeData.claimed++;
+		}
+
+		while( useDrop && isDefined( powerup ) ) {
+			claimed[ rewardIndex ] = true;
+			powerup waittill_any_or_timeout( 10, "powerup_grabbed");
+		}
+
+	} else {
+		player.challengeData.claimed++;
+	}
+
+
+	level.rewardInProgress = false;
+
+	return true;
+}
+
+	rewardPerkDrop() 
+	{
+		level endon( "end_game" );
+		return maps\_zombiemode_powerups::specific_powerup_drop( "free_perk",
+		level.challenge_tomb.rewardOrigin, true, undefined, true );
+	}
+
+	rewardPointsDrop( points ) 
+	{
+		level endon( "end_game" );
+		return maps\_zombiemode_powerups::specific_powerup_drop( "bonus_points_player",
+		level.challenge_tomb.rewardOrigin  , true, undefined, true );
+	}
+
+	rewardRestockDrop() 
+	{
+		level endon( "end_game" );
+		return maps\_zombiemode_powerups::specific_powerup_drop( "restock",
+		level.challenge_tomb.rewardOrigin , true, undefined, true );
+	}
+
 
 
 load_zone_names() {
