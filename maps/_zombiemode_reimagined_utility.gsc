@@ -1415,10 +1415,10 @@ start_challenges()
 	switch( level.script )
 	{
 		case "zombie_theater":	//alley
-			origin = (-1150, -180, 0);
+			origin = (-1150, -140, 0);
 			//origin = ( 180, -473.2, 320.1 );	//pap
 			angles = ( 3, 0, 0 );
-			rewardDrop = (-30, 0, 0);
+			rewardDrop = (-100, 0, 0);
 			break;
 
 		case "zombie_pentagon": //center lab halllway
@@ -1447,8 +1447,11 @@ start_challenges()
 			break;
 			
 		case "zombie_cod5_prototype":
-			origin = ( -188.1, 1109.4, 144.1 );
-			angles = ( 0, 90, 0 );
+			//origin = ( -188.1, 1109.4, 144.1 ); stairs
+			//angles = ( 0, 90, 0 );
+			origin = ( 173, 592.5, 138.1 ); //help room sawed off
+			angles = ( 6, 90, 0 );			//slight lean against wall
+			rewardDrop = (0, 100, 0);
 			break;
 			
 		case "zombie_cod5_asylum":
@@ -1727,17 +1730,18 @@ player_watch_challenge_hintStrings( trigger )
 				{
 					challenges.current = 3;
 					specialtyType = challenges.specialtyType;
+					round = challenges.specialtyChallengeStartRound;
 					if(specialtyType == "HEADSHOTS") {
-						total = level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND*challenges.specialtyChallengeStartRound;
+						total = level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND*round;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_HEADSHOTS_HINT", total, challenges.specialtyKills, total );
 					} else if(specialtyType == "ONESHOTS") {
-						total = level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND*challenges.specialtyChallengeStartRound;
+						total = level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND*round;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_ONESHOTS_HINT", total, challenges.specialtyKills, total );
 					} else if(specialtyType == "DAMAGE") {
-						total = level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND*challenges.specialtyChallengeStartRound;
+						total = level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND*round;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_DAMAGE_HINT", total, challenges.specialtyDamage, total );
 					} else if(specialtyType == "POINTS") {
-						total = level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND*challenges.specialtyChallengeStartRound;
+						total = level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND*round;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_POINTS_HINT", total, challenges.specialtyPoints, total );
 					}
 
@@ -1755,6 +1759,7 @@ player_watch_challenge_hintStrings( trigger )
 				{
 					challenges.current = 4;
 					specialtyType = challenges.nicheChallengeType;
+					iprintln("Niche specialty type: " + specialtyType );
 					if( !isDefined( specialtyType ) ) {
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT");
 					}
@@ -1807,8 +1812,9 @@ player_watch_challenge_rewards( trigger ) {
 		trigger waittill( "trigger", player );
 		iprintln("Player claiming reward for challenge " + challenges.current );
 		if( player in_revive_trigger() || !is_player_valid( player ) ) continue;
-		iprintln("1");
-		level level_player_claim_reward( player, challenges.current );
+		index = challenges.current;
+		wait(2);
+		level level_player_claim_reward( player, index);
 		wait 1.5;
 	}
 }
@@ -1903,9 +1909,10 @@ challenge_watch_primaryKills( weaponType )
 
 challenge_damageHook_validate_primaryKills(zombie, weapon, damage, hitloc) {
 	//check if the weapon matches, and the damage is sufficient to kill the zombie
-	wepArray = level.ARRAY_WEAPON_PRIMARY_TYPES[ self.challengeData.primaryType ];
+	wepArray = level.ARRAY_WEAPON_TYPES[ self.challengeData.primaryType ];
 	if( is_in_array( wepArray, weapon) ) {
-		if( zombie.health - damage <= 0 ) {
+		iprintln( " Primary weapon " + weapon + " matched for challenge " + self.challengeData.primaryType );
+		if( damage>= zombie.health ) {
 			self.challengeData.primaryTypeKills++;
 			return true;
 		}
@@ -1937,9 +1944,9 @@ challenge_watch_nicheKills()
 
 challenge_damageHook_validate_secondaryKills(zombie, weapon, damage, hitloc) {
 	//check if the weapon matches, and the damage is sufficient to kill the zombie
-	wepArray = level.ARRAY_WEAPON_NICHE_TYPES[ self.challengeData.nicheType ];
+	wepArray = level.ARRAY_WEAPON_TYPES[ self.challengeData.nicheType ];
 	if( is_in_array( wepArray, weapon) ) {
-		if( zombie.health - damage <= 0 ) {
+		if( damage >= zombie.health ) {
 			self.challengeData.nicheTypeKills++;
 			return true;
 		}
@@ -1950,14 +1957,16 @@ challenge_damageHook_validate_secondaryKills(zombie, weapon, damage, hitloc) {
 
 challenge_damageHook_validate_classKills(zombie, weapon, damage, hitloc) {
 	//check if secondary or primary vaildates
-	if( challenge_damageHook_validate_primaryKills( zombie, weapon, damage, hitloc ) ) {
+	if( self challenge_damageHook_validate_primaryKills( zombie, weapon, damage, hitloc ) ) {
 		self.challengeData.classTypeKills++;
 		return true;
 	}
-	if( challenge_damageHook_validate_secondaryKills( zombie, weapon, damage, hitloc ) ) {
+	if( self challenge_damageHook_validate_secondaryKills( zombie, weapon, damage, hitloc ) ) {
 		self.challengeData.classTypeKills++;
 		return true;
 	}
+
+
 
 	return false;
 }
@@ -2032,7 +2041,7 @@ challenge_watch_specialtyKills()
 	level endon( "end_game" );
 
 	challenges = self.challengeData;
-	specialtyType = array_randomize( level.ARRAY_CHALLENGE_SPECIALTY_KILLS )[0];
+	specialtyType = array_randomize( level.ARRAY_CHALLENGE_SPECIALTIES )[0];
 	//if primary type is a sniper or shotgun, change headshots to one shots
 	if( specialtyType == "HEADSHOTS" ) {
 		if( challenges.primaryType == "SNIPER" || challenges.primaryType == "SHOTGUN" ) {
@@ -2050,7 +2059,6 @@ challenge_watch_specialtyKills()
 		self.challengeData.pointsHook = ::challenge_pointsHook_validate_specialtyPoints;
 	}
 	
-	iprintln("Starting specialty challenge: " + specialtyType );
 	challenges.specialtyType = specialtyType;
 	challenges.specialtyKills = 0;
 	challenges.specialtyDamage = 0;
@@ -2059,7 +2067,7 @@ challenge_watch_specialtyKills()
 	start_round = level.round_number;
 	while( true ) {
 
-		if(challenges.completed < 2 ) {
+		if(challenges.completed < 2 && !challenges.completedArray[2] ) {
 			start_round = level.round_number;
 			challenges.specialtyChallengeStartRound = start_round;
 		}
@@ -2141,9 +2149,9 @@ challenge_watch_nicheChallenge()
 		wait 1;
 	}
 
-	nicheChallengeTypes = array("KILLS","DAMAGE");
+	nicheChallengeTypes = level.ARRAY_CHALLENGE_NICHE_CHALLENGES;
 	challenges = self.challengeData;
-	index = randomInt(0, 2);
+	index = randomInt(2);
 
 	if(challenges.specialtyType == "ONESHOTS" || challenges.specialtyType == "HEADSHOTS" ) {
 		index = 1;	//force damage challenge
@@ -2152,6 +2160,7 @@ challenge_watch_nicheChallenge()
 	}
 	nicheChallengeType = nicheChallengeTypes[ index ];
 	self.challengeData.nicheChallengeType = nicheChallengeType;
+	iprintln("Niche challenge type selected: " + nicheChallengeType );
 
 	if(nicheChallengeType == "KILLS") {
 		self.challengeData.nicheTypeKills = 0;
@@ -2278,7 +2287,6 @@ level_player_claim_reward( player, rewardIndex )
 	switch( rewardIndex ) 
 	{
 		case 0:	// begin challenges
-			claimed[ rewardIndex ] = true;
 			break;
 		case 1:	//perk drop
 			powerup = rewardPerkDrop();
@@ -2294,27 +2302,21 @@ level_player_claim_reward( player, rewardIndex )
 			break;
 		case 4:	//pap teleport
 			player.melee_upgrade = true;
-			claimed[ rewardIndex ] = true;
 			break;
 	}
 
 	if( useDrop ) {
+		iprintln("Waiting for powerup pickup " + rewardIndex + "-index " +  isDefined( powerup ) );
 		if( isDefined( powerup ) ) {
+			player.challengeData.rewardsClaimed[ rewardIndex ] = true;
 			player.challengeData.claimed++;
 		}
-
-		while( useDrop && isDefined( powerup ) ) {
-			claimed[ rewardIndex ] = true;
-			powerup waittill_any_or_timeout( 10, "powerup_grabbed");
-		}
-
 	} else {
+		player.challengeData.rewardsClaimed[ rewardIndex ] = true;
 		player.challengeData.claimed++;
 	}
-
-
+	wait(1);
 	level.rewardInProgress = false;
-
 	return true;
 }
 
@@ -2328,6 +2330,7 @@ level_player_claim_reward( player, rewardIndex )
 	rewardPointsDrop( points ) 
 	{
 		level endon( "end_game" );
+		level.setBonusPowerupPoints = points;
 		return maps\_zombiemode_powerups::specific_powerup_drop( "bonus_points_player",
 		level.challenge_tomb.rewardOrigin  , true, undefined, true );
 	}

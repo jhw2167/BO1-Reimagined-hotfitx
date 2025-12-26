@@ -122,6 +122,9 @@ init_powerups()
 	//"zom_icon_minigun" );
 	//"specialty_lightningbolt_zombies" );
 
+	//Include cor powerups
+	include_zombie_powerup( "bonus_points_player" );
+
 	/* GREEN DROPS */
 	//add_zombie_powerup( powerup_name, model_name, 		hint, 					solo, caution, zombie_grabbable, fx, drop_color )
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
@@ -1353,6 +1356,8 @@ powerup_zombie_grab()
 	self endon( "powerup_timedout" );
 	self endon( "powerup_grabbed" );
 	self endon( "hacked" );
+
+	wait(1);
 
 	spawnflags = 1; // SF_TOUCH_AI_AXIS
 	zombie_grab_trigger = spawn( "trigger_radius", self.origin - (0,0,40), spawnflags, 32, 72 );

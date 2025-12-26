@@ -290,6 +290,7 @@ post_all_players_connected()
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
 		players[i] thread watch_player_shotgun_attrition();
+		players[i] thread watch_punch_fired();
 		players[i] thread maps\_zombiemode_weapon_effects::wait_projectile_impacts();
 
 		players[i] thread watch_player_weapon_special_bonuses();
@@ -1208,11 +1209,13 @@ reimagined_init_level()
 	level.ARRAY_CHALLENGE_SPECIALTIES = array( "HEADSHOTS", "POINTS", "DAMAGE" );
 	level.VALUE_CHALLENGE_SPECIALTY_BOSS_KILLS = 2;						//HeadShots or One Shots - per round once activated
 	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 2;				//HeadShots or One Shots - per round once activated
-	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 1000;	//per round when activated
-	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 150;		//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 100;	//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 15;		//per round when activated
+
+	level.ARRAY_CHALLENGE_NICHE_CHALLENGES = array( "KILLS", "DAMAGE");
 
 	level.VALUE_CHALLENGE_NICHE_TYPE_KILLS = 8;
-	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 80*45000; 		//damage equivalent to killing 80 zombies at rd 20
+	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 8*45000; 		//damage equivalent to killing 80 zombies at rd 20
 
 	//Zomvies 45k health, round 20
 
@@ -1231,6 +1234,10 @@ reimagined_init_level()
 
 
 	//MISC
+	level.VALUE_UPGRADED_PUNCH_RANGE = 300;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 600;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 2;
+	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 4;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
 	//Maps
@@ -1455,6 +1462,7 @@ reimagined_init_player()
 	//Weapons
 	self.weap_options = [];
 	self.weap_options["uzi_upgraded_zm_x2"] = 0;
+	self.melee_upgrade = true;
 
 	self.bullet_hellfire = false;
 	self.bullet_sheercold = false;
@@ -9859,6 +9867,33 @@ wait_and_revive()
 	self maps\_laststand::auto_revive( self );
 	self.lives--;
 	self.waiting_to_revive = false;
+}
+
+watch_punch_fired()
+{
+	self endon( "disconnect" );
+
+	for( ;; )
+	{
+		self waittill( "melee" );
+		currentweapon = self.current_melee_weapon;
+		//write melee and weapon name
+		iprintln("Melee fired with weapon: " + self.current_melee_weapon );
+		if( currentweapon == "rebirth_hands_sp" )
+		{
+			iprintln("Thundergun punch fired");
+			if( !is_true(self.melee_upgrade) ) continue;
+			iprintln("Thundergun punch fired with upgrade");
+
+			self thread maps\_zombiemode_weapon_effects::upgraded_punch_fired(currentweapon);
+
+			view_pos = self GetTagOrigin( "tag_flash" ) - self GetPlayerViewHeight();
+			view_angles = self GetTagAngles( "tag_flash" );
+			playfx( level._effect["thundergun_knockdown_ground"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			self playsound( "fly_thundergun_forcehit" );
+		}
+	}
 }
 
 //Reimagined-Expanded Self is zombie
