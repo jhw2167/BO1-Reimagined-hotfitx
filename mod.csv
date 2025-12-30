@@ -166,6 +166,7 @@ fx,weapon/freeze_gun/fx_trail_freezegun_ring_emit
 fx,weapon/freeze_gun/fx_exp_freezegun_impact
 fx,electric_cherry/fx_electric_cherry_shock
 fx,electric_cherry/fx_electric_cherry_shock_large
+fx,weapon/thunder_gun/fx_thundergun_impact
 
 //vulture
 fx,vulture/fx_vulture_glow

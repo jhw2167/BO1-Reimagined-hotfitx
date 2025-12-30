@@ -1409,6 +1409,10 @@ generate_completed_hint( claimReward )
 start_challenges()
 {
 	PreCacheModel( "sanchez_challenge_tomb" );
+	//flag_wait( "all_players_connected" );
+	level waittill( "challenges_configured" );
+	//flag_wait( "challenges_configured");
+
 	origin = ( 0, 0, 0 );
 	angles = ( 0, 0, 0 );
 	rewardDrop = (30, 0, 0);
@@ -1422,13 +1426,21 @@ start_challenges()
 			break;
 
 		case "zombie_pentagon": //center lab halllway
-			origin = ( -2283.8, 1871.6, -511.9 );
-			angles = ( 0, 270, 0 );
+			//origin = ( -2283.8, 1871.6, -511.9 );
+			//angles = ( 0, 270, 0 );
+			//-466, 1567, -307
+			//8 45, 0
+			origin = ( -466, 1567, -307 );	//top guard rail main room
+			angles = ( 8, 45, 0 );
 			break;
 			
-		case "zombie_cosmodrome": //power
-			origin = ( 411.4, 87.6, -303.9 );
-			angles = ( 0, 270, 0 );
+		case "zombie_cosmodrome":
+			//origin = ( 411.4, 87.6, -303.9 );
+			//angles = ( 0, 270, 0 );
+			//-2461 2130 -75
+			origin = ( -2461, 2130, -75 );
+			angles = ( 8, 90, 0 );
+			rewardDrop = (0, -100, 0);
 			break;
 			
 		case "zombie_coast": // by light house
@@ -1437,8 +1449,34 @@ start_challenges()
 			break;
 			
 		case "zombie_temple": //opposite jug side
-			origin = ( 194.5, -532.1, -339.9 );
-			angles = ( 0, 266, 0 );
+			//origin = ( 194.5, -532.1, -339.9 );
+			//angles = ( 0, 266, 0 );
+			iprintln("AWAITING TOMB SET" );
+			iprintln("Level jugg spot: " + level.juggSpot );
+			iprintln("Level jugg origin: " + level.juggOrigin );
+			iprintln("Level jugg origin2: " + level.juggOrigin.z );
+			cartside = false;
+			if( level.juggSpot == "CART")
+				cartside = false;
+			else if( level.juggSpot == "TRAP" )
+				cartside = true;
+			else {	//jugg in center
+				if( randomint(2) == 1 )
+					cartside = true;
+			}
+
+			if( cartside )
+			{
+				origin = ( 850, -2016, -180.9 ); //minecart side
+				angles = (12, 262, 0 );
+				rewardDrop = (0, 100, 0);
+
+			} else {
+				origin = ( -1900.5, -2107, -207 ); //trap side
+				angles = ( 10, -90, 0 );
+				rewardDrop = (0, 100, 0);
+			}
+			iprintln("Challenge tomb origin: " + origin );
 			break;
 			
 		case "zombie_moon":	//outside spawn
@@ -1455,8 +1493,12 @@ start_challenges()
 			break;
 			
 		case "zombie_cod5_asylum":
-			origin = ( -721.8, -43.6, 64.1 );
-			angles = ( 0, 90, 0 );
+			//origin = ( -721.8, -43.6, 64.1 ); bottom power room
+			//angles = ( 0, 90, 0 );
+			origin = ( -136, -601, 215 ); //to left of power
+			//50 45 20
+			angles = ( 50, -45, 20 );
+			rewardDrop = (100, 0, 40);
 			break;
 			
 		case "zombie_cod5_sumpf":
@@ -1474,7 +1516,6 @@ start_challenges()
 	model SetModel( "sanchez_challenge_tomb" );
 	level.challenge_tomb = model;
 	level.challenge_tomb.rewardOrigin = model.origin + rewardDrop;
-	level waittill( "challenges_configured" );
 
 	level thread challenge_tomb_think();
 

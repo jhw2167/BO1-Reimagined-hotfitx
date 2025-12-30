@@ -18,6 +18,7 @@ init()
 	level._effect["custom_large_explosion"] = LoadFX( "explosions/fx_explosion_charge_large" );
 	level._effect["custom_large_fire"] = LoadFX( "env/fire/fx_fire_xlg_fuel" );
 	level._effect["custom_med_fire"] = Loadfx("env/fire/fx_fire_player_torso_mp");
+	level._effect["thundergun_impact"] = LoadFX( "weapon/thunder_gun/fx_thundergun_impact" );
 	precacheshellshock( "electrocution" );
 	
 	//Freeze
@@ -1031,23 +1032,30 @@ upgraded_punch_fired(currentweapon)
 	self upgraded_punch_get_enemies_in_range();
 
 	level.upgraded_punch_network_choke_count = 0;
+	iprintln("Upgraded Punch Enemies Fling: " + level.upgraded_punch_fling_enemies.size + " Knockdown: " + level.upgraded_punch_knockdown_enemies.size );
 	for ( i = 0; i < level.upgraded_punch_fling_enemies.size; i++ )
 	{
+		zomb = level.upgraded_punch_fling_enemies[i];
 		if( maps\_zombiemode::is_boss_zombie( level.upgraded_punch_fling_enemies[i].animname ) ) 
 		{
+			iprintln("Boss zombie - no fling " + zomb.zombie_hash);
 			//nothing
 		} 
-		else if(IsAI(level.upgraded_punch_fling_enemies[i]))
+		else if(IsAI( zomb ))
 		{
-			zomb = level.upgraded_punch_fling_enemies[i];
 			if ( IsDefined( zomb.thundergun_fling_func ) )
 			{
+				iprintln("Upgraded Punch Flinging zombie " + zomb.zombie_hash);
 				zomb [[ zomb.thundergun_fling_func ]]( self );
 				return;
+			}
+			else {
+				zomb maps\_zombiemode_weap_thundergun::thundergun_fling_zombie( self, level.upgraded_punch_fling_vecs[i], 0 );
 			}
 		}
 	}
 
+	iprintln("Upgraded Punch Knockdown Enemies: " + level.upgraded_punch_knockdown_enemies.size );
 	for ( i = 0; i < level.upgraded_punch_knockdown_enemies.size; i++ )
 	{
 		if( maps\_zombiemode::is_boss_zombie( level.upgraded_punch_knockdown_enemies[i].animname ) )
@@ -1081,29 +1089,37 @@ upgraded_punch_get_enemies_in_range()
 	forward_view_angles = self GetWeaponForwardDir();
 	end_pos = view_pos + vector_scale( forward_view_angles, level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST );
 
+	iprintln("Upgraded Punch Checking " + zombies.size + " zombies");
 	range_sq = level.VALUE_UPGRADED_PUNCH_RANGE * level.VALUE_UPGRADED_PUNCH_RANGE;
+	knockdown_range_sq = range_sq*0.5;
 	fling_range_sq = level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST * level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST;
+
+	iprintln(" Punch range: " + range_sq + " Fling range: " + fling_range_sq );
 	for ( i = 0; i < zombies.size; i++ )
 	{
 		if ( !IsDefined( zombies[i] ) || !IsAlive( zombies[i] ) )
 		{
+			iprintln("1");
 			continue;
 		}
 
 
 		if( level.upgraded_punch_knockdown_enemies.size > level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX ) {
+			iprintln("2");
 			break;
 		}
 
 		if( is_true( zombies[i].knockdown ) )
 		{
-			continue;
+			iprintln("3");
+			//continue;
 		}
 
 		test_origin = zombies[i] GetCentroid();
 		test_range_squared = DistanceSquared( view_pos, test_origin );
-		if ( test_range_squared > knockdown_range_squared )
+		if ( test_range_squared > range_sq )
 		{
+			iprintln("4");
 			return;
 		}
 
@@ -1111,44 +1127,56 @@ upgraded_punch_get_enemies_in_range()
 		dot = VectorDot( forward_view_angles, normal );
 		if ( 0 > dot )
 		{
+			iprintln("5");
 			continue;
 		}
 
 		radial_origin = PointOnSegmentNearestToPoint( view_pos, end_pos, test_origin );
 		if ( DistanceSquared( test_origin, radial_origin ) > range_sq )
 		{
+			iprintln("6");
 			continue;
 		}
 
 		if ( !zombies[i] DamageConeTrace( view_pos, self ) && !BulletTracePassed( view_pos, test_origin, false, undefined ) && !SightTracePassed( view_pos, test_origin, false, undefined ) )
 		{
+			iprintln("7");
 			continue;
 		}
 
-		if ( test_range_squared < fling_range_sq )
+		if ( test_range_squared < range_sq )
 		{
-			if( level.upgraded_punch_fling_enemies.size >= level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX )
-				continue;
-
-			level.upgraded_punch_fling_enemies[level.upgraded_punch_fling_enemies.size] = zombies[i];
-			dist_mult = (fling_range_sq - test_range_squared) / fling_range_sq;
-			
-			angles = self GetPlayerAngles();
-			up_angle = angles[0];
-			if(up_angle > -15)
+			if( (test_range_squared < knockdown_range_sq)
+				&& level.upgraded_punch_fling_enemies.size < level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX )
 			{
-				up_angle = -15;
-			}
-			angles = (up_angle, angles[1], angles[2]);
+				//fling them
+				level.upgraded_punch_fling_enemies[level.upgraded_punch_fling_enemies.size] = zombies[i];
+				dist_mult = (fling_range_sq - test_range_squared) / fling_range_sq;
+				
+				angles = self GetPlayerAngles();
+				up_angle = angles[0];
+				if(up_angle > -15)
+				{
+					up_angle = -15;
+				}
+				angles = (up_angle, angles[1], angles[2]);
 
-			fling_vec = AnglesToForward(angles);
-			fling_vec = vector_scale( fling_vec, 200 + 200 * dist_mult );
-			level.upgraded_punch_fling_vecs[level.upgraded_punch_fling_vecs.size] = fling_vec;
+				fling_vec = AnglesToForward(angles);
+				fling_vec = vector_scale( fling_vec, 200 + 200 * dist_mult );
+				level.upgraded_punch_fling_vecs[level.upgraded_punch_fling_vecs.size] = fling_vec;
+			} else {
+				//knock them down
+				if( level.upgraded_punch_knockdown_enemies.size >= level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX )
+				{
+					iprintln("9");
+					//continue;	unlimited knockdowns for now
+				}
+				level.upgraded_punch_knockdown_enemies[level.upgraded_punch_knockdown_enemies.size] = zombies[i];
+				level.upgraded_punch_knockdown_gib[level.upgraded_punch_knockdown_gib.size] = false;
+			}
+
 		}
-		else
-		{
-			level.upgraded_punch_knockdown_enemies[level.upgraded_punch_knockdown_enemies.size] = zombies[i];
-			level.upgraded_punch_knockdown_gib[level.upgraded_punch_knockdown_gib.size] = false;
-		}
+
+		
 	}
 }

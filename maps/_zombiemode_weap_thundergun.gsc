@@ -26,6 +26,7 @@ init()
 
 	level._effect["thundergun_knockdown_ground"]	= loadfx( "weapon/thunder_gun/fx_thundergun_knockback_ground" );
 	level._effect["thundergun_smoke_cloud"]			= loadfx( "weapon/thunder_gun/fx_thundergun_smoke_cloud" );
+	//level._effect["thundergun_worldflash"] = loadfx( "weapon/muzzleflashes/fx_thundergun_world" );
 
 	set_zombie_var( "thundergun_cylinder_radius",		180 );
 	set_zombie_var( "thundergun_fling_range",			450 ); // 40 feet
@@ -282,6 +283,7 @@ thundergun_fling_zombie( player, fling_vec, index )
 
 	if ( IsDefined( self.thundergun_fling_func ) )
 	{
+		iprintln("Base zombie fling func " + self.zombie_hash);
 		self [[ self.thundergun_fling_func ]]( player );
 		return;
 	}

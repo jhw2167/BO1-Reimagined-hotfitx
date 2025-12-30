@@ -1234,9 +1234,9 @@ reimagined_init_level()
 
 
 	//MISC
-	level.VALUE_UPGRADED_PUNCH_RANGE = 300;
-	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 600;
-	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 2;
+	level.VALUE_UPGRADED_PUNCH_RANGE = 600;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 1200;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 20;
 	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 4;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
@@ -1352,6 +1352,7 @@ reimagined_init_level()
     case "zombie_cod5_asylum":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "Shock, Drop, & Reroll!";
 		level.pap_used = false;
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
@@ -1375,13 +1376,14 @@ reimagined_init_level()
 		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][2] = (9026, 3068, -742);
 
 		level.THRESHOLD_SHINO_SWAMPLIGHT_KILL_RADIUS = 64;
-		
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_cod5_factory":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
 		level.special_dog_spawn = false;
 		level.last_special_dog_spawn = 0;
 		level.special_dog_killstreak = 0;	//number of times in a row the special dog has been killed
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_theater":
 		level thread challenge_populate_valid_zones( array("") );
@@ -1394,15 +1396,19 @@ reimagined_init_level()
 		level.pentagon_gas_point = undefined;
         break;
     case "zombie_cosmodrome":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_cosmodrome"] = "October 24, 1960";
         break;
     case "zombie_coast":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_coast"] = "Regicide!";
         break;
     case "zombie_temple":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_temple"] = "One Max Ammo and a Bullet";
         break;
     case "zombie_moon":
+		level thread challenge_populate_valid_zones( array("") );
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
 		//level.ARRAY_FREE_PERK_HINTS["zombie_moon"] = " 'Decompression in Tunnel 6' ";
         break;
@@ -1436,7 +1442,8 @@ challenge_populate_valid_zones( array_blacklist )
 		size++;
 	}
 
-	level notify( "challenges_configured" );
+	flag_set("challenges_configured");
+	level notify("challenges_configured");
 
 }
 
@@ -2133,7 +2140,7 @@ watch_player_current_weapon()
 		if(camo > 21) camo = 0;
 		/* Update Weapon Name in UI */
 
-		//self waittill("weapon_change");
+		self waittill("weapon_change");
 		weapName = self GetCurrentWeapon();
 
 		ui_weapon_name = self maps\_zombiemode_reimagined_utility::getWeaponUiName( weapName );
@@ -2141,6 +2148,9 @@ watch_player_current_weapon()
 
 
 		// swap the cammo
+		//print player location
+		iprintln( "Player: " + self.origin );
+
 		//iprintln( "Updating weapon options for: " + camo );
 		//self UpdateWeaponOptions( weapName, self CalcWeaponOptions( camo ) );
 		camo++;
@@ -9878,12 +9888,9 @@ watch_punch_fired()
 		self waittill( "melee" );
 		currentweapon = self.current_melee_weapon;
 		//write melee and weapon name
-		iprintln("Melee fired with weapon: " + self.current_melee_weapon );
 		if( currentweapon == "rebirth_hands_sp" )
 		{
-			iprintln("Thundergun punch fired");
 			if( !is_true(self.melee_upgrade) ) continue;
-			iprintln("Thundergun punch fired with upgrade");
 
 			self thread maps\_zombiemode_weapon_effects::upgraded_punch_fired(currentweapon);
 
@@ -9891,6 +9898,9 @@ watch_punch_fired()
 			view_angles = self GetTagAngles( "tag_flash" );
 			playfx( level._effect["thundergun_knockdown_ground"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
 			playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			//playfx( level._effect["thundergun_worldflash"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			playfx( level._effect["thundergun_impact"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			//PlayFxOnTag( level._effect["thundergun_impact"], self, "tag_eye" );
 			self playsound( "fly_thundergun_forcehit" );
 		}
 	}
@@ -9900,7 +9910,7 @@ watch_punch_fired()
 //HERE
 zombie_knockdown( wait_anim, upgraded )
 {
-	if( is_true(self.knockdown) )
+	if( is_true(self.knockdown) || true )
 		return;
 
 	//If zombie is not in the map
