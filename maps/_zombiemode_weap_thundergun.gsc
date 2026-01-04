@@ -283,12 +283,12 @@ thundergun_fling_zombie( player, fling_vec, index )
 
 	if ( IsDefined( self.thundergun_fling_func ) )
 	{
-		iprintln("Base zombie fling func " + self.zombie_hash);
+		
 		self [[ self.thundergun_fling_func ]]( player );
 		return;
 	}
 
-	if( level.apocalypse )
+	if( level.apocalypse )	//no points for wonderweapons
 		self DoDamage( self.health + 666, player.origin );
 	else
 		self DoDamage( self.health + 666, player.origin, player );
@@ -361,6 +361,7 @@ thundergun_knockdown_zombie( player, gib )
 
 handle_thundergun_pain_notetracks( note )
 {
+	iprintlnbold( "Thundergun Pain Note: " + note );
 	if ( note == "zombie_knockdown_ground_impact" )
 	{
 		playfx( level._effect["thundergun_knockdown_ground"], self.origin, AnglesToForward( self.angles ), AnglesToUp( self.angles ) );

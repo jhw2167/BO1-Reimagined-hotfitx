@@ -63,7 +63,7 @@ main()
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=10;	///per round
+	level.calculate_amount_override=20;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -1182,7 +1182,6 @@ reimagined_init_level()
 
 
 	//Real Time Zombie type vars chance to spawn special zombie n/1000 + .5% each round
-	//here
 
 	level.ZOMBIE_TYPE_RED_PLAYER_DAMAGE = 70;	//Red zombies do 70 damage on hit, normally 20
 	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
@@ -1234,10 +1233,10 @@ reimagined_init_level()
 
 
 	//MISC
-	level.VALUE_UPGRADED_PUNCH_RANGE = 600;
-	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 1200;
-	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 20;
-	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 4;
+	level.VALUE_UPGRADED_PUNCH_RANGE = 300;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 200;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 3;
+	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 8;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
 	//Maps
@@ -1288,7 +1287,7 @@ reimagined_init_level()
 	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
-	//Kino, theater //here
+	//Kino, theater
 	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 256000;	//minimum engineer health
 	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns, between_engineer
 	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
@@ -1840,6 +1839,7 @@ watch_player_dev_utility()
 wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
+	if(true) return; //Disable vision set change
 	
 	if(IsDefined(level.zombie_visionset)) 
 	{
@@ -9896,18 +9896,51 @@ watch_punch_fired()
 
 			view_pos = self GetTagOrigin( "tag_flash" ) - self GetPlayerViewHeight();
 			view_angles = self GetTagAngles( "tag_flash" );
-			playfx( level._effect["thundergun_knockdown_ground"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
-			playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
-			//playfx( level._effect["thundergun_worldflash"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
-			playfx( level._effect["thundergun_impact"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
-			//PlayFxOnTag( level._effect["thundergun_impact"], self, "tag_eye" );
+			//playfx( level._effect["thundergun_knockdown_ground"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			//playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+
+			// Get the barrel flash position and angles
+			angs = self GetPlayerAngles();
+			forward_vec = AnglesToForward( angs );
+			impact_distance = 65;
+			pitch_angle = 0;
+
+			//if angs[0] > 25 || angs[0] < -25 then limit impact distance and set pitch angle to 45
+			if( angs[0] > 25 )
+			{
+				impact_distance = 40;
+				pitch_angle = -30;
+			}
+			else if(angs[0] < -25) {
+				impact_distance = 40;
+				pitch_angle = 30;
+			}
+
+			//offset_vec = (0,0, self GetPlayerViewHeight()) + (forward_vec * impact_distance);
+			offset_vec = (forward_vec * impact_distance);
+			offset_origin = self GetTagOrigin( "tag_eye" ) + offset_vec;
+			iprintln("player angles " + angs);
+			iprintln("offset_vec: " + offset_vec);
+			
+			// Spawn model at player origin with offset
+			model = Spawn( "script_model", offset_origin );
+			model setModel( "tag_origin" );
+			model.angles = (pitch_angle, angs[1]-180, 0);
+			playfxontag( level._effect["thundergun_impact"], model, "tag_origin" );
+
+			// Link to player origin with the calculated offset
+			//model LinkTo( self, "tag_eye", offset_vec, (0,0,0) );
+
+			wait(0.5);
+			model Delete();
+
+
 			self playsound( "fly_thundergun_forcehit" );
 		}
 	}
 }
 
 //Reimagined-Expanded Self is zombie
-//HERE
 zombie_knockdown( wait_anim, upgraded )
 {
 	if( is_true(self.knockdown) || true )
@@ -9933,7 +9966,7 @@ zombie_knockdown( wait_anim, upgraded )
 		upgraded = false;
 
 	self.knockdown = true;
-	fall_anim = %ai_zombie_thundergun_hit_upontoback;
+	fall_anim = %ai_zombie_thundergun_hit_flatonback;
 	if( !is_true( self.has_legs ) )
 	{
 		//From BO1 origin staffs anim
@@ -9971,6 +10004,107 @@ zombie_knockdown( wait_anim, upgraded )
 	wait(0.25);
 	self.knockdown = false;
 
+}
+
+
+zombie_fling( fling_anim, getup_anim, damage, waittime, player )
+{
+	if( is_true(self.knockdown) )
+		return;
+
+	// Check if zombie is in playable area
+	if( !checkObjectInPlayableArea( self ) ) {
+		return; //turning off for now
+	}
+
+	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
+		return;
+
+	if( self.animname != "zombie" || self.zombie_type == "red" )
+		return;
+
+	// Set default values
+	if( !IsDefined(fling_anim) )
+		fling_anim = %ai_zombie_thundergun_hit_upontoback;
+	
+	if( !IsDefined(getup_anim) )
+		getup_anim = %ai_zombie_thundergun_getup_b;
+	
+	if( !IsDefined(damage) )
+		damage = 1;
+	
+	if( !IsDefined(waittime) )
+		waittime = 1;
+	
+	// Player is optional, defaults to undefined
+	self.knockdown = true;
+	
+	// Adjust animation for crawlers
+	if( !is_true( self.has_legs ) )
+	{
+		fling_anim = %ai_zombie_thundergun_hit_doublebounce;
+	}
+
+	self SetPlayerCollision( 0 );
+
+	// Check if damage will kill the zombie
+	if( damage >= self.health )
+	{
+		// Zombie dies mid-fling
+		if( IsDefined(self.fling_vec) )
+		{
+			// Launch zombie as ragdoll death
+			self StartRagdoll();
+			self LaunchRagdoll( self.fling_vec );
+		}
+
+		wait(1);
+		
+		// Apply lethal damage
+		if( IsDefined(player) ) {
+			self DoDamage( damage, self.origin, player );
+		}
+		else {
+			self DoDamage( damage, self.origin );
+		}
+		
+		return;
+	}
+	else
+	{
+		// Zombie survives - play fling animation
+		//self StartRagdoll();
+		//self SetVelocity( vector_scale( self.fling_vec, 2 ));
+		self animscripted( "fling_anim", self.origin, self.angles, fling_anim );
+		
+		// Apply non-lethal damage
+		if( IsDefined(player) ) {
+			self DoDamage( damage, self.origin, player );
+		}
+		else {
+			self DoDamage( damage, self.origin );
+		}
+		
+		wait( waittime );
+
+		//self SetVelocity( (0,0,0) );
+		if( !IsDefined(self) || !IsAlive(self) )
+			return;
+
+		// Play getup animation
+		if( is_true( self.has_legs ) )
+		{
+			self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
+			animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, waittime );
+		}
+		
+		self SetPlayerCollision( 1 );
+
+		wait(0.25);
+	}
+
+	self.knockdown = false;
+	self.fling_vec = undefined;
 }
 
 check_zombie_type( s_type )
@@ -10305,6 +10439,9 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 
 		if( boss_zombie ) {
 			//skip pre processing for punch
+		}
+		else if( (weapon=="rebirth_hands_sp" || weapon=="vorkuta_knife_sp" )&& is_true(self.melee_upgrade) ) {
+			//hanlded by upgraded punch
 		}
 		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) && is_true( self.is_zombie ) ) 		//knife punch!
 		{
