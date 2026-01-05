@@ -517,6 +517,7 @@ delayed_bonus_fire_damage( player )
 		wait(inc);
 	}
 	
+	player maps\_zombiemode_reimagined_utility::damage_hook( self, "HELLFIRE", self.health + 666, undefined);
 	self DoDamage( self.maxHealth + 1000, self.origin, player );	
 }
 
@@ -923,6 +924,7 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 	}
 
 	self.marked_for_tesla=true;
+	player maps\_zombiemode_reimagined_utility::damage_hook( self, "SHOCK", dmg, undefined);
 	self DoDamage( dmg , origin, player );
 
 
@@ -1065,7 +1067,8 @@ upgraded_punch_fired(currentweapon)
 	for ( i = 0; i < level.upgraded_punch_knockdown_enemies.size; i++ )
 	{
 		zomb = level.upgraded_punch_knockdown_enemies[i];
-		zomb DoDamage( 2000, zomb.origin, self ); //2000 base damage
+		self maps\_zombiemode_reimagined_utility::damage_hook( zomb, "UPGRADED_PUNCH", 2000, undefined);
+		zomb DoDamage( 2000, zomb.origin, self ); //2000 base damage1
 		if( maps\_zombiemode::is_boss_zombie( zomb.animname ) )
 		{
 			//iprintln("Boss zombie - no knockdown " + zomb.zombie_hash);
@@ -1200,7 +1203,7 @@ upgraded_punch_get_enemies_in_range()
 			} 
 			
 			//knock them down
-			if( level.upgraded_punch_knockdown_enemies.size >= level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX )
+			if( level.upgraded_punch_knockdown_enemies.size <= level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX )
 			{
 				level.upgraded_punch_knockdown_enemies[level.upgraded_punch_knockdown_enemies.size] = zombies[i];
 				level.upgraded_punch_knockdown_gib[level.upgraded_punch_knockdown_gib.size] = false;

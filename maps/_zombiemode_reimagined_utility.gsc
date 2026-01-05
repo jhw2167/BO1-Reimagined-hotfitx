@@ -1430,7 +1430,7 @@ start_challenges()
 			//angles = ( 0, 270, 0 );
 			//-466, 1567, -307
 			//8 45, 0
-			origin = ( -480, 1572, -307 );	//top guard rail main room
+			origin = ( -480, 1580, -307 );	//top guard rail main room
 			angles = ( 14, -40, 0 );
 			rewardDrop = (-50, 15, 0);
 			break;
@@ -1631,7 +1631,8 @@ player_watch_challenges()
 
 	challenges = SpawnStruct();
 	challenges.primaryType = array_randomize( level.ARRAY_WEAPON_PRIMARY_TYPES )[0];
-	challenges.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
+	//challenges.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
+	challenges.nicheType = "MAGIC";
 	challenges.locations = array();
 	randomArr = array_randomize( level.ARRAY_CHALLENGE_LOCATIONS );
 	for(i=0;i<3;i++) {
@@ -1999,6 +2000,7 @@ challenge_damageHook_validate_secondaryKills(zombie, weapon, damage, hitloc) {
 	wepArray = level.ARRAY_WEAPON_TYPES[ self.challengeData.nicheType ];
 	if( is_in_array( wepArray, weapon) ) {
 		if( damage >= zombie.health ) {
+			iprintln( " Niche weapon " + weapon + " matched for challenge " );
 			self.challengeData.nicheTypeKills++;
 			return true;
 		}
@@ -2333,13 +2335,13 @@ level_player_claim_reward( player, rewardIndex )
 		player PlaySound( "deny" );
 		return false;
 	}
-	iprintln("2");
+	
 	if( is_true( claimed[ rewardIndex ] ) ) {
 		player PlaySound( "deny" );
 		return false;
 	}
 
-	iprintln("3");
+	
 	if( is_true( level.rewardInProgress) ) {
 		player PlaySound( "deny" );
 		return false;
@@ -2350,7 +2352,6 @@ level_player_claim_reward( player, rewardIndex )
 		return false;
 	}
 
-	iprintln("4");
 	level.rewardInProgress = true;
 
 	powerup = undefined;

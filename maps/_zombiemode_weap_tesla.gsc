@@ -356,6 +356,7 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 	}
 	else
 	{
+		player maps\_zombiemode_reimagined_utility::damage_hook( self, "MAGIC", self.health + 100, undefined);
 		self DoDamage( self.health + 666, origin, player );
 	}
 

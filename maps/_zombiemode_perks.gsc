@@ -4956,6 +4956,7 @@ player_watch_electric_cherry()
 					a_zombies[i] thread wait_reset_tesla_mark();
 				}
 				wait 0.1;
+				self maps\_zombiemode_reimagined_utility::damage_hook( a_zombies[i], "CHERRY", perk_dmg, undefined );
 				a_zombies[i] DoDamage( perk_dmg, a_zombies[i].origin, self, undefined, "crush", level.ECH_PRK );
 				n_zombies_hit++;
 
@@ -5106,6 +5107,7 @@ player_watch_electric_cherry()
 		if(!is_immune)
 		{
 			zombie.marked_for_tesla = true;
+			self maps\_zombiemode_reimagined_utility::damage_hook( zombie, "CHERRY", cherry_damage, undefined );
 			zombie DoDamage( cherry_damage, zombie.origin, self, level.ECH_PRK, "cush" );
 		}
 		
@@ -7123,6 +7125,7 @@ player_zombie_handle_widows_poison( zombie )
 	while( keepPoison )
 	{
 		wait( interval );
+		self maps\_zombiemode_reimagined_utility::damage_hook( zombie, "POISON", dmg, undefined );
 		if( (count % points_count) == 0 )
 			zombie doDamage( dmg, zombie.origin, self, level.WWN_PRK, mod );
 		else
@@ -7263,8 +7266,9 @@ zombie_watch_widows_web( player )
 		self thread maps\_zombiemode_weapon_effects::slow_zombie_over_time( MAX_TIME, "walk" );
 	}
 		
-
-	self doDamage( level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE, self.origin, player, level.WWN_PRK, "MOD_GRENADE_SPLASH" );
+	dmg = level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE;
+	player maps\_zombiemode_reimagined_utility::damage_hook( self, "PHD", dmg, undefined );
+	self doDamage( dmg , self.origin, player, level.WWN_PRK, "MOD_GRENADE_SPLASH" );
 	
 	player thread player_zombie_handle_widows_poison( self );
 

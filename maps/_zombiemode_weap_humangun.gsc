@@ -560,6 +560,7 @@ humangun_delayed_kill(player, human_zombie)
 		self.no_powerups = true;
 		self.humangun_kill = true;
 		self maps\_zombiemode_spawner::zombie_head_gib();
+		player maps\_zombiemode_reimagined_utility::damage_hook( self, "MAGIC", level.zombie_health + 1000, undefined);
 		self DoDamage( level.zombie_health + 1000, self.origin, player );
 	}
 }
@@ -1134,6 +1135,7 @@ humangun_zombie_death( upgraded, player )
 	self stop_magic_bullet_shield();
 	self.no_powerups = true;
 	self.humangun_kill = true;
+	player maps\_zombiemode_reimagined_utility::damage_hook( self, "MAGIC", self.health + 100, undefined);
 	self DoDamage( self.health + 100, self.origin, player );
 	self.water_damage = false;
 

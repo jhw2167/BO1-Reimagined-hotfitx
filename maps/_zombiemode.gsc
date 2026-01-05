@@ -1050,7 +1050,8 @@ reimagined_init_level()
 	"UPGRADED_PUNCH",
 	"HELLFIRE",
 	"SHOCK",
-	"POISON"
+	"POISON",
+	"MAGIC"
 
 	);
 
@@ -1076,7 +1077,11 @@ reimagined_init_level()
 	"sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2",
 	
 	// Equipment
-	"claymore_zm", "spikemore_zm"
+	"claymore_zm", "spikemore_zm",
+
+	//misc
+	"EXPLOSIVE",
+	"PHD"
 
 	);
 
@@ -1096,7 +1101,9 @@ reimagined_init_level()
 	"rebirth_hands_sp", "vorkuta_knife_sp", "vorkuta_knife_zm", "falling_hands_zm",
 
 	//sabertooth
-	"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2"
+	"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2",
+
+	"UPGRADED_PUNCH"
 	);
 
 
@@ -1245,6 +1252,7 @@ reimagined_init_level()
 	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 200;
 	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 2;
 	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 2;
+	level.VALUE_UPGRADED_PUNCH_BASE_DAMAGE = 2000;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
 	//Maps
@@ -10076,10 +10084,12 @@ zombie_fling( fling_anim, getup_anim, damage, waittime, player )
 		// Apply lethal damage
 		if( IsDefined(player) ) {
 			self DoDamage( damage, self.origin, player );
+			player maps\_zombiemode_reimagined_utility::damage_hook( self, "UPGRADED_PUNCH", damage, undefined );
 		}
 		else {
 			self DoDamage( damage, self.origin );
 		}
+
 		
 		return;
 	}
