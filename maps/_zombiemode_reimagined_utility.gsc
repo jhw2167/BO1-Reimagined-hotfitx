@@ -1631,8 +1631,7 @@ player_watch_challenges()
 
 	challenges = SpawnStruct();
 	challenges.primaryType = array_randomize( level.ARRAY_WEAPON_PRIMARY_TYPES )[0];
-	//challenges.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
-	challenges.nicheType = "MAGIC";
+	challenges.nicheType = array_randomize( level.ARRAY_WEAPON_NICHE_TYPES )[0];
 	challenges.locations = array();
 	randomArr = array_randomize( level.ARRAY_CHALLENGE_LOCATIONS );
 	for(i=0;i<3;i++) {
@@ -1820,11 +1819,11 @@ player_watch_challenge_hintStrings( trigger )
 					else if(specialtyType == "KILLS") {
 						total = level.VALUE_CHALLENGE_NICHE_TYPE_KILLS;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_NICHE_KILLS_LOCATION_HINT",
-						total, challenges.nicheType, locations, challenges.nicheTypeKills, total );
+						total, secondaryName, locations, challenges.nicheTypeKills, total );
 					} else if(specialtyType == "DAMAGE") {
 						total = level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT", 
-						total, challenges.nicheType, locations, challenges.nicheTypeDamage, total );
+						total, secondaryName, locations, challenges.nicheTypeDamage, total );
 					} else {
 						trigger SetHintString( "NOT WORKING" );
 					}
@@ -2096,6 +2095,7 @@ challenge_watch_specialtyKills()
 
 	challenges = self.challengeData;
 	specialtyType = array_randomize( level.ARRAY_CHALLENGE_SPECIALTIES )[0];
+	//specialtyType = "HEADSHOTS";
 	//if primary type is a sniper or shotgun, change headshots to one shots
 	if( specialtyType == "HEADSHOTS" ) {
 		if( challenges.primaryType == "SNIPER" || challenges.primaryType == "SHOTGUN" ) {
@@ -2151,6 +2151,7 @@ challenge_watch_specialtyKills()
 	
 	challenge_damageHook_validate_specialtyHeadshots( zombie, weapon, damage, sHitLoc ) {
 			//must be a headshot and a kill
+		//iprintln(" Specialty headshot check " + weapon + " loc " +  sHitLoc + " dmg " + damage + " health " + zombie.health );
 		if( damage > zombie.health ) {
 			if(sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") {
 				self.challengeData.specialtyKills++;
@@ -2302,24 +2303,25 @@ damage_hook( zombie, weapon, damage, hitloc )
 		hitloc = "body";
 
 	if( IsDefined( self.challengeData.zombieDamageHook ) ) {
-		return self [[ self.challengeData.zombieDamageHook ]] ( zombie, weapon, damage, hitloc );
+		self [[ self.challengeData.zombieDamageHook ]] ( zombie, weapon, damage, hitloc );
 	}
 
+	//iprintln("Specialty zombie damage hook is defined: " + IsDefined( self.challengeData.specialtyZombieDamageHook ) );
 	if( IsDefined( self.challengeData.specialtyZombieDamageHook ) ) {
-		return self [[ self.challengeData.specialtyZombieDamageHook ]] ( zombie, weapon, damage, hitloc );
+		self [[ self.challengeData.specialtyZombieDamageHook ]] ( zombie, weapon, damage, hitloc );
 	}
 }
 
 zone_update_hook( zoneName ) {
 	if( IsDefined( self.challengeData.playerLocationHook ) ) {
-		return self [[ self.challengeData.playerLocationHook ]] ( zoneName );
+		self [[ self.challengeData.playerLocationHook ]] ( zoneName );
 	}
 	return true;
 }
 
 points_hook( event, player_points, mod, zombie ) {
 	if( IsDefined( self.challengeData.pointsHook ) ) {
-		return self [[ self.challengeData.pointsHook ]] ( event, player_points, mod, zombie );
+		self [[ self.challengeData.pointsHook ]] ( event, player_points, mod, zombie );
 	}
 	return false;
 }
@@ -2374,7 +2376,7 @@ level_player_claim_reward( player, rewardIndex )
 			break;
 		case 4:	//pap teleport
 			player.melee_upgrade = true;
-			PlayFxOnTag( level._effect["powerup_solo"], player, "tag_flash" );
+			PlayFxOnTag( level._effect["powerup_on_solo"], player, "tag_flash" );
 			break;
 	}
 
