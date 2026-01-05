@@ -2000,7 +2000,7 @@ challenge_damageHook_validate_secondaryKills(zombie, weapon, damage, hitloc) {
 	wepArray = level.ARRAY_WEAPON_TYPES[ self.challengeData.nicheType ];
 	if( is_in_array( wepArray, weapon) ) {
 		if( damage >= zombie.health ) {
-			iprintln( " Niche weapon " + weapon + " matched for challenge " );
+			//iprintln( " Niche weapon " + weapon + " matched for challenge " );
 			self.challengeData.nicheTypeKills++;
 			return true;
 		}

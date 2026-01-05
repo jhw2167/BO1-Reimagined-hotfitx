@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									*/
+	/* 									/
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=20;	///
 	level.starting_points_override=100000;	///
@@ -1484,7 +1484,7 @@ reimagined_init_player()
 	//Weapons
 	self.weap_options = [];
 	self.weap_options["uzi_upgraded_zm_x2"] = 0;
-	self.melee_upgrade = true;
+	self.melee_upgrade = false;
 
 	self.bullet_hellfire = false;
 	self.bullet_sheercold = false;
