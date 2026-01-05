@@ -1018,9 +1018,6 @@ tesla_play_arc_fx( target )
 upgraded_punch_fired(currentweapon)
 {
 	// physics hit when firing
-	range = 150;
-	PhysicsExplosionCylinder( self.origin, 150, 120, 1 );
-
 	if ( !IsDefined( level.upgraded_punch_knockdown_enemies ) )
 	{
 		level.upgraded_punch_knockdown_enemies = [];
@@ -1032,7 +1029,7 @@ upgraded_punch_fired(currentweapon)
 	self upgraded_punch_get_enemies_in_range();
 
 	level.upgraded_punch_network_choke_count = 0;
-	iprintln("Upgraded Punch Enemies Fling: " + level.upgraded_punch_fling_enemies.size + " Knockdown: " + level.upgraded_punch_knockdown_enemies.size );
+	//iprintln("Upgraded Punch Enemies Fling: " + level.upgraded_punch_fling_enemies.size + " Knockdown: " + level.upgraded_punch_knockdown_enemies.size );
 	for ( i = 0; i < level.upgraded_punch_fling_enemies.size; i++ )
 	{
 		zomb = level.upgraded_punch_fling_enemies[i];
@@ -1051,8 +1048,10 @@ upgraded_punch_fired(currentweapon)
 			else {
 							
 				//zomb.nodeathragdoll = true;
-				dmg = 2000;
-				dmg = (level.zombie_health / 4);
+				dmg = (level.zombie_health / 5);
+				if(zomb.health > dmg) {
+					dmg = 2000;	//2000 base damage, execute zomb if  < 1/5 health
+				}
 				zomb thread maps\_zombiemode::zombie_fling(undefined, undefined, dmg, 1, self); 
 				zomb thread watch_degrade_fling( 2 );
 			}
@@ -1062,18 +1061,19 @@ upgraded_punch_fired(currentweapon)
 	//// wake up any ragdolls lying on the platform
 	//PhysicsExplosionSphere(center, 128, 64, 2);
 
-	iprintln("Upgraded Punch Knockdown Enemies: " + level.upgraded_punch_knockdown_enemies.size );
+	//iprintln("Upgraded Punch Knockdown Enemies: " + level.upgraded_punch_knockdown_enemies.size );
 	for ( i = 0; i < level.upgraded_punch_knockdown_enemies.size; i++ )
 	{
-		zomb = level.upgraded_punch_knockdown_enemies[i]; 
+		zomb = level.upgraded_punch_knockdown_enemies[i];
+		zomb DoDamage( 2000, zomb.origin, self ); //2000 base damage
 		if( maps\_zombiemode::is_boss_zombie( zomb.animname ) )
 		{
-			iprintln("Boss zombie - no knockdown " + zomb.zombie_hash);
+			//iprintln("Boss zombie - no knockdown " + zomb.zombie_hash);
 			//nothing
 		}
 		else if(IsAI( zomb ))
 		{
-			iprintln("Upgraded Punch Knockdown zombie " + zomb.zombie_hash);
+			//iprintln("Upgraded Punch Knockdown zombie " + zomb.zombie_hash);
 			zomb thread maps\_zombiemode::zombie_knockdown();
 		}
 	}
@@ -1094,7 +1094,8 @@ upgraded_punch_fired(currentweapon)
 upgraded_punch_get_enemies_in_range()
 {
 	//this will be a little trickier with melee
-	view_pos = self GetWeaponMuzzlePoint();
+	//view_pos = self GetWeaponMuzzlePoint();
+	view_pos = self GetTagOrigin("tag_eye");
 	zombies = GetAiSpeciesArray( "axis", "all" );
 	zombies = get_array_of_closest( view_pos, zombies, undefined, undefined, level.VALUE_UPGRADED_PUNCH_RANGE );
 	if ( !isDefined( zombies ) )
@@ -1102,7 +1103,8 @@ upgraded_punch_get_enemies_in_range()
 		return;
 	}
 
-	forward_view_angles = self GetWeaponForwardDir();
+	//forward_view_angles = self GetWeaponForwardDir();
+	forward_view_angles = AnglesToForward( self GetTagAngles("tag_eye") );
 	end_pos = view_pos + vector_scale( forward_view_angles, level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST );
 
 	//iprintln("Upgraded Punch Checking " + zombies.size + " zombies");
@@ -1128,7 +1130,13 @@ upgraded_punch_get_enemies_in_range()
 		if( is_true( zombies[i].knockdown ) )
 		{
 			//iprintln("3");
-			//continue;
+			continue;
+		}
+
+		if( zombies[i]  maps\_zombiemode::check_zombie_type( "red" ) )
+		{
+			//iprintln("3");
+			continue;
 		}
 
 		test_origin = zombies[i] GetCentroid();
@@ -1180,10 +1188,10 @@ upgraded_punch_get_enemies_in_range()
 				} 
 				else {
 					direction_vec = VectorNormalize( zomb.origin - self.origin );
-					direction_vec = vector_scale( direction_vec, 50 );
+					direction_vec = vector_scale( direction_vec, 200 );
 
 					// Add vertical component
-					zombies[i].fling_vec = direction_vec + ( 0, 0, 30 );
+					zombies[i].fling_vec = direction_vec + ( 0, 0, 50 );
 					//zombies[i].fling_vec = ( 100, 100, 100 );
 					level.upgraded_punch_fling_enemies[level.upgraded_punch_fling_enemies.size] = zombies[i];
 					continue;

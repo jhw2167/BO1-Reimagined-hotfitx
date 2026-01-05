@@ -296,6 +296,7 @@ thundergun_fling_zombie( player, fling_vec, index )
 	if ( self.health <= 0 )
 	{
 		points = maps\_zombiemode_score::get_zombie_death_player_points();
+		player maps\_zombiemode_reimagined_utility::damage_hook( self, player GetCurrentWeapon(), self.health+1000, undefined );
 		/*points = 10;
 		if ( !index )
 		{

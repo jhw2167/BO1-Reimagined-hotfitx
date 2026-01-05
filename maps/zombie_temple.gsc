@@ -785,10 +785,11 @@ init_random_perk_machines()
 			//special logic for jugg
 			if(machine_model.targetname == "vending_jugg")
 			{
+				level.juggSpot = undefined;
 				level.juggOrigin = machine_model.origin;
-				if( level.juggOrigin.x > -500 && level.juggOrigin.x < 500 )
+				if( level.juggOrigin[0] > -500 && level.juggOrigin[0] < 500 )
 					level.juggSpot = "CENTER";
-				else if( level.juggOrigin.x > 0 )
+				else if( level.juggOrigin[0] > 0 )
 					level.juggSpot = "CART";
 				else
 					level.juggSpot = "TRAP";

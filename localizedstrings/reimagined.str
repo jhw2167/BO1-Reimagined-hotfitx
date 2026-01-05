@@ -1594,10 +1594,10 @@ LANG_ENGLISH         "Earn &&1 points in any of these areas: &&2. Progress &&3/&
 
 
 REFERENCE            CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT
-LANG_ENGLISH         "Deal &&1 damage to zombies with secondary weapon class [&&2]. Damage dealt in these areas [&&3] count double. Progress &&4/&&5"
+LANG_ENGLISH         "Deal &&1 damage to zombies with secondary weapon class [&&2]. Damage dealt in these areas &&3 count double. Progress &&4/&&5"
 
 REFERENCE            CHALLENGE_TOTAL_NICHE_KILLS_LOCATION_HINT
-LANG_ENGLISH         "Kill &&1 zombies with secondary weapon class [&&2]. Kills in these areas [&&3] count double. Progress &&4/&&5"
+LANG_ENGLISH         "Kill &&1 zombies with secondary weapon class [&&2]. Kills in these areas &&3 count double. Progress &&4/&&5"
 
 REFERENCE            CHALLENGE_TOTAL_DAMAGE_THRESHOLD_HINT
 LANG_ENGLISH         "At least &&1% damage dealt this round must be from weapon class [&&2]. Current &&3/&&4"

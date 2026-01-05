@@ -1421,7 +1421,7 @@ start_challenges()
 		case "zombie_theater":	//alley
 			origin = (-1150, -140, 0);
 			//origin = ( 180, -473.2, 320.1 );	//pap
-			angles = ( 3, 0, 0 );
+			angles = ( 10, 0, 0 );
 			rewardDrop = (-100, 0, 0);
 			break;
 
@@ -1430,22 +1430,25 @@ start_challenges()
 			//angles = ( 0, 270, 0 );
 			//-466, 1567, -307
 			//8 45, 0
-			origin = ( -466, 1567, -307 );	//top guard rail main room
-			angles = ( 8, 45, 0 );
+			origin = ( -480, 1572, -307 );	//top guard rail main room
+			angles = ( 14, -40, 0 );
+			rewardDrop = (-50, 15, 0);
 			break;
 			
 		case "zombie_cosmodrome":
 			//origin = ( 411.4, 87.6, -303.9 );
 			//angles = ( 0, 270, 0 );
 			//-2461 2130 -75
-			origin = ( -2461, 2130, -75 );
+			origin = ( -2450, 2110, -75 );
 			angles = ( 8, 90, 0 );
 			rewardDrop = (0, -100, 0);
 			break;
 			
 		case "zombie_coast": // by light house
-			origin = ( -331.6, 877.1, 255.1 );
-			angles = ( 0, 0, 0 );
+			//origin = ( -331.6, 877.1, 255.1 ); idk
+			origin = ( -315 , 1085, 485 ); //near lighthouse
+			angles = ( 8, 45, 0 );
+			rewardDrop = (-60, -50, 0);
 			break;
 			
 		case "zombie_temple": //opposite jug side
@@ -1454,7 +1457,7 @@ start_challenges()
 			iprintln("AWAITING TOMB SET" );
 			iprintln("Level jugg spot: " + level.juggSpot );
 			iprintln("Level jugg origin: " + level.juggOrigin );
-			iprintln("Level jugg origin2: " + level.juggOrigin.z );
+			iprintln("Level jugg origin2: " + level.juggOrigin[0] );
 			cartside = false;
 			if( level.juggSpot == "CART")
 				cartside = false;
@@ -1476,12 +1479,13 @@ start_challenges()
 				angles = ( 10, -90, 0 );
 				rewardDrop = (0, 100, 0);
 			}
-			iprintln("Challenge tomb origin: " + origin );
+			
 			break;
 			
 		case "zombie_moon":	//outside spawn
-			origin = ( 14393.2, -14860.7, -679.9 );
-			angles = ( 0, 270, 0 );
+			origin = ( 558, 367, -225 );
+			angles = ( 10, 90, 0 );
+			rewardDrop = (0, 90, 20);
 			break;
 			
 		case "zombie_cod5_prototype":
@@ -1489,7 +1493,7 @@ start_challenges()
 			//angles = ( 0, 90, 0 );
 			origin = ( 173, 592.5, 138.1 ); //help room sawed off
 			angles = ( 6, 90, 0 );			//slight lean against wall
-			rewardDrop = (0, 100, 0);
+			rewardDrop = (0, -100, 0);
 			break;
 			
 		case "zombie_cod5_asylum":
@@ -1498,17 +1502,21 @@ start_challenges()
 			origin = ( -136, -601, 215 ); //to left of power
 			//50 45 20
 			angles = ( 50, -45, 20 );
-			rewardDrop = (100, 0, 40);
+			rewardDrop = (-100, 0, 30);
 			break;
 			
 		case "zombie_cod5_sumpf":
-			origin = ( 9545, 577.1, -528.9 );
-			angles = ( 0, 180, 0 );
+			origin = ( 10115, 1240, -535 );	//next to spawn, zipline room
+			//origin = ( 9545, 577.1, -528.9 );	//spawnroom
+			angles = ( 8, 180, 0 );
+			rewardDrop = (100, 0, 0);
 			break;
 			
 		case "zombie_cod5_factory":
-			origin = ( 337, 535.9, -2.9 );
-			angles = ( 0, 0, 0 );
+			//origin = ( 337, 535.9, -2.9 );
+			origin = ( 245, -910, 48 );
+			angles = ( 8, 270, 0 );
+			rewardDrop = (0, 100, 0);
 			break;
 	}
 	model = Spawn( "script_model", origin );
@@ -1633,6 +1641,7 @@ player_watch_challenges()
 
 	challenges.current = 0;
 	challenges.claimed = 0;
+	challenges.completed = 0;
 	challenges.completedArray = array(false, false, false, false, false, false, false, false, false, false, false);
 	challenges.rewardsClaimed = array(false, false, false, false, false, false, false, false, false, false, false);
 	self.challengeData = challenges;
@@ -1643,6 +1652,8 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
+	//self thread debug_challenges_complete(10, 3, 5, 11);
+
 	//while(true) 
 	{
 		if(challenges.completed == 0) {
@@ -1727,6 +1738,16 @@ player_watch_challenge_hintStrings( trigger )
 				//iprintln("Triggering first challenges " + firstLevelChallenges);
 			}
 
+			locations = "[";
+				
+					for(i=0;i<challenges.locations.size;i++) {
+						locations += level.ARRAY_ZONE_NAMES[ challenges.locations[i] ];
+						if(i < challenges.locations.size - 1) {
+							locations += ", ";
+						}
+					}
+			locations += "]";
+
 			if( distance_1 < distance_2 && distance_1 < distance_3 && distance_1 < distance_4 )
 			{
 					//iprintln( "1 " + level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS + " | " + challenges.primaryType + " | " + challenges.primaryTypeKills );
@@ -1748,15 +1769,7 @@ player_watch_challenge_hintStrings( trigger )
 				if( firstLevelChallenges ) 
 				{
 					challenges.current = 2;
-					locations = "[";
-				
-					for(i=0;i<challenges.locations.size;i++) {
-						locations += level.ARRAY_ZONE_NAMES[ challenges.locations[i] ];
-						if(i < challenges.locations.size - 1) {
-							locations += ", ";
-						}
-					}
-					locations += "]";
+					
 					trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCATIONS_SURVIVE_HINT", 1, locations );
 					if( challenges.completedArray[2] ) 
 						self thread generate_completed_hint( !challenges.rewardsClaimed[2] );
@@ -1800,18 +1813,17 @@ player_watch_challenge_hintStrings( trigger )
 				{
 					challenges.current = 4;
 					specialtyType = challenges.nicheChallengeType;
-					iprintln("Niche specialty type: " + specialtyType );
 					if( !isDefined( specialtyType ) ) {
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT");
 					}
 					else if(specialtyType == "KILLS") {
-						total = level.VALUE_CHALLENGE_SECONDARY_TYPE_KILLS;
+						total = level.VALUE_CHALLENGE_NICHE_TYPE_KILLS;
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_NICHE_KILLS_LOCATION_HINT",
-						total, challenges.nicheType, challenges.locations, challenges.nicheTypeKills, total );
+						total, challenges.nicheType, locations, challenges.nicheTypeKills, total );
 					} else if(specialtyType == "DAMAGE") {
-						total = level.VALUE_CHALLENGE_SECONDARY_TYPE_DAMAGE;
-						trigger SetHintString( &"CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT", 
-						total, challenges.nicheType, challenges.locations, challenges.nicheTypeDamage, total );
+						total = level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE;
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT", 
+						total, challenges.nicheType, locations, challenges.nicheTypeDamage, total );
 					} else {
 						trigger SetHintString( "NOT WORKING" );
 					}
@@ -1851,10 +1863,10 @@ player_watch_challenge_rewards( trigger ) {
 		}
 
 		trigger waittill( "trigger", player );
-		iprintln("Player claiming reward for challenge " + challenges.current );
+		
 		if( player in_revive_trigger() || !is_player_valid( player ) ) continue;
 		index = challenges.current;
-		wait(2);
+		wait(0.25);
 		level level_player_claim_reward( player, index);
 		wait 1.5;
 	}
@@ -1881,7 +1893,6 @@ challenge_initChallenge( trigger )
 	//watch for player to hit start trigger on challenge board
 	trigger SetHintString( "Hold ^3[{+activate}]^7 to Start Challenges" );
 	challenge_tomb = level.challenge_tomb;
-	iprintln("Waiting for player to start challenges");
 
 	while(true) 
 	{
@@ -1952,7 +1963,7 @@ challenge_damageHook_validate_primaryKills(zombie, weapon, damage, hitloc) {
 	//check if the weapon matches, and the damage is sufficient to kill the zombie
 	wepArray = level.ARRAY_WEAPON_TYPES[ self.challengeData.primaryType ];
 	if( is_in_array( wepArray, weapon) ) {
-		iprintln( " Primary weapon " + weapon + " matched for challenge " + self.challengeData.primaryType );
+		//iprintln( " Primary weapon " + weapon + " matched for challenge " + self.challengeData.primaryType );
 		if( damage>= zombie.health ) {
 			self.challengeData.primaryTypeKills++;
 			return true;
@@ -2047,7 +2058,7 @@ challenge_watch_locationSurvive()
 		self.challengeData.locationSurviveRound = true;
 		level waittill( "end_of_round" );
 
-		iprintln("Completed round survive check " + self.challengeData.locationSurviveRound );
+		//iprintln("Completed round survive check " + self.challengeData.locationSurviveRound );
 		if( self.challengeData.locationSurviveRound ) {
 			break;
 		}
@@ -2108,7 +2119,8 @@ challenge_watch_specialtyKills()
 	start_round = level.round_number;
 	while( true ) {
 
-		if(challenges.completed < 2 && !challenges.completedArray[2] ) {
+		//goes up until first two challenges are
+		if(challenges.completed < 3 ) {
 			start_round = level.round_number;
 			challenges.specialtyChallengeStartRound = start_round;
 		}
@@ -2148,7 +2160,7 @@ challenge_watch_specialtyKills()
 
 	challenge_damageHook_validate_specialtyOneShots( zombie, weapon, damage, hitloc ) {
 			//must be a one shot kill
-		if( (damage >= zombie.max_health) && (zombie.health >= (zombie.max_health-1000) ))  {
+		if( (damage >= zombie.max_health) && (zombie.health > (zombie.max_health-100) ))  {
 			self.challengeData.specialtyKills++;
 			return true;
 		}
@@ -2185,9 +2197,8 @@ challenge_watch_nicheChallenge()
 	level endon( "end_game" );
 	self endon( "disconnect" );
 
-	while( self.challengeData.completed < 3 ) {	//complete all other tier one challenges first
-		iprintln("Challenges completed: " + self.challengeData.completed );
-		wait 1;
+	while(self.challengeData.completed < 4) {
+		self waittill( "challenge_complete" );
 	}
 
 	nicheChallengeTypes = level.ARRAY_CHALLENGE_NICHE_CHALLENGES;
@@ -2199,9 +2210,9 @@ challenge_watch_nicheChallenge()
 	} else if (challenges.specialtyType == "DAMAGE" ) {
 		index = 0;	//force kills challenge
 	}
+
 	nicheChallengeType = nicheChallengeTypes[ index ];
 	self.challengeData.nicheChallengeType = nicheChallengeType;
-	iprintln("Niche challenge type selected: " + nicheChallengeType );
 
 	if(nicheChallengeType == "KILLS") {
 		self.challengeData.nicheTypeKills = 0;
@@ -2273,7 +2284,21 @@ challenge_watch_nicheChallenge()
 
 
 //Hooks
-damage_hook( zombie, weapon, damage, hitloc ) {
+damage_hook( zombie, weapon, damage, hitloc ) 
+{
+	//if self or zombie is not defined, return, set defaults for all other values
+	if( !is_player_valid( self ) || !isDefined( zombie ) )
+		return;
+
+	if( !isDefined(weapon) )
+		weapon = self GetCurrentWeapon();
+	
+	if( !isDefined(damage) )
+		damage = 1;
+
+	if( !isDefined(hitloc) )
+		hitloc = "body";
+
 	if( IsDefined( self.challengeData.zombieDamageHook ) ) {
 		return self [[ self.challengeData.zombieDamageHook ]] ( zombie, weapon, damage, hitloc );
 	}
@@ -2320,6 +2345,11 @@ level_player_claim_reward( player, rewardIndex )
 		return false;
 	}
 
+	if( !player.challengeData.completedArray[ rewardIndex ] ) {
+		player PlaySound( "deny" );
+		return false;
+	}
+
 	iprintln("4");
 	level.rewardInProgress = true;
 
@@ -2343,6 +2373,7 @@ level_player_claim_reward( player, rewardIndex )
 			break;
 		case 4:	//pap teleport
 			player.melee_upgrade = true;
+			PlayFxOnTag( level._effect["powerup_solo"], player, "tag_flash" );
 			break;
 	}
 
@@ -2534,4 +2565,27 @@ load_zone_names() {
 load_name( zone, common ) {
 	zone = "reimagined_" + tolower( zone );
 	level.ARRAY_ZONE_NAMES[ zone ] = common;
+}
+
+debug_challenges_complete(waitTime, completed, completed2, completed3) 
+{
+	wait(waitTime);
+	iprintln("DEBUG: Completing all challenges for player");
+	self.challengeData.completed = completed;
+	for(i=0; i<completed; i++) {
+		self.challengeData.completedArray[i] = true;
+	}
+
+	wait(waitTime);
+	self.challengeData.completed = completed2;
+	for(i=0; i<completed2; i++) {
+		self.challengeData.completedArray[i] = true;
+	}
+
+	wait(waitTime);
+	self.challengeData.completed = completed3;
+	for(i=0; i<completed3; i++) {
+		self.challengeData.completedArray[i] = true;
+	}
+
 }

@@ -1042,7 +1042,16 @@ reimagined_init_level()
 	
 	// Shrink Ray
 	"shrink_ray_zm",
-	"shrink_ray_upgraded_zm"
+	"shrink_ray_upgraded_zm",
+
+	//ABILITIES
+	"PHD",
+	"CHERRY",
+	"UPGRADED_PUNCH",
+	"HELLFIRE",
+	"SHOCK",
+	"POISON"
+
 	);
 
 	level.ARRAY_WEAPONS_EXPLOSIVE = array(
@@ -1201,24 +1210,22 @@ reimagined_init_level()
 
 	level.VALUE_ENDGAME_BUY_COST = 50000;
 
-	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 10;
-	level.VALUE_CHALLENGE_CLASS_TYPE_KILLS = 10;
+	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 100;
+	level.VALUE_CHALLENGE_CLASS_TYPE_KILLS = 100;
 	level.ARRAY_CHALLENGE_LOCATIONS = array();		//dynamically set to current maps zones list
 
 	level.ARRAY_CHALLENGE_SPECIALTIES = array( "HEADSHOTS", "POINTS", "DAMAGE" );
 	level.VALUE_CHALLENGE_SPECIALTY_BOSS_KILLS = 2;						//HeadShots or One Shots - per round once activated
-	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 2;				//HeadShots or One Shots - per round once activated
-	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 100;	//per round when activated
-	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 15;		//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 20;				//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 60*1000;	//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 1800;		//per round when activated
 
 	level.ARRAY_CHALLENGE_NICHE_CHALLENGES = array( "KILLS", "DAMAGE");
 
-	level.VALUE_CHALLENGE_NICHE_TYPE_KILLS = 8;
-	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 8*45000; 		//damage equivalent to killing 80 zombies at rd 20
+	level.VALUE_CHALLENGE_NICHE_TYPE_KILLS = 200;
+	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 240*45000; 		//damage equivalent to killing 240 zombies at rd 20
 
 	//Zomvies 45k health, round 20
-
-
 	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = 80; //80% must be done by niche class
 
 
@@ -1232,11 +1239,12 @@ reimagined_init_level()
 	load_zone_names();
 
 
-	//MISC
+	//MISC	value_punch
+
 	level.VALUE_UPGRADED_PUNCH_RANGE = 300;
 	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 200;
-	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 3;
-	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 8;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 2;
+	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 2;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
 
 	//Maps
@@ -9888,7 +9896,7 @@ watch_punch_fired()
 		self waittill( "melee" );
 		currentweapon = self.current_melee_weapon;
 		//write melee and weapon name
-		if( currentweapon == "rebirth_hands_sp" )
+		if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, currentweapon ) )
 		{
 			if( !is_true(self.melee_upgrade) ) continue;
 
@@ -9927,15 +9935,18 @@ watch_punch_fired()
 			model setModel( "tag_origin" );
 			model.angles = (pitch_angle, angs[1]-180, 0);
 			playfxontag( level._effect["thundergun_impact"], model, "tag_origin" );
+			//playfxontag( level._effect["thundergun_smoke_cloud"], model, "tag_origin" );
 
 			// Link to player origin with the calculated offset
 			//model LinkTo( self, "tag_eye", offset_vec, (0,0,0) );
-
+			self playsound( "fly_thundergun_forcehit" );
 			wait(0.5);
 			model Delete();
+			//wait(1.5);
+			
+		} else {
+			//we'll give you shock bonus on the knife
 
-
-			self playsound( "fly_thundergun_forcehit" );
 		}
 	}
 }
@@ -9943,7 +9954,7 @@ watch_punch_fired()
 //Reimagined-Expanded Self is zombie
 zombie_knockdown( wait_anim, upgraded )
 {
-	if( is_true(self.knockdown) || true )
+	if( is_true(self.knockdown) )
 		return;
 
 	//If zombie is not in the map
@@ -9966,7 +9977,8 @@ zombie_knockdown( wait_anim, upgraded )
 		upgraded = false;
 
 	self.knockdown = true;
-	fall_anim = %ai_zombie_thundergun_hit_flatonback;
+	//fall_anim = %ai_zombie_thundergun_hit_flatonback;
+	fall_anim = %ai_zombie_thundergun_hit_upontoback;
 	if( !is_true( self.has_legs ) )
 	{
 		//From BO1 origin staffs anim
@@ -10014,7 +10026,8 @@ zombie_fling( fling_anim, getup_anim, damage, waittime, player )
 
 	// Check if zombie is in playable area
 	if( !checkObjectInPlayableArea( self ) ) {
-		return; //turning off for now
+		self thread zombie_knockdown( 2, false );
+		return;
 	}
 
 	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
@@ -10440,12 +10453,11 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 		if( boss_zombie ) {
 			//skip pre processing for punch
 		}
-		else if( (weapon=="rebirth_hands_sp" || weapon=="vorkuta_knife_sp" )&& is_true(self.melee_upgrade) ) {
-			//hanlded by upgraded punch
+		else if( (weapon=="rebirth_hands_sp" || weapon=="vorkuta_knife_sp" ) && is_true(attacker.melee_upgrade) ) {
+			final_damage = 2000;
 		}
 		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) && is_true( self.is_zombie ) ) 		//knife punch!
 		{
-			//iprintln("Punching Zombie " + weapon);
 			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 			if( weapon == "vorkuta_knife_zm" )
 				wait_anim *= 1.5;
@@ -10458,7 +10470,7 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 		}
 		else if ( weapon == "upgraded_knife_zm" ) //upgraded knife/punch
 		{
-			self [[ self.thundergun_fling_func ]]( attacker );
+			//self [[ self.thundergun_fling_func ]]( attacker ); not uised
 		}
 		else if( (usingUpgradedKnife || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
 		{
