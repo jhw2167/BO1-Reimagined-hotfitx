@@ -300,6 +300,7 @@ zombie_spawn_init( animname_set )
 	self.knockdown = false;
 	self.is_water = false;
 	self.widows_posion_bullet_count = 0;
+	self.is_traversing = false;
 
 	if( self.animname == "zombie" && self.zombie_type == "purple" ) {
 		self.marked_for_electric=true;
@@ -1442,6 +1443,7 @@ check_for_traverse()
 	self endon("stop_check_for_traverse");
 
 	self waittill("zombie_start_traverse");
+	self.is_traversing = true;
 
 	self notify("stop_tear_into_building_loop");
 	self reset_attack_spot();
@@ -4839,6 +4841,7 @@ find_flesh()
 		return;
 	}
 
+	self.is_traversing = false;
 	self.helitarget = true;
 	self.ignoreme = false; // don't let attack dogs give chase until the zombie is in the playable area
 	self.noDodgeMove = true; // WW (0107/2011) - script_forcegoal KVP overwites this variable which allows zombies to push the player in laststand

@@ -55,9 +55,9 @@ main()
 	*/
 
 	//Overrides	
-	/* 									/
+	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=1;	///
+	level.starting_round_override=15;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -1249,11 +1249,29 @@ reimagined_init_level()
 	//MISC	value_punch
 
 	level.VALUE_UPGRADED_PUNCH_RANGE = 300;
-	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 200;
+	level.VALUE_UPGRADED_PUNCH_FLING_RANGE = 150;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 300;
 	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 2;
-	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 2;
+	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 4;
+	level.VALUE_UPGRADED_PUNCH_SLOW_TIME = .8;
 	level.VALUE_UPGRADED_PUNCH_BASE_DAMAGE = 2000;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
+	level.ARRAY_INVALID_PUNCH_WEAPONS = array(
+		// Standard Knife
+		"knife_zm", "combat_knife_zm", "combat_knife_upgraded_zm", "upgraded_knife_zm",
+		
+		// Bowie Knife
+		"bowie_knife_zm", "combat_bowie_knife_zm",
+		"sickle_knife_zm", "combat_sickle_knife_zm",
+		
+		// Ballistic Knife (base melee versions)
+		"knife_ballistic_zm", "knife_ballistic_bowie_zm", "knife_ballistic_sickle_zm",
+		"knife_ballistic_bowie_upgraded_zm", "knife_ballistic_sickle_upgraded_zm",
+		
+		//sabertooth
+		"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2"
+
+		);
 
 	//Maps
 
@@ -2641,10 +2659,11 @@ watch_player_weapon_special_bonuses()
 			wep = "famas_upgraded_zm";	//x2 weapon file doesnt actually exist
 
 			stock = self GetWeaponAmmoStock( wep );
+			c=0;
 			while( stock < WeaponMaxAmmo( wep ) )
 			{
 
-				baseRate = 10;
+				baseRate = 11;
 
 				if( self hasProPerk(level.DBT_PRO) )
 					baseRate -= 2;
@@ -2656,10 +2675,13 @@ watch_player_weapon_special_bonuses()
 					baseRate -= 4;
 
 				stock = self GetWeaponAmmoStock( wep );
-				if( randomInt( baseRate ) == 0 )
+				if( c >= baseRate ) {
 					self SetWeaponAmmoStock( wep, stock+1);
-
+					c=0;
+				}
+					
 				wait(0.1);
+				c++;
 			}
 			
 			
@@ -3674,7 +3696,7 @@ init_dvars()
 	}
 		
 
-	level.zm_mod_version = "2.5.0";
+	level.zm_mod_version = "2.5.1";
 	SetDvar( "zm_mod_version", level.zm_mod_version );
 
 
@@ -9903,16 +9925,22 @@ watch_punch_fired()
 	{
 		self waittill( "melee" );
 		currentweapon = self.current_melee_weapon;
+		currentGun = self GetCurrentWeapon();
+		self.melee_upgrade = true;
 		//write melee and weapon name
-		if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, currentweapon ) )
+		if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, currentweapon ) || is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, currentGun ) )
 		{
 			if( !is_true(self.melee_upgrade) ) continue;
+			
+			if( is_in_array(level.ARRAY_INVALID_PUNCH_WEAPONS, currentGun ) ) {
+				iprintln("Invalid punch weapon: " + WeaponClass( currentGun ) );
+				continue;
+			}
 
 			self thread maps\_zombiemode_weapon_effects::upgraded_punch_fired(currentweapon);
 
 			view_pos = self GetTagOrigin( "tag_flash" ) - self GetPlayerViewHeight();
 			view_angles = self GetTagAngles( "tag_flash" );
-			//playfx( level._effect["thundergun_knockdown_ground"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
 			//playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
 
 			// Get the barrel flash position and angles
@@ -9935,22 +9963,30 @@ watch_punch_fired()
 			//offset_vec = (0,0, self GetPlayerViewHeight()) + (forward_vec * impact_distance);
 			offset_vec = (forward_vec * impact_distance);
 			offset_origin = self GetTagOrigin( "tag_eye" ) + offset_vec;
-			iprintln("player angles " + angs);
-			iprintln("offset_vec: " + offset_vec);
+			//iprintln("player angles " + angs);
+			//iprintln("offset_vec: " + offset_vec);
 			
 			// Spawn model at player origin with offset
 			model = Spawn( "script_model", offset_origin );
 			model setModel( "tag_origin" );
 			model.angles = (pitch_angle, angs[1]-180, 0);
 			playfxontag( level._effect["thundergun_impact"], model, "tag_origin" );
-			//playfxontag( level._effect["thundergun_smoke_cloud"], model, "tag_origin" );
-
-			// Link to player origin with the calculated offset
-			//model LinkTo( self, "tag_eye", offset_vec, (0,0,0) );
+			target = offset_origin + (forward_vec * 500);
+			model StartRagdoll( );
+			model LaunchRagdoll( (forward_vec * 500) );
+			
 			self playsound( "fly_thundergun_forcehit" );
 			wait(0.5);
 			model Delete();
-			//wait(1.5);
+
+			//if player has upgraded speed color, cooldown = 1.5
+			if( self hasProPerk( level.SPD_PRO ) )
+				wait(1);
+			else
+				wait(2.5);
+
+			playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			playsoundatposition ("zmb_whoosh", self.origin );
 			
 		} else {
 			//we'll give you shock bonus on the knife
@@ -9963,6 +9999,9 @@ watch_punch_fired()
 zombie_knockdown( wait_anim, upgraded )
 {
 	if( is_true(self.knockdown) )
+		return;
+
+	if( is_defined(self.fling_vec) )
 		return;
 
 	//If zombie is not in the map
@@ -10034,15 +10073,21 @@ zombie_fling( fling_anim, getup_anim, damage, waittime, player )
 
 	// Check if zombie is in playable area
 	if( !checkObjectInPlayableArea( self ) ) {
-		self thread zombie_knockdown( 2, false );
+		self thread zombie_knockdown( waittime, false );
 		return;
 	}
+
+	if( is_true(self.is_traversing) )
+		return;
 
 	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
 		return;
 
-	if( self.animname != "zombie" || self.zombie_type == "red" )
+	if( self.animname != "zombie" || self.zombie_type == "red" ) {
+		player maps\_zombiemode_reimagined_utility::damage_hook( self, "UPGRADED_PUNCH", damage, undefined );
+		self DoDamage( damage, self.origin, player );
 		return;
+	}
 
 	// Set default values
 	if( !IsDefined(fling_anim) )
@@ -10058,7 +10103,9 @@ zombie_fling( fling_anim, getup_anim, damage, waittime, player )
 		waittime = 1;
 	
 	// Player is optional, defaults to undefined
+	self thread recover_last_pos( waittime+2 );
 	self.knockdown = true;
+	wait(0.01);
 	
 	// Adjust animation for crawlers
 	if( !is_true( self.has_legs ) )
@@ -10083,8 +10130,8 @@ zombie_fling( fling_anim, getup_anim, damage, waittime, player )
 		
 		// Apply lethal damage
 		if( IsDefined(player) ) {
-			self DoDamage( damage, self.origin, player );
 			player maps\_zombiemode_reimagined_utility::damage_hook( self, "UPGRADED_PUNCH", damage, undefined );
+			self DoDamage( damage, self.origin, player );
 		}
 		else {
 			self DoDamage( damage, self.origin );
@@ -10128,6 +10175,38 @@ zombie_fling( fling_anim, getup_anim, damage, waittime, player )
 
 	self.knockdown = false;
 	self.fling_vec = undefined;
+}
+
+recover_last_pos( waitTime ) 
+{
+	self endon("death");
+	self endon("zombie_start_traverse");
+
+	self.last_pos = self.origin;
+	wait( waitTime );
+
+	if( !IsDefined(self) || !IsAlive(self) )
+		return;
+
+	//if zombie not in playable area, teleport to self.last_pos
+	count=10;c=1;
+	while(true)
+	{
+		if(c>count) break;
+		if( is_true(self.is_traversing) ) {
+			wait 0.5;
+			c++;
+			continue;
+		}
+
+		if( !checkObjectInPlayableArea( self ) ) {
+			self ForceTeleport( self.last_pos );
+		}
+
+		wait(0.1);
+		c++;
+	}
+	
 }
 
 check_zombie_type( s_type )
@@ -10176,7 +10255,7 @@ zombie_ragdoll_kill( player, power, kill_zomb )
 	self.a.nodeath = true;
 
 	direction_vec = VectorNormalize( self.origin - player.origin );
-	direction_vec = vector_scale( direction_vec, power );
+	direction_vec = vector_scale( direction_vec, power ) + (0,0, power/2);
 	self StartRagdoll();
 	self launchragdoll(direction_vec);
 	wait_network_frame();
@@ -10460,15 +10539,16 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 
 		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || baseWeapon == "knife_ballistic_upgraded_zm" );		
 
+		wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 		if( boss_zombie ) {
 			//skip pre processing for punch
 		}
 		else if( (weapon=="rebirth_hands_sp" || weapon=="vorkuta_knife_sp" ) && is_true(attacker.melee_upgrade) ) {
 			final_damage = 2000;
+			self thread zombie_knockdown( wait_anim, false );
 		}
 		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) && is_true( self.is_zombie ) ) 		//knife punch!
 		{
-			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 			if( weapon == "vorkuta_knife_zm" )
 				wait_anim *= 1.5;
 

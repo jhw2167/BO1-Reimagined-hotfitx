@@ -269,6 +269,7 @@ director_prespawn()
 
 	level.zombie_director = self;
 
+	self thread debug_director_return();
 	self notify( "zombie_init_done" );
 }
 
@@ -898,7 +899,7 @@ director_watch_damage()
 */
 director_run_to_exit( sourcePlayer )
 {
-	self endon( "death" );
+	self endon( "director_exit" );
 	//self endon( "zombie_start_traverse" );
 
 	self notify( "keep_running" );
@@ -1251,7 +1252,7 @@ director_run_to_exit( sourcePlayer )
 
 	set_goal( target, index )
 	{
-		self endon( "death" );
+		self endon( "director_exit" );
 		self endon( "goal_timeout" );
 
 		wait( 0.1 );
@@ -3244,6 +3245,8 @@ director_leave_map( exit, calm )
 //-----------------------------------------------------------------------------------------------
 director_reenter_map()
 {
+	self endon( "death" );
+
 	r = RandomInt( 100 );
 	devgui_timeaway = 0;
 
@@ -3256,7 +3259,7 @@ director_reenter_map()
 		director_print( "devgui leave for " + devgui_timeaway );
 		wait( devgui_timeaway );
 	}
-	else if ( is_true( self.defeated ) || r > 50 )
+	else if ( is_true( self.defeated ) )
 	{
 		director_print( "leaving for the round" );
 		level waittill( "between_round_over" );
@@ -3293,6 +3296,33 @@ director_reenter_map()
 
 	self.entering_level = undefined;
 }
+
+	debug_director_return() {
+		level endon("end_game");
+
+		while(1) {
+			self waittill_any( "director_exit", "death" );
+			self director_return_helper();
+		}
+	}
+
+
+	director_return_helper() 
+	{
+		level endon("end_game");
+		self endon("director_reenter_map");
+		
+		count = 3; c=0;
+		while(c < count) {
+			c++;
+			self waittill("start_of_round");
+		}
+		iprintln( "Director not respawned for some time, forcing return" );
+		self notify("death");
+		self.defeated = undefined;
+		self thread director_reenter_map();
+	}
+
 
 director_reenter_level()
 {

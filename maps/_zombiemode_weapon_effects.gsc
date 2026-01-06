@@ -1077,7 +1077,10 @@ upgraded_punch_fired(currentweapon)
 		else if(IsAI( zomb ))
 		{
 			//iprintln("Upgraded Punch Knockdown zombie " + zomb.zombie_hash);
-			zomb thread maps\_zombiemode::zombie_knockdown();
+			//zomb thread maps\_zombiemode::zombie_knockdown();
+			//slow the zombie like sheercold affect
+			zomb thread slow_zombie_over_time( level.VALUE_UPGRADED_PUNCH_SLOW_TIME, "walk");
+
 		}
 	}
 
@@ -1112,8 +1115,7 @@ upgraded_punch_get_enemies_in_range()
 
 	//iprintln("Upgraded Punch Checking " + zombies.size + " zombies");
 	range_sq = level.VALUE_UPGRADED_PUNCH_RANGE * level.VALUE_UPGRADED_PUNCH_RANGE;
-	knockdown_range_sq = range_sq*0.5;
-	fling_range_sq = level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST * level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST;
+	fling_range_sq = level.VALUE_UPGRADED_PUNCH_FLING_RANGE * level.VALUE_UPGRADED_PUNCH_FLING_RANGE;
 
 	//iprintln(" Punch range: " + range_sq + " Fling range: " + fling_range_sq );
 	for ( i = 0; i < zombies.size; i++ )
@@ -1131,6 +1133,12 @@ upgraded_punch_get_enemies_in_range()
 		}
 
 		if( is_true( zombies[i].knockdown ) )
+		{
+			//iprintln("3");
+			continue;
+		}
+
+		if( maps\_zombiemode::is_boss_zombie( zombies[i].animname ) )
 		{
 			//iprintln("3");
 			continue;
@@ -1174,20 +1182,20 @@ upgraded_punch_get_enemies_in_range()
 		zomb = zombies[i];
 		if ( test_range_squared < range_sq )
 		{
-			if(test_range_squared < knockdown_range_sq)
+			if(test_range_squared < fling_range_sq)
 			{
 				
 				if( isDefined(zomb.fling_vec) ) {
-					iprintln("Already has fling vec");
+					//iprintln("Already has fling vec");
 					continue;
 				} else if( level.upgraded_punch_fling_enemies.size > level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX ) {
 					//skip and knockdown
 					//iprintln("No more fling");
 				} else if( (self.origin[2] - zomb.origin[2]) <-20 ) {
 					//bad angle, knockdown instead
-					iprintln("Bad angle for fling");
+					//iprintln("Bad angle for fling");
 				} else if( !checkObjectInPlayableArea( zomb ) ) {
-					iprintln("Not in playable area");
+					//iprintln("Not in playable area");
 				} 
 				else {
 					direction_vec = VectorNormalize( zomb.origin - self.origin );

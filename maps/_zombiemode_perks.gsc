@@ -1038,19 +1038,26 @@ wait_for_timeout( weapon, packa_timer )
 	maps\_zombiemode_weapons::unacquire_weapon_toggle( weapon );
 }
 
+do_knuckle_crack() {
+	self do_knuckle_crack_impl( true );
+}
 
 //	Weapon has been inserted, crack knuckles while waiting
 //
-do_knuckle_crack()
+do_knuckle_crack_impl( takeWep )
 {
 	if(self HasPerk("specialty_fastreload") && !self hasProPerk(level.SPD_PRO))
 	{
 		self UnSetPerk("specialty_fastswitch");
+		gun = self upgrade_knuckle_crack_begin( takeWep );
+		self waittill_any_or_timeout( 2, "fake_death", "death", "player_downed", "weapon_change_complete" );
+		
+	} else {
+		gun = self upgrade_knuckle_crack_begin( takeWep );
+		self waittill_any_or_timeout( 1, "fake_death", "death", "player_downed", "weapon_change_complete" );
 	}
 
-	gun = self upgrade_knuckle_crack_begin();
-
-	self waittill_any_or_timeout( 1.5, "fake_death", "death", "player_downed", "weapon_change_complete" );
+	
 
 	if( self HasPerk("specialty_fastreload") )
 	{
@@ -1063,7 +1070,7 @@ do_knuckle_crack()
 
 //	Switch to the knuckles
 //
-upgrade_knuckle_crack_begin()
+upgrade_knuckle_crack_begin( takeWep )
 {
 	self increment_is_drinking();
 
@@ -1083,6 +1090,12 @@ upgrade_knuckle_crack_begin()
 
 	gun = self GetCurrentWeapon();
 	weapon = "zombie_knuckle_crack";
+
+	if(!takeWep) {
+		self GiveWeapon( weapon );
+		self SwitchToWeapon( weapon );
+		return gun;
+	}
 
 	if ( gun != "none" && !is_placeable_mine( gun ) && !is_equipment( gun ) )
 	{

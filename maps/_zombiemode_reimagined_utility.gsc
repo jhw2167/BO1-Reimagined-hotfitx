@@ -932,6 +932,30 @@ getWeaponUiName( weapon )
 }
 
 
+//player_play_temporary_fx( "powerup_on_solo", "tag_flash", fowardDir, 2 )
+//turn the above into a function
+player_play_temporary_fx( fxName, tagOnPlayer, time, offset, angleOffset, time ) 
+{
+	if(!isdefined( time ) ) 
+		time = 2;
+
+	if(!isdefined( offset ) ) 
+		offset = (0,0,0);
+
+	if(!isdefined( angleOffset ) )
+		angleOffset = (0,0,0);
+
+	model = Spawn( "script_model", self GetTagOrigin( tagOnPlayer ) );
+	model setModel( "tag_origin" );
+	model LinkTo( self, "tag_origin", offset, angleOffset );
+	//model LinkTo( self, "tag_flash" );
+
+	PlayFXOnTag( level._effect[ fxName ], model, "tag_origin" );
+	wait( time );
+	if( isdefined( model ) ) model delete();
+}
+			
+
 /*
 	###############################
 	PRO PERK PLACER
@@ -1361,7 +1385,6 @@ wait_print( msg, data )
 
 generate_completed_hint( claimReward )
 {
-    self endon( "death" );
 	self endon( "disconnect" );
 
 	text = NewClientHudElem( self );
@@ -1379,7 +1402,7 @@ generate_completed_hint( claimReward )
 
 	//Put another text below that asks to claim reward
 	rewardText = undefined;
-	if( is_true( claimReward ) )
+	if( is_true( claimReward ) && !is_true( level.rewardInProgress ) )
 	{
 		rewardText = NewClientHudElem( self );
 		rewardText.alignX = "center";
@@ -1397,7 +1420,8 @@ generate_completed_hint( claimReward )
 
 	wait 0.05;
 	text destroy_hud();
-	if( isdefined( rewardText ) ) rewardText destroy_hud();
+	if( isdefined( rewardText ) ) 
+		rewardText destroy_hud();
 }
 
 
@@ -1428,9 +1452,9 @@ start_challenges()
 		case "zombie_pentagon": //center lab halllway
 			//origin = ( -2283.8, 1871.6, -511.9 );
 			//angles = ( 0, 270, 0 );
-			//-466, 1567, -307
+			//-466, 1567, -307 -- 1580 was to far to guard rail
 			//8 45, 0
-			origin = ( -480, 1580, -307 );	//top guard rail main room
+			origin = ( -480, 1576, -307 );	//top guard rail main room
 			angles = ( 14, -40, 0 );
 			rewardDrop = (-50, 15, 0);
 			break;
@@ -1652,7 +1676,7 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	//self thread debug_challenges_complete(10, 3, 5, 11);
+	//self thread debug_challenges_complete(3, 5);
 
 	//while(true) 
 	{
@@ -1670,12 +1694,12 @@ player_watch_challenges()
 			self thread challenge_watch_nicheChallenge();
 		}
 
-		while(challenges.completed < 5) {
+		while(challenges.completed < 5 ) {
 			self waittill( "challenge_complete" );
 			iprintln("Challenge completed: " + challenges.completed);
 		}
 
-		while(challenges.completed == 5) {
+		while(challenges.completed >= 5) {
 			if(level.round_number >= level.VALUE_MIDGAME_ROUND) {
 				break;
 			}
@@ -1700,6 +1724,8 @@ player_watch_challenges()
 //watch_hints
 player_watch_challenge_hintStrings( trigger )
 {
+	level endon( "buyable_ending_ready" );
+
 	challenges = self.challengeData;
 	challenges.hintStrings = array();
 
@@ -2203,6 +2229,7 @@ challenge_watch_nicheChallenge()
 	while(self.challengeData.completed < 4) {
 		self waittill( "challenge_complete" );
 	}
+	iprintln("Starting niche challenge after completing first 4");
 
 	nicheChallengeTypes = level.ARRAY_CHALLENGE_NICHE_CHALLENGES;
 	challenges = self.challengeData;
@@ -2328,6 +2355,7 @@ points_hook( event, player_points, mod, zombie ) {
 
 //here 
 //rewards level thread - called on level so 1 reward claimed at a time
+#using_animtree( "generic_human" );
 level_player_claim_reward( player, rewardIndex )
 {
 	level endon( "end_game" );
@@ -2376,7 +2404,15 @@ level_player_claim_reward( player, rewardIndex )
 			break;
 		case 4:	//pap teleport
 			player.melee_upgrade = true;
-			PlayFxOnTag( level._effect["powerup_on_solo"], player, "tag_flash" );
+			view_angles = player GetPlayerAngles();
+			forwardDir = AnglesToForward( view_angles )*25;
+			//player player_play_temporary_fx( "powerup_on", "tag_flash", 2, forwardDir, (0,0,0) );
+
+			player thread maps\_zombiemode_perks::do_knuckle_crack_impl( false );
+			//player animscripted( "meleeanim", player.origin, player.angles, %stand_2_melee_1, "normal", undefined, 1 );
+			playfx( level._effect["thundergun_smoke_cloud"], player.origin+(0,10,0), AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			playfx( level._effect["thundergun_knockdown_ground"], player.origin+(0,10,0), AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			useDrop = false;
 			break;
 	}
 
@@ -2570,25 +2606,15 @@ load_name( zone, common ) {
 	level.ARRAY_ZONE_NAMES[ zone ] = common;
 }
 
-debug_challenges_complete(waitTime, completed, completed2, completed3) 
+debug_challenges_complete(waitTime, completed) 
 {
-	wait(waitTime);
+	wait(waitTime*2);
 	iprintln("DEBUG: Completing all challenges for player");
-	self.challengeData.completed = completed;
 	for(i=0; i<completed; i++) {
 		self.challengeData.completedArray[i] = true;
+		self notify( "challenge_complete" );
+		self.challengeData.completed++;
+		wait(waitTime);
 	}
-
-	wait(waitTime);
-	self.challengeData.completed = completed2;
-	for(i=0; i<completed2; i++) {
-		self.challengeData.completedArray[i] = true;
-	}
-
-	wait(waitTime);
-	self.challengeData.completed = completed3;
-	for(i=0; i<completed3; i++) {
-		self.challengeData.completedArray[i] = true;
-	}
-
+	
 }
