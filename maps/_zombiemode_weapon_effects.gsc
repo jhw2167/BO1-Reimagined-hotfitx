@@ -127,7 +127,6 @@ zombie_bullet_penetration( zomb , args, bonus_penn )
 	
 
 	forward_view_angles = self GetWeaponForwardDir();
-	
 	//Filter array by invalid enemies
 	pre_count = -3;	//Zombies penetrated by the game engine
 	for ( i = 0; i < zombies.size; i++ )

@@ -494,6 +494,15 @@ vending_randomization_effect( index )
 	level.pap_moving = false;
 	flag_clear( "pack_machine_in_use" );
 
+	//if script noteworthy is for juggernog, get all players and play voicecli
+	if(perk_trigger.script_noteworthy == "specialty_armorvest" ) {
+		players = GetPlayers();
+		for(i = 0; i < players.size; i++) {
+			players[i] thread maps\_zombiemode_audio::perk_vox( "specialty_armorvest" );
+		}
+	}
+
+
 	level waittill( "perks_swapping" );
 
 	while( flag( "pack_machine_in_use" ) )

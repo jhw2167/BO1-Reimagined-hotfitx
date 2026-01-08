@@ -2022,6 +2022,7 @@ disablePerk( perk, time )
 
 returnPerk( perk )
 {
+	iprintln("LOG: returnPerk called for " + perk );
 	proPerk = false;
 	base_perk = perk;
 	hasBasePerk = self HasPerk( perk );
@@ -2919,7 +2920,7 @@ unlocked_perk_upgrade( perk )
 
 give_perk( perk, bought )
 {
-	iprintln( "Giving Perk " + perk );
+	iprintln( "LOG: Giving Perk " + perk + " bought " + is_true( bought ) );
 	//iprintln(" Player " + self.entity_num );
 
 	self thread generate_perk_hint( perk );

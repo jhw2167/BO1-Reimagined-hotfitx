@@ -218,7 +218,7 @@ zombie_spawn_init( animname_set )
 		} else 
 		{
 			self.zombie_type = "normal";
-			if(level.zombie_types)
+			if( is_true( level.zombie_types) )
 			{
 				chance = RandomInt(1000);
 				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
@@ -232,7 +232,7 @@ zombie_spawn_init( animname_set )
 						self.zombie_type = "red";
 						//setModel
 					}
-					//iprintln("Spawning special zombie type: " + self.zombie_type);
+					//iprintln("LOG: Spawning special zombie type: " + self.zombie_type);
 				}
 			}
 		}

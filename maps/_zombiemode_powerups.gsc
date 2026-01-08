@@ -185,6 +185,7 @@ init_powerups()
 
 
 	// Randomize the order
+	level.prev_powerup = "";
 	randomize_powerups();
 	level.zombie_powerup_index = 0;
 	randomize_powerups();
@@ -544,8 +545,8 @@ get_valid_powerup( drop_color )
 		{
 			powerup = get_next_powerup( drop_color );
 		}
-		else
-		{
+		else {
+			level.prev_powerup = powerup;
 			return( powerup );
 		}
 	}
@@ -553,6 +554,11 @@ get_valid_powerup( drop_color )
 
 is_valid_powerup(powerup_name)
 {
+
+	if( level.prev_powerup == powerup_name ) {
+		return false;
+	}
+
 	// Carpenter needs 5 destroyed windows
 	if( powerup_name == "carpenter" ) //&& get_num_window_destroyed() < 5
 	{
@@ -2256,6 +2262,7 @@ nuke_powerup( drop_item, grabber, give_points )
  			zombies_nuked[i] playsound ("evt_nuked");
  		}
 
+		grabber maps\_zombiemode_reimagined_utility::damage_hook( zombies_nuked[i], "MAGIC", zombies_nuked[i].health + 666, "body" );
  		zombies_nuked[i] dodamage( zombies_nuked[i].health + 666, zombies_nuked[i].origin, grabber );
  	}
 
@@ -3460,6 +3467,11 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	wait(0.5);	//in case player picks up perk bottle nearby
 
+	//if player has upgraded Mule, give restock
+	if( ent_player maps\_zombiemode_perks::hasProPerk( level.MUL_PRO ) ) {
+		level thread full_ammo_powerup_implementation( undefined, ent_player, ent_player.entity_num );
+	}
+
 	if( is_true( ent_player.superpower_active) )
 	{
 		level.stack_player_superpower = true;
@@ -3470,10 +3482,10 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	ent_player._show_solo_hud = true;
 
-	DROP_LENGTH = 20;
+	DROP_LENGTH = 30;
 	if( ent_player maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
 	{
-		DROP_LENGTH = 30;
+		DROP_LENGTH = 45;
 	}
 	drop_time = DROP_LENGTH;
 
