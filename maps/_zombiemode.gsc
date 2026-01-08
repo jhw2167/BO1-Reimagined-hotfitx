@@ -908,7 +908,8 @@ reimagined_init_level()
 							 "psg1_zm", "l96a1_zm", "dragunov_zm" );
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
-	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
+	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "m1911lh_upgraded_zm",
+	 "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
 
 	//Also include unupgraded weapons e.g. m14_zm
 	level.ARRAY_WALL_WEAPONS = array( "m14_zm", "mpl_zm", "mp5k_zm", "mp40_zm", "ak74u_zm", "pm63_zm",
@@ -1242,19 +1243,24 @@ reimagined_init_level()
 
 	level.ARRAY_CHALLENGE_NICHE_CHALLENGES = array( "KILLS", "DAMAGE");
 
+	//Zomvies 45k health, round 20
 	level.VALUE_CHALLENGE_NICHE_TYPE_KILLS = 200;
 	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 240*45000; 		//damage equivalent to killing 240 zombies at rd 20
 
-	//Zomvies 45k health, round 20
-	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = 80; //80% must be done by niche class
-
 
 	//Second round challenges
-	level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS = 40;		// 50 per location
+	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = 0.8; //80% must be done by niche class
 
-	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND_LATE = 40;				//HeadShots or One Shots - per round once activated
-	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 400000;	//per round when activated
+	level.ARRAY_CHALLENGE_SPECIALTIES_HARD = array( "PERKS", "WALLGUN", "NOPAP", "ZOMBIE_TYPES" );
+	if( !is_true(level.zombie_types)) {
+		level.ARRAY_CHALLENGE_SPECIALTIES_HARD = array( "PERKS", "WALLGUN", "NOPAP" );
+	}
+	level.VALUE_CHALLENGE_SPECIALTIES_HARD_PERK_LIMIT = 3;
+	level.VALUE_CHALLENGE_SPECIALTIES_HARD_TOTAL_KILLS = 120;
 
+	level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS = 50;		// 50 per location
+
+	level.VALUE_CHALLENGE_TYPE_KILLS_PER_ROUND_LATE = 25;				//HeadShots or One Shots - per round once activated
 	//Load zone names in reimagined utility
 	load_zone_names();
 
@@ -11311,10 +11317,6 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 			break;
 			
 		}
-
-		//Reimagined-Expanded - Buff for early game weapons, they need it
-		//Disabling after nerf to health
-
 		
 		if( !isSubStr(weapon, "_upgraded") ) {
 			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;

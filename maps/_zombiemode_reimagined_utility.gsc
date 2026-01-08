@@ -1437,7 +1437,7 @@ start_challenges()
 	level waittill( "challenges_configured" );
 	//flag_wait( "challenges_configured");
 
-	level thread level_reset_zombie_hashes();
+	//level thread level_reset_zombie_hashes();
 
 	origin = ( 0, 0, 0 );
 	angles = ( 0, 0, 0 );
@@ -1703,6 +1703,7 @@ player_watch_challenges()
 		while(challenges.completed >= 5) {
 
 			if(level.round_number >= level.VALUE_MIDGAME_ROUND) {
+				challenges.completed = 6;
 				break;
 			}
 			level waittill( "start_of_round" );
@@ -1710,10 +1711,10 @@ player_watch_challenges()
 
 		iprintln("Midgame reached, starting endgame challenges");
 		if(challenges.completed < 11) {
-			//self thread challenge_watch_primaryKills( challenges.primaryType );
-			//self thread challenge_watch_locationSurvive( challenges.locations );
-			//self thread challenge_watch_specialtyKills();
-			//self thread challenge_watch_nicheKills( challenges.nicheType );
+			self thread challenge_watch_nicheDamageRound();
+			self thread challenge_watch_specialtyKillsHard();
+			self thread challenge_watch_sequentialLocationKills();
+			self thread challenge_watch_scaledCombinedKills();
 		}
 
 		while(challenges.completed < 10 ) {
@@ -2372,6 +2373,298 @@ challenge_watch_nicheChallenge()
 
 		return false;
 	}
+
+
+
+//Index 6: Secondary Weapon Damage Round
+challenge_watch_nicheDamageRound()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	challenges = self.challengeData;
+	challenges.totalRoundDamage = 0;
+	challenges.nicheRoundDamage = 0;
+	challenges.nicheDamageRoundComplete = false;
+
+	self.challengeData.zombieDamageHook = ::challenge_damageHook_validate_nicheDamageRound;
+
+	while( true ) {
+		level waittill( "start_of_round" );
+		challenges.totalRoundDamage = 0;
+		challenges.nicheRoundDamage = 0;
+		challenges.nicheDamageRoundComplete = false;
+
+		level waittill( "end_of_round" );
+
+		// Check if 80% of damage was from niche weapon
+		if( challenges.totalRoundDamage > 0 ) {
+			required_damage = int( challenges.totalRoundDamage * level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD );
+			if( challenges.nicheRoundDamage >= required_damage ) {
+				challenges.nicheDamageRoundComplete = true;
+				break;
+			}
+		}
+	}
+
+	self.challengeData.zombieDamageHook = undefined;
+	self.challengeData.completed++;
+	self.challengeData.completedArray[6] = true;
+	self notify( "challenge_complete" );
+}
+
+challenge_damageHook_validate_nicheDamageRound(zombie, weapon, damage, hitloc)
+{
+	if( !IsDefined(zombie) || zombie.health <= 0 || !IsAlive(zombie)) return false;
+
+	// Calculate actual damage dealt
+	dmg = damage;
+	if( damage > zombie.health )
+		dmg = zombie.health;
+
+	// Check if weapon is niche type
+	challenges.totalRoundDamage += dmg;
+	if( is_in_array( level.ARRAY_WEAPON_TYPES[ self.challengeData.nicheType ], weapon) ) {
+		self.challengeData.nicheRoundDamage += dmg;
+		return true;
+	}
+
+	return false;
+}
+
+
+//Index 7: Constrained Kills (4 variants)
+challenge_watch_specialtyKillsHard()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	challenges = self.challengeData;
+	
+	// Randomly select constraint type
+	challenges.constraintType = array_randomize( level.ARRAY_CHALLENGE_SPECIALTIES_HARD )[0];
+	
+	challenges.specialtyKills = 0;
+
+	switch( challenges.constraintType )
+	{
+		case "PERKS":
+			self.challengeData.specialtyZombieDamageHook = ::challenge_validate_constraint_perks;
+			break;
+
+		case "WALLGUN":
+			self.challengeData.specialtyZombieDamageHook = ::challenge_validate_constraint_wall;
+			break;
+
+		case "NOPAP":
+			self.challengeData.specialtyZombieDamageHook = ::challenge_validate_constraint_nopap;
+			break;
+
+		case "ZOMBIE_TYPES":
+			self.challengeData.specialtyZombieDamageHook = ::challenge_validate_constraint_zombie_types;
+			break;
+	}
+
+	while( true ) {
+		if( challenges.specialtyKills >= level.VALUE_CHALLENGE_SPECIALTIES_HARD_TOTAL_KILLS ) {
+			break;
+		}
+		wait 1;
+	}
+
+	self.challengeData.zombieDamageHook = undefined;
+	self.challengeData.completed++;
+	self.challengeData.completedArray[7] = true;
+	self notify( "challenge_complete" );
+}
+
+	challenge_validate_constraint_perks( zombie, weapon, damage, hitloc ) {
+		if(damage < zombie.health) return false;
+		if( !IsDefined(zombie) || zombie.health <= 0 || !IsAlive(zombie)) return false;
+		if( self.num_perks <= level.VALUE_CHALLENGE_SPECIALTIES_HARD_PERK_LIMIT ) 
+			self.challengeData.specialtyKills++;
+		return true;
+	}
+
+	challenge_validate_constraint_wall(  zombie, weapon, damage, hitloc ) {
+		if(damage < zombie.health) return false;
+		if( is_in_array( level.ARRAY_WALL_WEAPONS, weapon ) ) {
+			self.challengeData.specialtyKills++;
+			return true;
+		}
+		return false;
+	}
+
+	challenge_validate_constraint_nopap( zombie, weapon, damage, hitloc ) {
+		if(damage < zombie.health) return false;
+		primaries = self GetWeaponsListPrimaries();
+		for( i = 0; i < primaries.size; i++ ) {
+			if( IsSubStr( primaries[i], "upgraded" ) ) {
+				return false;
+			}
+		}
+		self.challengeData.specialtyKills++;
+		return true;
+	}
+
+	challenge_validate_constraint_zombie_types( zombie, weapon, damage, hitloc ) {
+		if(damage < zombie.health) return false;
+		if( IsDefined( zombie.zombie_type ) && zombie.zombie_type != "normal" ) {
+			self.challengeData.specialtyKills++;
+			return true;
+		}
+		return false;
+	}
+
+//Index 8: Sequential Location Kills
+challenge_watch_sequentialLocationKills()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	challenges.lastKillZoneIndex = -1;
+	
+	challenges = self.challengeData;
+	challenges.locationKillCounts = array( 0, 0, 0 );
+	challenges.lastKillZoneIndex = undefined;
+
+	self.challengeData.zombieKillHook = ::challenge_damageHook_validate_sequentialLocationKills;
+
+	while( true ) {
+		wait 1;
+		if( challenges.locationKillCounts[0] < level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS ) {
+			continue;
+		}
+		if( challenges.locationKillCounts[1] < level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS ){
+			continue;
+		}
+		if( challenges.locationKillCounts[2] < level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS ) {
+			continue;
+		}
+		break;
+	}
+
+	self.challengeData.zombieKillHook = undefined;
+	self.challengeData.completed++;
+	self.challengeData.completedArray[8] = true;
+	self notify( "challenge_complete" );
+}
+
+challenge_damageHook_validate_sequentialLocationKills(zombie, weapon, damage, hitloc)
+{
+	if( !IsDefined(zombie) || zombie.health <= 0 || !IsAlive(zombie)) return false;
+	
+	// Must be a kill
+	if( damage < zombie.health )
+		return false;
+
+	challenges = self.challengeData;
+	current_zone = self.current_zone;
+	
+	if( !IsDefined( current_zone ) )
+		return false;
+
+	// Find which location index the current zone corresponds to
+	location_index = -1;
+	for( i = 0; i < challenges.locations.size; i++ ) {
+		if( challenges.locations[i] == current_zone ) {
+			location_index = i;
+			break;
+		}
+	}
+
+	// Not in an assigned location
+	if( location_index == -1 ) {
+		challenges.lastKillZoneIndex = -1;
+		return false;
+	}
+	else if( challenges.lastKillZoneIndex == location_index ) {
+		challenges.locationKillCounts[location_index]++;	
+		return true;
+	}
+	else {
+		challenges.locationKillCounts[location_index] = 1;
+		challenges.lastKillZoneIndex = location_index;
+		return true;
+	}
+}
+
+
+//Index 9: Scaled Combined Kills
+challenge_watch_scaledCombinedKills()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	// Wait until challenges 6-8 are complete
+	while(self.challengeData.completed < 8) {
+		self waittill( "challenge_complete" );
+	}
+
+	challenges = self.challengeData;
+	
+	// Lock the round number for scaling
+	challenges.primaryTypeKills = 0;
+	challenges.nicheTypeKills = 0;
+
+	self.challengeData.zombieDamageHook = ::challenge_damageHook_validate_scaledKills;
+	challenges.weaponClassCarnargeTotal = level.VALUE_CHALLENGE_TYPE_KILLS_PER_ROUND_LATE * level.round_number;
+
+	while( true ) {
+		total_kills = challenges.primaryTypeKills + challenges.nicheTypeKills;
+		if( total_kills >= challenges.weaponClassCarnargeTotal ) {
+			break;
+		}
+		wait 1;
+	}
+
+	self.challengeData.zombieDamageHook = undefined;
+	self.challengeData.completed++;
+	self.challengeData.completedArray[9] = true;
+	self notify( "challenge_complete" );
+}
+
+challenge_damageHook_validate_scaledKills(zombie, weapon, damage, hitloc)
+{
+	if( !IsDefined(zombie) || zombie.health <= 0 || !IsAlive(zombie)) return false;
+	
+	// Must be a kill
+	if( damage < zombie.health )
+		return false;
+
+	challenges = self.challengeData;
+	kills_to_add = 1;
+
+	if( is_in_array( self.challengeData.locations, self.current_zone ) ) {
+		kills_to_add = 2;
+	}
+
+	// Check if kill with primary type weapon
+	if( is_in_array( level.ARRAY_WEAPON_TYPES[ challenges.primaryType ], weapon ) ) {
+		challenges.primaryTypeKills += kills_to_add;
+		return true;
+	}
+
+	// Check if kill with niche type weapon
+	if( is_in_array( level.ARRAY_WEAPON_TYPES[ challenges.nicheType ], weapon ) ) {
+		challenges.nicheTypeKills += kills_to_add;
+		return true;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 level_reset_zombie_hashes() 
