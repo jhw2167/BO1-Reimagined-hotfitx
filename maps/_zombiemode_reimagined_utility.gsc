@@ -1678,7 +1678,7 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	//self thread debug_challenges_complete(3, 5);
+	self thread debug_challenges_complete(3, 6);
 
 	//while(true) 
 	{
@@ -1780,23 +1780,49 @@ player_watch_challenge_hintStrings( trigger )
 						}
 					}
 			locations += "]";
-
+		
 			if( distance_1 < distance_2 && distance_1 < distance_3 && distance_1 < distance_4 )
 			{
-					//iprintln( "1 " + level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS + " | " + challenges.primaryType + " | " + challenges.primaryTypeKills );
 				if( firstLevelChallenges ) 
 				{
 					challenges.current = 1;
 					trigger SetHintString( &"REIMAGINED_CHALLENGE_CLASS_KILLS_HINT", level.VALUE_CHALLENGE_CLASS_TYPE_KILLS,
-					 primaryName, secondaryName, challenges.classTypeKills , level.VALUE_CHALLENGE_CLASS_TYPE_KILLS );
+					primaryName, secondaryName, challenges.classTypeKills , level.VALUE_CHALLENGE_CLASS_TYPE_KILLS );
 					if( challenges.completedArray[1] ) 
 						self thread generate_completed_hint( !challenges.rewardsClaimed[1] );
-				} else {
+				} 
+				else 
+				{
 					challenges.current = 6;
-
+					// Challenge 6: Niche Damage Round
+					if( !IsDefined( challenges.totalRoundDamage ) )
+						challenges.totalRoundDamage = 0;
+					if( !IsDefined( challenges.nicheRoundDamage ) )
+						challenges.nicheRoundDamage = 0;
+					
+					percentage = 0;
+					if( challenges.totalRoundDamage > 0 ) {
+						percentage = int( (challenges.nicheRoundDamage * 100) / challenges.totalRoundDamage );
+					}
+					
+					required_percent = int( level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD * 100 );
+					
+					// Choose hint based on whether threshold is met
+					if( percentage >= required_percent ) {
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_NICHE_DAMAGE_ROUND_GOOD_HINT", 
+							required_percent, secondaryName, percentage + "%", 
+							niceDmgString(challenges.nicheRoundDamage) + "/" + niceDmgString(challenges.totalRoundDamage) );
+					} else {
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_NICHE_DAMAGE_ROUND_BAD_HINT", 
+							required_percent, secondaryName, percentage + "%", 
+							niceDmgString(challenges.nicheRoundDamage) + "/" + niceDmgString(challenges.totalRoundDamage) );
+					}
+					
+					if( challenges.completedArray[6] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[6] );
 				}
-				
 			}
+
 			if( distance_2 < distance_1 && distance_2 < distance_3 && distance_2 < distance_4 )
 			{
 				if( firstLevelChallenges ) 
@@ -1806,11 +1832,49 @@ player_watch_challenge_hintStrings( trigger )
 					trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCATIONS_SURVIVE_HINT", 1, locations );
 					if( challenges.completedArray[2] ) 
 						self thread generate_completed_hint( !challenges.rewardsClaimed[2] );
-				} else {
+				} 
+				else 
+				{
 					challenges.current = 7;
-
+					// Challenge 7: Constrained Kills
+					
+					if( !IsDefined( challenges.constraintType ) ) {
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT" );
+					}
+					else {
+						constraintType = challenges.constraintType;
+						total = level.VALUE_CHALLENGE_SPECIALTIES_HARD_TOTAL_KILLS;
+						progress = challenges.specialtyKills;
+						
+						switch( constraintType )
+						{
+							case "PERKS":
+								trigger SetHintString( &"REIMAGINED_CHALLENGE_CONSTRAINED_PERKS_HINT", 
+									total, progress, total );
+								break;
+							
+							case "WALLGUN":
+								trigger SetHintString( &"REIMAGINED_CHALLENGE_CONSTRAINED_WALLGUN_HINT", 
+									total, progress, total );
+								break;
+							
+							case "NOPAP":
+								trigger SetHintString( &"REIMAGINED_CHALLENGE_CONSTRAINED_NOPAP_HINT", 
+									total, progress, total );
+								break;
+							
+							case "ZOMBIE_TYPES":
+								trigger SetHintString( &"REIMAGINED_CHALLENGE_CONSTRAINED_ZOMBIE_TYPES_HINT", 
+									total, progress, total );
+								break;
+						}
+					}
+					
+					if( challenges.completedArray[7] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[7] );
 				}
 			}
+
 			if( distance_3 < distance_1 && distance_3 < distance_2 && distance_3 < distance_4 )
 			{ 
 				if( firstLevelChallenges ) 
@@ -1837,11 +1901,29 @@ player_watch_challenge_hintStrings( trigger )
 					if( challenges.completedArray[3] ) 
 						self thread generate_completed_hint( !challenges.rewardsClaimed[3] );
 
-				} else {
+				} 
+				else 
+				{
 					challenges.current = 8;
-
+					// Challenge 8: Sequential Location Kills
+					
+					if( !IsDefined( challenges.locationKillCounts ) ) {
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT" );
+					}
+					else {
+						loc1_progress = challenges.locationKillCounts[0];
+						loc2_progress = challenges.locationKillCounts[1];
+						loc3_progress = challenges.locationKillCounts[2];
+						
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_SEQUENTIAL_LOCATION_HINT", 
+							locations, loc1_progress, loc2_progress, loc3_progress );
+					}
+					
+					if( challenges.completedArray[8] ) 
+						self thread generate_completed_hint( !challenges.rewardsClaimed[8] );
 				}
 			}
+
 			if( distance_4 < distance_1 && distance_4 < distance_2 && distance_4 < distance_3 )
 			{
 				if( firstLevelChallenges ) 
@@ -1866,13 +1948,26 @@ player_watch_challenge_hintStrings( trigger )
 					if( challenges.completedArray[4] ) 
 						self thread generate_completed_hint( !challenges.rewardsClaimed[4] );
 
-				} else {
+				} 
+				else 
+				{
 					challenges.current = 9;
-
+					// Challenge 9: Scaled Combined Kills
+					
+					if( !IsDefined( challenges.targetRound ) ) {
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT" );
+					}
+					else {
+						total_kills = level.VALUE_CHALLENGE_TYPE_KILLS_PER_ROUND_LATE * challenges.targetRound;
+						current_kills = challenges.primaryTypeKills + challenges.nicheTypeKills;
+						
+						trigger SetHintString( &"REIMAGINED_CHALLENGE_PRIMARY_SCALED_KILLS_HINT", 
+							total_kills, primaryName, current_kills, total_kills );
+					}
+					
 					if( challenges.completedArray[9] ) 
 						self thread generate_completed_hint( !challenges.rewardsClaimed[9] );
 				}
-				
 			}
 		}
 		else {
@@ -2423,7 +2518,7 @@ challenge_damageHook_validate_nicheDamageRound(zombie, weapon, damage, hitloc)
 		dmg = zombie.health;
 
 	// Check if weapon is niche type
-	challenges.totalRoundDamage += dmg;
+	self.challengeData.totalRoundDamage += dmg;
 	if( is_in_array( level.ARRAY_WEAPON_TYPES[ self.challengeData.nicheType ], weapon) ) {
 		self.challengeData.nicheRoundDamage += dmg;
 		return true;
@@ -2522,9 +2617,8 @@ challenge_watch_sequentialLocationKills()
 	level endon( "end_game" );
 	self endon( "disconnect" );
 
-	challenges.lastKillZoneIndex = -1;
-	
 	challenges = self.challengeData;
+	challenges.lastKillZoneIndex = -1;	
 	challenges.locationKillCounts = array( 0, 0, 0 );
 	challenges.lastKillZoneIndex = undefined;
 

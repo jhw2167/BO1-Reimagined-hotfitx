@@ -57,7 +57,7 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=15;	///
+	level.starting_round_override=25;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
@@ -8492,6 +8492,23 @@ pre_round_think()
 
 	/* ZOMBIE TYPES */
 
+		if( is_true(level.zombie_types) )
+		{
+			if(level.starting_round < level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND) {
+			//nothing
+			} else {
+				diff = level.starting_round - level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND;
+				level.zombie_type_red_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+				level.zombie_type_purple_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+				level.zombie_type_red_chance *= diff;
+				level.zombie_type_purple_chance *= diff;
+				if( level.round_number >= 35)
+					level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 12;
+				else if( level.round_number >= 25)
+					level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 8;
+				
+			}
+		}
 
 		
 

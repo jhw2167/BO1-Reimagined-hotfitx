@@ -4518,6 +4518,7 @@ init_includes()
 	//Pistols
 	//include_weapon("cz75dw_upgraded_zm_x2");
 	//include_weapon("cz75lh_upgraded_zm_x2");
+	include_weapon("tesla_gun_zm");
 	
 	include_weapon("asp_zm");				
 	include_weapon("asp_upgraded_zm", false);		
