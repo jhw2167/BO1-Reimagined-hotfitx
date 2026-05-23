@@ -2,6 +2,7 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 #include maps\_zombiemode_audio;
+#include maps\_zombiemode_reimagined_utility;
 
 init()
 {
@@ -1123,17 +1124,23 @@ is_weapon_upgraded( weaponname )
 //Reimagined-Expanded
 is_weapon_double_upgraded( weaponname )
 {
-	if( !isdefined( weaponname ) || weaponname == "" )
-	{
+	if( !isDefined( weaponname ) || weaponname == "" ) {
 		return false;
 	}
 
+	if( !IsSubStr( weaponname, "upgraded" ) ) {
+		return false;
+	} 
+	if( IsSubStr( weaponname, "_x2" ) ) {
+		return true;
+	}
+
+	
 	if( IsDefined( self.packapunch_weapons[ weaponname ] ) )
 	{
 		return ( self.packapunch_weapons[ weaponname ] > 1 );
 	}
-	else
-	{
+	else {
 		return false;
 	}
 
@@ -1199,6 +1206,68 @@ has_weapon_or_upgrade( weaponname )
 	}
 
 	return has_weapon;
+}
+
+//self is player
+get_weapon_camo_index( weapon )
+{
+	//if weapon is not packapunched, return 0
+	camo_index = 0;
+	if( !IsSubStr( weapon, "upgraded" ) ) {
+		return 0;
+	}
+	
+	if( !(self is_weapon_double_upgraded( weapon )) ) {
+		return 15;
+	}
+
+	if( !IsSubStr( weapon, "_x2" ) ) {
+		weapon = weapon + "_x2";
+	}
+
+	testWeapon = "uzi_upgraded_zm_x2";
+	if(weapon == testWeapon)
+	{
+		camo_index = 1; // camo_gold
+	}
+	else if(is_in_array( level.ARRAY_BIGDMG_WEAPONS, weapon ))
+	{
+		camo_index = 3; // camo_red, art of
+	}
+	else if( is_in_array( level.ARRAY_SHEERCOLD_WEAPONS, weapon ) )
+	{
+		camo_index = 17; // camo_ww, wonder weapon
+	}
+	else if( is_in_array( level.ARRAY_ELECTRIC_WEAPONS, weapon ) )
+	{
+		camo_index = 16; // electric camo - dust weapons
+	}
+	else if ( is_in_array( level.ARRAY_HELLFIRE_WEAPONS, weapon ) )
+	{
+		camo_index = 18; // hellfire_weapons - solid_camo_od
+	}
+	else if( is_in_array( level.ARRAY_POISON_WEAPONS, weapon ) )
+	{
+		camo_index = 8; // Poison weapons
+	}
+	else if ( is_in_array( level.ARRAY_EXECUTE_WEAPONS, weapon ) )
+	{
+		camo_index = 9; // Execute art of war
+	}
+	else if ( is_in_array( level.ARRAY_VALID_SNIPERS, weapon ) )
+	{
+		camo_index = 19; // sniper damascus gold
+	}
+	else if( weapon == "famas_upgraded_zm_x2" )
+	{
+		camo_index = 11; //Phenix OG Blue
+	}
+	else if( weapon == "spas_upgraded_zm_x2" )
+	{
+		camo_index = 12; // special details camo
+	}
+
+	return camo_index;
 }
 
 
@@ -4065,12 +4134,12 @@ get_pack_a_punch_weapon_options( weapon )
 
 	if ( isDefined( self.pack_a_punch_weapon_options[weapon] ) )
 	{
-		return self.pack_a_punch_weapon_options[weapon];
+		//return self.pack_a_punch_weapon_options[weapon];
 	}
 
 	smiley_face_reticle_index = 21; // smiley face is reserved for the upgraded famas, keep it at the end of the list
 
-	camo_index = 15;
+	camo_index = self get_weapon_camo_index( weapon );
 	lens_index = randomIntRange( 0, 6 );
 	reticle_index = randomIntRange( 0, smiley_face_reticle_index );
 	reticle_color_index = randomIntRange( 0, 6 );
@@ -4106,15 +4175,6 @@ get_pack_a_punch_weapon_options( weapon )
 	if ( reticle_index == letter_e_reticle_index )
 	{
 		reticle_color_index = green_reticle_color_index;
-	}
-
-	if(is_in_array( level.ARRAY_BIGDMG_WEAPONS, weapon ))
-	{
-		camo_index = 4; // camo_red, art of
-	}
-	else if( is_in_array( level.ARRAY_WW_WEAPONS, weapon ) )
-	{
-		camo_index = 10; // camo_ww, wonder weapon
 	}
 
 	self.pack_a_punch_weapon_options[weapon] = self CalcWeaponOptions( camo_index, lens_index, reticle_index, reticle_color_index );
@@ -4458,6 +4518,7 @@ init_includes()
 	//Pistols
 	//include_weapon("cz75dw_upgraded_zm_x2");
 	//include_weapon("cz75lh_upgraded_zm_x2");
+	include_weapon("tesla_gun_zm");
 	
 	include_weapon("asp_zm");				
 	include_weapon("asp_upgraded_zm", false);		

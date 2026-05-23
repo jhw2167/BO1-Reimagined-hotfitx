@@ -57,13 +57,13 @@ main()
 	//Overrides	
 	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
-	level.starting_round_override=11;	///
+	level.starting_round_override=25;	///
 	level.starting_points_override=100000;	///
 	//level.drop_rate_override=50;		/// //Rate = Expected drops per round
 	//level.zombie_timeout_override=1;	///
 	//level.spawn_delay_override=0.5;			///
 	level.server_cheats_override=true;	///
-	level.calculate_amount_override=5;	///per round
+	//level.calculate_amount_override=20;	///per round
 	level.apocalypse_override=false;		///
 	level.classic_override=false;		///
 	level.alt_bosses_override=false;		///
@@ -191,6 +191,7 @@ main()
 
 	// ww: init the pistols in the game so last stand has the importance order
 	level thread last_stand_pistol_rank_init();
+	level thread start_challenges();
 
 	//thread maps\_zombiemode_rank::init();
 
@@ -289,6 +290,7 @@ post_all_players_connected()
 		players[i] thread watch_player_sheercold();
 		players[i] thread watch_player_electric();
 		players[i] thread watch_player_shotgun_attrition();
+		players[i] thread watch_punch_fired();
 		players[i] thread maps\_zombiemode_weapon_effects::wait_projectile_impacts();
 
 		players[i] thread watch_player_weapon_special_bonuses();
@@ -906,14 +908,19 @@ reimagined_init_level()
 							 "psg1_zm", "l96a1_zm", "dragunov_zm" );
 	level.VALUE_SNIPER_PENN_BONUS = 2;
 
-	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
+	level.ARRAY_EXPLOSIVE_WEAPONS = array("m1911_upgraded_zm", "m1911lh_upgraded_zm",
+	 "china_lake_zm", "m72_law_zm", "asp_upgraded_zm");
 
 	//Also include unupgraded weapons e.g. m14_zm
 	level.ARRAY_WALL_WEAPONS = array( "m14_zm", "mpl_zm", "mp5k_zm", "mp40_zm", "ak74u_zm", "pm63_zm",
-									 "rottweil72_zm", "m16_gl_zm", "gl_m16_zm", "ithaca_zm",
-							"m14_upgraded_zm", "mpl_upgraded_zm", "mp5k_upgraded_zm", "mp40_upgraded_zm", 
-							"ak74u_upgraded_zm", "pm63_upgraded_zm", "rottweil72_upgraded_zm", "m16_gl_upgraded_zm",
-							"gl_m16_upgraded_zm", "ithaca_upgraded_zm", "bar_upgraded_zm", "m1garand_upgraded_zm", "springfield_upgraded_zm"
+			"rottweil72_zm", "m16_gl_zm", "gl_m16_zm", "ithaca_zm",
+			"m14_upgraded_zm", "mpl_upgraded_zm", "mp5k_upgraded_zm", "mp40_upgraded_zm", 
+			"ak74u_upgraded_zm", "pm63_upgraded_zm", "rottweil72_upgraded_zm", "m16_gl_upgraded_zm",
+			"gl_m16_upgraded_zm", "ithaca_upgraded_zm", "bar_upgraded_zm", "m1garand_upgraded_zm", "springfield_upgraded_zm",
+			"zombie_kar98k", "zombie_kar98k_upgraded", "zombie_type99_rifle", "zombie_type99_rifle_upgraded",
+			"zombie_springfield", "zombie_springfield_upgraded", "zombie_m1carbine", "zombie_m1carbine_upgraded",
+			"zombie_gewehr43", "zombie_gewehr43_upgraded", "zombie_bar", "zombie_bar_upgraded",
+			"kar98k_scoped_zombie", "kar98k_scoped_upgraded_zombie", "zombie_fg42", "zombie_fg42_upgraded"
 	);
 
 	level.ARRAY_ELECTRIC_WEAPONS = array("ak74u_upgraded_zm_x2", "aug_acog_mk_upgraded_zm_x2",
@@ -969,6 +976,206 @@ reimagined_init_level()
 	level.THRESHOLD_EXECUTE_ZOMBIE_HEALTH = 0.34 * level.THRESHOLD_MAX_ZOMBIE_HEALTH;
 
 
+	// CZ75 dual wield upgraded, HS10 dual wield, Ballistic Knife, AUG MK underbarrel,
+	// AK47 flamethrower, M16 grenade launcher
+	level.ARRAY_WEAPONS_DW_UNBARREL = array(
+		//add m1911
+		"m1911_upgraded_zm",
+		"m1911lh_upgraded_zm",
+
+		// CZ75 Dual Wield variants
+		"cz75_dw_upgraded_zm",
+		"cz75_dw_upgraded_zm_x2",
+		"cz75dw_upgraded_zm",
+		"cz75dw_upgraded_zm_x2",
+		
+		// HS10 Dual Wield variants
+		"hs10lh_upgraded_zm",
+		"hs10_upgraded_zm",
+		"hs10_upgraded_zm_x2",
+		"hs10lh_upgraded_zm_x2",
+		
+		// Ballistic Knife variants
+		"knife_ballistic_upgraded_zm",
+		"knife_ballistic_upgraded_zm_x2",
+		
+		// AUG Underbarrel variants
+		"mk_aug_upgraded_zm", "mk_aug_upgraded_zm_x2",
+		
+		// AK47 Flamethrower variants
+		//"ak47_ft_upgraded_zm","ak47_ft_upgraded_zm_x2",
+		"ft_ak47_upgraded_zm",
+		
+		// M16 Grenade Launcher variants
+		//"m16_gl_upgraded_zm",
+		"gl_m16_upgraded_zm"
+	);
+
+	level.ARRAY_WEAPONS_MAGIC = array(
+	// Ray Gun
+	"ray_gun_zm",
+	"ray_gun_upgraded_zm",
+	"starburst_ray_gun_zm",
+	
+	// Thundergun
+	"thundergun_zm",
+	"thundergun_upgraded_zm",
+	
+	// Freezegun / Winter's Howl
+	"freezegun_zm",
+	"freezegun_upgraded_zm",
+	
+	// Tesla Gun / Wunderwaffe DG-2
+	"tesla_gun_zm",
+	"tesla_gun_upgraded_zm",
+	"tesla_gun_powerup_zm",
+	"tesla_gun_powerup_upgraded_zm",
+	
+	// Scavenger (Sniper explosive)
+	"sniper_explosive_zm",
+	"sniper_explosive_upgraded_zm",
+	"sniper_explosive_bolt_zm",
+	"sniper_explosive_bolt_upgraded_zm",
+	
+	// V-R11 / Humangun
+	"humangun_zm",
+	"humangun_upgraded_zm",
+	
+	// Microwave Gun / 31-79 JGb215
+	"microwavegundw_zm",
+	"microwavegundw_upgraded_zm",
+	
+	// Shrink Ray
+	"shrink_ray_zm",
+	"shrink_ray_upgraded_zm",
+
+	//minigun
+	"minigun_zm",
+
+	//ABILITIES
+	"PHD",
+	"CHERRY",
+	"UPGRADED_PUNCH",
+	"HELLFIRE",
+	"SHOCK",
+	"POISON",
+	"MAGIC"
+
+	);
+
+	level.ARRAY_WEAPONS_EXPLOSIVE = array(
+	// Grenades
+	"frag_grenade_zm", "sticky_grenade_zm", "molotov_zm",
+	
+	// M1911 Mustang & Sally (explosive pistol)
+	"m1911_upgraded_zm", "m1911lh_upgraded_zm",
+	
+	// M72 LAW
+	"m72_law_zm", "m72_law_upgraded_zm",
+	"china_lake_zm", "china_lake_upgraded_zm",
+	
+	// Explosive Crossbow
+	"crossbow_explosive_zm", "crossbow_explosive_upgraded_zm", "crossbow_explosive_upgraded_zm_x2",
+	"explosive_bolt_zm",  "explosive_bolt_upgraded_zm", "explosivbe_bolt_zm", "explosivbe_bolt_upgraded_zm",
+	
+	// ASP Pistol upgraded (explosive)
+	"asp_upgraded_zm",
+	
+	// Sabertooth Shotgun upgraded (explosive)
+	"sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2",
+	
+	// Equipment
+	"claymore_zm", "spikemore_zm",
+
+	//misc
+	"EXPLOSIVE",
+	"PHD"
+
+	);
+
+	level.ARRAY_WEAPONS_MELEE = array(
+	// Standard Knife
+	"knife_zm", "combat_knife_zm", "combat_knife_upgraded_zm", "upgraded_knife_zm",
+	
+	// Bowie Knife
+	"bowie_knife_zm", "combat_bowie_knife_zm",
+	"sickle_knife_zm", "combat_sickle_knife_zm",
+	
+	// Ballistic Knife (base melee versions)
+	"knife_ballistic_zm", "knife_ballistic_bowie_zm", "knife_ballistic_sickle_zm",
+	"knife_ballistic_bowie_upgraded_zm", "knife_ballistic_sickle_upgraded_zm",
+	
+	// Special melee
+	"rebirth_hands_sp", "vorkuta_knife_sp", "vorkuta_knife_zm", "falling_hands_zm",
+
+	//sabertooth
+	"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2",
+
+	"UPGRADED_PUNCH"
+	);
+
+	//We nee to add zombie_ weapons to their appropriate categories too:
+
+	level.ARRAY_WEAPONS_RIFLE = array( "m14_zm", "m14_upgraded_zm", "m16_zm", "m16_gl_zm", "m16_gl_upgraded_zm", "gl_m16_zm", "gl_m16_upgraded_zm",
+	"famas_zm", "famas_upgraded_zm", "famas_upgraded_zm_x2", "aug_acog_zm", "aug_acog_mk_upgraded_zm", "aug_acog_mk_upgraded_zm_x2", "mk_aug_upgraded_zm",
+	"commando_zm", "commando_upgraded_zm", "commando_upgraded_zm_x2", "galil_zm", "galil_upgraded_zm", "galil_upgraded_zm_x2", "ak47_zm", "ak47_ft_upgraded_zm", "ak47_ft_upgraded_zm_x2",
+	"enfield_zm", "enfield_upgraded_zm", "enfield_upgraded_zm_x2", "fnfal_zm", "fnfal_upgraded_zm", "fnfal_upgraded_zm_x2", "g11_lps_zm", "g11_lps_upgraded_zm", 
+	"m1garand_upgraded_zm", "springfield_upgraded_zm", "zombie_kar98k", "zombie_kar98k_upgraded", "zombie_type99_rifle", "zombie_type99_rifle_upgraded",
+	"zombie_springfield", "zombie_springfield_upgraded", "zombie_m1carbine", "zombie_m1carbine_upgraded",
+	"zombie_gewehr43", "zombie_gewehr43_upgraded", "zombie_bar", "zombie_bar_upgraded",
+	"kar98k_scoped_zombie", "kar98k_scoped_upgraded_zombie", "zombie_fg42", "zombie_fg42_upgraded"
+	);
+
+	level.ARRAY_WEAPONS_SMG = array( "ak74u_zm", "ak74u_upgraded_zm", "ak74u_upgraded_zm_x2", "mp40_zm", "mp40_upgraded_zm", "mpl_zm", "mpl_upgraded_zm",
+	"mp5k_zm", "mp5k_upgraded_zm", "pm63_zm", "pm63_upgraded_zm", "spectre_zm", "spectre_upgraded_zm", "spectre_upgraded_zm_x2",
+	"uzi_zm", "uzi_upgraded_zm", "uzi_upgraded_zm_x2", "mac11_zm", "mac11_upgraded_zm", "skorpion_zm", "skorpion_upgraded_zm", "skorpionlh_upgraded_zm",
+	"kiparis_zm", "kiparis_upgraded_zm", "ppsh_zm", "ppsh_upgraded_zm", "ppsh_upgraded_zm_x2" );
+
+	level.ARRAY_WEAPONS_LMG = array(
+	"rpk_zm", "rpk_upgraded_zm", "rpk_upgraded_zm_x2",
+	"hk21_zm", "hk21_upgraded_zm", "hk21_upgraded_zm_x2",
+	"stoner63_zm", "stoner63_upgraded_zm", "stoner63_upgraded_zm_x2",
+	"m60_zm", "m60_upgraded_zm", "m60_upgraded_zm_x2",
+	"bar_upgraded_zm", "minigun_zm"
+	);
+
+	level.ARRAY_WEAPONS_SHOTGUN = array_combine( level.ARRAY_VALID_SHOTGUNS, array());
+	level.ARRAY_WEAPONS_SIDEARM = array_combine( level.ARRAY_SIDEARMBONUS_WEAPONS,
+	 array("m1911_zm", "m1911_upgraded_zm", "m1911lh_upgraded_zm",
+			"ray_gun_zm", "ray_gun_upgraded_zm") );
+	level.ARRAY_WEAPONS_SNIPER = array_combine( level.ARRAY_VALID_SNIPERS, array() );
+
+	//Aggregate weapons
+	level.ARRAY_WEAPON_PRIMARY_TYPES = array( "SHOTGUN", "SNIPER", "RIFLE", "LMG", "SMG", "SIDEARM" );
+	level.ARRAY_WEAPON_NICHE_TYPES = array( "EXPLOSIVE", "MELEE", "MAGIC", "DUAL_WIELD_UNDERBARREL" );
+
+	level.ARRAY_WEAPON_TYPES[ "SHOTGUN" ] = level.ARRAY_WEAPONS_SHOTGUN;
+	level.ARRAY_WEAPON_TYPES[ "SNIPER" ] = level.ARRAY_WEAPONS_SNIPER;
+	level.ARRAY_WEAPON_TYPES[ "RIFLE" ] = level.ARRAY_WEAPONS_RIFLE;
+	level.ARRAY_WEAPON_TYPES[ "LMG" ] = level.ARRAY_WEAPONS_LMG;
+	level.ARRAY_WEAPON_TYPES[ "SMG" ] = level.ARRAY_WEAPONS_SMG;
+	level.ARRAY_WEAPON_TYPES[ "SIDEARM" ] = level.ARRAY_WEAPONS_SIDEARM;
+
+	level.ARRAY_WEAPON_TYPES[ "EXPLOSIVE" ] = level.ARRAY_WEAPONS_EXPLOSIVE;
+	level.ARRAY_WEAPON_TYPES[ "MELEE" ] = level.ARRAY_WEAPONS_MELEE;
+	level.ARRAY_WEAPON_TYPES[ "MAGIC" ] = level.ARRAY_WEAPONS_MAGIC;
+	level.ARRAY_WEAPON_TYPES[ "DUAL_WIELD_UNDERBARREL" ] = level.ARRAY_WEAPONS_DW_UNBARREL;
+
+	level.ARRAY_WEAPON_TYPES_NAMES = [];
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SHOTGUN" ] = "Shotguns";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SNIPER" ] = "Sniper Rifles";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "RIFLE" ] = "Rifles";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "LMG" ] = "LMGs";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SMG" ] = "SMGs";
+
+	level.ARRAY_WEAPON_TYPES_NAMES[ "SIDEARM" ] = "Pistols";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "EXPLOSIVE" ] = "Explosive Weapons";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "MELEE" ] = "Melee Weapons";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "MAGIC" ] = "Magic Weapons or Abilities";
+	level.ARRAY_WEAPON_TYPES_NAMES[ "DUAL_WIELD_UNDERBARREL" ] = "Dualwield Weapons or Underbarrel Attachments";
+
+
+
 	//WEAPON VARIABLES
 	level.WEAPON_SABERTOOTH_RANGE = 160;
 
@@ -1004,8 +1211,86 @@ reimagined_init_level()
 	level.vulture_waypoint_structs_update = false;
 
 
-	//MISC
+	//Real Time Zombie type vars chance to spawn special zombie n/1000 + .5% each round
+
+	level.ZOMBIE_TYPE_RED_PLAYER_DAMAGE = 70;	//Red zombies do 70 damage on hit, normally 20
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND = 15;
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND = 40;  //stop increase spawn chance at this round
+	level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT = 7;  //chance of spawning type zombies increases by this every round
+
+	level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 4;	//upgraded to 8 and 12 later
+	level.VALUE_ZOMBIE_TYPE_PURPLE_HEALTH_MULTIPLIER = 2;
+	level.zombie_type_red_chance = 0;
+	level.zombie_type_purple_chance = 0;
+
+
+	//ENDGAME VARIABLES .challenge
+
+	level.VALUE_MIDGAME_ROUND = 25;
+	level.VALUE_ENDGAME_ROUND = 45;
+
+	level.VALUE_ENDGAME_BUY_COST = 50000;
+
+	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 100;
+	level.VALUE_CHALLENGE_CLASS_TYPE_KILLS = 100;
+	level.ARRAY_CHALLENGE_LOCATIONS = array();		//dynamically set to current maps zones list
+
+	level.ARRAY_CHALLENGE_SPECIALTIES = array( "HEADSHOTS", "POINTS", "DAMAGE" );
+	level.VALUE_CHALLENGE_SPECIALTY_BOSS_KILLS = 2;						//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND = 20;				//HeadShots or One Shots - per round once activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 60*1000;	//per round when activated
+	level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 1800;		//per round when activated
+
+	level.ARRAY_CHALLENGE_NICHE_CHALLENGES = array( "KILLS", "DAMAGE");
+
+	//Zomvies 45k health, round 20
+	level.VALUE_CHALLENGE_NICHE_TYPE_KILLS = 200;
+	level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE = 240*45000; 		//damage equivalent to killing 240 zombies at rd 20
+
+
+	//Second round challenges
+	level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = 0.8; //80% must be done by niche class
+
+	level.ARRAY_CHALLENGE_SPECIALTIES_HARD = array( "PERKS", "WALLGUN", "NOPAP", "ZOMBIE_TYPES" );
+	if( !is_true(level.zombie_types)) {
+		level.ARRAY_CHALLENGE_SPECIALTIES_HARD = array( "PERKS", "WALLGUN", "NOPAP" );
+	}
+	level.VALUE_CHALLENGE_SPECIALTIES_HARD_PERK_LIMIT = 3;
+	level.VALUE_CHALLENGE_SPECIALTIES_HARD_TOTAL_KILLS = 120;
+
+	level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS = 50;		// 50 per location
+
+	level.VALUE_CHALLENGE_TYPE_KILLS_PER_ROUND_LATE = 25;				//HeadShots or One Shots - per round once activated
+	//Load zone names in reimagined utility
+	load_zone_names();
+
+
+	//MISC	value_punch
+
+	level.VALUE_UPGRADED_PUNCH_RANGE = 300;
+	level.VALUE_UPGRADED_PUNCH_FLING_RANGE = 150;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_DIST = 300;
+	level.VALUE_UPGRADED_PUNCH_FLING_ZOMBIES_MAX = 2;
+	level.VALUE_UPGRADED_PUNCH_KNOCKDOWN_ZOMBS_MAX = 4;
+	level.VALUE_UPGRADED_PUNCH_SLOW_TIME = .8;
+	level.VALUE_UPGRADED_PUNCH_BASE_DAMAGE = 2000;
 	level.VALUE_BASE_ORIGIN = (-10000, -10000, -10000);
+	level.ARRAY_INVALID_PUNCH_WEAPONS = array(
+		// Standard Knife
+		"knife_zm", "combat_knife_zm", "combat_knife_upgraded_zm", "upgraded_knife_zm",
+		
+		// Bowie Knife
+		"bowie_knife_zm", "combat_bowie_knife_zm",
+		"sickle_knife_zm", "combat_sickle_knife_zm",
+		
+		// Ballistic Knife (base melee versions)
+		"knife_ballistic_zm", "knife_ballistic_bowie_zm", "knife_ballistic_sickle_zm",
+		"knife_ballistic_bowie_upgraded_zm", "knife_ballistic_sickle_upgraded_zm",
+		
+		//sabertooth
+		"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2"
+
+		);
 
 	//Maps
 
@@ -1055,7 +1340,7 @@ reimagined_init_level()
 	level.VALUE_FACTORY_SPECIAL_DOG_DEATH_STREAK_HEALTH_INC = 1.5;	//50% health bump per times killed in a row
 	level.ARRAY_FACTORY_SPECIAL_DOG_HEALTH_FACTOR = [];
 	
-	//Kino, theater //here
+	//Kino, theater
 	level.VALUE_ENGINEER_ZOMBIE_BASE_HEALTH = 256000;	//minimum engineer health
 	level.VALUE_ENGINEER_ZOMBIE_SPAWN_ROUNDS_PER_SPAWN = 3;	//3 rounds between spawns, between_engineer
 	level.ARRAY_ENGINEER_SPAWN_LOCS = array( 
@@ -1114,10 +1399,12 @@ reimagined_init_level()
 	switch (Tolower(GetDvar(#"mapname")))
 {
     case "zombie_cod5_prototype":
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_cod5_asylum":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_asylum"] = "Shock, Drop, & Reroll!";
 		level.pap_used = false;
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_cod5_sumpf":
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
@@ -1141,37 +1428,74 @@ reimagined_init_level()
 		level.ARRAY_SWAMPLIGHTS_POS["fishing_hut"][2] = (9026, 3068, -742);
 
 		level.THRESHOLD_SHINO_SWAMPLIGHT_KILL_RADIUS = 64;
-		
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_cod5_factory":
 		level.ARRAY_FREE_PERK_HINTS["zombie_cod5_factory"] = "Fluffy!";
 		level.special_dog_spawn = false;
 		level.last_special_dog_spawn = 0;
 		level.special_dog_killstreak = 0;	//number of times in a row the special dog has been killed
+		level thread challenge_populate_valid_zones( array("") );
         break;
     case "zombie_theater":
+		level thread challenge_populate_valid_zones( array("") );
 		//level.ARRAY_FREE_PERK_HINTS["zombie_theater"] = "The 6";
         break;
     case "zombie_pentagon":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_pentagon"] = "The 6";
 		//level._override_quad_explosion = maps\zombie_pentagon::pentagon_overide_quad_explosion; needs to be done from "pentagon" map files
 		level.pentagon_gas_point = undefined;
         break;
     case "zombie_cosmodrome":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_cosmodrome"] = "October 24, 1960";
         break;
     case "zombie_coast":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_coast"] = "Regicide!";
         break;
     case "zombie_temple":
+		level thread challenge_populate_valid_zones( array("") );
 		level.ARRAY_FREE_PERK_HINTS["zombie_temple"] = "One Max Ammo and a Bullet";
         break;
     case "zombie_moon":
+		level thread challenge_populate_valid_zones( array("") );
 		level.VALUE_VULTURE_HUD_DIST_CUTOFF_VERY_FAR *= 1.5;
 		//level.ARRAY_FREE_PERK_HINTS["zombie_moon"] = " 'Decompression in Tunnel 6' ";
         break;
 }
 
+
+}
+
+
+challenge_populate_valid_zones( array_blacklist )
+{
+	flag_wait("all_players_spawned");
+	level.ARRAY_CHALLENGE_LOCATIONS = array();
+	level.sessionstate = "";
+
+	zkeys = GetArrayKeys( level.zones );
+	size = 0;
+	for ( z = 0; z < zkeys.size; z++ )
+	{
+		zoneName = zkeys[z];
+		if( is_in_array( array_blacklist, zoneName ) )
+			continue;
+
+		reimaginedZoneName = (level choose_zone_name( zoneName, undefined ));
+		if(!isDefined(reimaginedZoneName))
+			continue;
+
+		//ref = &(toupper( reimagined_zoneName) );
+		//iprintln( "valid zone: " + ref );		
+		level.ARRAY_CHALLENGE_LOCATIONS[size] = reimaginedZoneName;
+		size++;
+	}
+
+	flag_set("challenges_configured");
+	level notify("challenges_configured");
 
 }
 
@@ -1197,6 +1521,7 @@ reimagined_init_player()
 	//Weapons
 	self.weap_options = [];
 	self.weap_options["uzi_upgraded_zm_x2"] = 0;
+	self.melee_upgrade = false;
 
 	self.bullet_hellfire = false;
 	self.bullet_sheercold = false;
@@ -1314,6 +1639,7 @@ reimagined_init_player()
 	self.knife_index = 0;
 	
 	//Perk player variables
+	self.dbtp_args = SpawnStruct();
 	self.weakpoint_streak=0;
 	self.dbtp_penetrated_zombs=0;
 	self.shotgun_attrition=1;
@@ -1567,6 +1893,7 @@ watch_player_dev_utility()
 wait_set_player_visionset()
 {
 	flag_wait( "begin_spawning" );
+	if(true) return; //Disable vision set change
 	
 	if(IsDefined(level.zombie_visionset)) 
 	{
@@ -1861,8 +2188,10 @@ watch_player_current_weapon()
 	self endon("end_game");
 
 	weapName = self GetCurrentWeapon();
+	camo = 0;
 	while(1)
 	{
+		if(camo > 21) camo = 0;
 		/* Update Weapon Name in UI */
 
 		self waittill("weapon_change");
@@ -1870,6 +2199,16 @@ watch_player_current_weapon()
 
 		ui_weapon_name = self maps\_zombiemode_reimagined_utility::getWeaponUiName( weapName );
 		self SetClientDvar( "ui_playerWeaponName", ui_weapon_name );
+
+
+		// swap the cammo
+		//print player location
+		iprintln( "Player: " + self.origin );
+
+		//iprintln( "Updating weapon options for: " + camo );
+		//self UpdateWeaponOptions( weapName, self CalcWeaponOptions( camo ) );
+		camo++;
+		//wait(0.5);
 	
 
 	}
@@ -2340,6 +2679,7 @@ watch_player_weapon_special_bonuses()
 			wep = "famas_upgraded_zm";	//x2 weapon file doesnt actually exist
 
 			stock = self GetWeaponAmmoStock( wep );
+			c=0;
 			while( stock < WeaponMaxAmmo( wep ) )
 			{
 
@@ -2352,13 +2692,16 @@ watch_player_weapon_special_bonuses()
 					baseRate -= 2;
 
 				if( stock < 91 )
-					baseRate -= 3;
+					baseRate -= 4;
 
 				stock = self GetWeaponAmmoStock( wep );
-				if( randomInt( baseRate ) == 0 )
+				if( c >= baseRate ) {
 					self SetWeaponAmmoStock( wep, stock+1);
-
+					c=0;
+				}
+					
 				wait(0.1);
+				c++;
 			}
 			
 			
@@ -2685,8 +3028,7 @@ handle_player_packapunch(weapon, didUpgrade)
 	self.packapunch_weapons[upgraded_weapon] = state;
 	self.packapunch_weapons[upgraded_weapon + "_x2"] = state;
 	
-	//iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
-
+	iprintln("handle_player_packapunch: " + weapon + " " + upgraded_weapon + " " + state);
 }
 
 	
@@ -3374,7 +3716,7 @@ init_dvars()
 	}
 		
 
-	level.zm_mod_version = "2.5.0";
+	level.zm_mod_version = "2.5.2";
 	SetDvar( "zm_mod_version", level.zm_mod_version );
 
 
@@ -3618,8 +3960,10 @@ init_client_flags()
 init_fx()
 {
 	level._effect["eye_glow"]			 		= LoadFX( "misc/fx_zombie_eye_single" );
-	//level._effect["eye_glow_red"] = 			LoadFX( "eyes/fx_zombie_eye_single_red" );
-	//level._effect["eye_glow_purple"] = 			LoadFX( "eyes/fx_zombie_eye_single_purple" );
+	level._effect["eye_glow_purple"] = 			LoadFX( "misc/fx_zombie_eye_single_purple" );
+	//level._effect[ "dog_eye_glow" ]				= LoadFX( "misc/fx_zombie_eye_single_red" );
+	level._effect["eye_glow_red"] = 			LoadFX( "misc/fx_zombie_eye_single_red" );
+	
 
 	//Gives CSC error if not included
 	level._effect["headshot"] 					= LoadFX( "impacts/fx_flesh_hit" );
@@ -7110,6 +7454,25 @@ reimagined_expanded_round_start()
 			level.zombie_move_speed = level.SUPER_SPRINTER_SPEED;
 		}
 
+
+		if( is_true(level.zombie_types) )
+		{
+			if(level.round_number < level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND) {
+			//nothing
+			} else if(level.round_number > level.ZOMBIE_TYPE_SPAWN_CHANCE_END_ROUND) {
+				//nothing
+			} else {
+				level.zombie_type_red_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+				level.zombie_type_purple_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+				if( level.round_number >= 35)
+					level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 12;
+				else if( level.round_number >= 25)
+					level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 8;
+				
+			}
+		}
+
+
 		//print spawn delay
 		iprintln( "Zombie move speed: " + level.zombie_move_speed );
 		//iprintln( "Zombie spawn delay: " + level.zombie_vars["zombie_spawn_delay"] );
@@ -7878,7 +8241,7 @@ setApocalypseOptions()
 		level.no_bosses = false;
 		level.expensive_perks = false;
 		level.tough_zombies = false;
-		level.zombie_types = false;
+		level.zombie_types = true;
 		level.total_perks = 5;
 		level.bo2_perks = true;
 		level.extra_drops = true;
@@ -8126,6 +8489,27 @@ pre_round_think()
 	if( IsDefined(level.starting_points_override) ) {
 		GetPlayers()[0] maps\_zombiemode_score::add_to_player_score( level.starting_points_override );
 	}
+
+	/* ZOMBIE TYPES */
+
+		if( is_true(level.zombie_types) )
+		{
+			if(level.starting_round < level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND) {
+			//nothing
+			} else {
+				diff = level.starting_round - level.ZOMBIE_TYPE_SPAWN_CHANCE_START_ROUND;
+				level.zombie_type_red_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+				level.zombie_type_purple_chance += level.ZOMBIE_TYPE_SPAWN_CHANCE_ROUND_INCREMENT;
+				level.zombie_type_red_chance *= diff;
+				level.zombie_type_purple_chance *= diff;
+				if( level.round_number >= 35)
+					level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 12;
+				else if( level.round_number >= 25)
+					level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER = 8;
+				
+			}
+		}
+
 		
 
 	/*	MAP SPECFIC				*/
@@ -9163,6 +9547,11 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			{
 				iDamage = 50;		// 45
 			}
+
+			//red zombies do 70
+			if( eAttacker check_zombie_type( "red" ) ){
+				iDamage = level.ZOMBIE_TYPE_RED_PLAYER_DAMAGE;
+			}
 		}
 
 
@@ -9569,11 +9958,90 @@ wait_and_revive()
 	self.waiting_to_revive = false;
 }
 
+watch_punch_fired()
+{
+	self endon( "disconnect" );
+
+	for( ;; )
+	{
+		self waittill( "melee" );
+		currentweapon = self.current_melee_weapon;
+		currentGun = self GetCurrentWeapon();
+		//write melee and weapon name
+		if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, currentweapon ) || is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, currentGun ) )
+		{
+			if( !is_true(self.melee_upgrade) ) continue;
+			
+			if( is_in_array(level.ARRAY_INVALID_PUNCH_WEAPONS, currentGun ) ) {
+				iprintln("Invalid punch weapon: " + WeaponClass( currentGun ) );
+				continue;
+			}
+
+			self thread maps\_zombiemode_weapon_effects::upgraded_punch_fired(currentweapon);
+
+			view_pos = self GetTagOrigin( "tag_flash" ) - self GetPlayerViewHeight();
+			view_angles = self GetTagAngles( "tag_flash" );
+			//playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+
+			// Get the barrel flash position and angles
+			angs = self GetPlayerAngles();
+			forward_vec = AnglesToForward( angs );
+			impact_distance = 65;
+			pitch_angle = 0;
+
+			//if angs[0] > 25 || angs[0] < -25 then limit impact distance and set pitch angle to 45
+			if( angs[0] > 25 )
+			{
+				impact_distance = 40;
+				pitch_angle = -30;
+			}
+			else if(angs[0] < -25) {
+				impact_distance = 40;
+				pitch_angle = 30;
+			}
+
+			//offset_vec = (0,0, self GetPlayerViewHeight()) + (forward_vec * impact_distance);
+			offset_vec = (forward_vec * impact_distance);
+			offset_origin = self GetTagOrigin( "tag_eye" ) + offset_vec;
+			//iprintln("player angles " + angs);
+			//iprintln("offset_vec: " + offset_vec);
+			
+			// Spawn model at player origin with offset
+			model = Spawn( "script_model", offset_origin );
+			model setModel( "tag_origin" );
+			model.angles = (pitch_angle, angs[1]-180, 0);
+			playfxontag( level._effect["thundergun_impact"], model, "tag_origin" );
+			target = offset_origin + (forward_vec * 500);
+			//model StartRagdoll();
+			//model LaunchRagdoll( (forward_vec * 500) );
+			
+			self playsound( "fly_thundergun_forcehit" );
+			wait(0.5);
+			model Delete();
+
+			//if player has upgraded speed color, cooldown = 1.5
+			if( self hasProPerk( level.SPD_PRO ) )
+				wait(1);
+			else
+				wait(2.5);
+
+			playfx( level._effect["thundergun_smoke_cloud"], view_pos, AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
+			playsoundatposition ("zmb_whoosh", self.origin );
+			
+		} else {
+			//we'll give you shock bonus on the knife
+
+		}
+	}
+}
+
 //Reimagined-Expanded Self is zombie
-//HERE
 zombie_knockdown( wait_anim, upgraded )
 {
 	if( is_true(self.knockdown) )
+		return;
+
+	if( isDefined(self.fling_vec) )
 		return;
 
 	//If zombie is not in the map
@@ -9586,7 +10054,7 @@ zombie_knockdown( wait_anim, upgraded )
 	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
 		return;
 
-	if( self.animname != "zombie" )
+	if( self.animname != "zombie" || self.zombie_type == "red" )
 		return;
 
 	if( !IsDefined(wait_anim) )
@@ -9596,6 +10064,7 @@ zombie_knockdown( wait_anim, upgraded )
 		upgraded = false;
 
 	self.knockdown = true;
+	//fall_anim = %ai_zombie_thundergun_hit_flatonback;
 	fall_anim = %ai_zombie_thundergun_hit_upontoback;
 	if( !is_true( self.has_legs ) )
 	{
@@ -9636,6 +10105,170 @@ zombie_knockdown( wait_anim, upgraded )
 
 }
 
+
+zombie_fling( fling_anim, getup_anim, damage, waittime, player )
+{
+	if( is_true(self.knockdown) )
+		return;
+
+	// Check if zombie is in playable area
+	if( !checkObjectInPlayableArea( self ) ) {
+		self thread zombie_knockdown( waittime, false );
+		return;
+	}
+
+	if( is_true(self.is_traversing) )
+		return;
+
+	if( !IsDefined(self) || !IsAlive(self) || is_boss_zombie(self.animname) || is_special_zombie(self.animname) )
+		return;
+
+	if( self.animname != "zombie" || self.zombie_type == "red" ) {
+		player maps\_zombiemode_reimagined_utility::damage_hook( self, "UPGRADED_PUNCH", damage, undefined );
+		self DoDamage( damage, self.origin, player );
+		return;
+	}
+
+	// Set default values
+	if( !IsDefined(fling_anim) )
+		fling_anim = %ai_zombie_thundergun_hit_upontoback;
+	
+	if( !IsDefined(getup_anim) )
+		getup_anim = %ai_zombie_thundergun_getup_b;
+	
+	if( !IsDefined(damage) )
+		damage = 1;
+	
+	if( !IsDefined(waittime) )
+		waittime = 1;
+	
+	// Player is optional, defaults to undefined
+	self thread recover_last_pos( waittime+2 );
+	self.knockdown = true;
+	wait(0.01);
+	
+	// Adjust animation for crawlers
+	if( !is_true( self.has_legs ) )
+	{
+		fling_anim = %ai_zombie_thundergun_hit_doublebounce;
+	}
+
+	self SetPlayerCollision( 0 );
+
+	// Check if damage will kill the zombie
+	if( damage >= self.health )
+	{
+		// Zombie dies mid-fling
+		if( IsDefined(self.fling_vec) )
+		{
+			// Launch zombie as ragdoll death
+			self StartRagdoll();
+			self LaunchRagdoll( self.fling_vec );
+		}
+
+		wait(1);
+		
+		// Apply lethal damage
+		if( IsDefined(player) ) {
+			player maps\_zombiemode_reimagined_utility::damage_hook( self, "UPGRADED_PUNCH", damage, undefined );
+			self DoDamage( damage, self.origin, player );
+		}
+		else {
+			self DoDamage( damage, self.origin );
+		}
+
+		
+		return;
+	}
+	else
+	{
+		// Zombie survives - play fling animation
+		//self StartRagdoll();
+		//self SetVelocity( vector_scale( self.fling_vec, 2 ));
+		self animscripted( "fling_anim", self.origin, self.angles, fling_anim );
+		
+		// Apply non-lethal damage
+		if( IsDefined(player) ) {
+			self DoDamage( damage, self.origin, player );
+		}
+		else {
+			self DoDamage( damage, self.origin );
+		}
+		
+		wait( waittime );
+
+		//self SetVelocity( (0,0,0) );
+		if( !IsDefined(self) || !IsAlive(self) )
+			return;
+
+		// Play getup animation
+		if( is_true( self.has_legs ) )
+		{
+			self animscripted( "getup_anim", self.origin, self.angles, getup_anim );
+			animscripts\traverse\zombie_shared::wait_anim_length( getup_anim, waittime );
+		}
+		
+		self SetPlayerCollision( 1 );
+
+		wait(0.25);
+	}
+
+	self.knockdown = false;
+	self.fling_vec = undefined;
+}
+
+recover_last_pos( waitTime ) 
+{
+	self endon("death");
+	self endon("zombie_start_traverse");
+
+	self.last_pos = self.origin;
+	wait( waitTime );
+
+	if( !IsDefined(self) || !IsAlive(self) )
+		return;
+
+	//if zombie not in playable area, teleport to self.last_pos
+	count=10;c=1;
+	while(true)
+	{
+		if(c>count) break;
+		if( is_true(self.is_traversing) ) {
+			wait 0.5;
+			c++;
+			continue;
+		}
+
+		if( !checkObjectInPlayableArea( self ) ) {
+			self ForceTeleport( self.last_pos );
+		}
+
+		wait(0.1);
+		c++;
+	}
+	
+}
+
+check_zombie_type( s_type )
+{
+	if( !IsDefined(self) || !IsAlive(self) )
+		return false;
+
+	if(!(self.animname == "zombie") )
+		return false;
+
+	if( self.zombie_type == s_type )
+		return true;
+
+	return false;
+}
+
+zombie_type_hint( s_type )
+{
+	if( is_true( self.hints_activated[ s_type ] ) ) return;
+	self thread generate_perk_hint( s_type, false );
+}
+
 //Reimagined-Expanded - kill zombie while he is down, Self is zombie
 zombie_ragdoll_kill( player, power, kill_zomb )
 {
@@ -9662,7 +10295,7 @@ zombie_ragdoll_kill( player, power, kill_zomb )
 	self.a.nodeath = true;
 
 	direction_vec = VectorNormalize( self.origin - player.origin );
-	direction_vec = vector_scale( direction_vec, power );
+	direction_vec = vector_scale( direction_vec, power ) + (0,0, power/2);
 	self StartRagdoll();
 	self launchragdoll(direction_vec);
 	wait_network_frame();
@@ -9679,7 +10312,13 @@ zombie_ragdoll_kill( player, power, kill_zomb )
 //
 
 //damage function
-actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
+actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime ) {
+	final_dmg = self actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime );
+	if( isplayer( attacker ) )
+		attacker maps\_zombiemode_reimagined_utility::damage_hook( self, weapon, final_dmg, sHitLoc );
+	return final_dmg;
+}
+actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, weapon, vpoint, vdir, sHitLoc, modelIndex, psOffsetTime )
 {
 	//iprintln("Weapon: " + weapon);
 	//iprintln("Weapon Class: " + WeaponClass(weapon));
@@ -9687,12 +10326,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//iprintln("Inflictor: " + inflictor);
 	//iprintln("Flags: " + flags);
 	//iprintln("Has Drop: " + self.hasDrop);
-	iprintln("Final Damage 0: " + damage);
+	//iprintln("Final Damage 0: " + damage);
 	//iprintln("Zombie hash: " + self.zombie_hash);
-	iprintln("Zombie animname: " + self.animname);
-	iprintln("Zomb health: " + self.health);
+	//iprintln("Zombie animname: " + self.animname);
+	//iprintln("Zombie type: " + self.zombie_type);
+	//iprintln("Zomb health: " + self.health);
 	//iprintln("Zomb max health: " + self.maxhealth);
-
 	
 	//Reimagined-Expanded, different implementation for double PaP
 	//DOUBLE_upgraded , _is_double_upgraded , upgraded_double_string
@@ -9738,6 +10377,12 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	if( isdefined( self.animname ) && is_in_array(level.ARRAY_VALID_DESPAWN_ZOMBIES, self.animname) )
 	{
 		self notify("zombie_damaged");
+
+		if(self check_zombie_type("red") )
+			attacker zombie_type_hint("zombie_type_red");
+		else if(self check_zombie_type("purple") )
+			attacker zombie_type_hint("zombie_type_purple");
+
 	}
 
 	// Turrets - kill in 4 shots
@@ -9759,10 +10404,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	if( isDefined(self) && is_boss_zombie(self.animname ) ) {
 		if( damage > self.health ) {
-			iprintln("Incoming death damage: ");
-			iprintln(damage);
-			iprintln("Boss zombie health: " + self.health);
-			iprintln("Difference: " + (damage - self.health));
+			//iprintln("Incoming death damage: ");
+			//iprintln(damage);
+			//iprintln("Boss zombie health: " + self.health);
+			//iprintln("Difference: " + (damage - self.health));
 		}
 	}
 
@@ -9934,13 +10579,16 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		usingBallisticKnife = ( weapon == "knife_ballistic_zm" || baseWeapon == "knife_ballistic_upgraded_zm" );		
 
+		wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 		if( boss_zombie ) {
 			//skip pre processing for punch
 		}
+		else if( (weapon=="rebirth_hands_sp" || weapon=="vorkuta_knife_sp" ) && is_true(attacker.melee_upgrade) ) {
+			final_damage = 2000;
+			self thread zombie_knockdown( wait_anim, false );
+		}
 		else if( is_in_array(level.ARRAY_VALID_ZOMBIE_KNOCKDOWN_WEAPONS, weapon ) && is_true( self.is_zombie ) ) 		//knife punch!
 		{
-			//iprintln("Punching Zombie " + weapon);
-			wait_anim = level.VALUE_ZOMBIE_KNOCKDOWN_TIME;
 			if( weapon == "vorkuta_knife_zm" )
 				wait_anim *= 1.5;
 
@@ -9952,7 +10600,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 		else if ( weapon == "upgraded_knife_zm" ) //upgraded knife/punch
 		{
-			self [[ self.thundergun_fling_func ]]( attacker );
+			//self [[ self.thundergun_fling_func ]]( attacker ); not uised
 		}
 		else if( (usingUpgradedKnife || (usingBallisticKnife && hasUgradedKnife) )   && !is_boss_zombie(self.animname)) 
 		{
@@ -10029,6 +10677,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		
 		if( attacker hasProPerk( level.STM_PRO ) ) {
 			final_damage *= 2;
+		}
+
+		//if its a red zombie, halve damage
+		if( self check_zombie_type("red") ) {
+			final_damage = int( final_damage / 2 );
 		}
 
 		//return final_damage;
@@ -10119,6 +10772,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			rayDmg = basedDmg / 10;
 
 		final_damage = rayDmg;
+
+		if( (self check_zombie_type("purple")) && weapon == "m1911_upgraded_zm" )
+			final_damage = 1;
 	}
 
 	//if(weapon == "sniper_explosive_zm" || weapon == "sniper_explosive_upgraded_zm")
@@ -10131,6 +10787,9 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 		if( IsSubStr( weapon, "upgraded" ) )
 			final_damage *= 2;
+
+		if( self check_zombie_type("purple") )
+			final_damage = 1;
 
 	}
 
@@ -10272,8 +10931,10 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 					final_damage = min_damage;
 					
 			} 
-			
 
+			if( self check_zombie_type("purple") )
+				final_damage = 1;
+			
 		}
 
 		//if thief zombie, trigger explosive damage
@@ -10673,10 +11334,6 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 			break;
 			
 		}
-
-		//Reimagined-Expanded - Buff for early game weapons, they need it
-		//Disabling after nerf to health
-
 		
 		if( !isSubStr(weapon, "_upgraded") ) {
 			final_damage *= level.VALUE_PAP_WEAPON_BONUS_DAMAGE;
@@ -10980,23 +11637,23 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		{
 			self.dbtap_marked = attacker.entity_num;
 
-			args = SpawnStruct();
-			args.inflictor = inflictor;
-			args.attacker = attacker;
-			args.damage = damage;
-			args.flags = flags;
-			args.meansofdeath = meansofdeath;
-			args.weapon = weapon;
-			args.vpoint = vpoint;
-			args.vdir = vdir;
-			args.sHitLoc = sHitLoc;	//maybe chest? Can't give people free headshots
-			args.modelIndex = modelIndex;
-			args.psOffsetTime = psOffsetTime;
+			//attacker.dbtp_args = SpawnStruct();
+			attacker.dbtp_args.inflictor = inflictor;
+			attacker.dbtp_args.attacker = attacker;
+			attacker.dbtp_args.damage = damage;
+			attacker.dbtp_args.flags = flags;
+			attacker.dbtp_args.meansofdeath = meansofdeath;
+			attacker.dbtp_args.weapon = weapon;
+			attacker.dbtp_args.vpoint = vpoint;
+			attacker.dbtp_args.vdir = vdir;
+			attacker.dbtp_args.sHitLoc = sHitLoc;	//maybe chest? Can't give people free headshots
+			attacker.dbtp_args.modelIndex = modelIndex;
+			attacker.dbtp_args.psOffsetTime = psOffsetTime;
 			
 			if( attacker hasProPerk(level.DBT_PRO) && isUpgradedSniper )
-				attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args, level.VALUE_SNIPER_PENN_BONUS );
+				attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, attacker.dbtp_args, level.VALUE_SNIPER_PENN_BONUS );
 			else 
-				attacker thread maps\_zombiemode_weapon_effects::zombie_bullet_penetration( self, args );
+				self maps\_zombiemode_weapon_effects::process_dbt_penn_dmg( attacker.dbtp_args );
 
 		} else {
 			//iprintln("Marked: " + dbt_marked);
@@ -11146,8 +11803,11 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 
 		attacker thread maps\_zombiemode_weapon_effects::explosive_arc_damage( self, dmg, radius, hellfire_time);
+
+		if( self check_zombie_type("purple") )
+				return 1;
+
 		return self.maxhealth + 1000; // should always kill
-			
 	}
 	
 	///*
@@ -11177,6 +11837,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	//Reimagined-Expanded, can china-lake be upgraded??
 	if(weapon == "m72_law_zm" || weapon == "china_lake_zm" || weapon == "asp_upgraded_zm" ) 
 	{
+		if( self check_zombie_type("purple") ) return 1;
+
 		radius=level.VALUE_EXPLOSIVE_BASE_RANGE;
 		dmg=level.VALUE_EXPLOSIVE_BASE_DMG;
 		hellfire_time=level.VALUE_HELLFIRE_TIME;
@@ -11224,6 +11886,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 	if((weapon == "sniper_explosive_bolt_zm" || weapon == "sniper_explosive_bolt_upgraded_zm") && self.animname != "director_zombie")
 	{
+		if( self check_zombie_type("purple") ) return 1;
 		return self.maxhealth + 1000;
 	}
 
@@ -13550,18 +14213,19 @@ zone_hud()
 		}
 
 		current_name = name;
+		self.current_zone = name;
 
 		self send_message_to_csc("hud_anim_handler", "hud_zone_name_out");
 		wait .25;
 		self SetClientDvar("hud_zone_name", name);
 		self send_message_to_csc("hud_anim_handler", "hud_zone_name_in");
+		self maps\_zombiemode_reimagined_utility::zone_update_hook(name);
 	}
 }
 
 choose_zone_name(zone, current_name)
 {
-	if(self.sessionstate == "spectator")
-	{
+	if(self.sessionstate == "spectator"){
 		zone = undefined;
 	}
 
@@ -13605,11 +14269,13 @@ choose_zone_name(zone, current_name)
 	}
 
 	name = " ";
+	//level thread wait_print("ZONE HUD: " + zone);
 
 	if(IsDefined(zone))
 	{
 		name = "reimagined_" + level.script + "_" + zone;
 	}
+	//level thread wait_print("REF NAME: " + name);
 
 	return name;
 }

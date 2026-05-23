@@ -268,6 +268,7 @@ shrink_zombie(upgraded, attacker)
 			fling_vec = (fling_vec[0], fling_vec[1], abs( fling_vec[2] ));
 			fling_vec = vector_scale( fling_vec, 100 + 100 * dist_mult );
 
+			attacker maps\_zombiemode_reimagined_utility::damage_hook( self, "UPGRADED_PUNCH", self.health + 666, undefined);
 			self DoDamage( self.health + 666, attacker.origin, attacker );
 			self StartRagdoll();
 			self LaunchRagdoll( fling_vec );

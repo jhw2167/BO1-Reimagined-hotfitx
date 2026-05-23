@@ -26,6 +26,7 @@ init()
 
 	level._effect["thundergun_knockdown_ground"]	= loadfx( "weapon/thunder_gun/fx_thundergun_knockback_ground" );
 	level._effect["thundergun_smoke_cloud"]			= loadfx( "weapon/thunder_gun/fx_thundergun_smoke_cloud" );
+	//level._effect["thundergun_worldflash"] = loadfx( "weapon/muzzleflashes/fx_thundergun_world" );
 
 	set_zombie_var( "thundergun_cylinder_radius",		180 );
 	set_zombie_var( "thundergun_fling_range",			450 ); // 40 feet
@@ -282,11 +283,12 @@ thundergun_fling_zombie( player, fling_vec, index )
 
 	if ( IsDefined( self.thundergun_fling_func ) )
 	{
+		
 		self [[ self.thundergun_fling_func ]]( player );
 		return;
 	}
 
-	if( level.apocalypse )
+	if( level.apocalypse )	//no points for wonderweapons
 		self DoDamage( self.health + 666, player.origin );
 	else
 		self DoDamage( self.health + 666, player.origin, player );
@@ -294,6 +296,7 @@ thundergun_fling_zombie( player, fling_vec, index )
 	if ( self.health <= 0 )
 	{
 		points = maps\_zombiemode_score::get_zombie_death_player_points();
+		player maps\_zombiemode_reimagined_utility::damage_hook( self, player GetCurrentWeapon(), self.health+1000, undefined );
 		/*points = 10;
 		if ( !index )
 		{
@@ -359,6 +362,7 @@ thundergun_knockdown_zombie( player, gib )
 
 handle_thundergun_pain_notetracks( note )
 {
+	iprintlnbold( "Thundergun Pain Note: " + note );
 	if ( note == "zombie_knockdown_ground_impact" )
 	{
 		playfx( level._effect["thundergun_knockdown_ground"], self.origin, AnglesToForward( self.angles ), AnglesToUp( self.angles ) );

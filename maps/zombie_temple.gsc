@@ -781,6 +781,20 @@ init_random_perk_machines()
 					machine_model.origin = machine_model.origin + (0, 0, -6);
 				}
 			}
+
+			//special logic for jugg
+			if(machine_model.targetname == "vending_jugg")
+			{
+				level.juggSpot = undefined;
+				level.juggOrigin = machine_model.origin;
+				if( level.juggOrigin[0] > -500 && level.juggOrigin[0] < 500 )
+					level.juggSpot = "CENTER";
+				else if( level.juggOrigin[0] > 0 )
+					level.juggSpot = "CART";
+				else
+					level.juggSpot = "TRAP";
+			}
+
 		}
 
 		if(isDefined(clip))

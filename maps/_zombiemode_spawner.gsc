@@ -208,6 +208,36 @@ zombie_spawn_init( animname_set )
 	self.gibbed = false;
 	self.head_gibbed = false;
 
+	if(self.animname == "zombie" ) 
+	{
+		//Check respawn queue
+		if( respawn_queue_interface("SIZE") > 0)
+		{
+			self.zombie_type = respawn_queue_interface("POP");
+			self.respawn_zombie = true;
+		} else 
+		{
+			self.zombie_type = "normal";
+			if( is_true( level.zombie_types) )
+			{
+				chance = RandomInt(1000);
+				sum = level.zombie_type_red_chance + level.zombie_type_purple_chance;
+			
+				if(chance < sum)
+				{
+					if(chance < (sum - level.zombie_type_red_chance)) {
+						self.zombie_type = "purple";
+						//setModel
+					} else {
+						self.zombie_type = "red";
+						//setModel
+					}
+					//iprintln("LOG: Spawning special zombie type: " + self.zombie_type);
+				}
+			}
+		}
+	}
+
 	// might need this so co-op zombie players cant block zombie pathing
 //	self PushPlayer( true );
 //	self.meleeRange = 128;
@@ -232,11 +262,24 @@ zombie_spawn_init( animname_set )
 
 	self.maxhealth = level.zombie_health;
 	self.health = level.zombie_health;
-
+	if(self.animname == "zombie" ) 
+	{
+		if( self.zombie_type == "red" ) {
+			self.maxhealth = Int( level.zombie_health * level.VALUE_ZOMBIE_TYPE_RED_HEALTH_MULTIPLIER );
+			self.health = self.maxhealth;
+		} else if( self.zombie_type == "purple" ) 
+		{
+			self.maxhealth = Int( level.zombie_health * level.VALUE_ZOMBIE_TYPE_PURPLE_HEALTH_MULTIPLIER );
+			self.health = self.maxhealth;
+		}
+	}
+	
 	self.freezegun_damage = 0;
 
 	self.dropweapon = false;
 	level thread zombie_death_event( self );
+
+
 
 	// We need more script/code to get this to work properly
 //	self add_to_spectate_list();
@@ -257,28 +300,15 @@ zombie_spawn_init( animname_set )
 	self.knockdown = false;
 	self.is_water = false;
 	self.widows_posion_bullet_count = 0;
+	self.is_traversing = false;
+
+	if( self.animname == "zombie" && self.zombie_type == "purple" ) {
+		self.marked_for_electric=true;
+		self.burned = true;
+	}
 
 	if(self.animname == "zombie" ) 
 	{
-		//Check respawn queue
-		if( respawn_queue_interface("SIZE") > 0)
-		{
-			self.zombie_type = respawn_queue_interface("POP");
-			self.respawn_zombie = true;
-
-			//iprintln("Respawning zombie from queue: " + self.zombie_type);
-			
-		} else {
-
-			self.zombie_type = "normal";
-			if(level.zombie_types)
-			{
-				//Others
-			}
-		}
-
-		
-
 		//Reimagined-Expanded, despawn or speed_up zombies if they are not damaged for a period
 		self.zombie_hash = randomint(level.VALUE_ZOMBIE_HASH_MAX);
 		if(
@@ -833,6 +863,26 @@ set_zombie_run_cycle( new_move_speed, isPermanent )
 	{
 		new_move_speed = self set_run_speed();
 		self.zombie_move_speed_original = self.zombie_move_speed;
+	}
+	
+	//Prevent red zombies from being no faster than sprint, then reduce its new move speed by 1
+	if( self.zombie_type == "red" )
+	{
+		minus=1;
+		if( self.zombie_speed_indx >= 3 ) {
+			minus = 2;
+		}
+		speed_enum = array("walk", "run", "sprint");
+		self.zombie_speed_indx = speed_enum[ max(0, self.zombie_speed_indx - minus) ];
+		new_move_speed = speed_enum[ self.zombie_speed_indx ];
+	}
+	//Purple zombies will be at least super sprint speed
+	if( self.zombie_type == "purple" )
+	{
+		if( self.zombie_speed_indx < 3 ) {
+			new_move_speed = "super-sprint";
+			self.zombie_speed_indx = 3;
+		}
 	}
 	
 	if( new_move_speed == "super-sprint" ) 
@@ -1393,6 +1443,7 @@ check_for_traverse()
 	self endon("stop_check_for_traverse");
 
 	self waittill("zombie_start_traverse");
+	self.is_traversing = true;
 
 	self notify("stop_tear_into_building_loop");
 	self reset_attack_spot();
@@ -4790,6 +4841,7 @@ find_flesh()
 		return;
 	}
 
+	self.is_traversing = false;
 	self.helitarget = true;
 	self.ignoreme = false; // don't let attack dogs give chase until the zombie is in the playable area
 	self.noDodgeMove = true; // WW (0107/2011) - script_forcegoal KVP overwites this variable which allows zombies to push the player in laststand
@@ -5224,6 +5276,10 @@ zombie_eye_glow()
 		if( self.animname == "zombie") 
 		{
 			fx = level.fx_eye_glow;
+			if(!isDefined(self.zombie_type)) { /*nothing*/ }
+			else if(self.zombie_type=="red") fx = "eye_glow_red";
+			else if(self.zombie_type=="purple") fx = "eye_glow_purple";
+
 			eye_glow = Spawn( "script_model", self GetTagOrigin( "J_EyeBall_LE" ) );
 
 			eye_glow.angles = self GetTagAngles( "J_EyeBall_LE" );

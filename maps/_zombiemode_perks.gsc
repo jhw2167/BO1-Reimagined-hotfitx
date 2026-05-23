@@ -982,6 +982,7 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				self notify( "pap_taken" );
 				player notify( "pap_taken" );
 				player.pap_used = true;
+				player handle_player_packapunch(weapon, true);
 
 				weapon_limit = 2;
 				if ( player HasPerk( "specialty_additionalprimaryweapon" ) )
@@ -1003,7 +1004,6 @@ wait_for_player_to_take( player, weapon, packa_timer )
 				}
 
 				//Upgraded weapon, upgrade_weapon, weap_upgrade
-				player handle_player_packapunch(weapon, true);
 				player SwitchToWeapon( upgrade_weapon );
 				player notify("weapon_upgrade_complete");
 				player maps\_zombiemode_weapons::play_weapon_vo(upgrade_weapon);
@@ -1038,19 +1038,26 @@ wait_for_timeout( weapon, packa_timer )
 	maps\_zombiemode_weapons::unacquire_weapon_toggle( weapon );
 }
 
+do_knuckle_crack() {
+	self do_knuckle_crack_impl( true );
+}
 
 //	Weapon has been inserted, crack knuckles while waiting
 //
-do_knuckle_crack()
+do_knuckle_crack_impl( takeWep )
 {
 	if(self HasPerk("specialty_fastreload") && !self hasProPerk(level.SPD_PRO))
 	{
 		self UnSetPerk("specialty_fastswitch");
+		gun = self upgrade_knuckle_crack_begin( takeWep );
+		self waittill_any_or_timeout( 2, "fake_death", "death", "player_downed", "weapon_change_complete" );
+		
+	} else {
+		gun = self upgrade_knuckle_crack_begin( takeWep );
+		self waittill_any_or_timeout( 1, "fake_death", "death", "player_downed", "weapon_change_complete" );
 	}
 
-	gun = self upgrade_knuckle_crack_begin();
-
-	self waittill_any_or_timeout( 1.5, "fake_death", "death", "player_downed", "weapon_change_complete" );
+	
 
 	if( self HasPerk("specialty_fastreload") )
 	{
@@ -1063,7 +1070,7 @@ do_knuckle_crack()
 
 //	Switch to the knuckles
 //
-upgrade_knuckle_crack_begin()
+upgrade_knuckle_crack_begin( takeWep )
 {
 	self increment_is_drinking();
 
@@ -1083,6 +1090,12 @@ upgrade_knuckle_crack_begin()
 
 	gun = self GetCurrentWeapon();
 	weapon = "zombie_knuckle_crack";
+
+	if(!takeWep) {
+		self GiveWeapon( weapon );
+		self SwitchToWeapon( weapon );
+		return gun;
+	}
 
 	if ( gun != "none" && !is_placeable_mine( gun ) && !is_equipment( gun ) )
 	{
@@ -2009,6 +2022,7 @@ disablePerk( perk, time )
 
 returnPerk( perk )
 {
+	iprintln("LOG: returnPerk called for " + perk );
 	proPerk = false;
 	base_perk = perk;
 	hasBasePerk = self HasPerk( perk );
@@ -2906,7 +2920,7 @@ unlocked_perk_upgrade( perk )
 
 give_perk( perk, bought )
 {
-	iprintln( "Giving Perk " + perk );
+	iprintln( "LOG: Giving Perk " + perk + " bought " + is_true( bought ) );
 	//iprintln(" Player " + self.entity_num );
 
 	self thread generate_perk_hint( perk );
@@ -4518,6 +4532,11 @@ remove_stockpile_ammo()
 	}
 }
 
+check_zombie_type( s_type )
+{
+	self maps\_zombiemode::check_zombie_type( s_type );
+}
+
 //=========================================================================================================
 // QUICKREV PRO
 //=========================================================================================================
@@ -4951,6 +4970,7 @@ player_watch_electric_cherry()
 					a_zombies[i] thread wait_reset_tesla_mark();
 				}
 				wait 0.1;
+				self maps\_zombiemode_reimagined_utility::damage_hook( a_zombies[i], "CHERRY", perk_dmg, undefined );
 				a_zombies[i] DoDamage( perk_dmg, a_zombies[i].origin, self, undefined, "crush", level.ECH_PRK );
 				n_zombies_hit++;
 
@@ -5076,14 +5096,19 @@ player_watch_electric_cherry()
 	}
 
 	//Self is player, only triggers if player has Cherry Pro
+	
 	player_electric_cherry_defense( zombie )
 	{
 		self.cherry_defense = false;
 		cherry_damage = level.VALUE_CHERRY_SHOCK_DMG * level.VALUE_CHERRY_PRO_SCALAR;
 		kill_zombie = ( cherry_damage > zombie.health ) || zombie.animname != "zombie"; //just kill dogs and monkeys and quads, no stun fx
+		is_immune = (zombie check_zombie_type("purple"));
 
-		if( kill_zombie ) 
-		{
+
+		if(is_immune) {
+			//nothing
+		}
+		else if( kill_zombie ) {
 			zombie thread electric_cherry_death_fx();
 		}
 		else {
@@ -5093,8 +5118,13 @@ player_watch_electric_cherry()
 			zombie thread wait_reset_tesla_mark();
 		}
 
-		zombie.marked_for_tesla = true;
-		zombie DoDamage( cherry_damage, zombie.origin, self, level.ECH_PRK, "cush" );
+		if(!is_immune)
+		{
+			zombie.marked_for_tesla = true;
+			self maps\_zombiemode_reimagined_utility::damage_hook( zombie, "CHERRY", cherry_damage, undefined );
+			zombie DoDamage( cherry_damage, zombie.origin, self, level.ECH_PRK, "cush" );
+		}
+		
 
 		self thread electric_cherry_reload_attack( 2, "NONE" );
 		self player_cherry_defense_cooldown();
@@ -7109,6 +7139,7 @@ player_zombie_handle_widows_poison( zombie )
 	while( keepPoison )
 	{
 		wait( interval );
+		self maps\_zombiemode_reimagined_utility::damage_hook( zombie, "POISON", dmg, undefined );
 		if( (count % points_count) == 0 )
 			zombie doDamage( dmg, zombie.origin, self, level.WWN_PRK, mod );
 		else
@@ -7249,8 +7280,9 @@ zombie_watch_widows_web( player )
 		self thread maps\_zombiemode_weapon_effects::slow_zombie_over_time( MAX_TIME, "walk" );
 	}
 		
-
-	self doDamage( level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE, self.origin, player, level.WWN_PRK, "MOD_GRENADE_SPLASH" );
+	dmg = level.VALUE_WIDOWS_GRENADE_EXPLOSION_DAMAGE;
+	player maps\_zombiemode_reimagined_utility::damage_hook( self, "PHD", dmg, undefined );
+	self doDamage( dmg , self.origin, player, level.WWN_PRK, "MOD_GRENADE_SPLASH" );
 	
 	player thread player_zombie_handle_widows_poison( self );
 

@@ -43,3 +43,5 @@ sound/wpn/smg
 sound/wpn/sniper
 sound/wpn/turret
 sound/wpn/uw_shots
+.aider*
+.env

@@ -360,6 +360,7 @@ freezegun_do_damage( upgraded, player, dist_ratio )
 
 	self freezegun_debug_print( damage, (0, 1, 0) );
 
+	player maps\_zombiemode_reimagined_utility::damage_hook( self, "MAGIC", min_damage, undefined);
 	self DoDamage( min_damage, player.origin, player, undefined, "projectile" );
 }
 

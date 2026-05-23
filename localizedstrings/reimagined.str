@@ -1498,7 +1498,7 @@ REFERENCE			POWERUP_RESTOCK_TITLE
 LANG_ENGLISH 		"RESTOCK"
 
 REFERENCE			POWERUP_RESTOCK_HINT
-LANG_ENGLISH 		"Replenishes all ammo and equipment for only one player"
+LANG_ENGLISH 		"Replenishes all ammo and equipment for one player"
 
 
 
@@ -1512,5 +1512,119 @@ LANG_ENGLISH 		"RESTOCK!!"
 REFERENCE			POWERUP_PAP_TELEPORT
 LANG_ENGLISH 		"TRANSPORTED!!"
 
+
+//Zombies
+REFERENCE			ZOMBIE_RED_TITLE
+LANG_ENGLISH 		"Tough Zombie (Red)"
+
+REFERENCE			ZOMBIE_RED_HINT
+LANG_ENGLISH 		"- Glowing red eyes\n- Hit harder than normal zombies and cannot be knocked down\n- Much more health than normal zombies"
+
+REFERENCE			ZOMBIE_PURPLE_TITLE
+LANG_ENGLISH 		"Resistant Zombie (Purple)"
+
+REFERENCE			ZOMBIE_PURPLE_HINT
+LANG_ENGLISH 		"- Glowing purple eyes\n- Fast zombie variant that is immune to explosives, electric abilities, and Hellfire\n- 2x as much health as normal zombies"
+
+//Endgame
+REFERENCE			MIDGAME_ROUND_REQUIREMENT
+LANG_ENGLISH 		"Survive to round &&1 to continue challenges"
+
+REFERENCE			ENDGAME_ROUND_REQUIREMENT
+LANG_ENGLISH 		"Survive to round &&1 to end the game"
+
+//endgame buy string, hold X and accept cost argument
+REFERENCE			ENDGAME_BUY_STRING
+LANG_ENGLISH 		"Hold ^3[{+activate}]^7 to escape [Cost: &&1 Points]"
+
+//Challenge Reference hints
+//locked challenge
+REFERENCE			CHALLENGE_LOCKED_HINT
+LANG_ENGLISH 		"CHALLENGE LOCKED"
+
+REFERENCE			CHALLENGE_PRIMARY_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using primary weapon class [&&2]. Progress &&3/&&4"
+
+REFERENCE			CHALLENGE_NICHE_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using secondary weapon class [&&2]. Progress &&3/&&4"
+
+REFERENCE			CHALLENGE_CLASS_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using your primary class [&&2] or secondary class [&&3]. Progress &&4/&&5"
+
+REFERENCE            CHALLENGE_LOCATIONS_SURVIVE_HINT
+LANG_ENGLISH         "Survive &&1 rounds without leaving one of the following areas: &&2"
+
+REFERENCE            CHALLENGE_TOTAL_DAMAGE_HINT
+LANG_ENGLISH         "Deal a total of &&1 damage to zombies. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_TOTAL_HEADSHOTS_HINT
+LANG_ENGLISH         "Kill &&1 zombies with a headshot. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_TOTAL_ONESHOTS_HINT
+LANG_ENGLISH         "Kill &&1 zombies in a single shot. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_TOTAL_POINTS_HINT
+LANG_ENGLISH         "Earn &&1 points. Progress &&2/&&3"
+
+
+REFERENCE            CHALLENGE_TOTAL_DAMAGE_CLASS_HINT
+LANG_ENGLISH         "Deal &&1 damage to zombies with weapon types: [&&2]. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_HEADSHOTS_CLASS_HINT
+LANG_ENGLISH         "Kill &&1 zombies with a headshot with weapon types: [&&2]. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_ONESHOTS_CLASS_HINT
+LANG_ENGLISH         "Kill &&1 zombies in a single shot with weapon types: [&&2]. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_POINTS_CLASS_HINT
+LANG_ENGLISH         "Earn &&1 points with weapon types: [&&2]. Progress &&3/&&4"
+
+
+REFERENCE            CHALLENGE_TOTAL_HEADSHOTS_LOCATION_HINT
+LANG_ENGLISH         "Kill &&1 zombies with a headshot while in any of these areas: &&2. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_LOCATIONS_DAMAGE_HINT
+LANG_ENGLISH         "Deal a total of &&1 damage to zombies while in any of these areas: &&2. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_ONESHOTS_LOCATION_HINT
+LANG_ENGLISH         "Kill &&1 zombies in a single shot while in any of these areas: &&2. Progress &&3/&&4"
+
+REFERENCE            CHALLENGE_TOTAL_POINTS_LOCATION_HINT
+LANG_ENGLISH         "Earn &&1 points in any of these areas: &&2. Progress &&3/&&4"
+
+
+REFERENCE            CHALLENGE_TOTAL_NICHE_DAMAGE_LOCATION_HINT
+LANG_ENGLISH         "Deal &&1 damage to zombies with secondary weapon class [&&2]. Damage dealt in these \n   areas &&3 count double. Progress &&4/&&5"
+
+REFERENCE            CHALLENGE_TOTAL_NICHE_KILLS_LOCATION_HINT
+LANG_ENGLISH         "Kill &&1 zombies with secondary weapon class [&&2]. Kills in these areas &&3 count double. Progress &&4/&&5"
+
+
+REFERENCE            CHALLENGE_TOTAL_DAMAGE_THRESHOLD_HINT
+LANG_ENGLISH         "At least &&1% damage dealt this round must be from weapon class [&&2]. Current &&3/&&4"
+
+REFERENCE            CHALLENGE_NICHE_DAMAGE_ROUND_BAD_HINT
+LANG_ENGLISH         "Deal at least &&1% of your damage this round with your secondary class [&&2]. Currently ^1&&3/&&4"
+
+REFERENCE            CHALLENGE_NICHE_DAMAGE_ROUND_BAD_HINT
+LANG_ENGLISH         "Deal at least &&1% of your damage this round with your secondary class [&&2]. Currently ^2&&3/&&4 damage"
+
+REFERENCE            CHALLENGE_SEQUENTIAL_LOCATION_HINT
+LANG_ENGLISH         "Get 50 consecutive kills in each of these 3 areas: &&1. Progress: [&&2, &&3, &&4]"
+
+REFERENCE            CHALLENGE_CONSTRAINED_PERKS_HINT
+LANG_ENGLISH         "Kill &&1 zombies while having 3 or fewer perks. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_CONSTRAINED_WALLGUN_HINT
+LANG_ENGLISH         "Kill &&1 zombies using wall weapons. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_CONSTRAINED_NOPAP_HINT
+LANG_ENGLISH         "Kill &&1 zombies while owning no Pack-a-Punched weapons. Progress &&2/&&3"
+
+REFERENCE            CHALLENGE_CONSTRAINED_ZOMBIE_TYPES_HINT
+LANG_ENGLISH         "Kill &&1 special zombie types. Progress &&2/&&3"
+
+REFERENCE			CHALLENGE_PRIMARY_SCALED_KILLS_HINT
+LANG_ENGLISH 		"Kill &&1 zombies using your primary class [&&2]. Zombies slain while in your assigned locations count double. Progress &&3/&&4"
 
 ENDMARKER

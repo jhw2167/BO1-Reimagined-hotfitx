@@ -1,0 +1,8 @@
+9bebc2845dce3010da76610ece7432b83811af02 Resolved merge conflict in merging wait_print fix with bo2Feature branch mainline
+a48596c60f5d1a986e8e4be68f7462ff5ca0ab65 Merge branch 'features/shotgunImprovements'
+4c85649197a2acadf33dc60dcfbdff111271ed26 Merge pull request #1 from WARDOGSK93/master
+3bf25cf2b653ac94a2b00f11f99c86f7d8ee91d9 Merge branch 'master' of github.com:Jbleezy/BO1-Reimagined
+e91ffdd295936891ae06067840149a6a1cd830e8 Merge branch 'master' into master
+318b36a56fbd44142aea06a01b7658b995b73f04 Added .txt file of documentation for easier reading
+77981cb64fce1c75b65fb7db07497feb5276f7f4 Merge branch 'master' of https://github.com/Jbleezy/BO1-Reimagined
+be7568952ac9bdfed711a014c25071b075f34c24 .gitignore

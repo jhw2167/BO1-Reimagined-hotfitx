@@ -122,6 +122,9 @@ init_powerups()
 	//"zom_icon_minigun" );
 	//"specialty_lightningbolt_zombies" );
 
+	//Include cor powerups
+	include_zombie_powerup( "bonus_points_player" );
+
 	/* GREEN DROPS */
 	//add_zombie_powerup( powerup_name, model_name, 		hint, 					solo, caution, zombie_grabbable, fx, drop_color )
 	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
@@ -141,6 +144,7 @@ init_powerups()
 	add_zombie_powerup( "tesla", "lightning_bolt", &"REIMAGINED_POWERUP_SUPERPOWER", true, false, false, undefined, "BLUE");
 	add_zombie_powerup( "restock",  	"zombie_ammocan",	&"REIMAGINED_POWERUP_RESTOCK", true, false, false, undefined, "BLUE");
 	add_zombie_powerup( "pap_teleport",  	"zombie_pickup_bonfire",	&"REIMAGINED_POWERUP_PAP_TELEPORT", true, false, false, undefined, "BLUE");
+	add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", true, false, false, undefined, "BLUE");
 	/*
 	add_zombie_powerup("upgrade_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false, undefined, "BLUE");
 	add_zombie_powerup("quad_points", "zombie_x4_icon", &"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false, undefined, "BLUE");
@@ -165,7 +169,6 @@ init_powerups()
 		add_zombie_powerup( "random_weapon", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false );
 
 		// bonus points
-		add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", true, false, false );
 		add_zombie_powerup( "bonus_points_team", "zombie_z_money_icon", &"REIMAGINED_BONUS_POINTS", false, false, false );
 		add_zombie_powerup( "lose_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_LOSE_POINTS", false, false, true );
 
@@ -182,6 +185,7 @@ init_powerups()
 
 
 	// Randomize the order
+	level.prev_powerup = "";
 	randomize_powerups();
 	level.zombie_powerup_index = 0;
 	randomize_powerups();
@@ -541,8 +545,8 @@ get_valid_powerup( drop_color )
 		{
 			powerup = get_next_powerup( drop_color );
 		}
-		else
-		{
+		else {
+			level.prev_powerup = powerup;
 			return( powerup );
 		}
 	}
@@ -550,6 +554,11 @@ get_valid_powerup( drop_color )
 
 is_valid_powerup(powerup_name)
 {
+
+	if( level.prev_powerup == powerup_name ) {
+		return false;
+	}
+
 	// Carpenter needs 5 destroyed windows
 	if( powerup_name == "carpenter" ) //&& get_num_window_destroyed() < 5
 	{
@@ -923,7 +932,7 @@ reset_powerup_chance()
 
 //
 //	Drop the specified powerup
-specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
+specific_powerup_drop( powerup_name, drop_spot, permament, weapon, soloDrop )
 {
 	if(!IsDefined(permament))
 		permament = false;
@@ -939,13 +948,17 @@ specific_powerup_drop( powerup_name, drop_spot, permament, weapon )
 
 	if ( IsDefined(powerup) )
 	{
+		powerup.soloDrop = is_true(soloDrop);
 		powerup powerup_setup( powerup_name );
 
 		if(!permament)
 			powerup thread powerup_timeout();
 		powerup thread powerup_wobble();
 		powerup thread powerup_grab();
+		return powerup;
 	}
+
+	return undefined;
 }
 
 
@@ -1349,6 +1362,8 @@ powerup_zombie_grab()
 	self endon( "powerup_timedout" );
 	self endon( "powerup_grabbed" );
 	self endon( "hacked" );
+
+	wait(1);
 
 	spawnflags = 1; // SF_TOUCH_AI_AXIS
 	zombie_grab_trigger = spawn( "trigger_radius", self.origin - (0,0,40), spawnflags, 32, 72 );
@@ -2247,6 +2262,7 @@ nuke_powerup( drop_item, grabber, give_points )
  			zombies_nuked[i] playsound ("evt_nuked");
  		}
 
+		grabber maps\_zombiemode_reimagined_utility::damage_hook( zombies_nuked[i], "MAGIC", zombies_nuked[i].health + 666, "body" );
  		zombies_nuked[i] dodamage( zombies_nuked[i].health + 666, zombies_nuked[i].origin, grabber );
  	}
 
@@ -2972,6 +2988,11 @@ free_perk_powerup( item, player )
 			continue;
 		}
 
+		if( is_true( item.soloDrop ) && players[i] != player )
+		{
+			continue;
+		}
+
 		if ( !players[i] maps\_laststand::player_is_in_laststand() && !(players[i].sessionstate == "spectator") )
 		{
 			players[i] thread maps\_zombiemode_perks::give_random_perk();
@@ -3103,6 +3124,11 @@ random_weapon_powerup( item, player )
 bonus_points_player_powerup( item, player )
 {
 	points = RandomIntRange( 1, 25 ) * 100;
+
+	if( isDefined(level.setBonusPowerupPoints)) {
+		points = level.setBonusPowerupPoints;
+		level.setBonusPowerupPoints = undefined;
+	}
 
 	if ( !player maps\_laststand::player_is_in_laststand() && !(player.sessionstate == "spectator") )
 	{
@@ -3441,6 +3467,11 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	wait(0.5);	//in case player picks up perk bottle nearby
 
+	//if player has upgraded Mule, give restock
+	if( ent_player maps\_zombiemode_perks::hasProPerk( level.MUL_PRO ) ) {
+		level thread full_ammo_powerup_implementation( undefined, ent_player, ent_player.entity_num );
+	}
+
 	if( is_true( ent_player.superpower_active) )
 	{
 		level.stack_player_superpower = true;
@@ -3451,10 +3482,10 @@ tesla_weapon_powerup( ent_player, powerup, time )
 
 	ent_player._show_solo_hud = true;
 
-	DROP_LENGTH = 20;
+	DROP_LENGTH = 30;
 	if( ent_player maps\_zombiemode_perks::hasProPerk( level.VLT_PRO ) )
 	{
-		DROP_LENGTH = 30;
+		DROP_LENGTH = 45;
 	}
 	drop_time = DROP_LENGTH;
 
