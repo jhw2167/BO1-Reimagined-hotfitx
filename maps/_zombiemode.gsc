@@ -601,8 +601,8 @@ reimagined_init_level()
 		if( isDefined(level.drop_rate_override) ) {
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN_NORMAL = level.drop_rate_override*10;
 			level.VALUE_ZOMBIE_DROP_RATE_GREEN = level.drop_rate_override*10;
-			level.VALUE_ZOMBIE_BLUE_DROP_RATE_BLUE = level.drop_rate_override*100;
-			level.VALUE_ZOMBIE_RED_DROP_RATE_RED = level.drop_rate_override*10;
+			level.VALUE_ZOMBIE_DROP_RATE_BLUE = level.drop_rate_override*100;
+			level.VALUE_ZOMBIE_DROP_RATE_RED = level.drop_rate_override*10;
 		}
 
 	level.VALUE_ZOMBIE_DROP_INCREMENT = 0.3;
@@ -2926,10 +2926,9 @@ watch_player_perkslots()
 
 		self waittill( "player_downed");
 
-		self.perk_slots-- ;
-
-		if( self.perk_slots < level.max_perks )
-			self.perk_slots = level.max_perks;
+		self.perk_slots--;
+		if( self.perk_slots < level.min_perks; )
+			self.perk_slots = level.min_perks;
 		
 	}
 
@@ -4071,6 +4070,10 @@ init_standard_zombie_anims()
 	if( !isDefined( level._zombie_run_melee ) )
 	{
 		level._zombie_run_melee = [];
+	}
+	if( !isDefined( level._zombie_sprint_melee ) )
+	{
+		level._zombie_sprint_melee = [];
 	}
 
 	level._zombie_melee["zombie"] = [];
@@ -6801,7 +6804,7 @@ round_spawning()
 		{
 				old_spawn = spawn_point;
 		}
-		else if( Spawn_point == old_spawn )
+		else if( spawn_point == old_spawn )
 		{
 				spawn_point = level.enemy_spawns[RandomInt( level.enemy_spawns.size )];
 		}
@@ -7554,7 +7557,7 @@ reimagined_expanded_round_start()
 	SetAILimit( level.zombie_ai_limit );//allows zombies to spawn in as some were just killed
 	
 	//Tracking
-	print_entities = IsDefined( level.dev_only) || true;
+	print_entities = IsDefined( level.dev_only);
 	if( print_entities	)
 	{
 		//Spawning entities, spawn entities
@@ -8324,6 +8327,7 @@ setApocalypseOptions()
 		level.classic = level.classic_override;
 	
 
+	level.min_perks=4;
 	if(level.apocalypse) 
 	{		
 		level.starting_round = 1;
@@ -11894,7 +11898,7 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 	//iprintln("Final Damage 7: " + final_damage);
 
 	//If its install and a boss zombie, double damage
-	if( is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill) )
+	if( is_true(level.zombie_vars["zombie_insta_kill"]) || is_true(attacker.powerup_instakill) || is_true(attacker.personal_instakill) )
 	{
 		if( is_boss_zombie(self.animname) )
 		{

@@ -1,0 +1,521 @@
+e6a405d01968b1e5057ba85bbbaa359433d3f507 2026-05-23 jhw2167 fixed merge issues in remainged.all for sounds - added all new sounds from main file
+31e3d9e84e6ea96392632e1828114060f9e60bb8 2026-05-23 jhw2167 - bug fixing attempts adding new weapon to reimagined utility hints
+7f9240918850d1b8283667785efc168b62d90ca6 2026-01-08 jhw2167  Added section for late game challenges, added supporting code and new constants in _zombiemode - fixed bug with doubletap pro so it wouldnt cascade several threads
+0fdc83ec4e4bec03c1cd5dbe81b31b1f3b3e451d 2026-01-07 jhw2167 maps/- Too many max ammos later in the gameX - Mule Pro updated to give max ammo on restock dropX - Remove chance to drop same drop twice in a rowX - Nuke and death machine count as MAGIC type killsX - Special zombies will spawn nowX - Fixed bug where any gun would trigger secondary damage typeX - Make secondary damage type nicer to readX - Patched DoubleTap Pro so it didn't cause lag when firing into many zombiesX - Add sound bite to shino when jugg spawnsX
+2044bd84fef9ad76d86a695dcd28058b543c562b 2026-01-06 jhw2167 maps/- Fixed issue with incosistent ammo gen on the famas - Fixed bug where any melee weapon would trigger wind punch - added cooldown to windpunch of 3 seconds Cooldown with Speed Cola pro
+54c48f0034968ffa8666ca0d00b7685e78e45a43 2026-01-05 jhw2167 Changes to challenge logic in reimagined utility to fix bugs counting specialty stats
+f1491b84923de22aca66bacb3a3dda9f39b90f14 2026-01-04 jhw2167 resetting overrides for release
+5feaf7c7050733fce3140bb2bae979ec86a93bf5 2026-01-04 jhw2167 - Several direct edits to weapons files to add particular magic damage to challenge hook
+cfa7a40e333a9060cb368ea2363060256a589fd7 2026-01-04 jhw2167 Challenges functionally work
+3081781eb0135c39b179b31131d1b12b486dab1e 2026-01-03 jhw2167 workable upgraded punch fx, mostly edited weapon_fx and _zombiemode for watch punch
+d3799b85270cae446a99cbd28ee355fe0dcf19b9 2025-12-29 jhw2167 trying to get thundergun impact fx to work, it does not - trying to get thundergun fling function to mirro thundergun function for punch, but that is giving me issues as well - challenge board works on shang, challenge board location set on 5, needs approval
+06117703f9f1c7fccbfe75375e313ca2c2b85cce 2025-12-26 jhw2167 Challenge bug fixes - thundergun upgraded punch bugfixes in weapon effects knockdown alg
+e9a60fbf56b1d805b85656eda3bc7e0acbbe52ce 2025-12-24 jhw2167 -Added challenge rewards, moved challenge board in kino, added hintstring for challenges completed
+957e05857b22d24c4b8b24c99d4c95d8e5a0287f 2025-12-24 jhw2167 polishing up zombie challenges
+600cc934fb012d5e8b01bad77991614dd30ce56a 2025-12-22 jhw2167 - added load_zone_names to load all colloquial zone names - added several localized strings to file for challenges - added code to load and blacklists certain zones from challenge locations array - some while loop in challenges is running away and causing losses
+eae32c64ec9b563677ca843343ab95b7546e5cc8 2025-12-21 jhw2167  - Early compiled version of challenges allow player to start challenges and view their challenges one by one on the board - changes to zombiemode vars in challenges
+9b35515c94fca1818a5159c22a57d91205729267 2025-12-21 jhw2167 - Added endgame strings to file - Added mass arrays for all weapontypes to _zombiemode - Began adding challenge logic WE DO NOT COMPILE
+0c3f585a95aa72176956be0231a7bb9bb9168640 2025-12-21 jhw2167 - Added sanchez challenge tomb for players to use
+5b1ece3fac6cc42851a4d91dc4fe8768d19fca04 2025-12-20 jhw2167 Changes to vorkuta knife looking for faster punch for potential upgrade - removed some iprintln statements
+8d235d38f83ac69de1fc83568924772af09203d8 2025-12-20 jhw2167 - refined hints in reimagined.str file for zombie red and purple eye hints - fixed bug in zombiemode_spawner where purple zombie was not getting its eyes checked for immunity to electricity - added more damage to player for red zombie - reduced speed for red zombie
+252c2163d86a4c6edd33c671d8761b66e7e1e78a 2025-12-20 jhw2167 - damage override for red and purple zombies - increased zombie max health for red zombies in _zombiemode between rounds
+72a5358daeb474eee659154da994cde517564094 2025-12-20 jhw2167 - Added support for red and purple zombie eyes - Added logical support for zombie red and purple types in _zombiemode and _zombiemode_spawner affecting eye code, zombie init code and speed code
+5499b00cf31be9e91435d68b6c5a4b059cb13999 2025-12-20 jhw2167 (aider) fix: update red zombie eye effect to match working versions structure
+d02b6712c17e41683d69cfb4e961047f64e55218 2025-12-18 jhw2167 - ADded solid variants to camos, fixed bugs with weapon upgrade utility functions
+e029aefca1ff84e52c7c185b0ae72d81db06144d 2025-12-18 jhw2167  - Added new pap - intalled get_camo_index function in _zombiemode_weapons
+dc17cb15fb85a44486362986af014da71da9df0b 2025-12-17 jhw2167 Cammo red override works when color map is renamed to cammo_red precisely
+15a1dcf4392c740c037114f134aa973cd59eef2e 2025-12-17 jhw2167 -added some pap camos, explored PaP logic in _zombiemode_weapons
+6103f4e94db9f6d7c2cd17868daf0ab01401008b 2025-12-17 jhw2167 - Added wii sound file into soundalias
+f4c1eeedd34fdc0b7e74533286ebf173153680fe 2025-12-17 jhw2167 updated soundalias files which were throwing errors
+bc97bac75eb489ee66a418b0cb3f76e96a411ce0 2025-12-17 jhw2167  Reset to recent working version for art of war cammo, added several new possible camos for other gun types
+d3b2a402a59002e5a23a46476f005fc774b2416a 2025-12-16 jhw2167 added new red pap art of war cammo - added new folder for pap camos - added logic in weaponOptions to choose camo
+4ea318d2e196334111fff938529c3ea2f5d148d0 2025-12-15 jhw2167 - changed version number - added lh mustang sally to weapon ammo blacklist - misc boss config changes to engineer
+c896c91e0aab51a42593923a8eaede9f711250d3 2025-05-29 jhw2167 engineer zombie bugfix changes... so many
+b9f17b2870fd9081e8758cfcaa4f1b9f57d4f0f6 2025-05-29 jhw2167 - Fixed bugs with engineer spawning and dying - fixed bugs where zombies would get held up at window
+66498718810348f55fb5ea49cc26398a9a5b7bc6 2025-05-27 jhw2167 -fixed various engineer related bugs
+7b2b41a770b88f20bf2dbd1f9a656ce51c47cf40 2025-05-26 jhw2167 - more bugfixing on engineer death and game crashes prepared engineer for PROD tests
+4d60e11dfe04695c2ed1ed81cb07b47a915d6547 2025-05-26 jhw2167 - minor bug fixes to engineer zombie on death behavior - fixes to vulture zombie drop glow behavior - fixes to sniper health damage on bosses - removed duplicate zombie_perk_bottle weapon in csv
+ef76cc6d9710810b6d08058cd9bade059248c494 2025-05-21 jhw2167 - scientist loses some of his remaining health each time he steals a weapon - reduced cooldown time for teleporters on five - - remove zombie half damage on double hit - added hint in apocalypse mode describing round progression - added hint in apocalypse mode describing points - fixed bug where colliding with a zombie automatically killed player - fixed bug where round flipped automatically on classic and reimagined dog rounds - fixed bug were knife radius was too small on pentagon gas tanks for EE
+492ee6cf1372032964cad5903aab31a9e6ce0817 2025-05-18 jhw2167 - Engineer generally works like intended - Engineer caused access violation when I stood still for 40 seconds and he expired - Engineer dies on his own after 40 seconds for some reason - test engineer killable while empowered - flip general spawn, trap and perk options - reset engineer properties to gameplay expected
+f850d1a71838e4537af6f6141572f69defb1a6f4 2025-05-17 jhw2167 -Added spawn mechanics and better ambient sounds fixed bug where randIndex for trap was not saved when logic was constructed
+0eba2b9a471d4c526b0298bb4945f11b13ec1e5f 2025-05-17 jhw2167 Added enough sounds to be fine - altered spawn fx and tp and enrage fx and characteristics a bit - would like some sort of shock buildup sound at the spawn - moving on to spawn and death drop implementation
+a1acb53a36052358cdfafcd918e702a886b94470 2025-05-16 jhw2167 - successfully added fx to unique natch_patch file - successfully allowed engineer to teleport, cannot teleport during scripted anim - successfully rerigged groundslam method for realistic attacks - linked engineer_init methods to custom_ai_type level array so it is initialized during correct stage - Engineer needs sounds for being enraged, and in general - Engineer needs proper spawn logic
+5042b2d4d8b18a548e1ee13cb122526e2e03a168 2025-05-07 jhw2167 -added and compiled exta eng animations
+6541ec13e8222de8cdda725d2e1e564e3048ae19 2025-05-07 jhw2167 -engineer implementaion pretty good, moving on to fx work
+a2d705fa5d74e55f485865eddc247467fddbc317 2025-05-07 jhw2167 -eng fights people again, sometimes if goal radius is too small he doesnt
+42db8ee84510637e0d8e61a9cc45775f8ea59f84 2025-05-07 jhw2167 maps/- added watcher method for eyes and eng near perks - added support for choose new goal event - engineer does not want to fight again - having trouble swapping to sprint runspeed
+e47832d55d13f1eb99b90efa6983a56f3e3eed2c 2025-05-06 jhw2167 properties marked_for_death, ignore_all, or calling reset_attack_spots, or failing to notify that a zombie is teleporting inside the map may all cause a zombie not to attack the player
+3b66a06bfee827e13cdebcf9ab73b8910e72b1e2 2025-05-06 jhw2167 eng still not attacking
+a858749908c7082707d2a6099c2fda2861362b59 2025-05-06 jhw2167 Once again, eng does not want to attack anyone
+42fceb0b16773930d898cc83f493c910f6cec2b1 2025-05-06 jhw2167 - engineer now follows and attacks player - engineer will activate traps while following - traps will damage eng and play fx on him - added health bonus for eng drinking perks - fixed bug where trap watch caused infinite loop
+15da3f7a462e9f187578ebb1bc75b26e31a8a134 2025-05-06 jhw2167 - bunch of engineer issues
+a2d24ebb59628085006f827d8d122c30a6385831 2025-05-06 jhw2167 - added boss fx to mod.csv - still a pacifist, but improving
+6c42179ec1951804251797444d8627044c622024 2025-05-05 jhw2167 - fine tuned eng trap death script for electric death - added anims for perk drink and attack - added logic for enraging the engineer - added logic for engeineer health calculation - added run melee attacks back - engineer is a pacifist and does not want to chase or hit anyone
+dcda9c6bf2ca2e1c0362ee4526a8672296d4375d 2025-05-05 jhw2167 - Engineer zombie tracks traps, will activate and execute himself in them
+1bff438298754b78f30a33096b7e1047b62b4043 2025-05-01 jhw2167 - doubled sheercold dist - added code structure for engineer goals - removed zombies ignore player when too many zombies chasing an enemy - win grenades no longer given for basic wine - added longer melee range to terror zombies
+3173603312830ffafd8fba25fb6f384d5cd34ca9 2025-05-01 jhw2167 -Engineer spawns and chases player, but he stops upon reaching player, and doesnt attack
+f585ada527b7d66ac8448b7f9e545ea8869590d9 2025-04-29 jhw2167 - Engineer spawns in
+f3feae2789f62407f3899f59bf55cae80225dad1 2025-04-25 jhw2167 - Trying and failing to add all pieces for engineer zombie
+d699bfcb5bfbd2870d5bea5ced79eccf0aa1ec1d 2025-04-25 jhw2167 - damage fixes to WaW weapons with no PAP variants like - stg44 - bar - m1garand
+06684933fd8e569751feafd4323e3091b21e9b3b 2025-04-24 jhw2167 -misc commit for release prep
+dad40ca59d2eae052d19e188e96182271017c1d0 2025-04-23 jhw2167 - remove WW grenade from box - melee kills ragdoll zombies on the ground
+6472d68ca4a4776d50cee88eeb12295c2369a69b 2025-04-23 jhw2167 - Put mod version in title loading screen Give famas 300 starting rounds Give hint for super power, restock drops Hint for QR tells players QR is not needed for solo QR returns random perk to player even in solo mode Removed Raid doesn't as sheercold weapon
+23c6645c0a474a628b47d917f645009ceb78648a 2025-04-15 jhw2167 - Additional attemps to stop PHD pro from killing your game - set default game mode to 'Reimagined'
+9349d9aa916f8c53c0655c58b895a223f4293539 2025-04-15 jhw2167 Remove Gamemode selection - code is still in heavy testing state trying to spawn Engineer Zombie
+4f8de7a060d939dde77ea37f386f7f215ee12844 2025-04-15 jhw2167 - Updates to make compatible with Pluto
+2030adc50a10597af53e1591f2df70ee99a19c44 2024-11-17 jhw2167 maps/- Ensured fog is removed after power turned on, call of the dead - Increased points rewarded for shooting zombies, apocalypse mode - Restock drop after r15 is more likely - Max Ammo drops more likely after round 20
+9cc8240be8b3b4971fc674365fdd04f589d0da7e 2024-11-17 jhw2167 -Minor bugfixes to cowards way out code
+18a345c09b819351c250f416d54ec01ef7cd88a8 2024-11-17 jhw2167 - Add cowards way out when downed - Quick Revive returns one random perk you owned when you are revived (multiplayer only) - Stamina-Up Pro: Zombies hitting you no longer triggers ghost most, you must melee then sprint - Stamina-Up Pro: Ghost mode cooldown increased to 12s
+fe324c784a95048812c3d9450f93abcacb1a11c1 2024-11-16 jhw2167 - Fixed George health from being overbearing - George health: max_zombie_health*round*0.5*times_died*0.5*number_players*0.5 - Scavenger damage now scales per round - Upgraded the Makarov to 72 starting rounds - Upgraded the ASP to 140 starting rounds - Boss zombies take double damage during instakill
+99e2c4815a715b7344861dfef4e9d4a1b2270f94 2024-11-05 jhw2167 -Added mechanics to spawn engineer zombie, need to build model and add anims
+e8ec8fbe7998f8002e361223e3e750d775b098a2 2024-11-05 jhw2167 -Finished bug fixing for pentagon gas effects
+d4f50b88f1f971bcaade29e30cb7483ae6689126 2024-11-04 jhw2167 - Added support for gas cannister easter egg on five - Added several helper functions to zombie_pentagon to support - Added localized string OPT_DEADSHOT_HITMARKERS - Added hint for players to challenge themselves with apocalypse mode - started messing around with kino engineer zombie
+e485e2afcff8abc46cb23cb72f00074560c8d598 2024-10-30 jhw2167  - Added support for special dog spawn on factory to scale up health if killed many times in a row - Added hint for free perk drops
+4d09e5e9afbd963fbd077896170d5868a7194937 2024-10-30 jhw2167 -Fixed bug where rebuilding barrier with chainsaw yielded 2000 points -Fixed bug where losing mulekick would force you to switch weapon - Reduced rate of powerup teleporter spawns on factory
+82814fba1c562d6e9824fd32a31a59d48e80e093 2024-10-22 jhw2167 WIP on 05-mapUpdates: 98e95ac -Edits and bug fixes for Der Reise dog spawning and perk drop
+ca8c385ee034e5545aa4f69678699b2d375cceb5 2024-10-22 jhw2167 index on 05-mapUpdates: 98e95ac -Edits and bug fixes for Der Reise dog spawning and perk drop
+98e95ac7cac6f60b523bcdf92bb2fd486f1ed5e1 2024-10-22 jhw2167 -Edits and bug fixes for Der Reise dog spawning and perk drop
+5f74a1bbc84edb4d5cf1fe5a41fa182cb0655256 2024-10-20 jhw2167 maps/- Fixing bug where tp flags allow upgraded dog to spawn before all teleporters are linked - Fixing bug where upgraded dog spawn and death causes infinite zombies to spawn - Upgraded dog not affected by instakill
+264864a1534943a7b4e3d69ef63329b39c93b9d5 2024-10-18 jhw2167 -Dog successfully finds exit and explodes - Need to add perk drop and balancing
+35401833181db9b8aa2af5a8b2cbf7b581c6277c 2024-10-18 jhw2167 -Primitive addition of special dog spawning support for factory - added glowing effects to the dog's eyes and perk drop glow
+a54454dbd6cbbb5d70a01364f2d83a07e5e8edb1 2024-10-17 jhw2167 - Patched bug with asylum pap powerup spawning continously
+d020d106031c9e27e46524b39f4db04142316e6e 2024-10-17 jhw2167 -PaP powerup on verrukt will continue to spawn until utilized
+035c4a6db9cf23dd5dde2b1031e20d91994e3092 2024-10-17 jhw2167 - Added mechanic where free perk bottle appears at a random location in the forest occasionally on nacth
+8fe604580b742b032e2bd56b237145f2737ed51f 2024-10-16 jhw2167 -Fixed bug where perks would not appear within nacth at times, pap would not appear at all somtimes in perk spawns
+49714cf16316af0c3e23ff1b4b9c6bdd78a5ebb3 2024-10-16 jhw2167 maps/- Fixed bug where PaP would double accept PaP weapons - Added several missing weapons to Nacth weapon table
+f5758f85727a59aa18d6d9f01e90c36cde342fec 2024-10-16 jhw2167 - Added small ragdoll kill on shotgun kills
+eeddbe770a0b2432c8257830c64040f572a2f952 2024-10-10 jhw2167 Weapon bugfixes for nacht - added two new locations for PaP to spawn
+166f657bde1bc8244b06ba451edb65af1ce8a432 2024-10-09 jhw2167 -Adjusted damage of WaW weapons - Addded teleport locs to nacht - Added barriers to some models outside nacht - fixed bug with perks turning off and on , nacht
+e49d6c80c56c7f36d8ea2792063b91cde728b794 2024-10-09 jhw2167 maps/- Option not to include BO2 perks - Remove Collision models from unplaced perks - Move collision models up
+98028a5057cc4d459b975da922dcb1c5c0a415b1 2024-10-09 jhw2167 - Perks inside the map will always be on and will not be toggled off - Removed unecessary conditional code from _zombiemode_perks
+8ab8e1c83d9b43fab9fc9ee9d62d8c01136d3eb0 2024-10-08 jhw2167 -Perk modesl turn off and on correctly on Natch Radio only lets you pull trigger once
+e67bf5ce46d014f94f3ce75cb1d5183e4e816be7 2024-10-08 jhw2167 -Added powerswitch models and parts, they do not work - Added logic to teleport player outside - Added logic to turn perks off in zombiemode_perks, does not turn the hint off
+ae2d19c2bba9a889c9033506ed63b38544dfc259 2024-10-08 jhw2167 maps/- Plan perk addition locations and angle to natch - Add all perks to natch - Add PaP to natch - Perks and PaP work, have not tested all weapons - Need to design drops that take you outside, make perks turn themselves on and off on demand
+e561ec6a4e88cbf94eb5eb255f44519729d11207 2024-10-07 jhw2167 - Added 4 perk locations to outside of nacht - disabled out of bounds kill watcher on natch - cleaned up perk spawner to spawn in set locations, not out of bounds
+5bf56f77d444c90bee1988eaaae13b2a007ce660 2024-10-07 jhw2167 - Zombies in apocalypse speed up before killing themselves - Crawler zombies given their own knockdown and getup anims from punch
+497b211c96d76a7b367ac5bd989323cfa4673858 2024-10-07 jhw2167 - Allowed players to change out special grenade in the box with WWN pro - Vulture aid gives bonus melee points in classic mode - Nerfed sabertooth cooldown and heat rates - Set sabertooth damage to constant 6000 dmg/tick - Sabertooth damage doubled when upgraded, double upgraded, with stamina, or when zombie is afflicted
+0c3a4cf3f0460e74d81718196ce39cea057f8ecb 2024-10-06 jhw2167 player SwitchToWeapon( upgrade_weapon ); - Fixed bug where upgraded ballistic knives were not available for pickup - Sickle and bowie model added to ballistic knife model
+67977550ea2d06c5a3464b606368adc8f06c0f8a 2024-10-06 jhw2167 - Fixed bug where upgraded ballistic knives were not available for pickup
+091280c721737d1ee9eeed3a1c7c0b9d5bb26250 2024-10-05 jhw2167 maps/- Upgraded Ballistic knife only electrocutes on projectile shots, instead of knives - Double upgraded ballistic knife will electrocute on both - increased zombie health substantially, and scaling - decreased time of super power drop - increased drop rate of blue drops - increasedd rop rate of vulture ammo drops - increased apocalypse points per zombie quick kill after round 25 in apocalypse
+ca0deeb67f4d774ec4ec4bc4e13379028bbaee67 2024-10-03 jhw2167 maps/- x2 Shotgun damaged halved - Zombies killed while in zombie_knockdown will ragdoll - Sabertooth and sniper kills ragdoll
+250c1188f6f680ec5bc31a41eb384bcf4bd65fa7 2024-10-03 jhw2167 maps/- Patched glitch with vulture aid giving upgraded ammo amounts - Sabertooth gives points as a melee weapon
+9f6e556f1c54049790ce4cc3c80beeb0da660095 2024-10-03 jhw2167 - Fixed normal deadshot giving hitmarkers in Apocalypse - Edit Apocalypse message to describe the game mode - Added support for default apocalypse parameter to set prefered game setting
+95f0a61fa9f5ca79d6ab243c47f0fae8f933a75d 2024-10-02 jhw2167 -Fixed issue where hordes would spawn slowly where nova crawlers spawn due to many failed zombie spawns - Integrated cluster spawning more appropriately with max attempts to spawn a zombie in a particular location - greatly increased base light machine gun damage
+784ed03cbc6366ef09c1422bf310d6bda27e10fa 2024-10-01 jhw2167 -Fixed bug where dev utility was being called
+72ff0e4b66df7cb629244011bc4918eef55f5cb0 2024-10-01 jhw2167 maps/- Zombie max health threshold increased to 400k on solo, 600k 4 player - Added mechanism to test roling zombie kill all with death fx - ADjusted deadshot hitmarkers to apply only on rifle and pistol bullets
+123c09f627eb9bb7d8a45b8bc419553d6c0bcf5a 2024-10-01 jhw2167 -Fixed issue with vulturue aid where powerup related vulture waypoints were not deleted causing entity crash - Edited auto_clicker to use for testing, doesn't work
+63ff6b9dcd2a4cf58d043ae85a1f03236056c56a 2024-09-27 jhw2167 Renamed doublebarrel sawed shotgun upgraded to avoid naming issues
+af578af31b1948521e06d62ff4ff2716dd3e23f6 2024-09-27 jhw2167 - X2 PaP cost 20k in classic mode - x2 crossbow added recurring napalm affects per bow - Sabertooth increased range and scope, decreased cooldown - Moved deadshot hitmarker thread to top of damage override - George early game health increased - George mid to late game health decreased - Added call to watch player button press and melee swap even after death in 2 player
+baff18475fd5eb7e774b2e32831c22d50a97b4fb 2024-09-25 jhw2167 - Fixed Hintstring issues with mule kick and wine - ADded WaW upgraded weapons to mod.csv to PaP on sumpf and asylum
+c08918b6da7a4662431baaefb1d944c7c395d27c 2024-09-25 jhw2167 -moved asylum and sumpf weapons into main mod.ff
+2d28a17710b15d3310389a58c565ac32de3680cc 2024-09-25 jhw2167 -Asylum is having difficulty with PaP weapons, will revert to previously stable version
+939a97938097221041314f99cb7f370bb56b9c4a 2024-09-25 jhw2167 Miscellaneous updates to vulture aid ammo fixes - Some weapons are not appearing or loaded correctly into WaW maps
+25cf4e80a8a16442d9252378eb8b5f59037be93c 2024-09-25 jhw2167  - Snipers get ammo like shotguns, vulture - No poison on snipers - Removed re-trigger for - Descreased vulture ammo drop chance to 4% of zombies - increased minimum drop ammo
+16b5fc113a5800bcb7f9eac01a5a931c5d7d6562 2024-09-25 jhw2167 - Patched intro blackscreen effect that shows settings
+bbb5f0a4189d946e0ce80b7295eec742ca3f6693 2024-09-24 jhw2167 - Reduce zombie speed in Non - Apocalypse mode - Increase zombie spawn delay in non-Apocalypse mode - fixed WWN in classic mode so player loses grenades when they get hit - No zombie knockdown for zombies outside of the map - Extended intro black screen to display current game settings
+53e8f11b146d3a0d399a784872567137b1b1f1a3 2024-09-24 jhw2167 maps/- Reduce zombie speed in Non - Apocalypse mode - Increase zombie spawn delay in non-Apocalypse mode - fixed WWN in classic mode so player loses grenades when they get hit - No zombie knockdown for zombies outside of the map
+06bfea4e1e193393397f088f2e28eb125430fbf1 2024-09-24 jhw2167 - Widows Poison disabled in classic mode - In classic mode, Wine removes a grenade and prevents damage when struck by zombie - WW will use entities to play fx, and will be deleted quickly - Disable WW big warning - WWN nades added to box when player has WWN pro - 2 WW grenades regenerate per round, 4 with Mule Pro - Mule pro regenerates 1 tactical grenade per round - Added auto_clicker.py to play the game and test for error - Fixed hintstring for mule imporper hint string
+3600a7b48de51258de91dfdeb50c8b980f63ae85 2024-09-23 jhw2167 -Added support for classic mode to menu options -Classic mode defaulted to true - BO2 perks default to true - Added classic perk hints and logic to display them - Re-added extra drops as a configurable option, defaulted to false
+7c08f613ed4991856b51097e1e4097346302a25f 2024-09-20 jhw2167 maps/- Thungergun and upgraded version added to invalid points array - Ray gun removed from invalid points array, you can get points with the ray gun in apocalypse - Zombies speed up to terrors before dying in apocalypse - In classic zombies they speed up to super sprinters - Pro Perks cost 40k, 20k in classic mode - You get 3 lives in apocalypse, don't need perks to be revived - Spawn delay for zombies increased, but they can spawn in bursts now
+db3dda6689be7ac46cc7ab4b91fc4561ba196268 2024-09-20 jhw2167 - ammended vulture aid ammo amounts - Added vulture parameter to track proximity to drop to pick up drop - Increased range of vulture ammo drop pickup - Added additional checks so boss zombie vulture HUD does not glitch when theif exits map - play fx on vulture drop pickup
+6aa98a44454c15f4639029fd58ff2b764f3eb864 2024-09-20 jhw2167 -Added support for zombies to spawn in clusters of up to 6, but mostly in groups of 2-3 - Increased delay between zombies spawns - Decreased zombie speed earlier in the game
+7ae5fc62738d5cfae4e86081a655b7fd65ca46a7 2024-09-19 jhw2167 - Patched setting thief health to integer instead of float value - Moved get_upgraded_weapon_string to reimagined_utility file - Added level variables for determiining thief health scaling
+87e69058acf26912a460f6e64e42c0e8d991d634 2024-09-19 jhw2167 - Reduced dog damage to 45. If the same dog attacks you twice, does double damage
+1b1c0d7eda6b27873a242240e634d12e763508d9 2024-09-19 jhw2167 - Reduced thief health to 16 zombies worth - If thief takes explosive damage he is slowed down for 2 seconds, cooldown of 30 seconds - If player has PaP or double PaP weapon, health is increased
+587029ea228a5f2f79e1099249fca24101185da3 2024-09-19 jhw2167 - Before round 6, last 2 zombies are sped up to sprinters, then last 5
+7e1be9c04e424edbc6865dd50ddd14db3d90d85b 2024-09-18 jhw2167 - Updated instakill hitmarkers not to include melee weapons
+1d3991d97ad71ef840ab77ab97a8c7922d5ff14f 2024-09-18 jhw2167 - Removed stakeout (ithaca) from the box \n - added hitmarkers to instakill
+eb007583e7c8f7c97b49a97a4dcde9532f6160e3 2024-09-18 jhw2167 Bugfixes and editing on zombie speed-up fixes - increased zombie speed over teen and 20s
+5602f65e3d90c1d07ccad5ba932259c7aabbdbe6 2024-09-18 jhw2167 - Fixed bug where zombies would not attack when super sprinters or terrors - Added sabertooth shock may use later
+975fafc9182dded2af94fb0f38fa94c0d1e02289 2024-09-17 jhw2167 - Zombie higher base speed lower in the game - Zombies sprint to get close to player then slow down within a small radius - When 5 zombies remaining, they all start sprinting
+2ec8069d5f1e6c8d94b9fff189caf2abec6f3882 2024-09-16 jhw2167 - Added check for primary weapons list before vulture ammo check to avoid undefined error
+cdc3828575457ceef0860632c7027508c3207855 2024-09-16 jhw2167 -Fixed Vulture bug where ammo drop fx didn't show
+d316d0eb0ba2d9611d76e55e8d75cef9930610e4 2024-09-16 jhw2167 - Added boss damage to g11 - added upgraded g11 to upgraded damage - updated zm_version
+580e0774863a8c61b1b4cd0bacdd41c5355dfbac 2024-09-13 jhw2167 -Increased y offset of heat icon by 2
+bd9852188a462b4a5003976e594e0a1dfac97904 2024-09-13 jhw2167 - Added support for BO2 perk toggel - Moved vulture perk in Call of the dead - skipped shock anims for dogs so they don't get stuck
+7921d566e088542a73716264092986ddb354f6f4 2024-09-13 jhw2167 -Fixed bug where perk would sometimes not appear in perk hut if PaP was added twice to added perks array - Finnished testing so model entities do not run away on shino - Added parameter so ithaca is not added on WaW maps which would cause weapon overload and perks not to work
+0a8ce778a0f9ec72e8c3687489792cb6314b7ad7 2024-09-13 jhw2167 - Patched Shi no Numa exceeding model limit error by moving init bo2 perk functions up a level - Added support for bo2 perks toggle on Shino and base vanilla, need to add ot all maps - Removed timed waits for rounds used for debug
+b4c13fa76425e9989828795878ee7ce61fca6b4a 2024-09-13 jhw2167 - Issue determined as re-initializing BO2 perks each time we attempt to turn them on
+f85fe87c335103d95de584a3e48b7a90b4ca2a98 2024-09-13 jhw2167 -commented out waits for perk_swapping in cod5_sumpf_perk files - added timed waits in activte vending machine and sumpf perk rotator function
+4318aabaef6ba8da3b2d87d126541a145fa42d21 2024-09-12 jhw2167 -Playing with sumpf perks and debug settings for sumpf error
+ae7e680c04546c4d0313ed682ab8d165b3748049 2024-09-11 jhw2167 -Added debug code to zombie sumpf perk machine scripts - Added round progressor utility functions
+4b4013a3c56c024e65c92ecdc1f0b108023cdaac 2024-09-09 jhw2167 -Bugfixing for game crashes, round testing
+d72aab564ec710239d21620f9eb95f3bda389fa3 2024-09-05 jhw2167 -Experimenting with melee being triggered by shoot button - set ballistic knives not to swap out when empty - Cleaned up dragonuv _x2 and other runtime script issues
+25023b1111b696a0236687634c65f203915ab31b 2024-09-05 jhw2167 -Removed zombie knife flourishes for bowie and sickle - Removed combat bowie and combat_sickle weapons - Removed normal bowie and sickle weaponfiles - Added bowie and sickle weapon models to knife and combat_knife alternative models - Added dynamic names for combat knives for sickle and bowie knife - Edited damage logic in _zombiemodeMode to accomodate for new upgraded style
+5aa43123535b6faf0186ac8b3b654903ec635af7 2024-09-04 jhw2167 added println statements to debug default knife melee, reset knife_zm file to reimagined
+d553542b0755c0485b3eec098a0437f7a130a856 2024-09-04 jhw2167 -Removed Flourish weapon animations for sickle and bowie -Added prinlns to debug missing knife melee
+eddb98cbecde9908a5ae3c9bc8a9e6d299b017ec 2024-09-04 jhw2167 -Edited include_weapon statements to exclude upgraded weapons - Removed println debug statements in zombiemode - Removed include wine grenaded from zombie_theatre and nmoved to weapons - Added hs10 left hand to mod.csv
+20e64e4d3a05c10a018cd1781ce44cf5c0cb5a4b 2024-09-02 jhw2167 -Added series of points for George to run to - Logic for maintaining george is getting complex, postponing this for later
+5ef45a720e31dc0a4d19e9431ce13602499b4b29 2024-08-31 jhw2167 -Substantial effort to get George to run away from chainsaw elegantly
+955a712ea1b168f6197e2e1a1d4efad042cd2afb 2024-08-30 jhw2167 -Trying to make George run away from the chainsaw, but its tough
+71bcd30f6a58075380575587f5e0fe988994edfe 2024-08-29 jhw2167 -Added mechanic where Goerge runs away from chainsaw user
+e28234d906e422646fbba1db090172af16891939 2024-08-29 jhw2167 - Increased dog melee damage to 90 - Like zombies, the second time the same dog hits you it does half damage - Fixed bug with improperly named array for despawn zombies - increased ammo on ak47, decreased flamethrower ammo
+3962ca600d0bca89037ed28454f615b75bb4935d 2024-08-29 jhw2167 -Fixed bug with hellfire not working properly and killing too quickly -Hellfire does damage over time for 4 seconds, killing all zombies at the end - Dogs are immune to hellfire - Dogs have massively improved health
+3d4d2fbf3a1858cb067785eaa0123b1a5171d5ee 2024-08-28 jhw2167 -Increased dog health
+32fa282b6c87ce55e6a6af01acd48a1567a198b1 2024-08-28 jhw2167 -Bugfixing spas, famas, and dragunov weapons
+3b140e24917c499cccd81a2db8ad46913a9fdcaa 2024-08-28 jhw2167 -Added X2 Dragonuv and damage modifiers
+96da075aa78bb8e7abe9400400114e048cf119d0 2024-08-28 jhw2167 -Refining and bug testing new weapon abilities including infinite ammo, execute, spas effects - Refining in game hints
+7e5dd766f09c5e1d0318136b53a4db1f6df3b5d6 2024-08-27 jhw2167 - Enfield is single shot execute weapon - KS23_upgraded and x2 are 3 round burst shotgun and x2 shocks all non standard zombie types - trying different HUD element types for fluid weapon name display
+09e0fd34dce01aafe7d524e5206b227ae9e932ff 2024-08-27 jhw2167 - AUG_x2 HintString added and updated - AUG masterkey now treated as a shotgun and no longer sucks - AUG x2 weapon masterkey has eletric effect on all rounds - AUG Weaponfile updated to increase clipsize and ammo - Added isolate bonus damage for spectre - Increased ammo and moveSpeed for Spectre
+67b6cad1fc2a62be527ddbb639b1f6787d6f2b8f 2024-08-27 jhw2167 -Added special bonus to famas upgraded so it regenerates ammo over time - Edited Famas weapon to hold more ammo - Added special bonus to spas upgraded so it cycles random ammo bonus types on payload
+453c3ee04c0adea70d401b41726d17f2b6da5936 2024-08-26 jhw2167 -Added partial refund to packapunching uzi -Fixed bug where new upgraded weapons would not be found in elemental effects array since the weaponfile is one level lower than the intended weaponName - Fixed bug where player could hold trigger while reloading to trigger hellfire whenever
+22d34976c23986a07e18d861f2027a5142eeaf89 2024-08-26 jhw2167 - Added method to handle uzi double pap specifically - Added Different uzi elemental types - Added support for poison weapons - Added method to get upgraded weapon string using new advanced configuration - changes to uzi and sabertooth weaponfiles
+830dd13f26ac7afba7746090446edfd3a7d845d1 2024-08-25 jhw2167 -Added function and menu item to support dynamic zombie naming
+4d974af7301761d9071b9c12d833ae37379ce7d4 2024-08-25 jhw2167 -Configuring new function getWeaponUiName for dynamically setting weapon names
+daa16c42a5a9416b58c2bbb2e15bfe2fce474229 2024-08-25 jhw2167 -Reorganized and added double PaP weapon names to strings file - Added method to coordinate setting new names in reimagined_utility
+41f3805b825c0600179ade06cedf71dfe39b7b75 2024-08-24 jhw2167 -Added damage to sabertooth -Edited skins to better versions for sabertooth -Added some new names to reimagined strings -Altered cooldown image in reimagined_hud
+98fa84d5772f729d22557e9f7f887d999e0fa2dd 2024-08-23 jhw2167 -Added Sabertooth saw to the game - Added sounds to aliases - Added sabertooth to weaponOptions for PaP camo, but the upgraded camo looks bad
+cfb33346433ddc931ced5bbc2ee5b1d9fe9124ba 2024-08-22 jhw2167 -Added sabertooth chainsaw to the game - material color map does not seem to load properly in game
+3f2c75dbb773497797f11eeb0e767efa95a61c14 2024-08-21 jhw2167 Added ithaca anims to ks23 since I could not figure out how to map notetrack sounds appropriately
+3c43dfd2b24de323cd5ba1436b6a65d4bb9c264d 2024-08-21 jhw2167 -Added KS23 shotgun, refactored weapnon specs and overrode damage - Sounds not behaving appropriately, will restart computer
+c27ae6fc06574b0251bc6af77c46d5e94c7231dc 2024-08-20 jhw2167 -Added KS23 shotgun - Added mac11 SMGs, but not refined for x2 yet - Added sound for KS23 but struggling with performance - We are pushing the weapon limit again
+6bd706bad2be794e0b36b3dcfd4fca476f388728 2024-08-20 jhw2167 -Added makarov and PaP variant - Added sounds to soundaliases for makarov -Added makarov to zombiemode weapons and damage overrides
+12a06704b7d3fdea42de37efcae0f4d84eb49f33 2024-08-19 jhw2167 -Added Enfield and Upgraded instance - Reorganized guns in zombiemode_weapons and their upgrades - Added special handling for x2 czs where one is Hellfire and other is shock weapon - Edited CZ75x2 weapons, M60, and Enfield for fine tuning
+378b92df77a8c03d89d3bf5751368550f022eebf 2024-08-19 jhw2167 -Added m60 files - Added m60 to add and include weapons - Added damage overrides to m60 - Edited stoner, uzi ammo
+1df045cf0727cc9be158b6fbd5b9e3201d60540b 2024-08-19 jhw2167 Added damage samples for smgs - Added condition so it is impossible to get weapon from mystery box if you had it or an upgraded version that was taken by Mule Kick
+f9ccab6ceb356b24247f1ec000b3c93e1b65fc42 2024-08-17 jhw2167 - Added notetrack soundmap to Uzi and upgraded variant -Added numerous fly sound files for generic sounds -Cleaned up some println statements in code
+a88cab52f8f6aa1aea90338888732c223ebac627 2024-08-16 jhw2167 added uzi and fire sounds - Added appropriate weapon reference displayname to ASP weaponfiles - updated mod.csv appropriate
+0ac47bbc916c0d48e487f1d96a2bccd1ea475663 2024-08-15 jhw2167 -Added damage and tested for asp and upgraded version
+aa93b7d0e05899ec22d8aea0aa8fd9e3e75ceadf 2024-06-07 jhw2167 Painfully, a pretty good addition of the ASP with pap support. Damage still needs to be sorted, names and camos applied
+fba000630cc9003c66fc617023c7d50aa7121dba 2024-06-06 jhw2167 Added ASP model and gun to zombies. Pack-a-punching does not work, but both weapons are in the game. Sorting out sounds
+4c76449caf9f498b06cff6a03c4e48d75e3075b6 2024-06-06 jhw2167 New PaP system works so we have many more weapon slots to make use of now. Need to edit base weapon files with more ammo, need to add special names and special camos
+f3b054819f81024b22d7e518e19e42f892d7d776 2024-06-03 jhw2167 Syncrhonized the file weapon includes and the real time includes and add zombie_weapon function calls. Next step is to implement RAM x2 pap with player based variables, then to add new weapons, update single pap'd weapons, and add new pap types. Also add new PaP weapon names and edit delivery mechanism
+924d3ddedd1155b859f2a35558ea0d3bcc6872b8 2024-06-02 jhw2167 Redesigned _zombiemode_weapons file with the help of new helper.gsc file and copilot. Double PaP is fragile at the moment, as only some weaponswill have a double pap weaponfile
+b1d0dba8bd2611af5d62caf9060cb67dfd0b5773 2024-05-30 jhw2167 - Removed client visions from diveToNuke - Reverted zombie drop fx to server fx temporarily - Removed fx on vulture ammo drops - Removed createEyes on clientscripts
+19d2d22595c9199defcb380e86d682ab265195a8 2024-05-29 jhw2167 - Cherry min cooldown set to 4s - Reduced Cherry Range to 196 units - Perk cannot be disabled for player while superpower active - Hellfire_Onhit hint added - Added minimum damage to eplosives
+613f92bfeec649a678164b2ea35270603fcaed39 2024-05-29 jhw2167 investigated sourceBuffLookupLength issue to confirm it was not a model or fx limit; fixed visionfile issue on ascenion on serverside, commented out clientside changes
+5937d65e3cd8a7ed0373d04b736f9a71f4430059 2024-05-27 jhw2167 - Superpower now stacks drops correctly and doesnt last forever - Other special grenades removed from box while you have Wine Pro - Changed muzzelflash on some weapons hopefully stops green poof - Re-add box randomness - PSg1 disabled temporarily
+279a9fe070243065fb91eb67f8da9041851e0c31 2024-05-23 jhw2167 maps/- Superpower perks last forever if you go down - G no free entities with QRV pro, zombies, moon - Widows poison no longer created entities - Zombies ignore you while PaP on verrukt - Fixed visionfile issue on Moon wiht zombie blood
+57b25f46de00aaf15f29b0f7f5699ad8fff142b9 2024-05-22 jhw2167 Correct Jugg price and hint on shino numa
+9753fb32c303d5a2dcc08325f3649b4a50b9a1b7 2024-05-21 jhw2167 - Buff melee kill points to 140 - Stamina up should note double melee DMG - cannot switch Bowie or sickle to primary - DBT should note benefits to ammo - picking up ammo with knife should go to gun - speed up/ rewrite superpower - dropoff for Bowie damage from 1-3 is too steep - Babyjug hint - monkey cycles blue drops - Perk bump trigger points on all perks - Ammo picked up from vulture drops will be added to first valid weapon slot
+61859a97c757f00071185645513cda3376b2cd71 2024-05-19 jhw2167 - blue drops are a lot early, less later, feels like more blue - map restock to firesale and firesale to restock on verrukt - set vision file after tp - fix minus to player score - change Jugg price shino - Fix Fists not working - Only normal zombies may be knocked down; not dogs or nova crawlers
+29f2e4117c7fe67acfc191b3595b7a5693e4529c 2024-05-18 jhw2167 Added springfield to asylum patch to be included in map
+0f90382038f47e1c4a012b276fd677134115b648 2024-05-18 jhw2167 - SPD doesn't speed up melee yet - remove burned effect on WW - tone down Widows paranoia - Classic Wine effect moved to Eletric Cherry Pro - Reduce to freeze verrukt - replace color and message with teleport! - PHD gives bonus points to explosive kills - Increase time on early apocalypse rounds, its tough - Fix moon easter egg issue where Cant place rod - Fix weapon_swap between knife and fist as main melee weapon
+c32a16c8c54278357c898edfae152f707c4dcd9a 2024-05-18 jhw2167 - Shino dog rounds counting into the negative on apocalypse - Fixed some WaW Wall weapon purchases not working - Buffed Vulture ammo bonus to 30 - Raise invisible barriers in verrukt PaP area
+a8631799ab0341668c3090e3cac03dd692c02042 2024-05-18 jhw2167 - Less Mercy in later apocalypse rounds - 5 second wait before each timer begins in Apocalypse per round - Set all collision clips taller so they can't be jumped on - Set jugg cost to 4k when expensive_perks is set - Improve Damage for PaP weapons - Add fog back to maps, fog turned off when power activated on Call
+1ace2736e99dd9f7565da2db44eb1bccfb15ba35 2024-05-16 jhw2167 Edits to patch overrides to syncrhonize them
+d153755945bc8b14fcc2b910fa092d09e5192d40 2024-05-16 jhw2167 Misc edits to weaponfiles, _zombiemode_weapons script, _zombiemode for weapon damage, sound files, linux scripts and .csv files to add support for new .ff creation
+87e52a9e9fc32f738af87fc371095052858954d2 2024-05-16 jhw2167 Revert "Added many misc files related to WaW weapons. I hope they work. Missing misc set of image files I will have to dig for in BO1-raw"
+bcd9bebcbe34b7c357d59f90cfd3aaaeda6a934e 2024-05-16 jhw2167 Revert "Misc changes to waw weapons that will be removed. Will revert head to some commits back before all broken waw weapon commits were added"
+70e793916cc2fe273b457aac1e8e649b56789420 2024-05-16 jhw2167 Misc changes to waw weapons that will be removed. Will revert head to some commits back before all broken waw weapon commits were added
+79ddea7c0ec783d9bf679078ffb1b978cba1a347 2024-05-13 jhw2167 Added many misc files related to WaW weapons. I hope they work. Missing misc set of image files I will have to dig for in BO1-raw
+82ac35af6fbe098f043cf9a98137e8f936059f18 2024-05-09 jhw2167 Added fix to Shino where perk triggers were not successfully deleted. Reset perk swaps to random set of rounds. Fixed hellhound spawn sounds
+be4384fb859b790b6646d63f5d927739f7b02a9c 2024-05-09 jhw2167 Minor buffs to vulture aid ammo restoration, add addition of drop incrememt variable to give mor drops in the later rounds of zombies
+2116735c2c75c3c14a2f12aa60faf5d44a7542a5 2024-05-08 jhw2167 Minor patches to fix apocalypse scoreboard and vulture aid fx and Shino Numa sacrafice zombie action
+8736613fa2a210bd60705ec78bf9bfbc4020b359 2024-05-07 jhw2167 maps/- Fix Pap_hellfire_hint - Fixed offhand melee weapon hint - Fixed Max Ammo saying restock - Fixed Free Perk waiting for all players on superpower active - Minor edits to apocalypse stats for 2 player testing
+d92024f5e2b889b02bf4fb45ee5fb613fdb2ac05 2024-05-07 jhw2167 - Shino Swamplights only begin after all zones opened - Added level var to track pap_available on Shino
+b171112525622db3db7a51c7079690621b0314d2 2024-05-06 jhw2167 Added support for generating extra perk on shino and supporting sounds, fx and anims
+2719f2815b0e0c411cdae67b473e60f9a3190abc 2024-05-06 jhw2167 Began implementation for Shino swamplight extra perks
+6b25b34c01128110aa8dc5754fc1090e03067861 2024-05-05 jhw2167 - fix explosive damage - Fix buy extra perks on Shino - Add Pap to Shino only after all houses are open - Fixed Moon Vision file issues after stamina up - Fixed Moon zombie eyes change to blue after easter egg - Added origins for Shino swamplights - Fixed shino issue where untimely zone open caused overlapping perks
+2201d375500c5465148ff0561c172b35ce7fcf7e 2024-05-03 jhw2167 - Fixed hints that were not displaying - Added hint to Superpower - Added support for drop restock and hint - Patched verukted teleport with Pap shader - Patched upgraded ammo costs to 4500 - Fixed Vulture aid bug that would show george when he was gone
+15ed23f118fc6211be73a2e428e21f3e2e4e32e7 2024-05-03 jhw2167 - Changed L96a1 upgraded damage to 74k, headshot multiplier to 3.5 - psg1_upgraded to 90k, headshot multiplier 3 - green drop rate up to 16, blue drop rate up to 10 - added playable area check to bosses - All sniper kills reward headshot bonus - Sidearm kills reward 33% more points. Sidearm damage returns double points - Added wait to Superpower so it would not remove extra perk if perk bottle was just obtained - Added Perk Slots row to Apocalypse Player Stats screen
+fc821f2f984aa96cb2d0187d783a6feba8398779 2024-05-01 jhw2167 Addressed the following bugs: - spawing trade weapon drop - reduce points to 75X - zombies glow without dropping r18 - don't drop when killed by cherry? - Cherry shock doesn't stun when doesn't kill - fix explosive damage - Deadshot hit markers proc on cherry and poison with shotguns - zombies with head gibbed no longer die instantly
+91882e02e6e4a23fda79aefafe0e61aa246c7488 2024-04-30 jhw2167 Added support for converting powerupts to free perk and other powerups on verrukt
+0fdb0f94224ca9b92003002ee4421a369ada118c 2024-04-29 jhw2167 Edited core damage and range variables regarding PHD script, added quick perk drinking to Speed Pro
+00dc19588a8b4d33b53168c3bfbef82a641181b8 2024-04-29 jhw2167 Slowed zombies down, and increased delay so zombies don't spawn as quickly on solo. Edited some hints, bugfixed supperpower powerup and removed println statements from _zombiemode_powers and hints. Edited powerup teleport so it only works when almost all zones are open
+818ee152662fbaae5b6616081f98efe8719dcfc8 2024-04-29 jhw2167 dev changes for release appropriate settings
+c517c0e8d700d0f16f258e4ca6f4e0e8aa63c03c 2024-04-28 jhw2167 Fixed bugs with superpower: wine grenades not taken, cherry activating after removed, and ensured perks added in correct order after returned. Added superpower drop to all maps. Increased time for powerup and for Verrukt pap to real game lengths - not debug lengths
+84072eae65fb04c593e9a07bf514941ded9da5f5 2024-04-28 jhw2167 added superpower powerup support to zombiemode_powerups, added drop to asylum it replaces the normal tesla drop. Made quality of life changes to manage_ui_perk_hud in order to support rapid removal and additon of perks elegantly
+ece8f574f206f75389606ef01a9285ef2a80b3a1 2024-04-28 jhw2167 Minor fixes to verrukt to set PaP angles correct and to exchange all 256 height collsion models with x64 version, other was too high and creating invisible barriers
+b8d56f4a150755725e3bd0077c4bed9fb658b574 2024-04-28 jhw2167 Added in game hints to weapons and pack-a-punch as well
+a635ae97ba5e24204fdd36ea96596f25b335e13b 2024-04-28 jhw2167 Set the default start gamemode to Apocalypse. Need to add more hints tomorrow
+11c504e29fb6766c49bab3eee155a673b2b8b5da 2024-04-28 jhw2167 Added support for game hints in server files since client files do not support client hud displays without UI hud config. Added menu setting support for hint enabling in game and improved menu experience for difficulty setting
+cd2139930ac7b8174b9f72ff6d6b9e6a8b7bce1b 2024-04-28 jhw2167 added perk hintstrings in localized strings and added server side support for them in _zombiemode_reimagined_utility, needs to be moved to client file
+d419b235a1886c828ed51f9b8a2dc1ef7ebb834b 2024-04-27 jhw2167 Adding perk hintstrings to localized strings file, ff not building properly at the moment so we are comitting early to restart machine
+9a49aba077cbec37a006e9e23a0a55c4fe956b87 2024-04-27 jhw2167 Added game startup hints and general hint generating utility funcitons
+546f2a5c22d4b8cfec527f696b09ebc7e0a170bd 2024-04-26 jhw2167 Fixed explicit dev log errors, console log still overpowers the console however
+53e7b90d83d2ef43ff075734da998f9d65ae0139 2024-04-26 jhw2167 added fonts, they do not work. Updated mod.csv to included fonts. Making various edits accross all files to errors with console log enabled
+bbe0c48a6d2ea79a439b3e820deded19ba33452d 2024-04-25 jhw2167 Moved electric cherry forward in shino hut so model would not glitch through the wall
+2881f970699b1eb556047e1c2201e03876e526fa 2024-04-25 jhw2167 Base doubletap gives 20% damage bonus, pro doubletap gives 60% damage bonus
+477f6dc8f73c904077ef3e5647c1c5ab8a73990e 2024-04-25 jhw2167 Reduced electric cherry max enemies killed from 16 to 8
+da54938d86699900bbd8b4b636cd09a8363028a8 2024-04-25 jhw2167 Electric cherry added height check to electric damage
+4b3b4dc961bd15f0c7852a45762611d3454c9fb7 2024-04-25 jhw2167 Misc fixes regarding pap spawn and if statement errors with commmented println statements
+0019b732efb08ab9de7f2b1b38e1d5347563f216 2024-04-24 jhw2167 miscellaneous updates to prepare for new release
+3f13744bad7be7e2b1f287688e8bc850a28df50f 2024-04-24 jhw2167 Resolve speed cola crash issue by limiting total weapons included in shino and verrukt, will need to take some time to add weapons without upgrades in these maps before release
+9bebc2845dce3010da76610ece7432b83811af02 2024-04-23 jhw2167 Resolved merge conflict in merging wait_print fix with bo2Feature branch mainline
+7747277033c8e31119aa5e881484aa2ed8d7fd38 2024-04-23 jhw2167 Removed wait_print function as it doesnt work once compiled
+616775a17bad7a89bcb12b13e28aa7be343829fd 2024-04-23 jhw2167 Added pap to Verrukt, moved electric cherry perk spawn location, added bonfire powerup to verrukt
+b84d102a9e206a228b8ff058411abe28496bcd94 2024-04-22 jhw2167 Added sound files for all WaW weapons to support Pap on shino and verukt
+58758558795fcd0ab93eab74be4ff5133a76ffe5 2024-04-21 jhw2167 Added PaP to verukt, moved perks_init to first so pap would be setup on these maps before calling the weapon additions and inclusions, added pro perk placer scripts in asylum, use it!
+d4fbeca3299057b2234141c6864f5c0ae1cc2366 2024-04-20 jhw2167 Fixed Vultue aid + PAP on Shino so it is not completely terrible and broken - waypoint + respawn issues. Fixed issue where Max Ammo would not be picked up with vulture pro. Need to blacklist certain WaW weapons from PaP
+22fffbd0c84b3b25bc79847c393ff4f375d7f189 2024-04-18 jhw2167 Fixed vulture waypoints for perk respawn on Shino, Call of the Dead no longer compiles
+f30239ced7eb0345e49d50ef174c42cf5cff5135 2024-04-17 jhw2167 Added pap efx for shino and verukt. Fixed various bugs relating to vultures perks moving, pap trigger threads spawning and killing. Vulture offscreen error should be patched, maybe need to revert inPlayableArea check
+87f0e23ac3dfd2fa8cc7c5f9cab16bc9123ae955 2024-04-16 jhw2167 pap sounds and model added, need fx as well
+230dfc16b2795a38aea7c1a39911270c666edb87 2024-04-15 jhw2167 Added packapunch and OG 4 perks assets to mod for Natch eventually. Doubletap looks odd in game, lighting is weird, and vulture shader doesnt show up
+7c6d2dd18a614c9859dfd583c5ee39bfac03d8a0 2024-04-14 jhw2167 Updated shino perk swap to happen every few rounds. Handled related bugs. Began attempt to implement glowing hanging zombie to trigger perk changes but was unsuccessful, will continue later
+b2b81767f25e49212ce02dd040f33cceed916a16 2024-04-13 jhw2167 Major additions made to add multiple perks to shino perk rotation. Adding and editing functions in sumpf perk machines files
+ea07b8f8ed51613be4a50e7dbe0e79c774e4ec40 2024-04-10 jhw2167 I am able to spawn the perk and see the effect. Classic perks do not have triggers that travel with them. Maranthon is not finding his trigger and I get dbtap
+c1fac3decdb03df6f5edbe5c4e615cf4347f549f 2024-04-09 jhw2167 Encountering great resistance when trying to remove basic perks from shino, added zombie protoype moving perks system to shino and trying to get it to work
+e95b252245150788898045d1b5706a60c25a63a3 2024-04-08 jhw2167 Began adding all perks to shino, refactoring perk spawn functions, will have to spawn perks dynamically each time
+012e66a9fc92de732abff81a0300922086d079df 2024-04-07 jhw2167 Misc bug fixes related to thief take weapons and pack-a-punch
+3b6637235d85aa5d9963463f249d8c4950f0890c 2024-04-07 jhw2167 Added some dev and utility changes for killing zombies and testing round progression especially on Kino and with regards to dog rounds
+3461ad3052e2d5a9a151bd0c6b4212c76d6fe61a 2024-04-07 jhw2167 Dev changes to watch faulty rounds and kill_all utility
+110329d2fc338c25bd65580c8533a0683492749e 2024-04-06 jhw2167 Fixing bug where rounds would stop on pentagon or kino
+acdf62afd03f2c07f549f39046a90091b073e1c3 2024-04-05 jhw2167 Commented out dev helper function
+d970e1569bebc8b50e6e9f0fd7eedf4eba29b773 2024-04-04 jhw2167 Fixed issue where quads were being queued to spawn but not actually spawning and was affecting enemies remaining counter
+2959544894e193bcb310d217df6ff21ec5b8b01f 2024-04-04 jhw2167 Misc edits to override and prevent special rounds from progressing
+5b1cf5ed0c9a2eb4604fb5a022e120b66c1a3ceb 2024-04-04 jhw2167 Minor patch to support special rounds from glitching
+30f23714d2dd8787c151227d96104e26e82e9430 2024-04-04 jhw2167 edits to dev configs, need to check code against common code
+b4ea6cb8838422e2f3af8a97e52d1892b915f170 2024-04-03 jhw2167 Patched error where Dog and scientist rounds would halt forward progress
+0b78f9d43503c5550461ff20846536cb2fc70f13 2024-03-28 jhw2167 Minor bugfixes to Select Menu and weaponchange, also Der Reise start screen
+a78683898fcbf606f4af40747b0fd7dc0cbdcf9a 2024-03-26 jhw2167 Added melee weapon hit sounds to punch attacks
+5a2175c94223001c6f6df776a0448acbc28864fb 2024-03-26 jhw2167 Fixing sounds for melee weapons, upgraded cherry. Bugfixxing melee weapons, updated some drop values
+5949dfc7973da0faf0282696bb208a343c17977e 2024-03-25 jhw2167 Fixed bug with widows and vulture not working with knife out; raised points for killing zombies; fixed bowie and sickle working when in hand
+0777419ae6680018fd946531ac1bfaf5cc8f89a6 2024-03-22 jhw2167 I have conquered the knives in BO1, players can now switch between fists or knife with gun
+aa5e5d40c56335debf248977b2e72c6a10ed1fa9 2024-03-21 jhw2167 added assets commensurate with punch and knife weapon objects, need to adjust current and offhand weapon objects in sickle and bowie knife codetoo
+6544e3531e2769e48ded2ce94ed2c2e643720c64 2024-03-18 jhw2167 Added functionality to view efficiency and total points information in player scoreboard
+ce3519ef47a79475c2c9662b81c977520f90fb9d 2024-03-18 jhw2167 Bug fixes for vultures wine, added efficiency count to scoreboard for apocalypse mode
+f23f3a5c91f3d5701dedfa8b921a3936ff4f8990 2024-03-14 jhw2167 Misc bugfixes to perks on down, widows wine, cherry, zombie knockdown punch
+24118c349cb15d137b6c1726b0dbfbf96ed42bc5 2024-03-12 jhw2167 Fixed vulture bug where waypoints didnt appear due to println statement being added. Also fixed bug where zombies without drop had drop glow
+ee30a31a8d225c764b98c5baa15cf25983f9bf02 2024-03-12 jhw2167 line-endings update from compile test
+9b47a42e22e08b80e27e51dbb1b4f950b504e4b2 2024-03-11 jhw2167 Added common_scripts file for bug fixing, edited all perk machine files to allow bo2 perks for all maps. Shino is messed up, but otherwise all bo2 perks are working on all maps now, bugfixed wine and vulture a bit
+3c2024c7253f46d09e66393560b34d52a12e119a 2024-03-10 jhw2167 Added widows web grenades for all maps, added web explode, web zombie wrap, poison acidgat and crossbow red blip fx to support. Added models and parts to support widows web grenades, added icon for hud support and added to weapons array in .csc. Currently 2 WaW maps do not compile do to undefined flag, will have to add common_scripts utility file and patch it or hunt for error.
+9242d72d92f5f694bbbc87059e2c8bd587b33159 2024-03-09 jhw2167 Messed up mod.csv somehow, swapping to old one to test
+26dcb93165c67d9e1828a9bea85d5d46deefe4ec 2024-03-09 jhw2167 Added many assets corresponding to wine grenades, will be a long day of sorting out all the assets
+79a3b82ba68bc3fae2b0837a249068f1df50cfe7 2024-03-07 jhw2167 added poison damage and constants to widows wine, added function call in damage_override to trigger poison damage. Added acidgat fx on tag for zombies, probably want to switch to a model. Need to continue bugfixing widows warning hud for saturation errors
+5af3ebb339e6fbf41bd9ee27a905ad5506105206 2024-03-06 jhw2167 Added hud display to widows that reveals zombie nearby
+f461fe4c606dbd19de0e1ebaa6f9fa72f5843d4c 2024-03-05 jhw2167 Added visual indicator on healthbar to show presence of perma perks like baby jug
+a4e1e686c2c7f915390899dd51428ea93992bf80 2024-03-05 jhw2167 Vulture aid pro now allows users to see a green glow around which zombies will drop a powerup. These fx are clientside so do not affect everyone
+d1d70cea340ccf6a569d33cdeeb2c63ecd9306fa 2024-03-04 jhw2167 Vulture aid now detects which perk is availible in nml and places the appropriate waypoint
+df68fa182a71f835182a872dbc2f3ba2d5c8772c 2024-03-03 jhw2167 Fixed bug where monkey taking perk caused the shader to disapear. Now ui_perk_hud_start_flash and disable perk functions work as expected with shaders and actions
+bba85492ceb2dc8827005aedc82c8f5cf8ef447d 2024-03-02 jhw2167 Reworked monkey perk stealing, so it fades perks in and out. Needs fine tuning. Fixed bug where vultue box glow wasnt stopping when vulture stopped. Fixed bug with perk removal and disabling. Monkeys disable pro perks for 30s instead of stealing them. Electric cherry shock applies to monkeys
+436eb0811b5721ce7af32ba97786104bbee57849 2024-03-01 jhw2167 Fixed bug where perk light was obstructing cherry cola; perk lights will move with their perks now
+c42976e09c4903ecd349b45ab77fdc49f705b869 2024-02-29 jhw2167 Fixed issue where monkeys would attack a perk with undefined attack points and would freeze in place. Now all new perks and attack points added to ascension. The fx perk machine lights are giving me issues. Fixed issue where zombie eyes would turn off when power was on
+1066301e82df3e228f90985cb9b18b3614f081c7 2024-02-28 jhw2167 Fixed bug with dog rounds not spawning, and dog rounds not ending, and dog rounds coming concurrently with normal rounds by adding decrements to zombie_total in ai_dogs
+533468714692460d78367bfce7747830aff750c2 2024-02-11 jhw2167 Added means to disable vulture with ADS+melee button combo, code runs and compiles but settings are configured to DEV, will merge with master to push recent changes
+4fdce5d5f8fb3ab6141915d5f1ca443013301a30 2024-02-11 jhw2167 Waypoints now work with powerups, regular vulture aid, fixed bug where box moved instantly to test vultures
+5cc52f5de50bdce81b95fdc01f79636fa3d0b895 2024-02-09 jhw2167 refactored perk removal function to work with UI based anim methods now. Need to give Vulture HuD on bosses now
+f5ea292b12a720d8ce38ce4a9e8d9aa18cf2fbef 2024-02-08 jhw2167 Fundametal perkhud elements work, and work with vulture. Need to add boss tracker, work on going down fx, handle perk movement
+5f164f0a410e61d381a9f2b691276b160fb23bc0 2024-02-01 jhw2167 Vulture aid normal mostly works for perks and moving PaP, will not work for moving perks at the moment, will have to setup pro version to track enemies and bosses as well
+c6ce8bb3d3739355da00502cf3f1a311af3c4fe4 2024-01-31 jhw2167 Commit before messing with ui menus, attempt to redo perks as UI anims
+4c903b32724627e639430b4d2d67ecf05facad20 2024-01-30 jhw2167 Added materials and properties corresponding to vulture glow shaders, need to address a number of vulture bugs
+2ac53ac1d399107b2a43987f098d4e075b7ee35f 2024-01-29 jhw2167 added some comments
+c436aebf3323b1f161becfd26c6fae3b0ba062c0 2024-01-29 jhw2167 Compiles but I did something to pro perk shaders
+5bb18cf005b1da62d24d654b26b5df880f63b790 2024-01-21 jhw2167 Added new perk shaders but they don't work at the moment, need to reconvert and implement them
+fa36cb2035d28bd5052e7bbd4b94bcaa0d73ce48 2024-01-21 jhw2167 Moved back to master for push, getting vulture to work with hud elems
+f54e27ed8b88426893129899f42c8ba20fb26781 2024-01-21 jhw2167 Fixed compile issue wtih fx on most DLC maps, which cant support vulture stuff. Will have to look into hud icons instead of in world fx for those maps. Vulture ammo spawn almost works, needs sounds, fine tuning, multiplayer testing. Vulture and cherry need to be added and tested on all maps
+1c34baa3a6b09500bf4b69566ab695f4fc20fa60 2024-01-20 jhw2167 Adding cherry and vulture to multiple maps, runtime issue on coast
+4600c73bd97e85fbf5b0e9e78bf3c0fe5109f102 2024-01-20 jhw2167 Adding vulture back, checking perk scripts for syntax error
+db9199510d700c254e8f343e53b8b29b6c22bd80 2024-01-20 jhw2167 removed duplicate fx from raw folder, only need them with fx
+0317d0ec01eedcacb25db82ecd320e88231b4313 2024-01-20 jhw2167 Pushing fx limit on Ascension and Shang to see how much of Vulture I can get away with
+07bd8e67ecf16a9b81f3b3f9a563661a5dc13859 2024-01-19 jhw2167 fixed issue with points adding twice when using add_player_score. need to fix vulture fx tomorrow, add pro version and move to WW
+3bfcb490af67b854331093bb84ff683e2ed7ea95 2024-01-18 jhw2167 Added createfx folder, contains a bunch of point fx that will make theater and factory look a lot nicer. I am not ready for that yet, so it will stay out of my mod.ff
+264a2c499929350558173aa0e4ed1649da6260c6 2024-01-18 jhw2167 Annoying points issue, dealing with 500 asset limit on temple
+a63752741a4b1c4565496ac9fbca0a143fca2d88 2024-01-18 jhw2167 Added fx for Vulture support, mostly working on Kino, will likely run into fx issues on Shang. Staminup glow not working unfortunately
+603afbf85912f3af8d2a6711515bbff0fe6aac6b 2024-01-18 jhw2167 Compiles and runs, fx not loading, not sure if scripting or load fx issue yet
+3a94553dbd24a4cab1780ab86a9fa87874addc73 2024-01-18 jhw2167 Cleaned up cherry, prepared .csc files for Vultureaid add tomorrow
+f2646979833ea504db2ea3204a269f41b9eba430 2024-01-17 jhw2167 Cleaned up cherry, working as expected
+2c9c646ddf48c3f232e9d7d7b220f21f33538483 2024-01-17 jhw2167 Basic cherry implementation for pro and normal eletric cherry. Need to add and test on all maps
+4646918d1a0a5b7fcea453c8a0b3dcdfbfd79000 2024-01-17 jhw2167 Mapmaker and Renn sounds now work
+9c84987208b47057ddacfd4d0bd3ec010ec5dbd2 2024-01-16 jhw2167 Waving the white flag on sounds for now, will add proper shaders and functionality to remaining blops2-3 perks. Add them to all maps
+ee84ed1ddc94ce04fa4cdf3971cd424c3f850c8d 2024-01-16 jhw2167 Fixed widows, added custom sound alias, cherry and vulture sounds still not working
+eab9503542021acf0d1ca8f9040668a2185c61d5 2024-01-15 jhw2167 Looking for a perk that will work for WW
+a835a1e31e5eec3dea45cf40b71b4eb8ee13dcdd 2024-01-15 jhw2167 minor changes to perks
+640dfa648a1cddec59d2bec20e6acf64646dbbdf 2024-01-15 jhw2167 removed rawfiles from csv
+81027ec6c8739695203f3f8dbb7697d67a6ad6d3 2024-01-15 jhw2167 Added various sounds from Renn mod, added to soundaliases, working with widowswine difficulty, need new perk to be specified
+84784f3733e2d2868e36006141e2a18173f4021e 2024-01-15 jhw2167 In the midst of advanced sound debugging using Renn mod assets
+0637f398b5ef2d2e317fad73437924f566a7c61e 2024-01-13 jhw2167 Delete useless sound adjacent files, my sounds mostly don't work anymore :/
+b2c0303cca36cfe3a88a4fec3c4e1ca8f28467a9 2024-01-13 jhw2167 Non working sounds, zombieblood_vision not loaded anymore
+130a982cab1f3067cb52500fedd5051d9c9b60c2 2024-01-12 jhw2167 accidentally put duplicate soundaliases in, rmeoved them, getting parse error in soundalias file again now, not hearing cherry reload
+5fdd25a2a38ec1c8f283fc9b1f5201ae8983dbc1 2024-01-12 jhw2167 Added sounds to alias file and ensured we still compile
+cd513446a92ab72f989d2f9db6e187716f22ce65 2024-01-12 jhw2167 Changes to cherry code to get cherry fx to work, added anims, sounds, and edited cherry fx for superior visual data
+c8016a1db53680c3112bc9c11e69adddfcef9f9d 2024-01-11 jhw2167 Adding BO2 perks, development mode, compiles and runs. Just finished adding Echerry to all maps, loads and runs with machine and shader on theater, implementing full cherry effects and damage now, will move to dev branch
+f75192767953839cc745bda586d7c1dba426470f 2023-12-31 jhw2167 Mass changes to do with line endings, fine tuning apocalypse point scaling and round endings, also some changes to monkey perk take behavior with pro perks
+df0041b2ccc96161398b31adae3135877f06589e 2023-12-29 jhw2167 Further updates to mod.csv, updates to monkeys on Ascension and disable pro perk behavior
+a6aff5d27a52bf5c816f4202e614e80f38c78bee 2023-12-29 jhw2167 Reverted mod.csv to development
+0bfbbf10a3740c2826c96960f28203fe8f2a38b9 2023-12-29 jhw2167 Post alpha release changes to apocalypse bonus points
+fd14bfc642a7f351c32049015cc83bc115dd5824 2023-12-22 jhw2167 Edits to zombiemode spawner and score to fix drops and double points effects
+100f6f583f1aedaa18c4e7c2b5ac1045c0d61666 2023-12-21 jhw2167 Various bug fixed including dog rounds, no bosses selection, fine tuning zombie speed, powerup glitches, bugs with perks
+7d48953b961d39f4aa054cbfb717f2079b476b99 2023-12-18 jhw2167 line endings updates from println statements, having fx issues with shock
+d5cb7683dc9b53576cd374e1631ac4e8a27e95b8 2023-12-18 jhw2167 Correct small bugs with zombiemode score, quick revive and shock effect. Also removed some debugging println statements
+5a15f284e8fc543ff022231f0c1c4e8e9e35b64f 2023-12-17 jhw2167 Fixed infinite loop glitch with electric weapons
+0b1077e84940d9041c48477db8fdb0f4998e80e6 2023-12-17 jhw2167 Added eye glow fx to zombies in sever file since they were being overwritten by monkey eye glow in clientscript files during apocalype rounds
+1a09919001b3ee170d515236cc25185b8f8720ed 2023-12-15 jhw2167 Deleted files deemed unecessary for merge with release branch
+9336df21a87a94327ce9903663004016c276b252 2023-12-15 jhw2167 Mass edit to remove println statements for release
+87b21b25335a259e5c2e31513ba3f28c029311d8 2023-12-15 jhw2167 Fixed misc bugs, final play testing before release, improved PHD flopper pro, unfortunately, missing fx on default explosion
+7f1cf2cfaa2e48e0620b4ecd46fd4e56d736b6ba 2023-12-13 jhw2167 Successfully reduced nova spawn rate to 20% of total zombies
+e9740e87dc4749c6922b613572e4f6e5d3c1b7fb 2023-12-13 jhw2167 No bosses works with moon astro too now
+ea327fb026cac5aefd8da4fd89a0195c96dde886 2023-12-12 jhw2167 added menu option to remove bosses from maps included dogs, monkeys, George, and temple special zombs
+b5dfdf024458f232e1bc0a714289ed7824872789 2023-12-11 jhw2167 Changes to allow init effects on clienside and fixed zombie health and scaling
+76b16e56dce896e3be2a0fa3e8513e1befdda6d0 2023-12-11 jhw2167 Fixing zombie horde delay spawns, coast water freezing, and temple boss zombie issues
+b42509fd94909ce5e85ace200c7f2f8095de9d80 2023-12-11 jhw2167 Large commit due to folder stream edit, replacement of line endings, zombie spawn delays are not working due to the use of lamda functions, need to redesign, find a way around this.
+cd437cc6fa9005de10c59d0809cf79dab0db08fb 2023-12-10 jhw2167 fix for not threading on_zombie_death function and proper compiling of special zombies
+263a9a62ca133b639c96b946d1bbadf4a8a58267 2023-12-10 jhw2167 Having trobule with boss zombie spawns need to get constants for animsets from working code
+ab02135893f5fef7f3720e41847efb49bff7a1c4 2023-12-09 jhw2167 fine tuning zombie spawn values and hordes
+1ac58f491ef8229640e51ee549ae11e03c7e365b 2023-12-08 jhw2167 Misc changes to shotguns to add damage buffs to WaW and knockdown to upgraded shotguns, updated zombie health
+6a84b1ba82df5337cf846f60a5c24a4573dd0fd1 2023-12-08 jhw2167 Minor edits
+7480f3c8445d60d1066ea51a744c62f749b6e51b 2023-12-08 jhw2167 misc file changes to alias and sound files, trying to find the right type
+fa7104642fd17e8e5aa42f09634eda447160e7d3 2023-12-08 jhw2167 Updating sounds and trying to get hitmarker sounds to workagain
+654d168f647ceb21944b23574e6fb089e88bbc2f 2023-12-08 jhw2167 Drops start spawning at r7, longer wait between dogs now, still unsuccessful at incorporating alarm sound
+9ead1955029653bebae2d033cde7f8dbcd85f39a 2023-12-08 jhw2167 added monkey round support in apocapylse mode, and  a diferent fx on perkapunch
+ecbd7cbc801c4c014e15a0e36e50e1a680778820 2023-12-08 jhw2167 Attempted to add alarm sound but failed, added stronger hitmarker sounds, integrated zombie dog spawning with zombie spawning, increased price of all doors by 500
+791eabd730c9305e4f874ee20b936a9bd8a7c26e 2023-12-06 jhw2167 Misc bug fixing and detecting for shotguns and x2 weapons and expected beahvior
+4f94b51d6d395d5ca9472ead9465eba64c797e6d 2023-12-06 jhw2167 Added feature to quick revive pro that limits points lost when aplayer is down. Added feature in apocalypse mode that subtracts points every few seconds from all players while you are down. increased revive time
+61ea0af1a37cb930e3f975e9faaf7814c1dbc099 2023-12-06 jhw2167 Miscellaneous weapon effect changes to zombiemode constants, debuging on eletric and hellfire effect and video records, need to adjust prices back and fix bonus points bug. Also bug on tesla working in Call
+e73118d67bfa3089943fc63050ce334128499065 2023-12-05 jhw2167 Miscellaneous pr-release changes
+42a4a5a7a21cb9c2db185aa4b166ac0e3c9fa50f 2023-12-05 jhw2167 Miscellaneous bug fixes with pro perks and hud; with drops not spawning, with temporary disable, all fixed
+354e9f2ba4447d370debb2d366116387c1efd3f1 2023-12-04 jhw2167 Miscellaneous changes regarding perk upgrade fx, zombie drop mechanics and remove perk behavior
+22080eae1325cb728720a5299300d1e34df1ec30 2023-12-04 jhw2167 Added zombie respawn queue so zombie respawning is tracked with greater fidelity. Added purely random drops after round 10 and a glow to zombies that will drop a drop
+56d0a1b23c0b56b66b0ae473e3a1eeb4ad553708 2023-12-04 jhw2167 Drops now truly random after round 10. Zombies glow when they carry a drop
+0c709e42817f0e34e0e9c718bd24d2b90937e338 2023-11-29 jhw2167 Changes to debugging for George health, reverted for release
+1d97d89c794dd35822be67289786c75c989aabdf 2023-11-21 jhw2167 Fixed major buggs with QuickRevive pro and being unable to repurchase pro perks in multiplayer
+eedb2de4749b515fd0f538ac99a4f5d6f0d383fd 2023-11-19 jhw2167 Fixed Misc bugs regarding perk upgrades
+f2e18abb0549d7bd03931c472ea0d37b4bb5a790 2023-11-18 jhw2167 New alpha release ready, still need to address quick revive and giving pro perks back after player death
+bbc50f2aed0aa71c94398e6c92133b8410f9194f 2023-11-17 jhw2167 Fixed George spawning, and George health and monkey spawning
+5dce0d37386d43730080e4829a8e402ef01e728e 2023-11-16 jhw2167 Ammended menu options and made server cheat's toggleable
+8774ab96d795664613c524105ac2805ef76206b1 2023-11-16 jhw2167 Refined options into two different schematics, one for game setup and for game options. allows player to enable cheats on private server as well
+261eafd115e1c49628bf07c6db976dbb67682184 2023-11-16 jhw2167 commented out useless option, added files to sumpf to support proper perk spawning, looked into PaP on verukt and sumpf but not going to force it, to do in the future. Need more bugfixing now.
+f1598aed2bb61ae7d2ebc787807489bc96f5949d 2023-11-12 jhw2167 Added electric cherry fx to mod csv
+5391758fff677636d181a1888241bfcdf380a6c2 2023-11-12 jhw2167 Commit to remove player points from zombies killed via wonderweapons in apocalypse mode. Also slight edits to WAW weapon damage
+50cc463277703874ee5c2a2123f3757b62681b08 2023-11-09 jhw2167 Fixed some bugs with x2 pap and perk machines, 2 Mulekicks were spawning in Shang! Now PaP hintstring is blocked with invalid weapons
+b0d4853087361afbf1677fec5dda668fbbfd0a47 2023-11-09 jhw2167 Large commit because linux stream edit tool changes the line endings. Perks now all have collisions and no visual clip model
+f70cf5e9eb1e85217e810d3a80b438ade928fb0e 2023-11-09 jhw2167 Mass find/replace function edited many files, seperating and adding these two files to commit. Working on applying collision models to all added perks
+4e5a2d3fba7ec07788dfb7a4054ec9a898b70689 2023-11-09 jhw2167 Fixed issue with zombie despawning, fixed issue with red max ammo being taken by zombies
+a90ff6bf1e3d8fcca666f5732883ff24ad00503d 2023-11-08 jhw2167 Minor edits to remove force to apocalypse mode
+4512118b0cf84780d9e7d43048769af6c59b35e5 2023-11-08 jhw2167 Minor edits to menu options, added zombieblood vision to non-full mod.csv, cleaned up iprintln statement in weap_crossbow, now bugfixing ballistic knife and sickle
+5daeb6b358ce442cb749c902b9c5b68b9e538d95 2023-11-08 jhw2167 Cleaned up menu a little bit, zombies despawn after enforced limit with no damage done to them now, about 15 seconds
+84857da8151ac8f6abf37d05464856164bf86e0c 2023-11-07 jhw2167 Compiles, zombie animations look better when not above 1.4 speedup, need to determine best anim for the super fast terror zombies
+7fb94328892519379af0e2c116374cf64957695f 2023-11-04 jhw2167 Misc changes to shotgun and melee functionality, bugfixing. Added mroe granular horde spawing and pauses between the hordes for more conistent player experience
+f4055ff94ddffaba9f27efc7a6d0f09fa0e1f040 2023-11-03 jhw2167 removed .gsc and .csc files from mod folder so they are pulled dynamically and package does not need to be recompiled
+f73879b1550888aef4ed0ca7be0c297c055be29f 2023-11-03 jhw2167 Going to remove my scripts from mod.csv tomorrow since you can script without recompiling. So much easier!
+95d32397f9a9ee9e7427e552a2beb45952c5c288 2023-11-02 jhw2167 Added zombiemode clientscript to mod.csv since it might be causeing compile issue on other systems
+6c7b31c6f0a3fad1d4924ff24281450b6f1058ff 2023-11-02 jhw2167 ROG ally having compile issues even when game works locally on this PC
+bf01dbe8e753234927f3872c21824b7e67200e40 2023-11-01 jhw2167 Fixed Call of the dead and ascension compilation issues. George has his weapon back
+20582fdea7a13102a2283ee4af1d9b3e45fdb92b 2023-10-31 jhw2167 Call compiles now, but map looks weird (visionset or fog issue) and George missing his weapon
+9a5558d5416d2ee511847528944d76962ae9b179 2023-10-31 jhw2167 removed reference to default explosion. I don't think we need it, and it may have caused issues with call of the dead
+8ef8c22ecf2c864f4a9241db1cb0c6d37c1b20f4 2023-10-31 jhw2167 Fixed ascension issue by calling init zombieblood method without level thread. Call of the dead issue persists
+40e2c2b21809402ef0fc6bb53b9c9c10e6cc67fe 2023-10-31 jhw2167 Doubletap Pro works better now. Still some issues to work out and determine why ascension and Call are glitching. Also the weird issue with the vision sets
+9c4d6913be7158a0ed1010ebcef16432b65c23a3 2023-10-30 jhw2167 Having some issues with ascension starting before the round prestart function and getting the UI to look good enough. Also Call of the dead doesnt load. Hitmarkers work on ascension again
+b48601741fb4fc8aa58cb4f70446e4259eaac238 2023-10-29 jhw2167 Commented out some println statements for the alpha release. Need to make a few edits to the branch since errors in the game are apparent after playing
+55f6f358381383e246a9abe302d2d90a9502af1b 2023-10-29 jhw2167 Call of the dead doesn't work. Temple has fx overflow that needs to be addressed. Anim tree issue is fixed, supersprinters are now on all maps in apocalypse mode. The ui options are coming slowly but surely.
+580448c18b22fc0ce5abb847b6455c3af643f4df 2023-10-28 jhw2167 Duplicate anims in the atr. UI doesnt compile due to unknown errors, need to reset animtree file
+074baf56a31fc98e2de8b91849b3cbc4241f99c1 2023-10-28 jhw2167 Code compiles again, DLC maps do not work due to anim tree issues. I am working on the menu but it is having some issues as well. Shotgun changes and zombie round thing updates managed, so those should be set. Shotgun scaling damage and grenade scaling damage added as well
+65d7a96951cb69d6d9aaec8b5eb1aecd6473f916 2023-10-27 jhw2167 Added anim tree so I could add fast_sprint zombies, adjusted apocalypse zombie speed and total zombie settings. Raygun and m1911 have minimum damages. Need to determine how to increase zombie speed
+35b0232d73b96ce99772fcc8121ebba0be6122da 2023-10-26 jhw2167 Edited zombie health algorithm to scale more appropriately for apocalypse zombies, and added reductions to zombie health for those not playing in apocalypse mode
+7076b01cc7453e480107eb691c0a6c9f06fe0625 2023-10-25 jhw2167 Error fixing and checkick new QR_Pro implementation. Need to commit to source error of uninitialized player and unkown function compile errors
+52a644ec3409da1004ec381dcc95aa368ef6781f 2023-10-25 jhw2167 commented trace in doubletap thread
+312064936931de99c505e39a8f91adb4746585aa 2023-10-25 jhw2167 Reverted zombiemode_powerups since I incidentally replaced models with shader names. fixed compile error in laststand. Added QR pro value to zombiemode
+540a623680e68009f674265d102cd684e57a6e47 2023-10-25 jhw2167 Improved reive radius with quickrevive pro
+6e85622d5c13a3d7eef4186536bd562a8394dca5 2023-10-24 jhw2167 Added DB instance of doubletap, set to 6 zombies of penetration. Need to build a HUD element for deadshot and add QR Pro as well
+f4ebd3b7e9cc9628ff514116fbe4c54ed516a1d6 2023-10-24 jhw2167 Doubletap pro has some naunced issues regarding bullet penetration
+6ed3914a56f1816f105513784a9572e746c20804 2023-10-24 jhw2167 Hitmarkers work now for some reason, sound is still difficult to get right, but it works for headshots. Deadshot pro implemented but without hud indicator for now. Maybe shaders can't be preached in main zombiemode function
+2df3cedcbf6e645c12577def19766d20d4a3af66 2023-10-23 jhw2167 starting fresh with hitmarker implts
+1b1bb16b1ec52704f68a490eb989908232f11d7c 2023-10-23 jhw2167 Added mod.csv and a couple maps files to try and get hitmarkers to work
+4865543b1b31e7f3a979b4de9c63faf3f30df5bb 2023-10-23 jhw2167 Fixed bug with last stand health removing remainder of hud by setting health to constant instead of undefined values
+7db9f638eea1d921e58c5ba44b0aa9582253b376 2023-10-22 jhw2167 BO4 dds images still do not work even with converted with BO1
+bd5abf83d9ea1268872718815d029e25fe211dcd 2023-10-22 jhw2167 Pretty sure weapon effects is the problem file, but I don't know which function its having trouble with
+6274fead8109582c9c577167224c020b29ba3968 2023-10-22 jhw2167 Compile issues trying to improve stamina_pro algorithm
+fbf6f0baa49619e3b4540257783138d2695079ef 2023-10-21 jhw2167 Added shader icons for BO2 powerups instead of BO1 ones for consistency, and a fresh feel
+f11b9620bf4ae423589884038c44bb0db3588fe5 2023-10-21 jhw2167 Fixing zombie freeze function so zombies thaw out and move fast again
+ec31f79083d14720923d31d4bca9f97a515ec194 2023-10-17 jhw2167 Reworked double PaP effects to trigger off of unique shooting patterns: hellfire when you hold the trigger, freeze when zombies get close, and shock at random intervals; edited reimagined hud to include stamina indicator for zombie blood sequence
+5b89571601c871f2287e9d84a1af4614a9792e01 2023-10-15 jhw2167 Had to repair function I broker earlier: zombiemode_melee_miss
+f57c6c931ab39c23793207277e4ee2397b56f9cb 2023-10-15 jhw2167 Added a few anim files that may be useful later. Current pro perks: Jugg, speed, stamina, mule kick. Need fx for speed and stamina.
+cd57badb2c4b904b38c2c4f1d2db73b27e1e0cd0 2023-10-14 jhw2167 Upgraded Mulekick gives max ammo upon purchase
+27111bb57c0d43b2efaa2b239c31b9b67b26df31 2023-10-14 jhw2167 Add clientsysstate not working to trigger zombie blood fx in client scripts. Added napalm zombie files to change character models. Will work on other pro perks
+0f31558db8ba6836445aa744aff23896db28e04d 2023-10-13 jhw2167 Added zombieblood_bo2 file and _zombiemode.csc for client processing and options
+c92a6e9d60ab6a18c4f1d67e3606c0074a4fd359 2023-10-12 jhw2167 Fixed small bugs with upgraded perks where normal perks were not removed upon downs and there were gaps in the perk hud
+8beba9a0db25754a4e295c90274992d9eb85070b 2023-10-09 jhw2167 Allows purchase of all upgraded perks, some challenges after going down still
+6ce8907d59199ae2625de193b07945c2e335c8c3 2023-10-09 jhw2167 Much effort in getting client changes to persist, but failed with shaders approach and using alternative perks
+351e23c3f3e3e318733b88fd04671b0187b9dfb5 2023-10-09 jhw2167 Small issues with pro perks, difficult to access true player values accross threads, even when using official GetPlayers function. Have to find a way to make deep copies
+5471ebdfbf0fc73fcec6d46ed3c2c6ab0d96502d 2023-10-08 jhw2167 added default explosion, adjusted jugg pro max health to 300
+74ea947fff5f91f4fee5fe1a4e170a6332df1655 2023-10-08 jhw2167 FX for pHd works for all maps, had to add logic and reference default explosion fx
+e0e23869f3da1fc732cbac6c181aa423bd0d3df7 2023-10-07 jhw2167 Added all BO1 perks to all maps, will add Cherry and Vulture to be added later; babyjugg added to all maps
+427e382c4d1cad492ffce7fa121d4caa5c77bc7c 2023-10-06 jhw2167 Moved bothersome iw files that were changing drop shader assets.  Added and editted perk machine placement files for black ops maps
+c5c30d55dc5da1e5685d51fa22cb05344b34051d 2023-09-29 jhw2167 added babyjugg to five spawnroom. Need to add to remainder of maps now. As with the rest of the perks
+715a44c80b2649838a49710b476d6dd7371fe5a4 2023-09-28 jhw2167 Shaders now work, working on adding babyjugg now
+a331db9f53f0b9a6219f2f5657494ef2c3c0b818 2023-09-27 jhw2167 Added iwi and material files for perk shaders, still not working. But the perk bottle drink animation does work now. Edited large chunk of _zombiemode_perks with updated shader and perk model data
+87445c5f0f36812a28c58a069b51d28a2bf6142b 2023-09-26 jhw2167 Moved to shippudens perk machines instead of my bad ones
+0b56d9298b3fcbd2144448c8cc031a17df72e2df 2023-09-26 jhw2167 Added shippuden perk assets, need to call perk bottles correctly now
+0b70f500ef1ac6b7f12e6dcd5f85b3a381b75681 2023-09-23 jhw2167 Perk models added, base block ops perks added to five successfully
+6ee7dec565372c469e32dc3e0a182c142f0dcf9c 2023-09-19 jhw2167 PHd added to pentagon with errors
+a2c08ebfbb72bd66e0f5959dafe078ceec4494c6 2023-09-19 jhw2167 Perk limit reduced to 5, getting a 'free perk' drop gives you a permanent perk slot
+0d76e9a7bd31d7b32e88f6e67a578608ea23f49c 2023-09-18 jhw2167 Finished bug testing, added speed down method to new carpenter function, removed println statements
+96a8ae74571ad092d648485ac234798a9b6ae4dd 2023-09-18 jhw2167 Carpenter re-added to drop rotation, carpenter and nuke point values scale with rounds
+0665f5cfda4e647d273d75ea7a03cd6554198e8d 2023-09-09 jhw2167 Added out.txt temp file to gitignore
+9dc6cd6b67205d82857c3523857bc59d1e497a4c 2023-09-07 jhw2167 fixed moon compilation error - did not correctly reference function check_zombie_pause from zombie_moon think function
+c41cf7d2b9d911e0b3f23b74dd5149710c712a22 2023-09-07 jhw2167 Director health scales with number of times he died, only call of the dead
+aec654cc41b1e1fc6df668c095b30a03392b9653 2023-07-20 jhw2167 Pistols now give double points, adjusted point scaling works in apocalypse
+80e4e6f5b4a9c75b2be94842a0a39c118f92cab4 2023-07-19 jhw2167 Fixed compilation error, break statement inside if and calling function from another file
+d57d6cf052a481e9b7eeb5c76d9873b130eb9c3f 2023-07-12 jhw2167 Compiles again, was calling method from another file without properly referencing it
+548568e487138409a23afb868450831a7eb9337a 2023-07-11 jhw2167 added gitignore to ignore stash folder
+d4ffcc69698b364b0432e6e5013759672cfd9c76 2023-07-08 jhw2167 Updated git ignore not to count anything that starts with zzz
+e45ad203a93cba2e5dd2d6d672793aa01f1cf054 2023-07-07 jhw2167 Added substantial quadratic point scaling
+81c4e602c02e06e208163bc919e2ea35085165f0 2023-07-06 jhw2167 Added apocalypse mode to menu options; cleaned and made zombie in game pause option workable
+eae04fee8e3fe5c3a5710c4010cab8bd8a892590 2023-07-04 jhw2167 Added animation for zombie knockdown getup on melee for all maps and made sure it doesn't effect boss or nonhuman zombies
+a7ba1128420d671e8a249520efed8082ae2dc283 2023-07-04 jhw2167 compilation issues commenting out println statements, restored to working version
+116afb75997f97e1576f3f5ec3b9c23968335e94 2023-07-04 jhw2167 removed excess loggers and testing bugs pt 2
+1184ee4302993b528850f504815d19aa5476fbdc 2023-07-04 jhw2167 removed excess loggers and testing bugs
+d1268060c16bf98769d945970a133a1ae962616a 2023-07-04 jhw2167 Fixed bug where fx would make zombie bosses freeze if they did not have proper animation, may need to test this with dogs and crawlers as well
+7204550d87263ff0f56f40a61f640296ec0fa4b4 2023-07-04 jhw2167 All maps compile and run except coast, need to figure out issue with coast
+81df847209eee7907a0bebacca76da7c0cdf80e3 2023-07-02 jhw2167 made changes to accomodate weapon limit, all makes with pap have double pap capability for most weapons: m72, ray gun, china lake: 'starburst' variants removed from QED china lake: removed to accomodate double pap ballistic knife: associates with bowie and sickle knife removed to accomodate double pap
+3d2c150bd5bd6239ef68e2f6f823d74c0e9fb754 2023-07-02 jhw2167 gitignore ignores all bash files
+71b96e5d3124645fadcccc9564d99c8dfe90d328 2023-07-02 jhw2167 Also removed double pap weapons from temple
+be49916fa725a127def1c5b4bfd1e7207f09ab63 2023-07-02 jhw2167 Removed newly added weapons from zombie_moon and added them to zombiemode_weapons so they are added accross all maps at once
+2657953126ab20a04b9a035dbb4392ca3aa4983c 2023-07-02 jhw2167 Fixed issue where zombie knuckle crack would cause pap to fail, we timeout if knuckle crack fails to load
+db7a329cab42e2833a1fb4ee255c656ca685b2ff 2023-07-01 jhw2167 Added new weapons to other BO1 maps, there are a few bugs to flush out including complete HUD removal on double pap, especially with the M72 law
+ce6011ce7facd34dc21345feb00b88578ac9502e 2023-07-01 jhw2167 Finished with double PaP effect changes for guns, need to add and test them on all maps now
+411698ae1a9547a4dae603b224c045561c40e22e 2023-07-01 jhw2167 Long roundabout process to add freeze features to double pap, edited mod.csv to include freeze gun Pap efx, added freezegun functions to weapon effects file
+07e4f81a308ed497fb915ce251b924812aaeba66 2023-06-30 jhw2167 Added flame effects for every 20 rounds for AK and RPK
+17b810bf2a60c1c4347d84e687a5922aebde5bf0 2023-06-29 jhw2167 Minor updates to existing tesla effect on weapons - edited arc num so 0 only happens once
+32d2e73fa433cd4d6e822f274dc8cdf120fb896a 2023-06-29 jhw2167 Minor updates to existing tesla effect on weapons
+64ba28e61a5180355ca02dd53d9647ac5da32797 2023-06-29 jhw2167 Added and refined tesla effect for ballstic knife and subset of smgs
+219aee747daca50613d81ab289a6e74db6b9b773 2023-06-29 jhw2167 added electric effect to double pap bullet guns, on every 20th bullet
+d0c147586e47f984f46e0c9239c28f0697dc252a 2023-06-29 jhw2167 Edited zombiemode_score to match correct updated points scaling algorithm
+8f6275244ea41c202bbf000c5eb749973fa74c68 2023-05-22 jhw2167 Added explosive effects to china lake and law, reduced law ammmo to 10/clip. Added upgraded double pap damage scaling to _zombiemode. Need to add headshot calculations by weapon type
+65db3630adb91e5d7e9ef27eee6ec6fa24fabe63 2023-05-21 jhw2167 explosions work on m72 and china lake now, moving to add alternative effects to ARs and SMGs now, and edit damage appropriately
+1aba226d0eb8256ee1f181f049f62c222845d9c6 2023-05-20 jhw2167 Explosive effects work as expected, need to test on other maps and wire up to law and china lake x2
+c5fa88d7bd668132323fdca29f2e43393277546f 2023-05-20 jhw2167 removed old env folder:
+551174fdfb1615a3115be14bb2e64e9a44b7c0fe 2023-05-20 jhw2167 env was at the wrong level
+28e2af740369c2494818b5b9a6c1f5334362ab39 2023-05-20 jhw2167 reorganized fx files, pulled some fx from the raw folder where there are a lot, working with threading on special weapon effects and removing bugs in triggerDamage function for post explosion fire (_zombiemode_weapon_effects.gsc)
+5ecfad93b9857f8a2956d300282c7e2f4b098726 2023-05-19 jhw2167 finished implementing fire effects and explosion for crossbow - mostly in crossbow file and file and using _zombiemode_ai_napalm methods
+66876b0ca04233c8524fea00cc864a9bc46de075 2023-05-19 jhw2167 minor changes in _zombiemode and _crossbow trying to get bonus damage for x2 weapons AND proper explosion anim for crossbow
+de67e6b03d994a029577314eb5f1f9356525499f 2023-05-18 jhw2167 code compiles and runs with added script functions and custom file _zombiemode_weapon_effects.gsc, will begin adding other weapon effects
+3056243ba453cd214e164773b574f052459da42e 2023-05-17 jhw2167 added new file zombiemode_weapon_effects to isolate all of my additions for weapon effects for double PaP'd weapns
+cd99a85d13a8574b22c78f0f5a96dbd91ae39875 2023-05-14 jhw2167 Double Upgraded ballistic blades can now be picked up, could not recreate failure where buying speed cola caused game to crash, maybe because I was out of bounds
+5e5be21c5ddcd98366d3020ed44307e255445745 2023-05-14 jhw2167 Editting ballistic_knife GSC so it recognizes double upgraded knife as able to be picked up, we get the hintstring, not the retrieval. Code compiles but threw runtime exception when I drank speed cola out of bounds
+b8e588d3b480bfb063674d7e42184d112f8d364e 2023-05-14 jhw2167 Added fx and death anims necessary for tesla simulated deaths to work in any map reverted ballistic knife to one knife per chamber tesla script called from damage_overide in _zombiemode 6455
+3d0850d9ee1ffaec02b13c467862083422a4c0af 2023-05-14 jhw2167 Added tesla damage and effect, fx, art, looking pretty still lacking
+2add0cd23dc61b95246c84712b9e21142cd75849 2023-05-13 jhw2167 Compiles, found a useful nesting_doll script that is supposed to perform the teslas effects for me, maybe the array is empty? see zombiemode:6455
+35854681a0b66dd8d5ab9683273ea7c8d9f2baef 2023-05-13 jhw2167 fixed syntax error in zombiemode.gsc where I used else if, eddited zombiemode tesla to load effects and scripts in every map
+235076b1bbe44e64775bceb5b97cd766df282563 2023-05-13 jhw2167 Added conditions to check if ballistic knife is tesla _zombiemode_weap tesla:458, and started adding damange checks for double upgraded weapon overrides in _zombiemode 6455
+8e9c10ac9c0ed1b6f82fdf7ed31fd1941b99710a 2023-05-12 jhw2167 Deleted redundant spas_X2_x2 file, playing with crowbow anims to support 3 in the chamber, reduced spas ammo to 30
+166dd853280bef2272454ba925be2da1e2262f46 2023-05-12 jhw2167 correctly referenced fnfal_x2 and ak47_ft_x2 so they should render for double pap, reverted dw weapons to normal upgraded ammo size since I couldn't find out how to double the ammo in the offhand weapon
+7d14855f991b7407f277c43eb02f7d347c0c5863 2023-05-12 jhw2167 Updated aug name in _zombiemode_weapons to 'aug_acog_mk_upgraded' so it would upgrade from standard aug weaponName. Will continue resolving errors and testing other weapons. Then moves to perks
+c3f2ecb03c21352995d0d0ab5e94d0d9be023e52 2022-06-03 jhw2167 first round of adding x2 pap to temple, mostly success with some not working python, aug and ak47
+7bac57805bf891d7f9a3d30982d37377bcf890bd 2022-06-03 jhw2167 fixed WaW weapons - which dint pap at all, and upgraded scavenger, also fixed typo on ak74u
+8ac51043ad8ff58c9f21b903c2e62e26de2a5e8f 2022-06-03 jhw2167 added missing upgraded ak47_x2, refined blacklist, need to verify
+ef5d8b4be46d10310d02c999b1cce152caaf88ce 2022-06-03 jhw2167 fixed syntax error; weapons dont pap now!
+c7758f554bcb27a2288980e986ea3048eea14e4b 2022-06-03 jhw2167 included 2x weaponsin file, excepting wall weaponsa nd wonder weapons, also deleted double added weapons from mod.csv and confirmed mode worked. made a coupke of edits to zombie_perks to create double pap blacklist
+af2654a5815522b4fd1c8424e501d4fb335a2b5f 2022-06-02 jhw2167 think we discovered the problem with adding all weapons is that there is a hidden limit to the number you can include in a  game and it starts messing with pre-caches. Hopefully we can remove wall weapons, and WaW and get enough in
+26dfc70640396f5d1c3317451612d9c1ae20a290 2022-06-01 jhw2167 very important to keep track of this notes file
+86e5903ac8dfad981c8f574725d9bcf0a000689e 2022-06-01 jhw2167 added weapons back since not including messes up combat knife, we can module which ones are included via mod.csv. Continuing looking into combat knife issue, have found as list of _x2 weapons affect this error: cz, python, rotweil, m16
+2322e4431fe97f4bb29dc9f3fbc9a0b5e30b9440 2022-05-31 jhw2167 removed base weapons from mod so they are not double added. Game does not run properly, combat knife is not being included in map and fails on use
+f2d68f8b6d5de8f9b4755a6a0d3ca6c97838aa2a 2022-05-31 jhw2167 disovered that weapon limit is not exceeded if weapons are not double included in mod.csv, so I will be deleting most base game weapons from there. added include for all weapons in zombie_temple
+7b3262060703e39eb244b84c998f577f4349a298 2022-05-31 jhw2167 added galil upgrade to include weapons, no script to give it in PaP machine
+25fee5ff04259897ef2998580c1ed44962137c19 2022-05-30 jhw2167 added galil_x2 to weapons folder and to  mod.csv
+b606eb76675c204c2843413c79714b7d59915cd7 2022-01-07 jhw2167 compiles here with NO double pap weapons added, need to find where that 254 limit lies, some guns appear to be added twice
+56dfe108ff33074faca21a4fa3825e02ee8a3b16 2022-01-07 jhw2167 added double upgraded guns to mod.csv, prevented wonder weaps from being double Pap'd, changed hintString for Pap
+08c4bcc7eaefa7972072ea87b43ad05aba947e07 2022-01-07 jhw2167 added x2 PaP zombie Thompson using Java script
+b6c154f60362e2912015f681456d9778813347c2 2022-01-02 jhw2167 fixed issue with zombie_pause being innit to 1 - created x2 file for double pap
+a48596c60f5d1a986e8e4be68f7462ff5ca0ab65 2022-01-02 jhw2167 Merge branch 'features/shotgunImprovements'
+1d92a6dbf353811ea75c60f957cf7c8c40ecd3bd 2022-01-02 jhw2167 further boosted shotgun damage after I noted that zombie health grew exponentially
+3931d5642f642c03e00cc296e85791d1772314c0 2022-01-02 jhw2167 added menu option to pause game in between rounds by delaying zombie spawns
+5e06eba878f2a551f932ed10047779874da6605f 2022-01-02 jhw2167 changed points added to hud to add as individual 10/20s instead of hadding them aggregate then showing the points
+073360763b29b390e46dcf06874d00cfee40d0f5 2022-01-02 jhw2167 reduced points from zombie hit after rounds 10 and 20, increasepoints from zombie kill after rounds 20 and 30
+4923aa18faed57e41b188785814abea395d3b2be 2022-01-01 jhw2167 will use traditional exponential zombie health scaling, but will max health at the much lower 36000 so all weapons are useful
+2b3b65bbbfa27740dd96f7d8dcca3e54ec42934f 2021-12-31 jhw2167 removed lines where knife_zm is taken so that player keeps punching ability when purchasing bowie or sickle
+6ffc6f97c0d3fb4743b93471cc08c2607ef8e6bd 2021-12-31 jhw2167 added knockdown anim to when zombies are melee'd with knife zm, also makes zombies avoid player collisions. Will need to update bowie and sickle files so as not to remove this
+102f8a254b32cd6d13f55ffc11bce48ec56936f4 2021-12-31 jhw2167 changed the anim to reflect a punch than a knife, removed knife sounds from anim
+4134abaa450d725056af1d19523101d07f77f0d4 2021-12-30 jhw2167 increased damage for Pap ARs
+97f9b93cf03c657ec69261946f2cec362a356df7 2021-12-29 jhw2167 increase damage and headshot multipliers for smg's when PaP, increased some ammo cap
+3b1ce2889ea399e75086e76ffb0aa829043e1c59 2021-12-29 jhw2167 improved based and upgraded damage for l96a and psg1, reduced headshot multiplier, dragunov has been removed
+ad317d51589f633d653b8809c42fef388aa49d7f 2021-12-29 jhw2167 spike traps on shang never kill, cleaned up a stray println in _zombiemode
+0c996711e5cedfbddba1b2ff86f831e4fff7b5fc 2021-12-29 jhw2167 completed shotgun updates featuring damage and ammo updates, see notes for details
+9ee4afa18019b5c876741a524dd241434e0415e3 2021-12-29 jhw2167 added some println statements for disseminating data
+4eb013637f6436c8a8c44b24d6a8db6723d8f7b6 2021-12-25 jhw2167 added weaponOptions.csv from main repo since I saw a correlation between the errors in the console log and info in the file; errors are non-essential, this change did not appear to help much
+7133feb5c828f47186a770931e861ea24483de77 2021-12-25 jhw2167 uncommented print lines to observe damage changes in zombiemode, will follow with damage changes tomorrow
+78febdd8409ad8dad46b2411b14d19924b6515a7 2021-12-24 jhw2167 spas base max ammo set to maxAmmo=8 and startAmmo=8 which means max=64 + 8 rounds
+78833b2fcacc27f6b49dc1cc625850447fa73fcd 2021-12-23 jhw2167 base compile for simple hotfix changes, code compiles and runs with cheats enabled
+da7d45c45f9fe2260d5e555256bffb7badf2d3a0 2021-12-23 jhw2167 changes rebased to reimagined expanded commit that compliled and ran adequately, goals.txt no longer tracked by repo
+f58ee6b5f5991d41af1c2c2ce1c23cd236308aa7 2021-12-23 jhw2167 added goals modifications
+a7dce19f94214ba8e9bda107f50356c14e79faca 2021-12-23 jhw2167 added simple goals for hotfixes, will be creating branches to add features

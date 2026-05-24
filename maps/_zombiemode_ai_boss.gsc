@@ -1592,6 +1592,11 @@ init_boss_zombie_anims()
 	{
 		level._zombie_run_melee = [];
 	}
+	if( !isDefined( level._zombie_sprint_melee ) )
+	{
+		level._zombie_sprint_melee = [];
+	}
+
 	level._zombie_melee["boss_zombie"] = [];
 	level._zombie_walk_melee["boss_zombie"] = [];
 	level._zombie_run_melee["boss_zombie"] = [];

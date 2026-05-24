@@ -1,0 +1,7 @@
+- Fixed bug where apocalypse player perks were set to max_perks total each time they lost a perk in zombiemode by adding min_perks
+- Adjusted name of drop rate modifier level variables in _zombiemode so they sync with _zombiemode_spawner
+- initialized level._zombie_sprint_melee = [] in _zombiemode
+
+- changed Spawn_point variable s to lower case for concistency
+- removed duplicate instakill var check line: 11901
+- initialized level._zombie_sprint_melee = [] in _zombiemode_ai_boss 
