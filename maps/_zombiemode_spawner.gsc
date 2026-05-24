@@ -290,7 +290,9 @@ zombie_spawn_init( animname_set )
 	self thread zombie_damage_failsafe();	
 	
 	self.zombie_despawn=false;
-	self.respawn_zombie = false;
+	if(!isDefined(self.respawn_zombie) ) {
+		self.respawn_zombie = false;
+	}
 
 	self.marked_for_freeze=false;
 	self.marked_for_tesla=false;

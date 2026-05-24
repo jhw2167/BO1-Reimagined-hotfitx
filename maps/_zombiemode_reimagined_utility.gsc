@@ -400,7 +400,7 @@ generate_perk_hint( perkOrWeapon, specialHint )
 
 		case "specialty_shotgun_damage":
 			text SetText( &"REIMAGINED_SHOTGUN_DAMAGE_HINT" );
-			title SetText( &"REIMAGINED_\SHOTGUN_DAMAGE_TITLE" );
+			title SetText( &"REIMAGINED_SHOTGUN_DAMAGE_TITLE" );
 			break;
 
 		case "specialty_sniper_damage":
@@ -934,7 +934,7 @@ getWeaponUiName( weapon )
 
 //player_play_temporary_fx( "powerup_on_solo", "tag_flash", fowardDir, 2 )
 //turn the above into a function
-player_play_temporary_fx( fxName, tagOnPlayer, time, offset, angleOffset, time ) 
+player_play_temporary_fx( fxName, tagOnPlayer, time, offset, angleOffset) 
 {
 	if(!isdefined( time ) ) 
 		time = 2;
@@ -1576,6 +1576,12 @@ start_challenges()
 		trigger SetCursorHint( "HINT_NOICON" );
 		trigger SetHintString( &"REIMAGINED_ENDGAME_ROUND_REQUIREMENT", level.VALUE_ENDGAME_ROUND );
 	}
+
+	//wait until endgame round reached
+	while( level.round_number < level.VALUE_ENDGAME_ROUND ) {
+		level waittill( "start_of_round" );
+	}
+	trigger Delete();
 
 	trigger = Spawn( "trigger_radius_use", model.origin + ( 0, 0, 30 ), 0, 20, 70 );
 	trigger SetCursorHint( "HINT_NOICON" );
@@ -2567,7 +2573,7 @@ challenge_watch_specialtyKillsHard()
 		wait 1;
 	}
 
-	self.challengeData.zombieDamageHook = undefined;
+	self.challengeData.specialtyZombieDamageHook = undefined;
 	self.challengeData.completed++;
 	self.challengeData.completedArray[7] = true;
 	self notify( "challenge_complete" );

@@ -1,6 +1,5 @@
 - director_leave_map(), claude thinks it kills director permanently, I think this is a good reset, but be mindful
 
-- machineTargetName - set to lowercase n to match other uses of the variable, zombiemode_perks
-- electric_cherry_stun() - wants me to reset ignore_all - but this is done in find_flesh
-- spelling mistakes: explosivbe_bolt_upgraded_zm, tag_orgin
-- fixed return statement in _zombiemode_powerups
+- added logic in reimagined-utility to wait for endgame round before making endgame trigger available
+- made sure to clear specialtyZombieDamageHook in challenge_watch_specialtyKillsHard() at the end of the function
+- 

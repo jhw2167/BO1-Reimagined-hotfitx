@@ -553,7 +553,7 @@ triggerCustomFireDamage(attacker)
 		{
 			guy thread bonus_fire_damage( guy, attacker, 2, 2 );
 		}
-		else if(!maps\_zombiemode::is_boss_zombie(self.animname))
+		else if(!maps\_zombiemode::is_boss_zombie(guy.animname))
 		{
 			guy thread maps\_zombiemode_ai_napalm::kill_with_fire(self.napalm_fire_damage_type, attacker);
 		}
