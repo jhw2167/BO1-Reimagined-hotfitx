@@ -2417,7 +2417,7 @@ full_ammo_powerup_implementation( drop_item, player, player_num )
 		// skip players in last stand
 		if ( players[i] maps\_laststand::player_is_in_laststand() )
 		{
-			return;
+			continue;
 		}
 
 		primary_weapons = players[i] GetWeaponsList();

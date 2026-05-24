@@ -1,7 +1,6 @@
-- removed references to stumpy_melee in _zombiemode_ai_boss
-- removed _zombie_tesla_deaths and renamed to _zombie_tesla_death array
-- removed break statement line 1223 so watch teleport state isnt always exited
+- director_leave_map(), claude thinks it kills director permanently, I think this is a good reset, but be mindful
 
-- removed self delete() call at end of eng_tp_death() function
-- eng_amb_vocals() was running on spawnpos indefinitely when spawn was aborted, made sure this is disabled
-- director_leave_map(), 
+- machineTargetName - set to lowercase n to match other uses of the variable, zombiemode_perks
+- electric_cherry_stun() - wants me to reset ignore_all - but this is done in find_flesh
+- spelling mistakes: explosivbe_bolt_upgraded_zm, tag_orgin
+- fixed return statement in _zombiemode_powerups

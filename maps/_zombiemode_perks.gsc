@@ -870,7 +870,7 @@ vending_2x_blacklist(weapon) {
 			weapon == "sniper_explosive_bolt_upgraded_zm" ||										//scavenger
 			(IsSubStr( weapon, "sniper" ) && IsSubStr( weapon, "upgraded" )) ||						///scavenger
 			weapon == "humangun_upgraded_zm" ||														//human gun
-			weapon == "explosivbe_bolt_upgraded_zm")
+			weapon == "explosiv e_bolt_upgraded_zm")
 			{
 				return true;
 			}
@@ -1788,7 +1788,7 @@ electric_perks_dialog()
 convertProPerkToShaderPro( perk )
 {
 	if ( !isDefined ( perk ) )
-		return "UNKOWN";
+		return "UNKNOWN";
 	
 	if (perk == "specialty_armorvest_upgrade")
 		return "specialty_juggernaut_zombies_pro";
@@ -2636,12 +2636,12 @@ vending_trigger_think()
 	
 }
 
-watch_perk_trigger( perk, cost, upgrade_perk_cost, machineTargetName )
+watch_perk_trigger( perk, cost, upgrade_perk_cost, machineTargetname )
 {
 	if( !IsDefined(machineTargetname) )
 		machineTargetname = "zombie_vending";
 	
-	perkOffEvent = machineTargetName + "_off";
+	perkOffEvent = machineTargetname + "_off";
 
 	level endon("perks_swapping"); //shino
 	level endon( perkOffEvent ); //nacht
@@ -7211,7 +7211,7 @@ player_watch_widows_grenade( stop_str )
 player_widows_grenade_explode( grenade )
 {
 	model = Spawn( "script_model", grenade.origin );
-	grenade setModel( "tag_orgin" );
+	grenade setModel( "tag_origin" );
 	model SetModel( "bo3_t7_ww_grenade_world" );
 	PlayFxOnTag( level._effect[ "widow_light" ], model, "tag_origin" );
 	model linkTo( grenade );
