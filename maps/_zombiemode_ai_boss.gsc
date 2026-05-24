@@ -473,12 +473,15 @@ watch_eng_goals()
 			//iprintln("4");
 			self eng_tp_death();
 			break;
+		} else if ( self.state == "death" ) {
+			//iprintln("5");
+			break;
 		}
 
 		wait(0.05);
 	}
 
-	if(isDefined( self.powerup_fx ) )
+	if( isDefined( self ) && isDefined( self.powerup_fx ) )
 		self.powerup_fx delete();
 	
 
@@ -566,7 +569,7 @@ eng_watch_trigger_enrage(trackEyes, trackPerk)
 		self endon("choose_new_goal");
 		self endon("activated");
 
-		while(IsAlive(self) || is_true(self.useAmbientVocals) ) 
+		while( isDefined(self) && (IsAlive(self) || is_true(self.useAmbientVocals)) ) 
 		{
 			
 			if( randomInt(100) < 5) {
@@ -1220,7 +1223,7 @@ eng_execute_attack()
 					self notify( "teleport" );
 					break;
 				}
-				break;
+				//break;
 			}
 
 			wait(0.05);
@@ -1392,10 +1395,7 @@ eng_tp_death()
   	//self.no_damage_points = false;
 
 	//Name: DoDamage( <health>, <source position>, <attacker>, <destructible_piece_index>, <means of death>, <hitloc> )
-	self dodamage(self.maxHealth + 666, self.origin, undefined );
-	self notify( "death" );
-	wait(0.1);
-	self delete();
+	self dodamage(self.maxHealth + 666, self.origin, undefined );	
 }
 
 /*
@@ -1652,13 +1652,10 @@ init_boss_zombie_anims()
 	{
 		level._zombie_stumpy_melee = [];
 	}
-	level._zombie_stumpy_melee["boss_zombie"] = [];
-	level._boss_zombie_stumpy_melee["boss_zombie"][0] = %ai_zombie_walk_on_hands_shot_a;
-	level._boss_zombie_stumpy_melee["boss_zombie"][1] = %ai_zombie_walk_on_hands_shot_b;
 	
-	if( !isDefined( level._zombie_tesla_deaths ) )
+	if( !isDefined( level._zombie_tesla_death ) )
 	{
-		level._zombie_tesla_deaths = [];
+		level._zombie_tesla_death = [];
 	}
 	level._zombie_tesla_death["boss_zombie"] = [];
 	level._zombie_tesla_death["boss_zombie"][0] = %ai_zombie_boss_tesla_death_a;
@@ -1872,6 +1869,9 @@ boss_zombie_manager()
 		if( spawn_failed( boss ) ) {
 			//iprintln( "Engineer Zombie: Spawn failed, aborting" );
 			level.theater_rounds_until_boss = 0;
+			spawnPos.useAmbientVocals = false;
+			wait(3);
+			spawnPos Delete();
 			return;
 		}
 

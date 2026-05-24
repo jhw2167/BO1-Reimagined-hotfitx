@@ -1,7 +1,7 @@
-- Fixed bug where apocalypse player perks were set to max_perks total each time they lost a perk in zombiemode by adding min_perks
-- Adjusted name of drop rate modifier level variables in _zombiemode so they sync with _zombiemode_spawner
-- initialized level._zombie_sprint_melee = [] in _zombiemode
+- removed references to stumpy_melee in _zombiemode_ai_boss
+- removed _zombie_tesla_deaths and renamed to _zombie_tesla_death array
+- removed break statement line 1223 so watch teleport state isnt always exited
 
-- changed Spawn_point variable s to lower case for concistency
-- removed duplicate instakill var check line: 11901
-- initialized level._zombie_sprint_melee = [] in _zombiemode_ai_boss 
+- removed self delete() call at end of eng_tp_death() function
+- eng_amb_vocals() was running on spawnpos indefinitely when spawn was aborted, made sure this is disabled
+- director_leave_map(), 
