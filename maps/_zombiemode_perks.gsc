@@ -5882,7 +5882,9 @@ init_vulture()
 			self waittill_any( "powerup_timedout", "powerup_grabbed", "hacked" );
 
 			level.vulture_track_current_powerups[ index ].is_active_powerup = false;
+			if( isDefined( level.vulture_track_current_powerups[ index ].script_model) )
 			level.vulture_track_current_powerups[ index ].script_model Delete();
+			level.vulture_track_current_powerups[ index ].script_model = undefined;
 			//level thread vulture_powerup_reshuffle( index );
 			//level notify( "vulture_powerup_reshuffle" );
 		}

@@ -1286,6 +1286,7 @@ reimagined_init_level()
 		// Ballistic Knife (base melee versions)
 		"knife_ballistic_zm", "knife_ballistic_bowie_zm", "knife_ballistic_sickle_zm",
 		"knife_ballistic_bowie_upgraded_zm", "knife_ballistic_sickle_upgraded_zm",
+		 "knife_ballistic_upgraded_zm", "knife_ballistic_upgraded_zm_x2",
 		
 		//sabertooth
 		"sabertooth_zm", "sabertooth_upgraded_zm", "sabertooth_upgraded_zm_x2"
@@ -11929,6 +11930,10 @@ actor_damage_override_impl( inflictor, attacker, damage, flags, meansofdeath, we
 
 			self.dmg_taken += int(final_damage);
 			iprintln("Director Damage: " + self.dmg_taken);
+
+			//return 0 since director does not take damage normal way,
+			//taking too much damage may trigger auto death notif and destroy respawn mech
+			return 0;
 		}
 
 		if( self.animname == "boss_zombie")
@@ -14041,15 +14046,37 @@ watch_faulty_rounds()
 	while(1)
 	{
 		wait(1);
-		enemy_count = get_total_remaining_enemies();
-		if(enemy_count <= 0)
+		enemies = GetAiSpeciesArray( "axis", "all" );
+		enemy_count = 0;
+		//iterate over all, make sure all are defined, alive, and have health and not ignore
+		for(i=0;i<enemies.size;i++)
+		{
+			if(!isdefined(enemies[i]) || IsAlive(enemies[i])) {
+				continue;
+			}
+
+			if(!IsDefined( enemies[i].health ) || is_true(enemies[i].ignore_enemy_count)) {
+				continue;
+			}
+
+			//check if location is within map
+			if(!checkObjectInPlayableArea(enemies[i]) ) {
+				continue;
+			}
+
+			enemy_count++;
+		}
+
+
+		if(enemy_count <= 1)
 			time_no_enemies++;
 		else
 			time_no_enemies = 0;
 
-		if(time_no_enemies > 30) 
+		if(time_no_enemies > 90) 
 		{
 			level.zombie_total = 0;
+			level.zombie_dog_total=0;
 			flag_set( "end_round_wait" );
 			level notify( "last_dog_down" );
 			wait( 1 );

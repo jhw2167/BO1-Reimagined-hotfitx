@@ -1307,6 +1307,9 @@ get_base_weapon_string( base_wep )
 
 checkObjectInPlayableArea( object )
 {
+	if(!IsDefined( object ) )
+		return false;
+		
 	playable_area = getentarray("player_volume","script_noteworthy");
 	for (i = 0; i < playable_area.size; i++)
 	{

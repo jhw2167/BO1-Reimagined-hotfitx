@@ -185,7 +185,6 @@ dog_round_spawning()
 			{
 				ai.favoriteenemy = favorite_enemy;
 				spawn_loc thread dog_spawn_fx( ai, spawn_loc );
-				level.zombie_dog_total--;
 				//level.zombie_total--;
 				iprintln("Dog spawned 1 " + level.zombie_total + " " + level.zombie_dog_total);
 				count++;
@@ -201,7 +200,6 @@ dog_round_spawning()
 			{
 				ai.favoriteenemy = favorite_enemy;
 				spawn_point thread dog_spawn_fx( ai );
-				level.zombie_dog_total--;
 				//level.zombie_total--;
 				iprintln("Dog spawned 2 " + level.zombie_total + " " + level.zombie_dog_total);
 				count++;
@@ -209,6 +207,8 @@ dog_round_spawning()
 			}
 		}
 
+		//increment dog spawn no matter what
+		level.zombie_dog_total--;
 		waiting_for_next_dog_spawn( count, max );
 	}
 

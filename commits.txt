@@ -1,5 +1,6 @@
 - director_leave_map(), claude thinks it kills director permanently, I think this is a good reset, but be mindful
 
-- added logic in reimagined-utility to wait for endgame round before making endgame trigger available
-- made sure to clear specialtyZombieDamageHook in challenge_watch_specialtyKillsHard() at the end of the function
-- 
+- Attempt to fix george fails to respawn issue by overriding to return 0 damage since death notif may be firing automatically
+- Boosted time no enemies to 90s and will start counter with only 1 zombie left to prevent against bugs
+
+
