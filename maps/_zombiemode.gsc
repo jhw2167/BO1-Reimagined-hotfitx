@@ -2928,7 +2928,7 @@ watch_player_perkslots()
 		self waittill( "player_downed");
 
 		self.perk_slots--;
-		if( self.perk_slots < level.min_perks; )
+		if( self.perk_slots < level.min_perks )
 			self.perk_slots = level.min_perks;
 		
 	}
