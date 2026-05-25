@@ -1,6 +1,8 @@
 - director_leave_map(), claude thinks it kills director permanently, I think this is a good reset, but be mindful
 
-- Attempt to fix george fails to respawn issue by overriding to return 0 damage since death notif may be firing automatically
-- Boosted time no enemies to 90s and will start counter with only 1 zombie left to prevent against bugs
+- client _zombiemode_perks - added printline to perks action handler to test if struct is coming as message or struct
+- initialized array: level.vulture_powerup_zombies[ localclientnumber ] = []; before use
+
+- 
 
 

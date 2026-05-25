@@ -1425,6 +1425,9 @@ vulture_zombie_powerup_fx( localclientnumber, set, newEnt )
 		if( level.vulture_status[ localclientnumber ] > 1 )
 		{
 			ent_num = self GetEntityNumber();
+			if( !IsDefined(  level.vulture_powerup_zombies[ localclientnumber ] ) ) {
+				level.vulture_powerup_zombies[ localclientnumber ] = [];
+			}
 			level.vulture_powerup_zombies[ localclientnumber ][ ent_num ] = 
 				PlayFXOnTag( localclientnumber, level._effect["powerup_on"], self, "j_SpineLower" );
 			self thread vulture_zombie_end_powerup_fx( localclientnumber );

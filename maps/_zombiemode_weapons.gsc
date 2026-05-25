@@ -2835,12 +2835,12 @@ treasure_chest_ChooseWeightedRandomWeapon( player, final_wep, empty )
 
 
 		
-		if( keys[i] == "saberooth_zm" ) // Filter out saberooth_zm if any player has it
+		if( keys[i] == "sabertooth_zm" ) // Filter out sabertooth_zm if any player has it
 		{
 			players = get_players();
 			for( j = 0; j < players.size; j++ )
 			{
-				if( players[j] has_weapon_or_upgrade( "saberooth_zm" ) )
+				if( players[j] has_weapon_or_upgrade( "sabertooth_zm" ) )
 				{
 					//iprintln( "8" );
 					continue;
