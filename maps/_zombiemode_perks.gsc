@@ -1989,6 +1989,9 @@ addProPerk( perk )
 //disableProPerk
 disablePerk( perk, time ) 
 {
+	self endon( "death" );
+	self endon( "player_downed" );
+
 	if( !IsDefined( self ) || !IsDefined( self.PRO_PERKS ) ) {
 		//iprintln("disablePerk: self or self.PRO_PERKS is undefined");
 		return;
@@ -3379,7 +3382,7 @@ manage_ui_perk_hud_interface( command, perk )
 	while( self.perk_hud_queue_locked  || self.perk_hud_queue_unlocks_num < queue_num ) 
 	{
 		//self waittill( notify_message );	
-		wait 0.05;
+		wait 0.2;
 	}
 	self.perk_hud_queue_locked = true;
 
@@ -3404,6 +3407,13 @@ manage_ui_perk_hud( command, perk )
 	switch( command )
 	{
 		case "add":
+			//iterate over purchased perks and make sure new perk doesnt match anything
+			for( i=0; i < total_perks; i++ ) {
+				if( self.purchased_perks[i] == perk ) {
+					return;
+				}
+			}
+
 			self.purchased_perks[ total_perks ] = perk;
 			break;
 
@@ -4549,6 +4559,7 @@ watch_player_qrevive()
 	self endon("death");
 	self endon("fake_death");
 	self endon("end_game");
+	self endon("bled_out");
 
 	self waittill("player_downed");
 	

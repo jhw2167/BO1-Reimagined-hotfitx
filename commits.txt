@@ -3,6 +3,14 @@
 - client _zombiemode_perks - added printline to perks action handler to test if struct is coming as message or struct
 - initialized array: level.vulture_powerup_zombies[ localclientnumber ] = []; before use
 
+
+Issues:
+- ak47 x2 has sick cammo
+- ak47 x2 is named Red Mist, has sick cammo, but only 45 ammo
+- ak47 triggers freeze effect at times - secondary weapon effect, not disabled appropriately
+- upon reaching 4th challenge, it was automatically completed - no reason for it to be, progress showed 0/200
+- accepting the reward gave animation, weird water animation, punch does not have animation
+- red zombies and special screamer lose walk anims sometimes
 - 
 
 

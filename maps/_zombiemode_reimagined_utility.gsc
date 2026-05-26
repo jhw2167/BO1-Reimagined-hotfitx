@@ -1401,7 +1401,7 @@ generate_completed_hint( claimReward )
 	text.alpha = 1;
 	text.color = ( 0.0, 1.0, 0.0 );
 	text SetText( "Complete!" );
-	text.y -= 150;
+	text.y -= 200;
 
 	//Put another text below that asks to claim reward
 	rewardText = undefined;
@@ -1687,9 +1687,9 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	self thread debug_challenges_complete(3, 6);
+	self thread debug_challenges_complete(4, 10);
 
-	//while(true) 
+	//while(true) -- not needed, blocks in line
 	{
 		if(challenges.completed == 0) {
 			self challenge_initChallenge( trigger );	//block
@@ -1705,17 +1705,17 @@ player_watch_challenges()
 			self thread challenge_watch_nicheChallenge();
 		}
 
-		while(challenges.completed < 5 || challenges.claimed < 4 ) {
-			wait(5);
-		}
-
-		while(challenges.completed >= 5) {
+		while(1)
+		{
+			level waittill( "start_of_round" );
+			//check that challenge 5 is completed
+			if(!challenges.completedArray[5]) continue;
 
 			if(level.round_number >= level.VALUE_MIDGAME_ROUND) {
 				challenges.completed = 6;
 				break;
 			}
-			level waittill( "start_of_round" );
+
 		}
 
 		iprintln("Midgame reached, starting endgame challenges");
@@ -1757,7 +1757,7 @@ player_watch_challenge_hintStrings( trigger )
 	{
 		if( self IsTouching( trigger ) && self maps\_laststand::is_facing( level.challenge_tomb ) )
 		{
-			firstLevelChallenges = challenges.current < 6;
+			firstLevelChallenges = challenges.completed < 6;
 
 			view_pos = self GetWeaponMuzzlePoint();
 			forward_view_angles = self GetWeaponForwardDir();
@@ -1994,12 +1994,12 @@ player_watch_challenge_hintStrings( trigger )
 	niceDmgString( dmg ) {
 		strDmg = "";
 		if( dmg >= 1000000 ) {
-			millions = dmg / 1000000;
+			millions = int( dmg / 1000000 );
 			strDmg += millions + ",";
 			dmg = dmg % 1000000;
-			
+
 			// Pad thousands section with leading zeros
-			thousands = dmg / 1000;
+			thousands = int( dmg / 1000 );
 			if( thousands < 100 ) {
 				strDmg += "0";
 			}
@@ -2010,11 +2010,11 @@ player_watch_challenge_hintStrings( trigger )
 			dmg = dmg % 1000;
 		}
 		else if( dmg >= 1000 ) {
-			thousands = dmg / 1000;
+			thousands = int( dmg / 1000 );
 			strDmg += thousands + ",";
 			dmg = dmg % 1000;
 		}
-		
+
 		// Pad ones section with leading zeros if there were higher sections
 		if( strDmg != "" ) {
 			if( dmg < 100 ) {
@@ -2024,7 +2024,7 @@ player_watch_challenge_hintStrings( trigger )
 				strDmg += "0";
 			}
 		}
-		strDmg += dmg;
+		strDmg += int( dmg );
 		return strDmg;
 	}
 
@@ -2393,8 +2393,14 @@ challenge_watch_nicheChallenge()
 	level endon( "end_game" );
 	self endon( "disconnect" );
 
-	while(self.challengeData.completed < 4) {
+	while(1) {
 		self waittill( "challenge_complete" );
+
+		if(!self.challengeData.completedArray[0]) continue;
+		if(!self.challengeData.completedArray[1]) continue;
+		if(!self.challengeData.completedArray[2]) continue;
+		if(!self.challengeData.completedArray[3]) continue;
+		break;
 	}
 
 	nicheChallengeTypes = level.ARRAY_CHALLENGE_NICHE_CHALLENGES;
@@ -3075,14 +3081,14 @@ load_name( zone, common ) {
 	level.ARRAY_ZONE_NAMES[ zone ] = common;
 }
 
-debug_challenges_complete(waitTime, completed) 
+debug_challenges_complete(completed, waitTime) 
 {
 	wait(waitTime*2);
 	iprintln("DEBUG: Completing all challenges for player");
 	for(i=0; i<completed; i++) {
 		self.challengeData.completedArray[i] = true;
+		self.challengeData.completed=i;
 		self notify( "challenge_complete" );
-		self.challengeData.completed++;
 		wait(waitTime);
 	}
 	

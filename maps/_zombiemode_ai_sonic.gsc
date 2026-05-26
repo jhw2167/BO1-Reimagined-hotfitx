@@ -334,6 +334,7 @@ sonic_zombie_spawn( animname_set )
 	self.thundergun_knockdown_func = maps\_zombiemode_spawner::zombie_knockdown;
 	self.monkey_bolt_taunts = ::sonic_monkey_bolt_taunts;
 
+	self.zombie_type="none";
 	self maps\_zombiemode_spawner::set_zombie_run_cycle( "sprint");
 
 	self thread _zombie_screamAttackThink();

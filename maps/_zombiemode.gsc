@@ -1226,7 +1226,7 @@ reimagined_init_level()
 
 	//ENDGAME VARIABLES .challenge
 
-	level.VALUE_MIDGAME_ROUND = 25;
+	level.VALUE_MIDGAME_ROUND = 20;
 	level.VALUE_ENDGAME_ROUND = 45;
 
 	level.VALUE_ENDGAME_BUY_COST = 50000;
@@ -14075,14 +14075,41 @@ watch_faulty_rounds()
 
 		if(time_no_enemies > 90) 
 		{
-			level.zombie_total = 0;
-			level.zombie_dog_total=0;
-			flag_set( "end_round_wait" );
-			level notify( "last_dog_down" );
-			wait( 1 );
-			flag_clear( "end_round_wait" );
+			//kill all the enemies
+			for(i=0;i<enemies.size;i++)
+			{
+				if(!isdefined(enemies[i]) || IsAlive(enemies[i])) {
+					continue;
+				}
+
+				if(!IsDefined( enemies[i].health ) || is_true(enemies[i].ignore_enemy_count)) {
+					continue;
+				}
+
+				//skip boss zombies, director, astronaut, flame and screamer
+				animname = enemies[i].animname;
+				if(
+				animname == "thief_zombie"
+				|| animname == "director_zombie" 
+				|| animname == "astro_zombie" 
+				|| animname == "bo2_zm_mech"
+				|| animname == "napalm_zombie"
+				|| animname == "sonic_zombie" 
+				) {
+					continue;
+				}
+				
+				
+				enemies[i] DoDamage( enemies[i].health + 1000, enemies[i].origin, undefined, undefined, "explosion" );
+			}
+			level.zombie_total=0;
+
 			time_no_enemies = 0;
+
+			level waittill( "start_of_round" );
 		}
+
+		
 		
 	}	
 }
