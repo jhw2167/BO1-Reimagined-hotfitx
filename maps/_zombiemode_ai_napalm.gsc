@@ -327,6 +327,7 @@ napalm_zombie_spawn( animname_set )
 
 	self.water_trigger_func = ::napalm_enter_water_trigger;
 
+	self.zombie_type="none";
 	self maps\_zombiemode_spawner::set_zombie_run_cycle("walk");
 
 	self.custom_damage_func = ::napalm_custom_damage;

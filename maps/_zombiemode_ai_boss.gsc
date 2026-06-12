@@ -1652,6 +1652,9 @@ init_boss_zombie_anims()
 	{
 		level._zombie_stumpy_melee = [];
 	}
+	level._zombie_stumpy_melee["boss_zombie"] = [];
+	level._boss_zombie_stumpy_melee["boss_zombie"][0] = %ai_zombie_walk_on_hands_shot_a;
+	level._boss_zombie_stumpy_melee["boss_zombie"][1] = %ai_zombie_walk_on_hands_shot_b;
 	
 	if( !isDefined( level._zombie_tesla_death ) )
 	{

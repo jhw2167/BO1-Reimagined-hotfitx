@@ -1687,7 +1687,7 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	self thread debug_challenges_complete(4, 10);
+	self thread debug_challenges_complete(10, 10);
 
 	//while(true) -- not needed, blocks in line
 	{
@@ -2877,7 +2877,7 @@ level_player_claim_reward( player, rewardIndex )
 			powerup = rewardRestockDrop();
 			useDrop = true;
 			break;
-		case 4:	//pap teleport
+		case 4:	//melee upgrade
 			player.melee_upgrade = true;
 			view_angles = player GetPlayerAngles();
 			forwardDir = AnglesToForward( view_angles )*25;
@@ -3085,11 +3085,15 @@ debug_challenges_complete(completed, waitTime)
 {
 	wait(waitTime*2);
 	iprintln("DEBUG: Completing all challenges for player");
+	level waitill( "start_of_round" );
 	for(i=0; i<completed; i++) {
 		self.challengeData.completedArray[i] = true;
 		self.challengeData.completed=i;
 		self notify( "challenge_complete" );
 		wait(waitTime);
+		level waitill( "start_of_round" );
+		//print challenge and round		
+		iprintln("DEBUG: Completed challenge " + i + " on round " + level.round_number );
 	}
 	
 }
