@@ -1687,7 +1687,7 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	//self thread debug_challenges_complete(10, 10);
+	self thread debug_challenges_complete(5, 10);
 
 	//while(true) -- not needed, blocks in line
 	{
@@ -1771,7 +1771,7 @@ player_watch_challenge_hintStrings( trigger )
 			distance_3 = DistanceSquared( medal_3, radial_origin_3 );
 			distance_4 = DistanceSquared( medal_4, radial_origin_4 );
 
-			if( challenges.completed >= 4 && challenges.claimed == 4 ) {
+			if( challenges.completed >= 5 && challenges.claimed == 5 ) {
 				challenges.current = -1;
 				trigger SetHintString( &"REIMAGINED_MIDGAME_ROUND_REQUIREMENT", level.VALUE_MIDGAME_ROUND );
 				wait 0.05;
@@ -2898,6 +2898,46 @@ level_player_claim_reward( player, rewardIndex )
 			playfx( level._effect["thundergun_knockdown_ground"], player.origin+(0,10,0), AnglesToForward( view_angles ), AnglesToUp( view_angles ) );
 			useDrop = false;
 			break;
+
+		case 5: //wait for second challenge set
+			break;
+
+		case 6: //more points
+			powerup = rewardPointsDrop( 10000 );
+			useDrop = true;
+			break;
+
+		case 7: //upgrade a perk
+			base_perks = level.ARRAY_VALID_PERKS;
+			pro_perks  = level.ARRAY_VALID_PRO_PERKS;
+
+			upgradable = [];
+			for( i = 0; i < base_perks.size; i++ )
+			{
+				if( (player HasPerk( base_perks[i] )) && !( player hasProPerkHook( pro_perks[i] ) ) )
+					upgradable[ upgradable.size ] = pro_perks[i];
+			}
+
+			if( upgradable.size == 0 ) {
+				player PlaySound( "deny" );
+				return false;
+			}
+
+			perk = upgradable[ randomInt( upgradable.size ) ];
+			player maps\_zombiemode_perks::give_perk( perk, true );
+			player.perk_purchased = perk;
+			break;
+
+		case 8: //upgrade any weapon from the box
+			player.upgradedBox = true;
+			break;
+
+		case 9: //25000 points + max ammo
+			powerup = rewardPointsDrop( 25000 );
+			rewardRestockDrop();
+			useDrop = true;
+			break;
+		
 	}
 
 	if( useDrop ) {
@@ -2914,6 +2954,11 @@ level_player_claim_reward( player, rewardIndex )
 	level.rewardInProgress = false;
 	return true;
 }
+
+	hasProPerkHook( perk )
+	{
+		return self maps\_zombiemode_perks::hasProPerk( perk );
+	}
 
 	rewardPerkDrop() 
 	{
@@ -2938,6 +2983,60 @@ level_player_claim_reward( player, rewardIndex )
 	}
 
 
+//converts normal weapon string from box to upgraded weapon and gives it to the player
+//called from _zombiemode_weapons
+give_upgraded_weapon( weapon, modelIndex )
+{
+    if( !IsDefined( weapon ) || weapon == "none" )
+        return false;
+
+    //Grenades / mines / equipment have their own grant paths - let the caller handle them
+    if( self is_offhand_weapon( weapon ) )
+        return false;
+
+    if( !IsDefined( modelIndex ) )
+        modelIndex = 0;
+
+    //Same input normalizations the PAP trigger applies
+    if( weapon == "microwavegun_zm" )
+        weapon = "microwavegundw_zm";
+    else if( weapon == "zombie_doublebarrel_sawed" )
+        weapon = "zombie_doublebarrel";
+
+    if( !IsDefined( level.zombie_weapons[weapon] ) )
+        return false;
+
+    upgrade_weapon = level.zombie_weapons[weapon].upgrade_name;
+
+    //No double-pap, and graceful fall-back when no upgrade variant exists
+    if( IsSubStr( weapon, "upgraded" ) || !IsDefined( upgrade_weapon ) )
+        upgrade_weapon = weapon;
+
+    weapon_limit = 2;
+    if( self HasPerk( "specialty_additionalprimaryweapon" ) )
+        weapon_limit = 3;
+
+    primaries = self GetWeaponsListPrimaries();
+    if( IsDefined( primaries ) && primaries.size >= weapon_limit )
+    {
+        //At cap - swap into the active slot
+        self maps\_zombiemode_weapons::weapon_give( upgrade_weapon );
+    }
+    else
+    {
+        //Caller-supplied modelIndex (e.g. ballistic-knife bowie/sickle variants) wins;
+        //otherwise use the standard PAP camo model index for this weapon
+        if( modelIndex == 0 )
+            modelIndex = self maps\_zombiemode_weapons::get_upgraded_weapon_model_index( upgrade_weapon );
+
+        self GiveWeapon( upgrade_weapon, modelIndex, self maps\_zombiemode_weapons::get_pack_a_punch_weapon_options( upgrade_weapon ) );
+        self maps\_zombiemode_weapons::give_max_ammo( upgrade_weapon, 1 );
+    }
+
+    self SwitchToWeapon( upgrade_weapon );
+    self notify( "weapon_upgrade_complete" );
+    return true;
+}
 
 load_zone_names() {
 
@@ -3100,7 +3199,7 @@ debug_challenges_complete(completed, waitTime)
 		self.challengeData.completed=i;
 		self notify( "challenge_complete" );
 		wait(waitTime);
-		level waittill( "start_of_round" );
+		//level waittill( "start_of_round" );
 		//print challenge and round		
 		iprintln("DEBUG: Completed challenge " + i + " on round " + level.round_number );
 	}

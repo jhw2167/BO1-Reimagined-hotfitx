@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									
+	/* 									*/
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=5;	///
 	level.starting_points_override=100000;	///
@@ -8237,7 +8237,7 @@ setApocalypseOptions()
 	if( level.user_options == 0 )
 	{
 		if( GetDvar("zombie_apocalypse_default") == "")
-			level.apocalypse = 0;
+			level.apocalypse = 1;
 		else
 			level.apocalypse = GetDvarInt("zombie_apocalypse_default");
 
@@ -14051,7 +14051,7 @@ watch_faulty_rounds()
 		//iterate over all, make sure all are defined, alive, and have health and not ignore
 		for(i=0;i<enemies.size;i++)
 		{
-			if(!isdefined(enemies[i]) || IsAlive(enemies[i])) {
+			if(!isdefined(enemies[i]) || !IsAlive(enemies[i])) {
 				continue;
 			}
 
