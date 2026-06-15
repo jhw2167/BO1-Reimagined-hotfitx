@@ -55,7 +55,7 @@ main()
 	*/
 
 	//Overrides	
-	/* 									*/
+	/* 									
 	//level.zombie_ai_limit_override=1;	///allowed on map
 	level.starting_round_override=5;	///
 	level.starting_points_override=100000;	///
@@ -1227,9 +1227,9 @@ reimagined_init_level()
 	//ENDGAME VARIABLES .challenge
 
 	level.VALUE_MIDGAME_ROUND = 20;
-	level.VALUE_ENDGAME_ROUND = 45;
+	level.VALUE_ENDGAME_ROUND = 40;
 
-	level.VALUE_ENDGAME_BUY_COST = 50000;
+	level.VALUE_ENDGAME_BUY_COST = 100000;
 
 	level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS = 100;
 	level.VALUE_CHALLENGE_CLASS_TYPE_KILLS = 100;
@@ -3716,7 +3716,7 @@ init_dvars()
 	}
 		
 
-	level.zm_mod_version = "2.5.2";
+	level.zm_mod_version = "2.5.3";
 	SetDvar( "zm_mod_version", level.zm_mod_version );
 
 
@@ -7597,7 +7597,7 @@ reimagined_expanded_round_start()
 			return;
 
 		if( level.round_number > 5) {
-			level thread last_zombies_prune_playable_area();
+			//level thread last_zombies_prune_playable_area();
 		}
 		
 		for( i = 0; i < zombies.size; i++ )
@@ -7636,8 +7636,8 @@ reimagined_expanded_round_start()
 
 				if( self.animname == "zombie" || self.animname == "quad_zombie" )
 				{
-					if( !is_true(zombies[i].monitoring_playable_area) )
-						zombies[i] thread maps\_zombiemode_spawner::watch_zombie_in_playable_area();
+					//if( !is_true(zombies[i].monitoring_playable_area) )
+						//zombies[i] thread maps\_zombiemode_spawner::watch_zombie_in_playable_area();
 				}
 			}
 		
@@ -14265,6 +14265,8 @@ zone_hud()
 
 		name = choose_zone_name(self get_current_zone(), current_name);
 
+		self maps\_zombiemode_reimagined_utility::zone_update_hook(name);
+
 		if(current_name == name)
 		{
 			continue;
@@ -14277,7 +14279,7 @@ zone_hud()
 		wait .25;
 		self SetClientDvar("hud_zone_name", name);
 		self send_message_to_csc("hud_anim_handler", "hud_zone_name_in");
-		self maps\_zombiemode_reimagined_utility::zone_update_hook(name);
+	
 	}
 }
 

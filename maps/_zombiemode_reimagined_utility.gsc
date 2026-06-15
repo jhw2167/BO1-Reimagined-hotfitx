@@ -1687,7 +1687,7 @@ player_watch_challenges()
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger thread delete_on_disconnect( self );
 	
-	self thread debug_challenges_complete(10, 10);
+	//self thread debug_challenges_complete(10, 10);
 
 	//while(true) -- not needed, blocks in line
 	{
@@ -1708,10 +1708,10 @@ player_watch_challenges()
 		while(1)
 		{
 			level waittill( "start_of_round" );
-			//check that challenge 5 is completed
-			if(!challenges.completedArray[5]) continue;
+			if(!challenges.completedArray[4]) continue;
 
 			if(level.round_number >= level.VALUE_MIDGAME_ROUND) {
+				challenges.completedArray[5] = true;
 				challenges.completed = 6;
 				break;
 			}
@@ -1771,7 +1771,7 @@ player_watch_challenge_hintStrings( trigger )
 			distance_3 = DistanceSquared( medal_3, radial_origin_3 );
 			distance_4 = DistanceSquared( medal_4, radial_origin_4 );
 
-			if( challenges.completed == 4 && challenges.claimed == 4 ) {
+			if( challenges.completed >= 4 && challenges.claimed == 4 ) {
 				challenges.current = -1;
 				trigger SetHintString( &"REIMAGINED_MIDGAME_ROUND_REQUIREMENT", level.VALUE_MIDGAME_ROUND );
 				wait 0.05;
@@ -2243,7 +2243,13 @@ challenge_watch_locationSurvive()
 	while( true ) {
 
 		level waittill( "start_of_round" );
-		self.challengeData.locationSurviveRound = true;
+		
+		if( !isDefined(self.challengeData.locations) ) continue;
+		locationsArray = self.challengeData.locations;
+		if(locationsArray.size == 0) continue;
+		if(!isDefined(self.current_zone) ) continue;
+
+		self.challengeData.locationSurviveRound = is_in_array( locationsArray, self.current_zone );
 		level waittill( "end_of_round" );
 
 		//iprintln("Completed round survive check " + self.challengeData.locationSurviveRound );
@@ -2261,9 +2267,11 @@ challenge_watch_locationSurvive()
 
 challenge_zoneUpdateHook_validate_locationSurvive( zoneName ) 
 {
-	if(level.zombie_total <= 1) return self.challengeData.locationSurviveRound;	//little buffer for players
-
+	if(!isDefined(zoneName)) return false;
+	if( !isDefined(self.challengeData.locations) ) return false;
 	locationsArray = self.challengeData.locations;
+	if(locationsArray.size == 0) return false;
+
 	if( !is_in_array( locationsArray, zoneName ) ) {
 		//iprintln("Player left zone " + zoneName);
 		self.challengeData.locationSurviveRound = false;
@@ -2416,11 +2424,11 @@ challenge_watch_nicheChallenge()
 	nicheChallengeType = nicheChallengeTypes[ index ];
 	self.challengeData.nicheChallengeType = nicheChallengeType;
 
-	if(nicheChallengeType == "KILLS") {
-		self.challengeData.nicheTypeKills = 0;
+	self.challengeData.nicheTypeKills = 0;
+	self.challengeData.nicheTypeDamage = 0;
+	if(nicheChallengeType == "KILLS") {	
 		self.challengeData.zombieDamageHook = ::challenge_damageHook_validate_nicheKills_location;
 	} else if(nicheChallengeType == "DAMAGE") {
-		self.challengeData.nicheTypeDamage = 0;
 		self.challengeData.zombieDamageHook = ::challenge_damageHook_validate_nicheDamage_location;
 	}
 
@@ -2705,12 +2713,13 @@ challenge_watch_scaledCombinedKills()
 	level endon( "end_game" );
 	self endon( "disconnect" );
 
-	// Wait until challenges 6-8 are complete
-	while(self.challengeData.completed < 8) {
+	// Wait until challenges 6-8 are complete 1- start challenges, 2-5 first set, 6 - start second set, 7,8,9,10 second set, 11 - endgame
+	while(self.challengeData.completed < 9) {
 		self waittill( "challenge_complete" );
 	}
 
 	challenges = self.challengeData;
+	challenges.targetRound = level.round_number;
 	
 	// Lock the round number for scaling
 	challenges.primaryTypeKills = 0;
@@ -3085,13 +3094,13 @@ debug_challenges_complete(completed, waitTime)
 {
 	wait(waitTime*2);
 	iprintln("DEBUG: Completing all challenges for player");
-	level waitill( "start_of_round" );
+	level waittill( "start_of_round" );
 	for(i=0; i<completed; i++) {
 		self.challengeData.completedArray[i] = true;
 		self.challengeData.completed=i;
 		self notify( "challenge_complete" );
 		wait(waitTime);
-		level waitill( "start_of_round" );
+		level waittill( "start_of_round" );
 		//print challenge and round		
 		iprintln("DEBUG: Completed challenge " + i + " on round " + level.round_number );
 	}
