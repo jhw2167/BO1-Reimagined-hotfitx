@@ -4015,7 +4015,7 @@ perk_give_bottle_begin( perk )
 	return gun;
 }
 
-// UPGRADE PERK powerup_solo
+// UPGRADE PERK powerup_solo, upgradedPerkFx, upgraded_perk
 upgrade_perk_fx()
 {
 	weap = self GetCurrentWeapon();

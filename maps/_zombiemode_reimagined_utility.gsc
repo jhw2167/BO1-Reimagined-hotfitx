@@ -1459,7 +1459,7 @@ start_challenges()
 			//angles = ( 0, 270, 0 );
 			//-466, 1567, -307 -- 1580 was to far to guard rail
 			//8 45, 0
-			origin = ( -480, 1576, -307 );	//top guard rail main room
+			origin = ( -475, 1568, -307 );	//top guard rail main room
 			angles = ( 14, -40, 0 );
 			rewardDrop = (-50, 15, 0);
 			break;
@@ -1468,7 +1468,7 @@ start_challenges()
 			//origin = ( 411.4, 87.6, -303.9 );
 			//angles = ( 0, 270, 0 );
 			//-2461 2130 -75
-			origin = ( -2450, 2110, -75 );
+			origin = ( -2414, 2130, -75 );
 			angles = ( 8, 90, 0 );
 			rewardDrop = (0, -100, 0);
 			break;
@@ -1757,7 +1757,7 @@ player_watch_challenge_hintStrings( trigger )
 	{
 		if( self IsTouching( trigger ) && self maps\_laststand::is_facing( level.challenge_tomb ) )
 		{
-			firstLevelChallenges = challenges.completed < 6;
+			firstLevelChallenges = challenges.completed < 6 && challenges.claimed<5;
 
 			view_pos = self GetWeaponMuzzlePoint();
 			forward_view_angles = self GetWeaponForwardDir();
@@ -1771,7 +1771,7 @@ player_watch_challenge_hintStrings( trigger )
 			distance_3 = DistanceSquared( medal_3, radial_origin_3 );
 			distance_4 = DistanceSquared( medal_4, radial_origin_4 );
 
-			if( challenges.completed >= 5 && challenges.claimed == 5 ) {
+			if( challenges.claimed == 5 && level.round_number < level.VALUE_MIDGAME_ROUND ) {
 				challenges.current = -1;
 				trigger SetHintString( &"REIMAGINED_MIDGAME_ROUND_REQUIREMENT", level.VALUE_MIDGAME_ROUND );
 				wait 0.05;
@@ -1802,6 +1802,7 @@ player_watch_challenge_hintStrings( trigger )
 				} 
 				else 
 				{
+					//nicheDamageChallenge, damageChallenge, damagePercentChallenge
 					challenges.current = 6;
 					// Challenge 6: Niche Damage Round
 					if( !IsDefined( challenges.totalRoundDamage ) )
@@ -1819,12 +1820,12 @@ player_watch_challenge_hintStrings( trigger )
 					// Choose hint based on whether threshold is met
 					if( percentage >= required_percent ) {
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_NICHE_DAMAGE_ROUND_GOOD_HINT", 
-							required_percent, secondaryName, percentage + "%", 
-							niceDmgString(challenges.nicheRoundDamage) + "/" + niceDmgString(challenges.totalRoundDamage) );
+							required_percent, secondaryName, percentage);
+							//niceDmgString(challenges.nicheRoundDamage) + "/" + niceDmgString(challenges.totalRoundDamage) );
 					} else {
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_NICHE_DAMAGE_ROUND_BAD_HINT", 
-							required_percent, secondaryName, percentage + "%", 
-							niceDmgString(challenges.nicheRoundDamage) + "/" + niceDmgString(challenges.totalRoundDamage) );
+							required_percent, secondaryName, percentage);
+							//niceDmgString(challenges.nicheRoundDamage) + "/" + niceDmgString(challenges.totalRoundDamage) );
 					}
 					
 					if( challenges.completedArray[6] ) 
@@ -1913,6 +1914,7 @@ player_watch_challenge_hintStrings( trigger )
 				} 
 				else 
 				{
+					//locationKills, locationDamage, locationChallenge, locationDamageChallenge, locationKillsChallenge
 					challenges.current = 8;
 					// Challenge 8: Sequential Location Kills
 					
@@ -1920,12 +1922,14 @@ player_watch_challenge_hintStrings( trigger )
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_LOCKED_HINT" );
 					}
 					else {
+						kills = level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS;
 						loc1_progress = challenges.locationKillCounts[0];
 						loc2_progress = challenges.locationKillCounts[1];
 						loc3_progress = challenges.locationKillCounts[2];
 						
+						
 						trigger SetHintString( &"REIMAGINED_CHALLENGE_SEQUENTIAL_LOCATION_HINT", 
-							locations, loc1_progress, loc2_progress, loc3_progress );
+							kills, locations, loc1_progress, loc2_progress, loc3_progress );
 					}
 					
 					if( challenges.completedArray[8] ) 
@@ -2821,6 +2825,10 @@ damage_hook( zombie, weapon, damage, hitloc )
 	if( IsDefined( self.challengeData.specialtyZombieDamageHook ) ) {
 		self [[ self.challengeData.specialtyZombieDamageHook ]] ( zombie, weapon, damage, hitloc );
 	}
+
+	if( IsDefined( self.challengeData.zombieKillHook ) ) {
+        self [[ self.challengeData.zombieKillHook ]]( zombie, weapon, damage, hitloc );
+    }
 }
 
 zone_update_hook( zoneName ) {
@@ -2923,12 +2931,29 @@ level_player_claim_reward( player, rewardIndex )
 				return false;
 			}
 
+			if( is_true( self.superpower_active ) ) {
+				player PlaySound( "deny" );
+				return false;
+			}
+				
+
+
 			perk = upgradable[ randomInt( upgradable.size ) ];
-			player maps\_zombiemode_perks::give_perk( perk, true );
+
+			// do the drink animation
+			if( player HasPerk("specialty_fastreload") && !( player hasProPerkHook(level.SPD_PRO) ) ) {
+				player UnSetPerk("specialty_fastswitch");
+			}
 			player.perk_purchased = perk;
+			cost=0;
+			gun = player maps\_zombiemode_perks::perk_give_bottle_begin( perk );
+			//self is supposed to be perk trigger, not level, hope it still works
+			thread maps\_zombiemode_perks::give_perk_think(player, gun, perk, cost);
+
 			break;
 
 		case 8: //upgrade any weapon from the box
+			playsoundatposition("mus_wonder_weapon_stinger", (0,0,0));
 			player.upgradedBox = true;
 			break;
 
@@ -3189,19 +3214,34 @@ load_name( zone, common ) {
 	level.ARRAY_ZONE_NAMES[ zone ] = common;
 }
 
-debug_challenges_complete(completed, waitTime) 
+
+
+debug_challenges_complete( completed, waitTime )
 {
-	wait(waitTime*2);
-	iprintln("DEBUG: Completing all challenges for player");
-	level waittill( "start_of_round" );
-	for(i=0; i<completed; i++) {
-		self.challengeData.completedArray[i] = true;
-		self.challengeData.completed=i;
-		self notify( "challenge_complete" );
-		wait(waitTime);
-		//level waittill( "start_of_round" );
-		//print challenge and round		
-		iprintln("DEBUG: Completed challenge " + i + " on round " + level.round_number );
-	}
-	
+		level.VALUE_MIDGAME_ROUND = 10;
+	level.VALUE_ENDGAME_ROUND = 15;
+    //completed/waitTime kept for call-site compatibility; unused in this debug tactic
+    iprintln( "DEBUG: Reducing all challenge thresholds 10x for easy completion" );
+
+    level.VALUE_CHALLENGE_PRIMARY_TYPE_KILLS               = 10;        // was 100
+    level.VALUE_CHALLENGE_CLASS_TYPE_KILLS                 = 10;        // was 100
+
+    level.VALUE_CHALLENGE_SPECIALTY_BOSS_KILLS             = 1;         // was 2 (floor of 0.2 -> bumped to 1 so it can't auto-pass at zero)
+    level.VALUE_CHALLENGE_SPECIALTY_KILLS_PER_ROUND        = 2;         // was 20
+    level.VALUE_CHALLENGE_SPECIALTY_TOTAL_DAMAGE_PER_ROUND = 6000;      // was 60000
+    level.VALUE_CHALLENGE_SPECIALTY_TOTAL_POINTS_PER_ROUND = 180;       // was 1800
+
+    level.VALUE_CHALLENGE_NICHE_TYPE_KILLS                 = 20;        // was 200
+    level.VALUE_CHALLENGE_NICHE_TYPE_DAMAGE                = 24 * 45000;// was 240*45000
+
+    //Ratio, not a count - 8% of round damage from niche class instead of 80%
+    level.VALUE_CHALLENGE_NICHE_CLASS_ZOMBIE_DAMAGE_THRESHOLD = 0.08;   // was 0.8
+
+    //PERK_LIMIT is a "<= N perks" cap, so easier means HIGHER, not lower; raised to 9
+    level.VALUE_CHALLENGE_SPECIALTIES_HARD_PERK_LIMIT      = 9;         // was 3
+    level.VALUE_CHALLENGE_SPECIALTIES_HARD_TOTAL_KILLS     = 12;        // was 120
+
+    level.VALUE_CHALLENGE_CONSECUTIVE_LOCATION_KILLS       = 5;         // was 50
+
+    level.VALUE_CHALLENGE_TYPE_KILLS_PER_ROUND_LATE        = 3;         // was 25 (floor of 2.5)
 }

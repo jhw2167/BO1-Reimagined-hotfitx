@@ -3283,6 +3283,10 @@ treasure_chest_weapon_spawn( chest, player, respin )
 			self.weapon_model_dw hide();
 		}
 
+		 // Hook
+        if( is_true( player.upgradedBox ) )
+            self thread attach_upgraded_box_fx();
+
 		if( !isdefined( player.already_got_weapons_count ) )
 		{
 			player.already_got_weapons_count = 0;
@@ -3352,6 +3356,24 @@ treasure_chest_weapon_spawn( chest, player, respin )
 	self.weapon_string = undefined;
 	self notify("box_spin_done");
 }
+
+	attach_upgraded_box_fx()
+	{
+		if( !IsDefined( self.weapon_model ) )
+			return;
+
+		fx_model = Spawn( "script_model", self.weapon_model.origin );
+		fx_model SetModel( "tag_origin" );
+		fx_model LinkTo( self.weapon_model );
+
+		PlayFXOnTag( level._effect["powerup_on_solo"], fx_model, "tag_origin" );
+
+		//Same end-conditions as treasure_chest_glowfx
+		self waittill_any( "weapon_grabbed", "box_spin_done", "box_moving" );
+
+		if( IsDefined( fx_model ) )
+			fx_model Delete();
+	}
 
 weapon_floats_up(player)
 {
